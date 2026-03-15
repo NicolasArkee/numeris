@@ -36,7 +36,7 @@ export function Hero() {
               Premier rendez-vous gratuit →
             </Link>
             <Link
-              href="/formules"
+              href="/expertises"
               className="border border-white/20 px-8 py-4 font-sans text-[0.875rem] font-medium text-white/50 transition-colors hover:border-white/40 hover:text-white/90"
             >
               Voir nos formules

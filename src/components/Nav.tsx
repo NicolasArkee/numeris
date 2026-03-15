@@ -2,11 +2,11 @@ import Link from "next/link";
 import { AppConfig } from "@/utils/AppConfig";
 
 const links = [
-  { href: "/nos-expertises", label: "Nos expertises" },
-  { href: "/equipe", label: "L'équipe" },
-  { href: "/formules", label: "Formules" },
+  { href: "/expertises", label: "Nos expertises" },
+  { href: "/professions", label: "Professions" },
+  { href: "/secteurs", label: "Secteurs" },
+  { href: "/villes", label: "Villes" },
   { href: "/ressources", label: "Ressources" },
-  { href: "/a-propos", label: "À propos" },
 ];
 
 export function Nav() {

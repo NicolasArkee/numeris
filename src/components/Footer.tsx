@@ -2,18 +2,18 @@ import Link from "next/link";
 import { AppConfig } from "@/utils/AppConfig";
 
 const expertises = [
-  { href: "/nos-expertises/comptabilite", label: "Comptabilité" },
-  { href: "/nos-expertises/fiscalite", label: "Fiscalité" },
-  { href: "/nos-expertises/social", label: "Gestion sociale" },
-  { href: "/nos-expertises/creation-entreprise", label: "Création" },
-  { href: "/nos-expertises/conseil-gestion", label: "Conseil en gestion" },
-  { href: "/nos-expertises/audit", label: "Audit" },
+  { href: "/expertises/comptabilite", label: "Comptabilité" },
+  { href: "/expertises/fiscalite", label: "Fiscalité" },
+  { href: "/expertises/social", label: "Gestion sociale" },
+  { href: "/expertises/creation-entreprise", label: "Création" },
+  { href: "/expertises/conseil-gestion", label: "Conseil en gestion" },
+  { href: "/expertises/audit", label: "Audit" },
 ];
 
 const cabinet = [
-  { href: "/equipe", label: "L'équipe" },
-  { href: "/a-propos", label: "À propos" },
-  { href: "/formules", label: "Nos formules" },
+  { href: "/professions", label: "Professions" },
+  { href: "/secteurs", label: "Secteurs" },
+  { href: "/villes", label: "Villes" },
   { href: "/ressources", label: "Ressources" },
   { href: "/contact", label: "Contact" },
 ];
@@ -116,18 +116,12 @@ export function Footer() {
             Tous droits réservés.
           </span>
           <div className="flex gap-7">
-            <Link
-              href="/mentions-legales"
-              className="text-white/[0.18] transition-colors hover:text-white/45"
-            >
+            <span className="text-white/[0.18]">
               Mentions légales
-            </Link>
-            <Link
-              href="/politique-confidentialite"
-              className="text-white/[0.18] transition-colors hover:text-white/45"
-            >
+            </span>
+            <span className="text-white/[0.18]">
               Politique de confidentialité
-            </Link>
+            </span>
           </div>
           <div className="flex items-center gap-2.5">
             <span className="border border-white/15 px-2.5 py-0.5 text-[0.6rem] font-bold uppercase tracking-[0.06em] text-white/25">
