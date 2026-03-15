@@ -3,6 +3,8 @@ import Link from "next/link";
 import { db } from "@/libs/db";
 import { AppConfig } from "@/utils/AppConfig";
 import { BreadcrumbJsonLd } from "@/components/JsonLd";
+import { PageHero } from "@/components/PageHero";
+import { TrustBar } from "@/components/TrustBar";
 
 export const metadata: Metadata = {
   title: `Nos Expertises Comptables | ${AppConfig.name}`,
@@ -13,6 +15,7 @@ export const metadata: Metadata = {
 export default function ExpertisesPage() {
   const services = db.getServices();
   const secteurs = db.getSecteurs();
+  const categories = db.getProfessionCategories();
 
   return (
     <>
@@ -23,25 +26,19 @@ export default function ExpertisesPage() {
         ]}
       />
 
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-nuit px-6 py-20 lg:px-[4.5rem] lg:py-24">
-        <div className="grid-bg pointer-events-none absolute inset-0 opacity-35" />
-        <div className="relative z-10 mx-auto max-w-[82rem]">
-          <div className="mb-6 flex items-center gap-3.5">
-            <span className="block h-px w-7 bg-or" />
-            <span className="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-or">
-              Expertise comptable
-            </span>
-          </div>
-          <h1 className="mb-6 font-serif text-[2.75rem] font-light leading-[1.08] tracking-tight text-blanc lg:text-[4rem]">
-            Nos expertises
-          </h1>
-          <p className="max-w-2xl text-[0.95rem] leading-relaxed text-white/40">
-            De la tenue comptable au conseil stratégique, {AppConfig.name} couvre
-            l&apos;ensemble de vos besoins en expertise comptable et financière.
-          </p>
-        </div>
-      </section>
+      <PageHero
+        eyebrow="Expertise comptable"
+        title="Nos expertises"
+        subtitle={`De la tenue comptable au conseil stratégique, ${AppConfig.name} couvre l'ensemble de vos besoins en expertise comptable et financière.`}
+        breadcrumbs={[
+          { name: "Accueil", url: "/" },
+          { name: "Expertises", url: "/expertises" },
+        ]}
+        cta={{ label: "Demander un devis", href: "/contact" }}
+        ctaSecondary={{ label: "Voir nos tarifs", href: "/expertises#tarifs" }}
+      />
+
+      <TrustBar />
 
       {/* Services grid */}
       <section className="bg-creme px-6 py-20 lg:px-[4.5rem]">
@@ -71,8 +68,14 @@ export default function ExpertisesPage() {
 
           {/* Secteurs */}
           <div className="mt-20">
+            <div className="mb-6 flex items-center gap-3.5">
+              <span className="block h-px w-6 flex-shrink-0 bg-or" />
+              <span className="text-[0.65rem] font-bold uppercase tracking-[0.14em] text-or-fonce">
+                Par secteur
+              </span>
+            </div>
             <h2 className="mb-8 font-serif text-[1.75rem] font-light text-encre">
-              Par secteur d&apos;activité
+              Expertises par secteur d&apos;activité
             </h2>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
               {secteurs.map((s) => (
@@ -83,6 +86,34 @@ export default function ExpertisesPage() {
                 >
                   <h3 className="mb-1 text-[0.95rem] font-medium text-encre">{s.name}</h3>
                   <p className="text-[0.75rem] text-ardoise">{s.description}</p>
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Professions */}
+          <div className="mt-20">
+            <div className="mb-6 flex items-center gap-3.5">
+              <span className="block h-px w-6 flex-shrink-0 bg-or" />
+              <span className="text-[0.65rem] font-bold uppercase tracking-[0.14em] text-or-fonce">
+                Par profession
+              </span>
+            </div>
+            <h2 className="mb-8 font-serif text-[1.75rem] font-light text-encre">
+              Expertises par profession
+            </h2>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              {categories.map((cat) => (
+                <Link
+                  key={cat.slug}
+                  href={`/professions#${cat.slug}`}
+                  className="border border-pierre-12 bg-blanc px-6 py-5 transition-colors hover:border-or"
+                >
+                  <span className="mb-2 block text-[1.3rem]">{cat.icon}</span>
+                  <h3 className="mb-1 text-[0.95rem] font-medium text-encre">{cat.name}</h3>
+                  {cat.description && (
+                    <p className="line-clamp-2 text-[0.72rem] text-ardoise">{cat.description}</p>
+                  )}
                 </Link>
               ))}
             </div>

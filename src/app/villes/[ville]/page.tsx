@@ -49,6 +49,36 @@ export default async function VillePage({ params }: Props) {
       faqs={seo.faqs}
       linkGroups={linkGroups}
     >
+      {/* Local info card */}
+      <div className="mb-12 border border-pierre-12 border-l-2 border-l-or bg-blanc p-7">
+        <h2 className="mb-4 font-serif text-[1.25rem] font-light text-encre">
+          Votre cabinet à {ville.name}
+        </h2>
+        <div className="grid gap-6 md:grid-cols-3">
+          <div>
+            <span className="mb-1 block text-[0.68rem] font-bold uppercase tracking-[0.1em] text-ardoise">
+              Adresse
+            </span>
+            <p className="text-[0.85rem] text-encre">{AppConfig.address}</p>
+          </div>
+          <div>
+            <span className="mb-1 block text-[0.68rem] font-bold uppercase tracking-[0.1em] text-ardoise">
+              Téléphone
+            </span>
+            <p className="text-[0.85rem] font-medium text-or-fonce">{AppConfig.phone}</p>
+          </div>
+          <div>
+            <span className="mb-1 block text-[0.68rem] font-bold uppercase tracking-[0.1em] text-ardoise">
+              Rendez-vous
+            </span>
+            <a href="/contact" className="text-[0.85rem] font-medium text-or-fonce hover:underline">
+              Prendre rendez-vous →
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {/* Services in this ville */}
       <div className="mb-12">
         <h2 className="mb-6 font-serif text-[1.5rem] font-light text-encre">
           Nos services à {ville.name}
@@ -64,6 +94,7 @@ export default async function VillePage({ params }: Props) {
               <h3 className="mb-1 text-[0.95rem] font-medium text-encre">
                 {svc.title} à {ville.name}
               </h3>
+              <p className="text-[0.72rem] text-ardoise">{svc.description}</p>
             </a>
           ))}
         </div>

@@ -1,0 +1,4706 @@
+{
+  "Métier & Formation": {
+    "vol": 332010,
+    "n": 14513,
+    "children": {
+      "Expert-comptable général": {
+        "vol": 313450,
+        "n": 13705,
+        "children": {
+          "Recherche expert comptable": {
+            "vol": 101410,
+            "n": 1256,
+            "children": {
+              "expert comptable": {
+                "vol": 53050,
+                "n": 237
+              },
+              "expert comptable paris": {
+                "vol": 10060,
+                "n": 168
+              },
+              "expert comptable start up": {
+                "vol": 4670,
+                "n": 66
+              },
+              "expert comptable indépendant": {
+                "vol": 13150,
+                "n": 278
+              },
+              "expert comptable profession libérale": {
+                "vol": 2370,
+                "n": 39
+              },
+              "expert comptable nice": {
+                "vol": 10740,
+                "n": 279
+              },
+              "expert comptable restauration": {
+                "vol": 4640,
+                "n": 123
+              },
+              "expert comptable médecin": {
+                "vol": 2730,
+                "n": 66
+              }
+            }
+          },
+          "Salaire et tarifs experts": {
+            "vol": 31860,
+            "n": 585,
+            "children": {
+              "expert comptable salaire": {
+                "vol": 11870,
+                "n": 55
+              },
+              "salaire expert comptable": {
+                "vol": 13350,
+                "n": 105
+              },
+              "tarif expert comptable": {
+                "vol": 2030,
+                "n": 46
+              },
+              "combien gagne un expert comptable": {
+                "vol": 1500,
+                "n": 63
+              },
+              "prix d un expert comptable": {
+                "vol": 1420,
+                "n": 96
+              },
+              "cout d un expert comptable": {
+                "vol": 410,
+                "n": 51
+              },
+              "experte comptable salaire": {
+                "vol": 930,
+                "n": 108
+              },
+              "prix expert comptable par mois": {
+                "vol": 350,
+                "n": 61
+              }
+            }
+          },
+          "l'expert comptable": {
+            "vol": 17110,
+            "n": 1335,
+            "children": {
+              "l'expert comptable": {
+                "vol": 9200,
+                "n": 270
+              },
+              "métier expert comptable": {
+                "vol": 1780,
+                "n": 109
+              },
+              "creation entreprise expert comptable": {
+                "vol": 900,
+                "n": 134
+              },
+              "freelance expert comptable": {
+                "vol": 1960,
+                "n": 274
+              },
+              "conseil expert comptable": {
+                "vol": 800,
+                "n": 127
+              },
+              "avis sur l-expert-comptable": {
+                "vol": 870,
+                "n": 213
+              },
+              "avocat expert comptable": {
+                "vol": 860,
+                "n": 119
+              },
+              "missions d un expert comptable": {
+                "vol": 740,
+                "n": 89
+              }
+            }
+          },
+          "Réseaux et CCN experts": {
+            "vol": 20860,
+            "n": 1474,
+            "children": {
+              "experts comptables": {
+                "vol": 5830,
+                "n": 149
+              },
+              "l expert comptable com": {
+                "vol": 7660,
+                "n": 390
+              },
+              "ccn expert comptable": {
+                "vol": 1350,
+                "n": 96
+              },
+              "sasu expert comptable": {
+                "vol": 2060,
+                "n": 112
+              },
+              "cogep expert comptable": {
+                "vol": 1200,
+                "n": 220
+              },
+              "oec expert comptable": {
+                "vol": 1310,
+                "n": 162
+              },
+              "groupe dec expert comptable": {
+                "vol": 880,
+                "n": 142
+              },
+              "daf externalisé expert-comptable": {
+                "vol": 570,
+                "n": 203
+              }
+            }
+          },
+          "Études et diplômes experts": {
+            "vol": 13350,
+            "n": 744,
+            "children": {
+              "etude expert comptable": {
+                "vol": 5020,
+                "n": 31
+              },
+              "diplome expert comptable": {
+                "vol": 2040,
+                "n": 153
+              },
+              "devenir expert comptable": {
+                "vol": 1920,
+                "n": 156
+              },
+              "comment devenir expert comptable": {
+                "vol": 1340,
+                "n": 54
+              },
+              "formation pour expert comptable": {
+                "vol": 930,
+                "n": 93
+              },
+              "ecole expert comptable": {
+                "vol": 560,
+                "n": 75
+              },
+              "etude pour devenir expert comptable": {
+                "vol": 1140,
+                "n": 109
+              },
+              "parcours expert comptable": {
+                "vol": 400,
+                "n": 73
+              }
+            }
+          },
+          "Outils et logiciels experts": {
+            "vol": 19120,
+            "n": 1010,
+            "children": {
+              "postes expert comptable": {
+                "vol": 2850,
+                "n": 142
+              },
+              "logiciel expert comptable": {
+                "vol": 4760,
+                "n": 106
+              },
+              "prix expert comptable": {
+                "vol": 2680,
+                "n": 178
+              },
+              "tiime expert comptable": {
+                "vol": 4200,
+                "n": 206
+              },
+              "cout expert comptable": {
+                "vol": 480,
+                "n": 65
+              },
+              "odoo expert comptable": {
+                "vol": 930,
+                "n": 55
+              },
+              "crm expert comptable": {
+                "vol": 490,
+                "n": 55
+              },
+              "verspieren expert comptable": {
+                "vol": 2730,
+                "n": 203
+              }
+            }
+          },
+          "Experts comptables proximité": {
+            "vol": 80320,
+            "n": 1731,
+            "children": {
+              "expert comptable à proximité": {
+                "vol": 12820,
+                "n": 279
+              },
+              "expert comptable nantes": {
+                "vol": 17950,
+                "n": 347
+              },
+              "expert comptable toulouse": {
+                "vol": 5320,
+                "n": 105
+              },
+              "expert comptable strasbourg": {
+                "vol": 14600,
+                "n": 330
+              },
+              "expert comptable aix en provence": {
+                "vol": 6160,
+                "n": 129
+              },
+              "expert comptable villeurbanne": {
+                "vol": 8890,
+                "n": 195
+              },
+              "expert comptable montpellier": {
+                "vol": 7460,
+                "n": 164
+              },
+              "expert comptable saint herblain": {
+                "vol": 7120,
+                "n": 182
+              }
+            }
+          },
+          "Stagiaires et missions experts": {
+            "vol": 6160,
+            "n": 583,
+            "children": {
+              "lettre de mission expert comptable": {
+                "vol": 1730,
+                "n": 76
+              },
+              "expert comptable stagiaire": {
+                "vol": 1750,
+                "n": 165
+              },
+              "résiliation lettre de mission expert-comptable sans préavis": {
+                "vol": 970,
+                "n": 42
+              },
+              "attestation expert comptable": {
+                "vol": 720,
+                "n": 154
+              },
+              "lettre fin de mission expert-comptable": {
+                "vol": 250,
+                "n": 14
+              },
+              "rapport de stage expert comptable pdf": {
+                "vol": 320,
+                "n": 30
+              },
+              "contrat de travail expert comptable salarié": {
+                "vol": 290,
+                "n": 56
+              },
+              "courrier reprise dossier expert comptable": {
+                "vol": 130,
+                "n": 46
+              }
+            }
+          },
+          "Assurance et cabinets régionaux": {
+            "vol": 4810,
+            "n": 1163,
+            "children": {
+              "assurance expert comptable": {
+                "vol": 1500,
+                "n": 232
+              },
+              "amarris expert comptable": {
+                "vol": 520,
+                "n": 150
+              },
+              "experts comptables alsace": {
+                "vol": 410,
+                "n": 112
+              },
+              "fidaquitaine experts comptables et conseils": {
+                "vol": 860,
+                "n": 197
+              },
+              "apl expert comptable angers": {
+                "vol": 460,
+                "n": 133
+              },
+              "expert comptable subventions ariège": {
+                "vol": 320,
+                "n": 120
+              },
+              "agc expert comptable": {
+                "vol": 420,
+                "n": 137
+              },
+              "prévoyance axa expert comptable": {
+                "vol": 320,
+                "n": 82
+              }
+            }
+          },
+          "Experts comptables Paris": {
+            "vol": 10750,
+            "n": 1880,
+            "children": {
+              "paris expert comptable": {
+                "vol": 2180,
+                "n": 304
+              },
+              "dougs expert comptable": {
+                "vol": 1070,
+                "n": 359
+              },
+              "sandrine meffre expert comptable": {
+                "vol": 1160,
+                "n": 320
+              },
+              "nicolas sapin expert comptable": {
+                "vol": 4920,
+                "n": 461
+              },
+              "mohamed kabbaj expert comptable": {
+                "vol": 980,
+                "n": 194
+              },
+              "claude cazes expert comptable": {
+                "vol": 130,
+                "n": 97
+              },
+              "dominique perrier expert comptable": {
+                "vol": 140,
+                "n": 78
+              },
+              "erwan le corre expert comptable": {
+                "vol": 170,
+                "n": 67
+              }
+            }
+          },
+          "Obligations et missions experts": {
+            "vol": 4230,
+            "n": 944,
+            "children": {
+              "obligation expert comptable": {
+                "vol": 1190,
+                "n": 122
+              },
+              "expert comptable pour déclaration impôt particulier date limite": {
+                "vol": 380,
+                "n": 110
+              },
+              "sous traitance expert comptable": {
+                "vol": 790,
+                "n": 143
+              },
+              "modele rupture mission à l'initiative de l'expert comptable": {
+                "vol": 400,
+                "n": 61
+              },
+              "droit de rétention expert comptable": {
+                "vol": 630,
+                "n": 129
+              },
+              "prevoyance expert comptable": {
+                "vol": 310,
+                "n": 150
+              },
+              "modèle mandat contrôle urssaf expert comptable": {
+                "vol": 460,
+                "n": 152
+              },
+              "durabilité expert comptable": {
+                "vol": 70,
+                "n": 77
+              }
+            }
+          },
+          "Experts comptables régionaux": {
+            "vol": 3470,
+            "n": 1000,
+            "children": {
+              "expert comptable bethune": {
+                "vol": 570,
+                "n": 176
+              },
+              "cerfrance gironde expert comptable bordeaux métropole": {
+                "vol": 590,
+                "n": 160
+              },
+              "expert comptable balma": {
+                "vol": 870,
+                "n": 183
+              },
+              "indy expert comptable": {
+                "vol": 470,
+                "n": 129
+              },
+              "blaise petit expert comptable": {
+                "vol": 800,
+                "n": 205
+              },
+              "burkard experts comptables sa": {
+                "vol": 150,
+                "n": 83
+              },
+              "bm fiduciaire expert comptable paris 10e": {
+                "vol": 20,
+                "n": 47
+              },
+              "contacter claire vilain expert comptable berre": {
+                "vol": 0,
+                "n": 17
+              }
+            }
+          }
+        }
+      },
+      "Études & formation expert-comptable": {
+        "vol": 9610,
+        "n": 121,
+        "children": {
+          "Diplômes & cursus": {
+            "vol": 8190,
+            "n": 87,
+            "children": {
+              "expert comptable etude": {
+                "vol": 5030,
+                "n": 30
+              },
+              "expert comptable diplome": {
+                "vol": 1200,
+                "n": 12
+              },
+              "expert comptable formation": {
+                "vol": 1230,
+                "n": 18
+              },
+              "expert comptable offre emploi": {
+                "vol": 660,
+                "n": 21
+              },
+              "peut on être expert comptable et commissaire aux comptes": {
+                "vol": 70,
+                "n": 6
+              }
+            }
+          },
+          "Associations & clubs": {
+            "vol": 1420,
+            "n": 34,
+            "children": {
+              "expert comptable association": {
+                "vol": 1130,
+                "n": 24
+              },
+              "expert comptable pour association sportive": {
+                "vol": 290,
+                "n": 10
+              }
+            }
+          }
+        }
+      },
+      "Mémorialiste & alternance": {
+        "vol": 2430,
+        "n": 65,
+        "children": {
+          "Mémorialiste carrière": {
+            "vol": 1950,
+            "n": 29,
+            "children": {
+              "expert comptable mémorialiste": {
+                "vol": 1750,
+                "n": 17
+              },
+              "expert comptable monaco": {
+                "vol": 200,
+                "n": 12
+              }
+            }
+          },
+          "Alternance expert-comptable": {
+            "vol": 480,
+            "n": 36,
+            "children": {
+              "expert comptable stage": {
+                "vol": 410,
+                "n": 16
+              },
+              "alternance expert comptable": {
+                "vol": 70,
+                "n": 20
+              }
+            }
+          }
+        }
+      },
+      "Formation & métier expert-comptable": {
+        "vol": 3180,
+        "n": 186,
+        "children": {
+          "Formations & reconversion": {
+            "vol": 1350,
+            "n": 36,
+            "children": {
+              "formation expert comptable": {
+                "vol": 1290,
+                "n": 26
+              },
+              "efficience experts comptables": {
+                "vol": 60,
+                "n": 10
+              }
+            }
+          },
+          "Fiche métier & outils": {
+            "vol": 1350,
+            "n": 113,
+            "children": {
+              "fiche métier expert comptable": {
+                "vol": 410,
+                "n": 11
+              },
+              "cv expert comptable": {
+                "vol": 170,
+                "n": 28
+              },
+              "tableau de bord expert comptable": {
+                "vol": 280,
+                "n": 20
+              },
+              "ansemble expert comptable": {
+                "vol": 230,
+                "n": 17
+              },
+              "plaque professionnelle expert comptable": {
+                "vol": 180,
+                "n": 25
+              },
+              "cadeau pour expert comptable": {
+                "vol": 80,
+                "n": 10
+              },
+              "agent commercial free lance au résultat expert comptable": {
+                "vol": 0,
+                "n": 2
+              }
+            }
+          },
+          "Statistiques experts France": {
+            "vol": 480,
+            "n": 37,
+            "children": {
+              "nombre d'expert comptable en france": {
+                "vol": 410,
+                "n": 28
+              },
+              "prescription des experts-comptables": {
+                "vol": 70,
+                "n": 9
+              }
+            }
+          }
+        }
+      },
+      "Différences métiers": {
+        "vol": 1540,
+        "n": 157,
+        "children": {
+          "Comptable vs Expert": {
+            "vol": 550,
+            "n": 54,
+            "children": {
+              "différence comptable et expert comptable": {
+                "vol": 550,
+                "n": 26
+              },
+              "diférence mission expert comptable et comptable d'entreprise": {
+                "vol": 0,
+                "n": 18
+              },
+              "différence expert comptable cac": {
+                "vol": 0,
+                "n": 10
+              }
+            }
+          },
+          "Différences Comptable/Expert": {
+            "vol": 630,
+            "n": 62,
+            "children": {
+              "différence entre comptable et expert comptable": {
+                "vol": 550,
+                "n": 33
+              },
+              "différence entre cac et expert comptable": {
+                "vol": 40,
+                "n": 9
+              },
+              "différence entre auditeur et expert comptable": {
+                "vol": 40,
+                "n": 10
+              },
+              "difference entre expert comptable et un cabinet de comptabilité": {
+                "vol": 0,
+                "n": 10
+              }
+            }
+          },
+          "Expert vs Commissaire": {
+            "vol": 360,
+            "n": 41,
+            "children": {
+              "différence expert comptable et commissaire aux comptes": {
+                "vol": 170,
+                "n": 17
+              },
+              "difference entre expert comptable et commissaire au compte": {
+                "vol": 190,
+                "n": 24
+              }
+            }
+          }
+        }
+      },
+      "Offres d'emploi expert-comptable": {
+        "vol": 1210,
+        "n": 127,
+        "children": {
+          "Offres associées": {
+            "vol": 870,
+            "n": 74,
+            "children": {
+              "offre emploi expert comptable": {
+                "vol": 440,
+                "n": 21
+              },
+              "recrutement expert comptable": {
+                "vol": 250,
+                "n": 10
+              },
+              "annonce expert comptable": {
+                "vol": 100,
+                "n": 29
+              },
+              "emploi cabinet expert comptable": {
+                "vol": 80,
+                "n": 14
+              }
+            }
+          },
+          "Reconversion & projets": {
+            "vol": 340,
+            "n": 53,
+            "children": {
+              "reconversion expert comptable": {
+                "vol": 220,
+                "n": 13
+              },
+              "projet professionnel expert comptable pdf": {
+                "vol": 100,
+                "n": 30
+              },
+              "appel d'offre expert comptable": {
+                "vol": 20,
+                "n": 10
+              }
+            }
+          }
+        }
+      },
+      "Devenir expert-comptable": {
+        "vol": 490,
+        "n": 91,
+        "children": {
+          "Âge et durée études": {
+            "vol": 440,
+            "n": 73,
+            "children": {
+              "devenir expert-comptable à 40 ans": {
+                "vol": 150,
+                "n": 14
+              },
+              "combien d année pour etre expert comptable": {
+                "vol": 230,
+                "n": 26
+              },
+              "age moyen expert comptable": {
+                "vol": 60,
+                "n": 25
+              },
+              "diplome d expert comptable madagascar": {
+                "vol": 0,
+                "n": 8
+              }
+            }
+          },
+          "BTS pour expert-comptable": {
+            "vol": 50,
+            "n": 18,
+            "children": {
+              "bts expert comptable": {
+                "vol": 50,
+                "n": 12
+              },
+              "bts expert comptable oullins": {
+                "vol": 0,
+                "n": 6
+              }
+            }
+          }
+        }
+      },
+      "Avantages métier": {
+        "vol": 100,
+        "n": 61,
+        "children": {
+          "Avantages et inconvénients": {
+            "vol": 50,
+            "n": 23,
+            "children": {
+              "expert comptable avantages inconvénients": {
+                "vol": 40,
+                "n": 15
+              },
+              "inconvénient d'être expert comptable": {
+                "vol": 10,
+                "n": 8
+              }
+            }
+          },
+          "Avantages métier expert": {
+            "vol": 50,
+            "n": 38,
+            "children": {
+              "expert comptable avantages": {
+                "vol": 40,
+                "n": 21
+              },
+              "avantage d'être expert comptable": {
+                "vol": 10,
+                "n": 17
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "Ordre & Réglementation": {
+    "vol": 53640,
+    "n": 3304,
+    "children": {
+      "Ordre & Annuaire": {
+        "vol": 46570,
+        "n": 2186,
+        "children": {
+          "Ordre Paris & régions": {
+            "vol": 16640,
+            "n": 240,
+            "children": {
+              "ordre des experts comptables": {
+                "vol": 9390,
+                "n": 42
+              },
+              "ordre des experts comptables paris": {
+                "vol": 1380,
+                "n": 21
+              },
+              "ordre expert comptable lyon": {
+                "vol": 750,
+                "n": 35
+              },
+              "ordre des experts comptables lille": {
+                "vol": 1660,
+                "n": 41
+              },
+              "ordre des experts comptables toulouse": {
+                "vol": 1380,
+                "n": 34
+              },
+              "ordre expert comptable bretagne": {
+                "vol": 970,
+                "n": 23
+              },
+              "ordre expert comptable pays de loire": {
+                "vol": 900,
+                "n": 33
+              },
+              "ordre des experts comptables nouvelle aquitaine": {
+                "vol": 210,
+                "n": 11
+              }
+            }
+          },
+          "Ordre national structure": {
+            "vol": 11050,
+            "n": 422,
+            "children": {
+              "ordre expert comptable": {
+                "vol": 6610,
+                "n": 89
+              },
+              "ordre experts comptables": {
+                "vol": 2920,
+                "n": 127
+              },
+              "cadre de référence expert comptable": {
+                "vol": 560,
+                "n": 35
+              },
+              "ordre des experts comptables connexion": {
+                "vol": 300,
+                "n": 49
+              },
+              "plainte ordre des experts comptables": {
+                "vol": 120,
+                "n": 60
+              },
+              "hubemploi ordre des experts comptables": {
+                "vol": 420,
+                "n": 38
+              },
+              "analyses sectorielles ordre des experts comptables": {
+                "vol": 40,
+                "n": 10
+              },
+              "reglement interieur expert comptable": {
+                "vol": 80,
+                "n": 14
+              }
+            }
+          },
+          "Annuaire professionnels": {
+            "vol": 4720,
+            "n": 219,
+            "children": {
+              "annuaire expert comptable": {
+                "vol": 1930,
+                "n": 40
+              },
+              "annuaire des experts comptables": {
+                "vol": 2040,
+                "n": 41
+              },
+              "annuaire ordre des experts comptables": {
+                "vol": 430,
+                "n": 31
+              },
+              "annuaire expert comptable nouvelle aquitaine": {
+                "vol": 130,
+                "n": 47
+              },
+              "annuaire expert comptable alsace": {
+                "vol": 40,
+                "n": 11
+              },
+              "annuaire des experts comptables paris": {
+                "vol": 70,
+                "n": 14
+              },
+              "annuaire expert comptable montpellier": {
+                "vol": 80,
+                "n": 29
+              },
+              "annuaire-experts-comptables.com": {
+                "vol": 0,
+                "n": 6
+              }
+            }
+          },
+          "Congrès 2025": {
+            "vol": 5200,
+            "n": 143,
+            "children": {
+              "congres expert comptable 2025": {
+                "vol": 2890,
+                "n": 29
+              },
+              "université d'été expert comptable 2025": {
+                "vol": 430,
+                "n": 11
+              },
+              "congrès des experts comptables 2024": {
+                "vol": 510,
+                "n": 21
+              },
+              "congres expert comptable lyon 2025": {
+                "vol": 380,
+                "n": 9
+              },
+              "référentiel normatif expert comptable 2025": {
+                "vol": 280,
+                "n": 9
+              },
+              "congrès des experts-comptables 2026": {
+                "vol": 240,
+                "n": 21
+              },
+              "resultat expert comptable 2025": {
+                "vol": 320,
+                "n": 22
+              },
+              "congres expert comptable 2026": {
+                "vol": 150,
+                "n": 21
+              }
+            }
+          },
+          "Conseil national & supérieur": {
+            "vol": 1620,
+            "n": 176,
+            "children": {
+              "conseil national de l'ordre des experts comptables": {
+                "vol": 820,
+                "n": 16
+              },
+              "conseil superieur de l ordre des experts comptables": {
+                "vol": 470,
+                "n": 43
+              },
+              "conseil de l ordre des experts comptables": {
+                "vol": 280,
+                "n": 49
+              },
+              "conseil de l'ordre des experts comptables paris": {
+                "vol": 20,
+                "n": 11
+              },
+              "président de l'ordre des experts comptables": {
+                "vol": 30,
+                "n": 5
+              },
+              "conseil supérieur ordre des experts comptables adresse": {
+                "vol": 0,
+                "n": 5
+              },
+              "conseil superieur des experts comptable emploi drupal": {
+                "vol": 0,
+                "n": 27
+              },
+              "conseil ordre expert comptable alsace": {
+                "vol": 0,
+                "n": 20
+              }
+            }
+          },
+          "Congrès événements": {
+            "vol": 2330,
+            "n": 266,
+            "children": {
+              "congrès des experts comptables": {
+                "vol": 570,
+                "n": 47
+              },
+              "congres expert comptable": {
+                "vol": 920,
+                "n": 50
+              },
+              "congres des experts comptables lyon": {
+                "vol": 470,
+                "n": 37
+              },
+              "congres des experts comptables marseille": {
+                "vol": 240,
+                "n": 26
+              },
+              "congres expert comptable clermont ferrand": {
+                "vol": 20,
+                "n": 8
+              },
+              "congres expert comptable 2021": {
+                "vol": 60,
+                "n": 46
+              },
+              "congres des experts comptables 2019": {
+                "vol": 50,
+                "n": 45
+              },
+              "aix les bains 12 mai 2017 rencontre expert comptable": {
+                "vol": 0,
+                "n": 7
+              }
+            }
+          },
+          "Congrès & fédérations": {
+            "vol": 1250,
+            "n": 198,
+            "children": {
+              "congrès de l'ordre des experts comptables": {
+                "vol": 560,
+                "n": 35
+              },
+              "federation des experts comptables": {
+                "vol": 300,
+                "n": 36
+              },
+              "syndicat des experts comptables": {
+                "vol": 80,
+                "n": 40
+              },
+              "jeunes experts comptables": {
+                "vol": 160,
+                "n": 23
+              },
+              "salon des experts comptables": {
+                "vol": 60,
+                "n": 18
+              },
+              "compagnie des experts comptables": {
+                "vol": 40,
+                "n": 20
+              },
+              "assemblée générale ordre des experts comptables occitanie 2024": {
+                "vol": 50,
+                "n": 22
+              },
+              "club patrimoine ordre des experts comptables": {
+                "vol": 0,
+                "n": 4
+              }
+            }
+          },
+          "Associations & femmes": {
+            "vol": 1270,
+            "n": 118,
+            "children": {
+              "association expert comptable": {
+                "vol": 420,
+                "n": 42
+              },
+              "expert comptable clermont ferrand": {
+                "vol": 300,
+                "n": 7
+              },
+              "femmes experts comptables": {
+                "vol": 220,
+                "n": 12
+              },
+              "expert comptable femme": {
+                "vol": 190,
+                "n": 7
+              },
+              "club social expert comptable": {
+                "vol": 40,
+                "n": 4
+              },
+              "bretagne expert comptable": {
+                "vol": 60,
+                "n": 10
+              },
+              "president expert comptable": {
+                "vol": 40,
+                "n": 36
+              }
+            }
+          },
+          "Conseils régionaux": {
+            "vol": 710,
+            "n": 161,
+            "children": {
+              "conseil regional ordre experts comptables": {
+                "vol": 610,
+                "n": 48
+              },
+              "conseil régional de l'ordre des experts-comptables de paris - île-de-france": {
+                "vol": 40,
+                "n": 21
+              },
+              "congres regional expert comptable rhone alpes 2024": {
+                "vol": 40,
+                "n": 26
+              },
+              "conseil régional de l'ordre des experts-comptables de normandie": {
+                "vol": 20,
+                "n": 33
+              },
+              "conseils régionaux de l'ordre des experts-comptables montpellier": {
+                "vol": 0,
+                "n": 13
+              },
+              "conseil regional ordre des experts comptables pays de loire": {
+                "vol": 0,
+                "n": 7
+              },
+              "conseil regional expert comptable lyon": {
+                "vol": 0,
+                "n": 7
+              },
+              "conseil régional ordre des experts comptables bourgogne": {
+                "vol": 0,
+                "n": 6
+              }
+            }
+          },
+          "Listes internationales": {
+            "vol": 1200,
+            "n": 68,
+            "children": {
+              "liste des experts comptables": {
+                "vol": 490,
+                "n": 24
+              },
+              "liste des experts comptables en algérie": {
+                "vol": 340,
+                "n": 17
+              },
+              "expert comptable cameroun": {
+                "vol": 140,
+                "n": 11
+              },
+              "ordre des experts comptables madagascar": {
+                "vol": 230,
+                "n": 16
+              }
+            }
+          },
+          "Résultats examens & concours": {
+            "vol": 410,
+            "n": 88,
+            "children": {
+              "resultat expert comptable": {
+                "vol": 170,
+                "n": 19
+              },
+              "concours expert comptable": {
+                "vol": 130,
+                "n": 27
+              },
+              "challenge voile experts comptable 2025": {
+                "vol": 100,
+                "n": 17
+              },
+              "concours expert comptable madagascar": {
+                "vol": 10,
+                "n": 19
+              },
+              "date d'examen expert comptable": {
+                "vol": 0,
+                "n": 6
+              }
+            }
+          },
+          "Chambres disciplinaires": {
+            "vol": 170,
+            "n": 87,
+            "children": {
+              "chambre syndicale des experts comptables": {
+                "vol": 100,
+                "n": 42
+              },
+              "chambre experts comptables": {
+                "vol": 60,
+                "n": 29
+              },
+              "chambre des experts comptables belgique": {
+                "vol": 10,
+                "n": 8
+              },
+              "chambre suisse des experts comptables fiduciaires et fiscaux": {
+                "vol": 0,
+                "n": 5
+              },
+              "chambre locale des experts comptables de perpignan": {
+                "vol": 0,
+                "n": 3
+              }
+            }
+          }
+        }
+      },
+      "Déontologie experts-comptables": {
+        "vol": 2590,
+        "n": 310,
+        "children": {
+          "Code Déontologie Général": {
+            "vol": 1460,
+            "n": 91,
+            "children": {
+              "code de déontologie expert comptable": {
+                "vol": 1030,
+                "n": 33
+              },
+              "expert comptable code de déontologie": {
+                "vol": 300,
+                "n": 7
+              },
+              "code déontologie expert comptable": {
+                "vol": 130,
+                "n": 43
+              },
+              "décret conseil d'etat code deontologie expert comptable 1945": {
+                "vol": 0,
+                "n": 4
+              },
+              "decomposition code de déontologie expert comptable": {
+                "vol": 0,
+                "n": 2
+              },
+              "code de déontologie comptable changement de l'expert": {
+                "vol": 0,
+                "n": 2
+              }
+            }
+          },
+          "Principes déontologiques": {
+            "vol": 390,
+            "n": 73,
+            "children": {
+              "déontologie expert comptable": {
+                "vol": 230,
+                "n": 28
+              },
+              "déontologie des experts comptables": {
+                "vol": 110,
+                "n": 16
+              },
+              "exercice professionnel et déontologie expert comptable": {
+                "vol": 50,
+                "n": 26
+              },
+              "dehontologie expert comptable synthese": {
+                "vol": 0,
+                "n": 3
+              }
+            }
+          },
+          "Courriers Déontologiques": {
+            "vol": 270,
+            "n": 17,
+            "children": {
+              "courrier déontologique expert comptable": {
+                "vol": 110,
+                "n": 9
+              },
+              "modèle réponse courrier déontologique expert comptable": {
+                "vol": 160,
+                "n": 8
+              }
+            }
+          },
+          "Articles Code Déontologie": {
+            "vol": 240,
+            "n": 66,
+            "children": {
+              "article 168 du code de déontologie des experts comptables": {
+                "vol": 70,
+                "n": 16
+              },
+              "article 152 code de déontologie expert comptable": {
+                "vol": 90,
+                "n": 19
+              },
+              "article 23 du code de déontologie des experts comptables": {
+                "vol": 80,
+                "n": 19
+              },
+              "art 155 du code de déontologie de l'expert comptable": {
+                "vol": 0,
+                "n": 12
+              }
+            }
+          },
+          "Code déontologie officiel": {
+            "vol": 210,
+            "n": 44,
+            "children": {
+              "code de déontologie expert-comptable 2025": {
+                "vol": 70,
+                "n": 32
+              },
+              "code de déontologie expert comptable pdf": {
+                "vol": 140,
+                "n": 12
+              }
+            }
+          },
+          "Devoirs Professionnels": {
+            "vol": 20,
+            "n": 19,
+            "children": {
+              "code des devoirs professionnels expert comptable": {
+                "vol": 20,
+                "n": 14
+              },
+              "code de conduite expert comptable": {
+                "vol": 0,
+                "n": 5
+              }
+            }
+          }
+        }
+      },
+      "Ordre experts comptables PACA": {
+        "vol": 530,
+        "n": 45,
+        "children": {
+          "Ordre PACA informations": {
+            "vol": 510,
+            "n": 32,
+            "children": {
+              "ordre des experts comptables paca": {
+                "vol": 460,
+                "n": 23
+              },
+              "expert comptable paca": {
+                "vol": 50,
+                "n": 9
+              }
+            }
+          },
+          "Congrès régionaux PACA": {
+            "vol": 20,
+            "n": 13,
+            "children": {
+              "congres regional expert comptable paca": {
+                "vol": 20,
+                "n": 9
+              },
+              "congres regional expert comptable paca 2019": {
+                "vol": 0,
+                "n": 4
+              }
+            }
+          }
+        }
+      },
+      "Normes & législation": {
+        "vol": 1570,
+        "n": 304,
+        "children": {
+          "Législation & RGPD": {
+            "vol": 580,
+            "n": 100,
+            "children": {
+              "editions legislatives expert comptable": {
+                "vol": 180,
+                "n": 13
+              },
+              "loi pacte experts comptables": {
+                "vol": 130,
+                "n": 15
+              },
+              "expert comptable rgpd": {
+                "vol": 50,
+                "n": 7
+              },
+              "partenariat expert comptable": {
+                "vol": 120,
+                "n": 37
+              },
+              "modele manuel de procedure cabinet expert comptable": {
+                "vol": 20,
+                "n": 11
+              },
+              "carte de visite expert comptable": {
+                "vol": 80,
+                "n": 17
+              }
+            }
+          },
+          "Normes & examens": {
+            "vol": 540,
+            "n": 96,
+            "children": {
+              "expert-comptable étude difficile": {
+                "vol": 110,
+                "n": 15
+              },
+              "normes professionnelles expert comptable": {
+                "vol": 350,
+                "n": 36
+              },
+              "questionnaire de prise de connaissance expert comptable": {
+                "vol": 60,
+                "n": 17
+              },
+              "diligentia expert comptable": {
+                "vol": 20,
+                "n": 9
+              },
+              "dans quelles mesures les tic bouleversent-elles les expert comptables": {
+                "vol": 0,
+                "n": 14
+              },
+              "detention capital expert comptable": {
+                "vol": 0,
+                "n": 5
+              }
+            }
+          },
+          "Contrôle qualité": {
+            "vol": 290,
+            "n": 29,
+            "children": {
+              "https controle qualite experts comptables org": {
+                "vol": 240,
+                "n": 19
+              },
+              "controle lab expert comptable": {
+                "vol": 50,
+                "n": 10
+              }
+            }
+          },
+          "Avenir régional": {
+            "vol": 70,
+            "n": 18,
+            "children": {
+              "avenir expert comptable": {
+                "vol": 30,
+                "n": 13
+              },
+              "quel avenir pour les experts comptables": {
+                "vol": 40,
+                "n": 5
+              }
+            }
+          },
+          "Centres de gestion": {
+            "vol": 80,
+            "n": 31,
+            "children": {
+              "organisme de gestion agréé expert comptable": {
+                "vol": 60,
+                "n": 23
+              },
+              "centre de formation expert comptable": {
+                "vol": 20,
+                "n": 8
+              }
+            }
+          },
+          "Enjeux & diversification": {
+            "vol": 10,
+            "n": 30,
+            "children": {
+              "développement du paritarisme expert comptable": {
+                "vol": 10,
+                "n": 14
+              },
+              "comment un comportement d'ethique ameliore la qualite de l'expert comptable": {
+                "vol": 0,
+                "n": 16
+              }
+            }
+          }
+        }
+      },
+      "Réglementation & exercice": {
+        "vol": 1110,
+        "n": 163,
+        "children": {
+          "Exercice sans titre": {
+            "vol": 440,
+            "n": 63,
+            "children": {
+              "comptable indépendant sans être expert comptable": {
+                "vol": 220,
+                "n": 24
+              },
+              "recours expert comptable cse": {
+                "vol": 70,
+                "n": 18
+              },
+              "secret professionnel expert comptable": {
+                "vol": 130,
+                "n": 11
+              },
+              "expert comptable disparition": {
+                "vol": 20,
+                "n": 10
+              }
+            }
+          },
+          "Anti-blanchiment": {
+            "vol": 240,
+            "n": 18,
+            "children": {
+              "lutte anti blanchiment expert comptable": {
+                "vol": 220,
+                "n": 9
+              },
+              "norme blanchiment expert comptable": {
+                "vol": 20,
+                "n": 9
+              }
+            }
+          },
+          "Certification & conformité": {
+            "vol": 430,
+            "n": 82,
+            "children": {
+              "bilan certifié par expert-comptable": {
+                "vol": 150,
+                "n": 31
+              },
+              "cloud expert comptable": {
+                "vol": 50,
+                "n": 9
+              },
+              "examen limité expert comptable": {
+                "vol": 120,
+                "n": 21
+              },
+              "agrément cemac expert comptable": {
+                "vol": 70,
+                "n": 18
+              },
+              "mission tiers de confiance expert comptable": {
+                "vol": 40,
+                "n": 3
+              }
+            }
+          }
+        }
+      },
+      "Ordonnance 1945 & congrès": {
+        "vol": 480,
+        "n": 142,
+        "children": {
+          "Ordonnance 1945 texte": {
+            "vol": 250,
+            "n": 26,
+            "children": {
+              "ordonnance 1945 expert comptable": {
+                "vol": 210,
+                "n": 8
+              },
+              "article 2 ordonnance 1945 expert comptable": {
+                "vol": 40,
+                "n": 18
+              }
+            }
+          },
+          "Congrès experts-comptables": {
+            "vol": 230,
+            "n": 116,
+            "children": {
+              "80eme congres expert comptable": {
+                "vol": 50,
+                "n": 9
+              },
+              "80 congres des experts comptables": {
+                "vol": 40,
+                "n": 9
+              },
+              "80ème congrès des experts comptables": {
+                "vol": 80,
+                "n": 28
+              },
+              "79e congrès des experts comptables": {
+                "vol": 50,
+                "n": 22
+              },
+              "78 congres ordre des experts comptables": {
+                "vol": 10,
+                "n": 22
+              },
+              "diapo formations 72ème congrés ordre experts comptables": {
+                "vol": 0,
+                "n": 25
+              },
+              "500e anniversaire experts comptables": {
+                "vol": 0,
+                "n": 1
+              }
+            }
+          }
+        }
+      },
+      "Cotisations ordre": {
+        "vol": 460,
+        "n": 100,
+        "children": {
+          "Cotisation Ordre National": {
+            "vol": 290,
+            "n": 53,
+            "children": {
+              "cotisations ordre des experts comptables": {
+                "vol": 290,
+                "n": 28
+              },
+              "cotisation annuelle ordre des experts comptables calcul": {
+                "vol": 0,
+                "n": 8
+              },
+              "cotisation ordre expert comptable 2017": {
+                "vol": 0,
+                "n": 17
+              }
+            }
+          },
+          "Cotisations Diverses": {
+            "vol": 170,
+            "n": 47,
+            "children": {
+              "cotisations experts comptables": {
+                "vol": 150,
+                "n": 35
+              },
+              "cotisations cavec expert comptable salarié": {
+                "vol": 20,
+                "n": 10
+              },
+              "contribution formation professionnelle 2019 expert comptable": {
+                "vol": 0,
+                "n": 2
+              }
+            }
+          }
+        }
+      },
+      "Bibliothèque experts-comptables": {
+        "vol": 330,
+        "n": 54,
+        "children": {
+          "Bibliothèque ressources": {
+            "vol": 240,
+            "n": 32,
+            "children": {
+              "bibliotique expert comptable": {
+                "vol": 210,
+                "n": 26
+              },
+              "bibliotique mémoire expert comptable": {
+                "vol": 30,
+                "n": 6
+              }
+            }
+          },
+          "Boutique experts-comptables": {
+            "vol": 90,
+            "n": 22,
+            "children": {
+              "boutique expert comptable": {
+                "vol": 90,
+                "n": 17
+              },
+              "code promotionnel ordre des experts comptables": {
+                "vol": 0,
+                "n": 5
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "Cabinets & Annuaires": {
+    "vol": 47770,
+    "n": 5845,
+    "children": {
+      "Cabinets experts comptables": {
+        "vol": 28700,
+        "n": 3725,
+        "children": {
+          "Recherche cabinet expert": {
+            "vol": 5800,
+            "n": 767,
+            "children": {
+              "cabinet expert comptable": {
+                "vol": 4710,
+                "n": 212
+              },
+              "cabinet expert comptable tours": {
+                "vol": 230,
+                "n": 89
+              },
+              "cabinet expert comptable 91": {
+                "vol": 210,
+                "n": 51
+              },
+              "cabinet expert-comptable dax": {
+                "vol": 140,
+                "n": 106
+              },
+              "cabinet expert comptable gestion de patrimoine": {
+                "vol": 140,
+                "n": 91
+              },
+              "cabinet expert comptable cse": {
+                "vol": 100,
+                "n": 53
+              },
+              "cabinet aci expert comptable": {
+                "vol": 250,
+                "n": 129
+              },
+              "fiducial cabinet expert comptable": {
+                "vol": 20,
+                "n": 36
+              }
+            }
+          },
+          "Cabinets conseils spécialisés": {
+            "vol": 2830,
+            "n": 330,
+            "children": {
+              "cabinet d expert comptable": {
+                "vol": 2640,
+                "n": 88
+              },
+              "cabinet fidexo expert comptable essonne": {
+                "vol": 30,
+                "n": 80
+              },
+              "cabinet conseil expert comptable": {
+                "vol": 40,
+                "n": 8
+              },
+              "cabinet d'expert-comptable carcassonne": {
+                "vol": 80,
+                "n": 55
+              },
+              "cabinet d expert comptable toulouse": {
+                "vol": 40,
+                "n": 25
+              },
+              "correction cabinet d'expert comptable sciences de gestion": {
+                "vol": 0,
+                "n": 43
+              },
+              "cabinet d'expert comptable sur embrun": {
+                "vol": 0,
+                "n": 28
+              },
+              "cabinet martel chauvin et associés expert-comptable": {
+                "vol": 0,
+                "n": 3
+              }
+            }
+          },
+          "Comparatif cabinets experts": {
+            "vol": 2570,
+            "n": 216,
+            "children": {
+              "expert comptable cabinet": {
+                "vol": 1530,
+                "n": 77
+              },
+              "cabinets d experts comptables": {
+                "vol": 740,
+                "n": 45
+              },
+              "meilleur cabinet expert comptable nice": {
+                "vol": 210,
+                "n": 38
+              },
+              "cabinet expert comptable en ligne": {
+                "vol": 70,
+                "n": 24
+              },
+              "achat cabinet expert comptable": {
+                "vol": 20,
+                "n": 23
+              },
+              "dematerialisation cabinet expert comptable factures": {
+                "vol": 0,
+                "n": 4
+              },
+              "blake et mouton pour un cabinet d'expert comptable": {
+                "vol": 0,
+                "n": 3
+              },
+              "5 style de management dans les cabinet d'expert comptable": {
+                "vol": 0,
+                "n": 2
+              }
+            }
+          },
+          "Cabinets Paris Keobiz": {
+            "vol": 2440,
+            "n": 157,
+            "children": {
+              "cabinet expert comptable paris": {
+                "vol": 1220,
+                "n": 56
+              },
+              "keobiz - cabinet d'expert-comptable paris 9ème": {
+                "vol": 460,
+                "n": 4
+              },
+              "cabinet expert comptable paris 8": {
+                "vol": 460,
+                "n": 35
+              },
+              "cabinet d'expert comptable paris 16": {
+                "vol": 30,
+                "n": 5
+              },
+              "cabinet expert comptable paris 2": {
+                "vol": 210,
+                "n": 13
+              },
+              "cabinet expert comptable boulevard haussmann": {
+                "vol": 40,
+                "n": 11
+              },
+              "cabinet expert comptable levallois perret": {
+                "vol": 20,
+                "n": 21
+              },
+              "entreprise cabinet expert comptable audit fiscalite cecaf à paris 75009": {
+                "vol": 0,
+                "n": 12
+              }
+            }
+          },
+          "Cabinets Ouest France": {
+            "vol": 2730,
+            "n": 239,
+            "children": {
+              "cabinet expert comptable nantes": {
+                "vol": 560,
+                "n": 28
+              },
+              "cabinet expert comptable rennes": {
+                "vol": 280,
+                "n": 19
+              },
+              "cabinet expert comptable rouen": {
+                "vol": 300,
+                "n": 15
+              },
+              "cabinet expert comptable caen": {
+                "vol": 640,
+                "n": 54
+              },
+              "cabinet expert comptable brest": {
+                "vol": 400,
+                "n": 66
+              },
+              "cabinet expert comptable calais": {
+                "vol": 260,
+                "n": 26
+              },
+              "cabinet expert comptable boulogne-sur-mer": {
+                "vol": 90,
+                "n": 15
+              },
+              "cabinet expert comptable nord": {
+                "vol": 200,
+                "n": 16
+              }
+            }
+          },
+          "Cabinets Sud-Est": {
+            "vol": 2460,
+            "n": 260,
+            "children": {
+              "cabinet d'expert comptable marseille": {
+                "vol": 910,
+                "n": 53
+              },
+              "cabinet expert comptable toulouse": {
+                "vol": 300,
+                "n": 25
+              },
+              "cabinet expert comptable montpellier": {
+                "vol": 280,
+                "n": 40
+              },
+              "cabinet expert comptable perpignan": {
+                "vol": 160,
+                "n": 13
+              },
+              "cabinet expert comptable nimes": {
+                "vol": 150,
+                "n": 19
+              },
+              "cabinet expert comptable aix en provence": {
+                "vol": 190,
+                "n": 23
+              },
+              "cabinet expert comptable cannes": {
+                "vol": 380,
+                "n": 60
+              },
+              "cabinet expert comptable toulon": {
+                "vol": 90,
+                "n": 27
+              }
+            }
+          },
+          "Cabinets grandes villes": {
+            "vol": 4380,
+            "n": 612,
+            "children": {
+              "cabinet expert comptable nice": {
+                "vol": 780,
+                "n": 118
+              },
+              "cabinet expert comptable strasbourg": {
+                "vol": 530,
+                "n": 30
+              },
+              "cabinet expert comptable à proximité": {
+                "vol": 1000,
+                "n": 109
+              },
+              "cabinet expert comptable metz": {
+                "vol": 590,
+                "n": 68
+              },
+              "cabinet expert comptable pau": {
+                "vol": 390,
+                "n": 51
+              },
+              "cabinet expert comptable valenciennes": {
+                "vol": 460,
+                "n": 95
+              },
+              "cabinet expert comptable chambery": {
+                "vol": 330,
+                "n": 54
+              },
+              "cabinet expert comptable rodez": {
+                "vol": 300,
+                "n": 87
+              }
+            }
+          },
+          "Cabinets Nord & Centre": {
+            "vol": 1280,
+            "n": 205,
+            "children": {
+              "cabinet expert comptable orleans": {
+                "vol": 420,
+                "n": 40
+              },
+              "cabinet d'expert comptable lille": {
+                "vol": 350,
+                "n": 19
+              },
+              "cabinet expert comptable le mans": {
+                "vol": 180,
+                "n": 42
+              },
+              "cabinet expert comptable lorient": {
+                "vol": 100,
+                "n": 20
+              },
+              "cabinet expert comptable libourne": {
+                "vol": 200,
+                "n": 54
+              },
+              "cabinet expert comptable luxembourg": {
+                "vol": 30,
+                "n": 9
+              },
+              "cabinet comptable expert lmnp amortissable feurs": {
+                "vol": 0,
+                "n": 10
+              },
+              "cabinet d expert comptable dammarie les lys": {
+                "vol": 0,
+                "n": 11
+              }
+            }
+          },
+          "Cabinets villes régionales": {
+            "vol": 1700,
+            "n": 345,
+            "children": {
+              "cabinet expert comptable bayonne": {
+                "vol": 160,
+                "n": 17
+              },
+              "cabinet expert comptable beziers": {
+                "vol": 280,
+                "n": 37
+              },
+              "cabinet expert comptable hazebrouck": {
+                "vol": 300,
+                "n": 63
+              },
+              "cabinet expert comptable narbonne": {
+                "vol": 220,
+                "n": 68
+              },
+              "cabinet expert comptable besancon": {
+                "vol": 450,
+                "n": 68
+              },
+              "cabinet expert comptable montauban": {
+                "vol": 250,
+                "n": 58
+              },
+              "cabinet expert comptable bruxelles": {
+                "vol": 20,
+                "n": 21
+              },
+              "cabinet expert-comptable brognard": {
+                "vol": 20,
+                "n": 13
+              }
+            }
+          },
+          "Cabinets villes secondaires": {
+            "vol": 1120,
+            "n": 230,
+            "children": {
+              "cabinet expert comptable avignon": {
+                "vol": 220,
+                "n": 22
+              },
+              "cabinet expert comptable angers": {
+                "vol": 380,
+                "n": 49
+              },
+              "cabinet expert comptable annecy": {
+                "vol": 190,
+                "n": 33
+              },
+              "cabinet expert comptable arras": {
+                "vol": 60,
+                "n": 16
+              },
+              "cabinet expert comptable carcassonne": {
+                "vol": 90,
+                "n": 23
+              },
+              "cabinet expert comptable artix": {
+                "vol": 80,
+                "n": 34
+              },
+              "cabinet expert-comptable alès": {
+                "vol": 70,
+                "n": 31
+              },
+              "cabinet expert-comptable aurillac": {
+                "vol": 30,
+                "n": 22
+              }
+            }
+          },
+          "Cabinets villes moyennes": {
+            "vol": 610,
+            "n": 187,
+            "children": {
+              "cabinet expert comptable grenoble": {
+                "vol": 140,
+                "n": 10
+              },
+              "cabinet expert comptable haguenau": {
+                "vol": 190,
+                "n": 49
+              },
+              "cabinet expert comptable gien": {
+                "vol": 110,
+                "n": 43
+              },
+              "cabinet expert comptable grasse": {
+                "vol": 100,
+                "n": 45
+              },
+              "cabinet expert comptable guadeloupe": {
+                "vol": 20,
+                "n": 8
+              },
+              "cabinet igca - expert comptable": {
+                "vol": 50,
+                "n": 24
+              },
+              "bni parthenay cabinet expert comptable yhane gaillard": {
+                "vol": 0,
+                "n": 5
+              },
+              "cabinet expert comptable madame gameiro 63": {
+                "vol": 0,
+                "n": 3
+              }
+            }
+          },
+          "Cabinets villes Saint-": {
+            "vol": 780,
+            "n": 177,
+            "children": {
+              "cabinet expert comptable saint etienne": {
+                "vol": 340,
+                "n": 94
+              },
+              "cabinet expert-comptable saint jean de luz": {
+                "vol": 90,
+                "n": 5
+              },
+              "cabinet expert comptable saint malo": {
+                "vol": 40,
+                "n": 9
+              },
+              "cabinet expert comptable saint mande": {
+                "vol": 160,
+                "n": 24
+              },
+              "cabinet expert comptable la ferte saint aubin": {
+                "vol": 60,
+                "n": 24
+              },
+              "cabinet expert comptable mont saint aignan": {
+                "vol": 20,
+                "n": 3
+              },
+              "cabinet expert-comptable saint-denis": {
+                "vol": 70,
+                "n": 15
+              },
+              "cabinet stéphane legendre expert comptable saint mandé": {
+                "vol": 0,
+                "n": 3
+              }
+            }
+          }
+        }
+      },
+      "Avis & présence en ligne": {
+        "vol": 10120,
+        "n": 319,
+        "children": {
+          "Avis & blogs": {
+            "vol": 4930,
+            "n": 99,
+            "children": {
+              "l-expert-comptable.com avis": {
+                "vol": 2510,
+                "n": 33
+              },
+              "elnet expert comptable": {
+                "vol": 960,
+                "n": 10
+              },
+              "el net expert comptable": {
+                "vol": 930,
+                "n": 24
+              },
+              "site des experts comptables": {
+                "vol": 300,
+                "n": 17
+              },
+              "cybersécurité expert comptable": {
+                "vol": 160,
+                "n": 10
+              },
+              "portail expert comptable": {
+                "vol": 70,
+                "n": 5
+              }
+            }
+          },
+          "Création site web expert-comptable": {
+            "vol": 2130,
+            "n": 53,
+            "children": {
+              "creation site internet expert comptable": {
+                "vol": 830,
+                "n": 11
+              },
+              "site internet expert comptable": {
+                "vol": 670,
+                "n": 23
+              },
+              "création site web expert-comptable": {
+                "vol": 630,
+                "n": 19
+              }
+            }
+          },
+          "Actualités experts-comptables": {
+            "vol": 510,
+            "n": 35,
+            "children": {
+              "actuel expert comptable": {
+                "vol": 310,
+                "n": 23
+              },
+              "contenus editoriaux expert comptable": {
+                "vol": 200,
+                "n": 12
+              }
+            }
+          },
+          "Agences digitales experts-comptables": {
+            "vol": 1180,
+            "n": 41,
+            "children": {
+              "agence digitale expert comptable": {
+                "vol": 820,
+                "n": 27
+              },
+              "agence markeking expert comptable": {
+                "vol": 360,
+                "n": 14
+              }
+            }
+          },
+          "Marketing digital experts-comptables": {
+            "vol": 1190,
+            "n": 71,
+            "children": {
+              "marketing expert comptable": {
+                "vol": 400,
+                "n": 17
+              },
+              "conseil referencement expert comptable": {
+                "vol": 370,
+                "n": 7
+              },
+              "publicité expert comptable": {
+                "vol": 220,
+                "n": 30
+              },
+              "marketing digital expert comptable": {
+                "vol": 200,
+                "n": 17
+              }
+            }
+          },
+          "Comptes de campagne": {
+            "vol": 180,
+            "n": 20,
+            "children": {
+              "expert comptable compte de campagne": {
+                "vol": 160,
+                "n": 13
+              },
+              "campagne expert comptable": {
+                "vol": 20,
+                "n": 7
+              }
+            }
+          }
+        }
+      },
+      "Cabinet Bordeaux": {
+        "vol": 440,
+        "n": 40,
+        "children": {
+          "Cabinets Bordeaux ville": {
+            "vol": 440,
+            "n": 35,
+            "children": {
+              "cabinet expert comptable bordeaux": {
+                "vol": 440,
+                "n": 33
+              },
+              "cabinet comptable expert immobilier gironde": {
+                "vol": 0,
+                "n": 2
+              }
+            }
+          },
+          "Cabinet Artigues Bordeaux": {
+            "vol": 0,
+            "n": 5,
+            "children": {
+              "ecabinet expert comptable artigues près bordeaux": {
+                "vol": 0,
+                "n": 5
+              }
+            }
+          }
+        }
+      },
+      "Cabinets experts comptables locaux": {
+        "vol": 800,
+        "n": 146,
+        "children": {
+          "Cabinets Lyon indépendants": {
+            "vol": 450,
+            "n": 59,
+            "children": {
+              "cabinet expert comptable lyon": {
+                "vol": 290,
+                "n": 42
+              },
+              "cabinet d'expert comptable lyon": {
+                "vol": 160,
+                "n": 14
+              },
+              "cabinet expert comptable specialiste des revenus locatif lyon 2019": {
+                "vol": 0,
+                "n": 3
+              }
+            }
+          },
+          "Cabinets Nancy & Clermont": {
+            "vol": 350,
+            "n": 87,
+            "children": {
+              "cabinet expert comptable nancy": {
+                "vol": 110,
+                "n": 11
+              },
+              "cabinet expert comptable clermont ferrand": {
+                "vol": 90,
+                "n": 13
+              },
+              "dématérialisation expert comptable": {
+                "vol": 50,
+                "n": 12
+              },
+              "cabinet expert comptable stage": {
+                "vol": 50,
+                "n": 29
+              },
+              "cabinet expert comptable recrutement": {
+                "vol": 50,
+                "n": 22
+              }
+            }
+          }
+        }
+      },
+      "Bureaux & Experts": {
+        "vol": 450,
+        "n": 95,
+        "children": {
+          "Bureaux experts spécifiques": {
+            "vol": 270,
+            "n": 44,
+            "children": {
+              "bureau expert comptable": {
+                "vol": 270,
+                "n": 36
+              },
+              "bloc bureau expert comptable": {
+                "vol": 0,
+                "n": 8
+              }
+            }
+          },
+          "Experts villes et pays": {
+            "vol": 180,
+            "n": 51,
+            "children": {
+              "experts comptables belfort": {
+                "vol": 110,
+                "n": 29
+              },
+              "paie expert comptable": {
+                "vol": 30,
+                "n": 8
+              },
+              "expert comptable benin": {
+                "vol": 40,
+                "n": 14
+              }
+            }
+          }
+        }
+      },
+      "Recherche d'expert-comptable": {
+        "vol": 1200,
+        "n": 76,
+        "children": {
+          "Trouver expert comptable": {
+            "vol": 1110,
+            "n": 60,
+            "children": {
+              "trouver un expert comptable": {
+                "vol": 900,
+                "n": 38
+              },
+              "recherche expert comptable": {
+                "vol": 110,
+                "n": 14
+              },
+              "prendre rendez vous avec un expert comptable": {
+                "vol": 20,
+                "n": 3
+              },
+              "trouver mon expert comptable": {
+                "vol": 80,
+                "n": 5
+              }
+            }
+          },
+          "Création cabinet comptable": {
+            "vol": 90,
+            "n": 16,
+            "children": {
+              "peut on ouvrir un cabinet comptable sans être expert comptable": {
+                "vol": 70,
+                "n": 9
+              },
+              "expert comptable salarié ou indépendant": {
+                "vol": 20,
+                "n": 7
+              }
+            }
+          }
+        }
+      },
+      "Experts comptables associés": {
+        "vol": 540,
+        "n": 126,
+        "children": {
+          "Expert Clementine avis": {
+            "vol": 290,
+            "n": 29,
+            "children": {
+              "clementine expert comptable": {
+                "vol": 250,
+                "n": 20
+              },
+              "expert comptable clementine": {
+                "vol": 40,
+                "n": 9
+              }
+            }
+          },
+          "Experts associés noms": {
+            "vol": 250,
+            "n": 97,
+            "children": {
+              "florence vasseur expert comptable": {
+                "vol": 40,
+                "n": 14
+              },
+              "cecile de saint michel expert comptable": {
+                "vol": 140,
+                "n": 25
+              },
+              "mielcarek expert comptable": {
+                "vol": 50,
+                "n": 13
+              },
+              "chantal samama expert comptable": {
+                "vol": 20,
+                "n": 10
+              },
+              "charly criscuolo expert comptable": {
+                "vol": 0,
+                "n": 8
+              },
+              "celine verdier ales 30100 expert comptable": {
+                "vol": 0,
+                "n": 27
+              }
+            }
+          }
+        }
+      },
+      "Experts comptables nominatifs": {
+        "vol": 2430,
+        "n": 592,
+        "children": {
+          "Experts Ajaccio": {
+            "vol": 460,
+            "n": 49,
+            "children": {
+              "expert comptable ajaccio": {
+                "vol": 290,
+                "n": 17
+              },
+              "expert comptable antony": {
+                "vol": 70,
+                "n": 24
+              },
+              "andre vincent expert comptable": {
+                "vol": 100,
+                "n": 8
+              }
+            }
+          },
+          "Experts-comptables nom Blanc": {
+            "vol": 270,
+            "n": 19,
+            "children": {
+              "livre blanc expert comptable": {
+                "vol": 230,
+                "n": 12
+              },
+              "blanc expert comptable thonon": {
+                "vol": 40,
+                "n": 7
+              }
+            }
+          },
+          "Experts nominatifs Brun/Brunet": {
+            "vol": 60,
+            "n": 18,
+            "children": {
+              "expert comptable brunoy": {
+                "vol": 60,
+                "n": 12
+              },
+              "bruneau expert comptable saint gaudens": {
+                "vol": 0,
+                "n": 6
+              }
+            }
+          },
+          "Experts nominatifs Bruno": {
+            "vol": 190,
+            "n": 85,
+            "children": {
+              "bruno tuil expert comptable": {
+                "vol": 150,
+                "n": 53
+              },
+              "bruno azema expert comptable": {
+                "vol": 20,
+                "n": 20
+              },
+              "serge mensah expert comptable": {
+                "vol": 20,
+                "n": 4
+              },
+              "avis bruno ruscon expert-comptable à lyon": {
+                "vol": 0,
+                "n": 2
+              },
+              "bruno hivert expert comptable": {
+                "vol": 0,
+                "n": 6
+              }
+            }
+          },
+          "Experts-comptables prénom Xavier/Eric/Patrick/Michael": {
+            "vol": 380,
+            "n": 62,
+            "children": {
+              "xavier aubry expert comptable": {
+                "vol": 170,
+                "n": 18
+              },
+              "expert comptable barr": {
+                "vol": 40,
+                "n": 10
+              },
+              "eric guenoun expert comptable": {
+                "vol": 130,
+                "n": 21
+              },
+              "ariel zini expert comptable": {
+                "vol": 40,
+                "n": 13
+              }
+            }
+          },
+          "Experts-comptables prénom Jean/Boris/Paul/Max/Michael": {
+            "vol": 470,
+            "n": 76,
+            "children": {
+              "jean cazaban expert comptable": {
+                "vol": 190,
+                "n": 22
+              },
+              "michael fontaine expert comptable": {
+                "vol": 50,
+                "n": 4
+              },
+              "yvan meyer expert comptable": {
+                "vol": 120,
+                "n": 9
+              },
+              "cyril hanouna expert comptable": {
+                "vol": 40,
+                "n": 33
+              },
+              "gregory cellier expert comptable": {
+                "vol": 70,
+                "n": 8
+              }
+            }
+          },
+          "Experts-comptables nom Martin": {
+            "vol": 80,
+            "n": 15,
+            "children": {
+              "eric martin expert comptable": {
+                "vol": 80,
+                "n": 8
+              },
+              "di martino expert comptable": {
+                "vol": 0,
+                "n": 7
+              }
+            }
+          },
+          "Experts-comptables prénom Alain": {
+            "vol": 230,
+            "n": 138,
+            "children": {
+              "alain rolland expert comptable": {
+                "vol": 20,
+                "n": 12
+              },
+              "alain pignolet expert comptable": {
+                "vol": 20,
+                "n": 26
+              },
+              "alain meunier expert comptable": {
+                "vol": 120,
+                "n": 54
+              },
+              "alain decroix expert comptable": {
+                "vol": 40,
+                "n": 6
+              },
+              "alain fournier expert comptable": {
+                "vol": 30,
+                "n": 32
+              },
+              "alca fnn fameck expert comptable": {
+                "vol": 0,
+                "n": 2
+              },
+              "alain maslé expert comptable meaux": {
+                "vol": 0,
+                "n": 3
+              },
+              "alain abergel president des experts comptables": {
+                "vol": 0,
+                "n": 3
+              }
+            }
+          },
+          "Experts divers noms": {
+            "vol": 50,
+            "n": 7,
+            "children": {
+              "loic perez expert comptable": {
+                "vol": 50,
+                "n": 7
+              }
+            }
+          },
+          "Experts-comptables prénom Adrien": {
+            "vol": 20,
+            "n": 11,
+            "children": {
+              "adrien foulon expert comptable": {
+                "vol": 20,
+                "n": 11
+              }
+            }
+          },
+          "Experts Arnaud": {
+            "vol": 120,
+            "n": 56,
+            "children": {
+              "rigaud expert comptable": {
+                "vol": 40,
+                "n": 20
+              },
+              "arnaud ramadier expert comptable": {
+                "vol": 30,
+                "n": 22
+              },
+              "arnaud marquet expert comptable": {
+                "vol": 50,
+                "n": 14
+              }
+            }
+          },
+          "Experts Antoine": {
+            "vol": 100,
+            "n": 56,
+            "children": {
+              "antoine michel expert comptable": {
+                "vol": 60,
+                "n": 31
+              },
+              "antoine rigaud expert comptable": {
+                "vol": 40,
+                "n": 7
+              },
+              "douletroux antoine expert comptable": {
+                "vol": 0,
+                "n": 18
+              }
+            }
+          }
+        }
+      },
+      "Listes régionales": {
+        "vol": 1490,
+        "n": 86,
+        "children": {
+          "Ordre Bordeaux": {
+            "vol": 400,
+            "n": 31,
+            "children": {
+              "ordre expert comptable bordeaux": {
+                "vol": 370,
+                "n": 20
+              },
+              "congres expert comptable bordeaux": {
+                "vol": 30,
+                "n": 11
+              }
+            }
+          },
+          "Listes régionales": {
+            "vol": 1090,
+            "n": 55,
+            "children": {
+              "liste expert comptable": {
+                "vol": 600,
+                "n": 18
+              },
+              "expert comptable guadeloupe microentreprise": {
+                "vol": 360,
+                "n": 23
+              },
+              "expert comptable martinique": {
+                "vol": 130,
+                "n": 14
+              }
+            }
+          }
+        }
+      },
+      "Experts Christophe": {
+        "vol": 310,
+        "n": 147,
+        "children": {
+          "Christophe prénom courant": {
+            "vol": 310,
+            "n": 131,
+            "children": {
+              "christophe moreau expert comptable": {
+                "vol": 80,
+                "n": 10
+              },
+              "christophe casteras expert comptable": {
+                "vol": 40,
+                "n": 12
+              },
+              "christophe besson expert comptable": {
+                "vol": 40,
+                "n": 25
+              },
+              "christophe mairesse expert comptable": {
+                "vol": 120,
+                "n": 44
+              },
+              "christophe collin expert comptable": {
+                "vol": 10,
+                "n": 4
+              },
+              "christophe gosselin expert comptable": {
+                "vol": 20,
+                "n": 11
+              },
+              "boyer christophe expert comptable": {
+                "vol": 0,
+                "n": 13
+              },
+              "christophe sans expert comptable toulouse": {
+                "vol": 0,
+                "n": 12
+              }
+            }
+          },
+          "Christophe prénom rare": {
+            "vol": 0,
+            "n": 16,
+            "children": {
+              "christophe rocard expert comptable": {
+                "vol": 0,
+                "n": 14
+              },
+              "christophe rebattu ifec expert comptable": {
+                "vol": 0,
+                "n": 2
+              }
+            }
+          }
+        }
+      },
+      "Dossiers & Cession": {
+        "vol": 440,
+        "n": 96,
+        "children": {
+          "Dossiers révision experts": {
+            "vol": 290,
+            "n": 73,
+            "children": {
+              "dossier de revision ordre des experts comptables excel": {
+                "vol": 100,
+                "n": 10
+              },
+              "exemple dossier permanent expert comptable": {
+                "vol": 80,
+                "n": 28
+              },
+              "dossier de travail ordre des experts comptables": {
+                "vol": 110,
+                "n": 27
+              },
+              "deux experts comptables sur un même dossier": {
+                "vol": 0,
+                "n": 8
+              }
+            }
+          },
+          "Cession cabinets experts": {
+            "vol": 150,
+            "n": 23,
+            "children": {
+              "cession cabinet expert comptable": {
+                "vol": 130,
+                "n": 16
+              },
+              "démission expert comptable": {
+                "vol": 20,
+                "n": 7
+              }
+            }
+          }
+        }
+      },
+      "Elza expert-comptable": {
+        "vol": 110,
+        "n": 72,
+        "children": {
+          "Elza 43 ans Bollène": {
+            "vol": 110,
+            "n": 55,
+            "children": {
+              "elza expert comptable bollene": {
+                "vol": 50,
+                "n": 11
+              },
+              "elza expert comptable": {
+                "vol": 20,
+                "n": 22
+              },
+              "elza 43ans expert comptable a bollene": {
+                "vol": 40,
+                "n": 22
+              }
+            }
+          },
+          "Elza Bollène Marseille": {
+            "vol": 0,
+            "n": 17,
+            "children": {
+              "elsa 43 ans expert comptable": {
+                "vol": 0,
+                "n": 6
+              },
+              "elsa expert comptable bollène": {
+                "vol": 0,
+                "n": 11
+              }
+            }
+          }
+        }
+      },
+      "Experts comptables célèbres": {
+        "vol": 470,
+        "n": 38,
+        "children": {
+          "Experts comptables Eric & Raphael": {
+            "vol": 20,
+            "n": 6,
+            "children": {
+              "eric chevallier expert comptable": {
+                "vol": 20,
+                "n": 6
+              }
+            }
+          },
+          "Experts comptables Olivier": {
+            "vol": 450,
+            "n": 32,
+            "children": {
+              "olivier sanchez expert comptable": {
+                "vol": 450,
+                "n": 29
+              },
+              "denis olivier expert comptable liquidation judiciaire": {
+                "vol": 0,
+                "n": 3
+              }
+            }
+          }
+        }
+      },
+      "Experts comptables individuels": {
+        "vol": 50,
+        "n": 58,
+        "children": {
+          "Experts comptables Alexandre": {
+            "vol": 40,
+            "n": 36,
+            "children": {
+              "alexandre tellier expert comptable": {
+                "vol": 40,
+                "n": 23
+              },
+              "alexandre expert comptable rodocanacchi 13008": {
+                "vol": 0,
+                "n": 13
+              }
+            }
+          },
+          "Experts comptables Alexandra/Nathalie": {
+            "vol": 10,
+            "n": 22,
+            "children": {
+              "nathalie zimmermann expert comptable": {
+                "vol": 10,
+                "n": 12
+              },
+              "alexis salles expert comptable": {
+                "vol": 0,
+                "n": 10
+              }
+            }
+          }
+        }
+      },
+      "Experts Christian": {
+        "vol": 70,
+        "n": 78,
+        "children": {
+          "Christian prénom courant": {
+            "vol": 70,
+            "n": 66,
+            "children": {
+              "christian pierre expert comptable": {
+                "vol": 70,
+                "n": 49
+              },
+              "albe christian expert comptable": {
+                "vol": 0,
+                "n": 3
+              },
+              "christian michigan expert comptable": {
+                "vol": 0,
+                "n": 11
+              },
+              "christian clement expert comptable": {
+                "vol": 0,
+                "n": 3
+              }
+            }
+          },
+          "Christian prénom rare": {
+            "vol": 0,
+            "n": 12,
+            "children": {
+              "d'être christian expert comptable": {
+                "vol": 0,
+                "n": 8
+              },
+              "christian roy expert comptable tour": {
+                "vol": 0,
+                "n": 4
+              }
+            }
+          }
+        }
+      },
+      "Experts Benoît": {
+        "vol": 110,
+        "n": 42,
+        "children": {
+          "Experts Benoît individuels": {
+            "vol": 110,
+            "n": 40,
+            "children": {
+              "benoit violier expert comptable": {
+                "vol": 90,
+                "n": 35
+              },
+              "benoit jacob expert comptable": {
+                "vol": 20,
+                "n": 5
+              }
+            }
+          },
+          "Benoît Grangé chiffres": {
+            "vol": 0,
+            "n": 2,
+            "children": {
+              "benoit grangé expert comptable chiffre d'affaire": {
+                "vol": 0,
+                "n": 2
+              }
+            }
+          }
+        }
+      },
+      "Catherine expert-comptable": {
+        "vol": 40,
+        "n": 52,
+        "children": {
+          "Catherine experts France": {
+            "vol": 40,
+            "n": 35,
+            "children": {
+              "catherine dumont expert comptable": {
+                "vol": 40,
+                "n": 29
+              },
+              "catherine douglas expert comptable": {
+                "vol": 0,
+                "n": 6
+              }
+            }
+          },
+          "Catherine experts régionaux": {
+            "vol": 0,
+            "n": 17,
+            "children": {
+              "catherine violleau expert comptable": {
+                "vol": 0,
+                "n": 14
+              },
+              "catherine christophe blanchard expert comptable dans les vosges": {
+                "vol": 0,
+                "n": 3
+              }
+            }
+          }
+        }
+      },
+      "Experts comptables femmes": {
+        "vol": 0,
+        "n": 57,
+        "children": {
+          "Experts comptables femmes Cristel/Christelle": {
+            "vol": 0,
+            "n": 34,
+            "children": {
+              "cristel castere expert comptable": {
+                "vol": 0,
+                "n": 9
+              },
+              "bourgeois christelle expert comptable": {
+                "vol": 0,
+                "n": 25
+              }
+            }
+          },
+          "Experts comptables femmes Christine": {
+            "vol": 0,
+            "n": 23,
+            "children": {
+              "bodo christine expert comptable": {
+                "vol": 0,
+                "n": 14
+              },
+              "christine lacroix ordre des experts comptables": {
+                "vol": 0,
+                "n": 9
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "Tarifs & Devis": {
+    "vol": 13520,
+    "n": 626,
+    "children": {
+      "Experts comptables en ligne & devis": {
+        "vol": 10130,
+        "n": 319,
+        "children": {
+          "Expert comptable en ligne": {
+            "vol": 6760,
+            "n": 64,
+            "children": {
+              "expert comptable en ligne": {
+                "vol": 4520,
+                "n": 37
+              },
+              "expert comptable e commerce": {
+                "vol": 1080,
+                "n": 12
+              },
+              "expert comptable pas cher": {
+                "vol": 660,
+                "n": 8
+              },
+              "expert comptable odoo": {
+                "vol": 500,
+                "n": 7
+              }
+            }
+          },
+          "Devis expert comptable": {
+            "vol": 850,
+            "n": 43,
+            "children": {
+              "devis expert comptable": {
+                "vol": 850,
+                "n": 36
+              },
+              "devis expert comptable socic": {
+                "vol": 0,
+                "n": 7
+              }
+            }
+          },
+          "Meilleurs experts en ligne": {
+            "vol": 1010,
+            "n": 71,
+            "children": {
+              "meilleur expert comptable en ligne": {
+                "vol": 590,
+                "n": 24
+              },
+              "pepit expert comptable en ligne": {
+                "vol": 420,
+                "n": 36
+              },
+              "ecl societe.com expert comptable en ligne societe.com": {
+                "vol": 0,
+                "n": 8
+              },
+              "allintitle devis expert comptable en ligne": {
+                "vol": 0,
+                "n": 3
+              }
+            }
+          },
+          "Comparatif et mutuelle experts": {
+            "vol": 570,
+            "n": 35,
+            "children": {
+              "mutuelle expert comptable": {
+                "vol": 380,
+                "n": 12
+              },
+              "simulateur tarif expert-comptable": {
+                "vol": 190,
+                "n": 23
+              }
+            }
+          },
+          "Conseil expert comptable gratuit": {
+            "vol": 520,
+            "n": 67,
+            "children": {
+              "expert-comptable gratuit pôle emploi": {
+                "vol": 330,
+                "n": 23
+              },
+              "3 rdv gratuit expert-comptable": {
+                "vol": 130,
+                "n": 12
+              },
+              "expert comptable consultation gratuite": {
+                "vol": 40,
+                "n": 20
+              },
+              "consultation expert comptable gratuite": {
+                "vol": 20,
+                "n": 12
+              }
+            }
+          },
+          "Consultation et RDV expert": {
+            "vol": 420,
+            "n": 39,
+            "children": {
+              "consultation expert comptable": {
+                "vol": 200,
+                "n": 26
+              },
+              "rdv gratuit expert-comptable ain": {
+                "vol": 220,
+                "n": 13
+              }
+            }
+          }
+        }
+      },
+      "Déclaration & Honoraires": {
+        "vol": 3390,
+        "n": 307,
+        "children": {
+          "Déclaration impôt particulier": {
+            "vol": 1130,
+            "n": 74,
+            "children": {
+              "expert-comptable aide déclaration impôt particulier": {
+                "vol": 840,
+                "n": 16
+              },
+              "expert comptable impot particulier": {
+                "vol": 220,
+                "n": 37
+              },
+              "aide déclaration d impôt expert comptable": {
+                "vol": 20,
+                "n": 14
+              },
+              "revenu expert comptable": {
+                "vol": 50,
+                "n": 7
+              }
+            }
+          },
+          "Jedeclare.com utilisation": {
+            "vol": 640,
+            "n": 61,
+            "children": {
+              "jedeclare com expert comptable": {
+                "vol": 550,
+                "n": 9
+              },
+              "declaration impots expert comptable": {
+                "vol": 60,
+                "n": 38
+              },
+              "declaration tracfin expert comptable": {
+                "vol": 20,
+                "n": 5
+              },
+              "expert comptable declaration de revenus": {
+                "vol": 10,
+                "n": 9
+              }
+            }
+          },
+          "Honoraires et paiement": {
+            "vol": 840,
+            "n": 75,
+            "children": {
+              "honoraires expert comptable": {
+                "vol": 590,
+                "n": 45
+              },
+              "honoraire expert comptable": {
+                "vol": 210,
+                "n": 14
+              },
+              "non paiement honoraires expert comptable": {
+                "vol": 40,
+                "n": 4
+              },
+              "dans quel compte enregistrer les honoraires du expert comptable": {
+                "vol": 0,
+                "n": 10
+              },
+              "depuis la loi macron l'expert-comptable doit conclure une convention d'honoraire": {
+                "vol": 0,
+                "n": 2
+              }
+            }
+          },
+          "Facturation électronique & inscription": {
+            "vol": 360,
+            "n": 51,
+            "children": {
+              "facture electronique expert comptable": {
+                "vol": 290,
+                "n": 28
+              },
+              "inscription expert comptable": {
+                "vol": 70,
+                "n": 17
+              },
+              "augmentation volume expert comptable": {
+                "vol": 0,
+                "n": 6
+              }
+            }
+          },
+          "Déclaration indépendance collaborateurs": {
+            "vol": 130,
+            "n": 14,
+            "children": {
+              "modele declaration d'indépendance des collaborateur expert comptable": {
+                "vol": 70,
+                "n": 5
+              },
+              "déclaration d'indépendance expert comptable": {
+                "vol": 60,
+                "n": 9
+              }
+            }
+          },
+          "TVA et honoraires": {
+            "vol": 290,
+            "n": 32,
+            "children": {
+              "tva expert comptable": {
+                "vol": 290,
+                "n": 23
+              },
+              "declaration de tva par un expert comptable": {
+                "vol": 0,
+                "n": 9
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "Salaires & Rémunération": {
+    "vol": 11570,
+    "n": 783,
+    "children": {
+      "Convention collective": {
+        "vol": 11240,
+        "n": 719,
+        "children": {
+          "Convention Textes Officiels": {
+            "vol": 5920,
+            "n": 193,
+            "children": {
+              "convention collective expert comptable": {
+                "vol": 3030,
+                "n": 66
+              },
+              "convention collective des experts comptables": {
+                "vol": 2280,
+                "n": 26
+              },
+              "convention collective expert comptable commissaire aux comptes": {
+                "vol": 370,
+                "n": 27
+              },
+              "elnet expert comptable convention collective": {
+                "vol": 190,
+                "n": 36
+              },
+              "convention collective cabinet expert comptable": {
+                "vol": 20,
+                "n": 13
+              },
+              "convention collective nationale des experts comptables": {
+                "vol": 30,
+                "n": 9
+              },
+              "convention collective des cabinets d'experts-comptables repos compensateur": {
+                "vol": 0,
+                "n": 8
+              },
+              "convention collective des experts-comptable et des cac n 3020": {
+                "vol": 0,
+                "n": 8
+              }
+            }
+          },
+          "Grille Salaires Années": {
+            "vol": 2130,
+            "n": 45,
+            "children": {
+              "grille salaire expert comptable 2025": {
+                "vol": 1610,
+                "n": 22
+              },
+              "grille salaire expert comptable": {
+                "vol": 420,
+                "n": 12
+              },
+              "ccn expert comptable salaire": {
+                "vol": 100,
+                "n": 11
+              }
+            }
+          },
+          "Convention Généralités": {
+            "vol": 540,
+            "n": 76,
+            "children": {
+              "convention expert comptable": {
+                "vol": 440,
+                "n": 36
+              },
+              "convention expert comptable salaire": {
+                "vol": 60,
+                "n": 19
+              },
+              "convention expert comptable maladie": {
+                "vol": 20,
+                "n": 14
+              },
+              "conges evenements familiaux expert comptable": {
+                "vol": 20,
+                "n": 4
+              },
+              "deces grand parent convention expert comptable": {
+                "vol": 0,
+                "n": 3
+              }
+            }
+          },
+          "Grille Salaires Convention": {
+            "vol": 650,
+            "n": 43,
+            "children": {
+              "convention collective expert comptable grille salaire": {
+                "vol": 450,
+                "n": 14
+              },
+              "convention collective expert comptable grille salaire 2025": {
+                "vol": 200,
+                "n": 29
+              }
+            }
+          },
+          "Prime Ancienneté": {
+            "vol": 500,
+            "n": 25,
+            "children": {
+              "prime ancienneté expert comptable": {
+                "vol": 380,
+                "n": 13
+              },
+              "convention expert comptable prime anciennete": {
+                "vol": 120,
+                "n": 12
+              }
+            }
+          },
+          "Salaires et Coefficients": {
+            "vol": 520,
+            "n": 82,
+            "children": {
+              "convention collective expert comptable salaire": {
+                "vol": 270,
+                "n": 30
+              },
+              "coefficient convention collective expert comptable": {
+                "vol": 90,
+                "n": 23
+              },
+              "numero convention collective expert comptable": {
+                "vol": 100,
+                "n": 19
+              },
+              "valeur du point de base convention collective expert comptable": {
+                "vol": 20,
+                "n": 3
+              },
+              "13ème mois convention collective expert comptable": {
+                "vol": 40,
+                "n": 7
+              }
+            }
+          },
+          "Avantages et Rupture": {
+            "vol": 420,
+            "n": 72,
+            "children": {
+              "convention collective expert comptable déménagement": {
+                "vol": 130,
+                "n": 12
+              },
+              "tarif rupture conventionnelle expert comptable": {
+                "vol": 90,
+                "n": 29
+              },
+              "convention collective expert comptable mutuelle": {
+                "vol": 150,
+                "n": 17
+              },
+              "convention collective expert comptable maternité": {
+                "vol": 50,
+                "n": 14
+              }
+            }
+          },
+          "Préavis Démission": {
+            "vol": 150,
+            "n": 30,
+            "children": {
+              "convention collective expert comptable preavis demission": {
+                "vol": 140,
+                "n": 24
+              },
+              "convention collective expert comptable periode d'essai": {
+                "vol": 10,
+                "n": 6
+              }
+            }
+          },
+          "Maladie et Indemnités": {
+            "vol": 90,
+            "n": 33,
+            "children": {
+              "ccn expert comptable maladie": {
+                "vol": 70,
+                "n": 19
+              },
+              "calcul indemnité rupture conventionnelle convention expert comptable": {
+                "vol": 20,
+                "n": 14
+              }
+            }
+          },
+          "Congés Spéciaux": {
+            "vol": 210,
+            "n": 70,
+            "children": {
+              "convention collective expert comptable congés spéciaux": {
+                "vol": 110,
+                "n": 24
+              },
+              "convention collective expert comptable jour deces": {
+                "vol": 50,
+                "n": 20
+              },
+              "convention collective expert comptable jour demenagement": {
+                "vol": 50,
+                "n": 19
+              },
+              "convention collective experts comptables et commissaires aux comptes congés": {
+                "vol": 0,
+                "n": 7
+              }
+            }
+          },
+          "Convention Dates Précises": {
+            "vol": 50,
+            "n": 27,
+            "children": {
+              "convention collective expert comptable 2024": {
+                "vol": 50,
+                "n": 8
+              },
+              "convention collective expert comptable 2018": {
+                "vol": 0,
+                "n": 19
+              }
+            }
+          },
+          "Heures Supplémentaires": {
+            "vol": 60,
+            "n": 23,
+            "children": {
+              "maintien de salaire ccn expert comptable": {
+                "vol": 40,
+                "n": 14
+              },
+              "convention collective expert comptable heures supplémentaires": {
+                "vol": 20,
+                "n": 9
+              }
+            }
+          }
+        }
+      },
+      "Retraite experts-comptables": {
+        "vol": 330,
+        "n": 64,
+        "children": {
+          "Montant Retraite": {
+            "vol": 270,
+            "n": 37,
+            "children": {
+              "retraite moyenne expert comptable": {
+                "vol": 170,
+                "n": 25
+              },
+              "indemnite de depart en retraite convention collective expert comptable": {
+                "vol": 100,
+                "n": 12
+              }
+            }
+          },
+          "Caisse Retraite": {
+            "vol": 60,
+            "n": 27,
+            "children": {
+              "caisse de retraite expert comptable": {
+                "vol": 60,
+                "n": 14
+              },
+              "caisse vieillesse experts comptable reversion": {
+                "vol": 0,
+                "n": 13
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "Géolocalisation": {
+    "vol": 33640,
+    "n": 1593,
+    "children": {
+      "Experts comptables grandes villes": {
+        "vol": 11960,
+        "n": 422,
+        "children": {
+          "Experts-comptables Lyon": {
+            "vol": 3130,
+            "n": 78,
+            "children": {
+              "expert comptable lyon": {
+                "vol": 2760,
+                "n": 33
+              },
+              "experts comptables lyon": {
+                "vol": 330,
+                "n": 31
+              },
+              "ecole expert comptable lyon": {
+                "vol": 30,
+                "n": 7
+              },
+              "devis expert comptable lyon": {
+                "vol": 10,
+                "n": 4
+              },
+              "carré rg expert-comptable à lyon lyon": {
+                "vol": 0,
+                "n": 3
+              }
+            }
+          },
+          "Experts-comptables Bordeaux": {
+            "vol": 2050,
+            "n": 77,
+            "children": {
+              "expert comptable bordeaux": {
+                "vol": 1690,
+                "n": 25
+              },
+              "numbr expert comptable à bordeaux": {
+                "vol": 310,
+                "n": 36
+              },
+              "ecole expert comptable bordeaux": {
+                "vol": 30,
+                "n": 8
+              },
+              "audexiel expert comptable bordeaux": {
+                "vol": 20,
+                "n": 4
+              },
+              "conseiller fiscal bordeaux expert comptable": {
+                "vol": 0,
+                "n": 4
+              }
+            }
+          },
+          "Experts-comptables LMNP/LMP": {
+            "vol": 2410,
+            "n": 77,
+            "children": {
+              "expert comptable lmnp": {
+                "vol": 1950,
+                "n": 30
+              },
+              "lmnp expert comptable": {
+                "vol": 230,
+                "n": 19
+              },
+              "tarif expert comptable lmnp": {
+                "vol": 200,
+                "n": 19
+              },
+              "expert-comptable spécialisé lmnp mieux notés près de vitrolles": {
+                "vol": 30,
+                "n": 3
+              },
+              "avis expert comptable lmnp saint herblain": {
+                "vol": 0,
+                "n": 6
+              }
+            }
+          },
+          "Experts comptables Ouest": {
+            "vol": 1360,
+            "n": 43,
+            "children": {
+              "expert comptable rennes": {
+                "vol": 750,
+                "n": 18
+              },
+              "expert comptable le mans": {
+                "vol": 610,
+                "n": 25
+              }
+            }
+          },
+          "Experts-comptables Lille": {
+            "vol": 1180,
+            "n": 39,
+            "children": {
+              "expert comptable lille": {
+                "vol": 1110,
+                "n": 35
+              },
+              "avis sur terre d'entrepreneurs - expert-comptable arras": {
+                "vol": 70,
+                "n": 4
+              }
+            }
+          },
+          "Experts comptables Nancy Orléans": {
+            "vol": 1270,
+            "n": 44,
+            "children": {
+              "expert comptable orleans": {
+                "vol": 1210,
+                "n": 23
+              },
+              "cdd expert comptable": {
+                "vol": 60,
+                "n": 21
+              }
+            }
+          },
+          "Experts comptables Sud-Ouest": {
+            "vol": 460,
+            "n": 37,
+            "children": {
+              "expert comptable narbonne": {
+                "vol": 460,
+                "n": 23
+              },
+              "avis sur cf - compagnie fiduciaire - expert comptable toulouse": {
+                "vol": 0,
+                "n": 14
+              }
+            }
+          },
+          "Bons experts Strasbourg": {
+            "vol": 100,
+            "n": 27,
+            "children": {
+              "bon expert comptable strasbourg": {
+                "vol": 100,
+                "n": 18
+              },
+              "bon expert comptable frejus": {
+                "vol": 0,
+                "n": 9
+              }
+            }
+          }
+        }
+      },
+      "Experts Marseille": {
+        "vol": 2920,
+        "n": 117,
+        "children": {
+          "Experts Marseille localités": {
+            "vol": 2900,
+            "n": 99,
+            "children": {
+              "expert comptable marseille": {
+                "vol": 1890,
+                "n": 33
+              },
+              "expert comptable salon de provence": {
+                "vol": 220,
+                "n": 9
+              },
+              "experts comptables marseille": {
+                "vol": 360,
+                "n": 30
+              },
+              "expert comptable marseille 13012": {
+                "vol": 430,
+                "n": 20
+              },
+              "david meyer expert comptable marseille": {
+                "vol": 0,
+                "n": 6
+              },
+              "direccte marseille autorisation de travail expert comptable": {
+                "vol": 0,
+                "n": 1
+              }
+            }
+          },
+          "Alliance cabinets experts": {
+            "vol": 20,
+            "n": 18,
+            "children": {
+              "alliance expert comptable": {
+                "vol": 20,
+                "n": 14
+              },
+              "alliance expert comptable 34": {
+                "vol": 0,
+                "n": 4
+              }
+            }
+          }
+        }
+      },
+      "Experts comptables par ville": {
+        "vol": 11250,
+        "n": 523,
+        "children": {
+          "Experts-comptables Rouen/Reims/Roanne": {
+            "vol": 3640,
+            "n": 60,
+            "children": {
+              "expert comptable rouen": {
+                "vol": 2390,
+                "n": 38
+              },
+              "expert comptable reims": {
+                "vol": 690,
+                "n": 6
+              },
+              "expert comptable bas rhin": {
+                "vol": 270,
+                "n": 7
+              },
+              "expert comptable romans sur isere": {
+                "vol": 290,
+                "n": 9
+              }
+            }
+          },
+          "Experts-comptables Sud-Ouest": {
+            "vol": 4280,
+            "n": 68,
+            "children": {
+              "expert comptable grenoble": {
+                "vol": 2400,
+                "n": 28
+              },
+              "expert comptable grandchamp des fontaines": {
+                "vol": 630,
+                "n": 10
+              },
+              "expert comptable dunkerque": {
+                "vol": 570,
+                "n": 17
+              },
+              "expert comptable carcassonne": {
+                "vol": 680,
+                "n": 13
+              }
+            }
+          },
+          "Experts-comptables La Rochelle et environs": {
+            "vol": 1120,
+            "n": 42,
+            "children": {
+              "expert comptable la rochelle": {
+                "vol": 350,
+                "n": 16
+              },
+              "expert comptable la roche sur yon": {
+                "vol": 770,
+                "n": 26
+              }
+            }
+          },
+          "Experts villes spécifiques": {
+            "vol": 830,
+            "n": 44,
+            "children": {
+              "expert comptable versailles": {
+                "vol": 770,
+                "n": 32
+              },
+              "ags experts comptables epinal": {
+                "vol": 60,
+                "n": 12
+              }
+            }
+          },
+          "Experts-comptables création entreprise": {
+            "vol": 170,
+            "n": 47,
+            "children": {
+              "livre blanc prospect expert comptable": {
+                "vol": 120,
+                "n": 23
+              },
+              "expert-comptable création entreprise carcassonne": {
+                "vol": 20,
+                "n": 8
+              },
+              "comptabilité franchise valencia expert": {
+                "vol": 30,
+                "n": 16
+              }
+            }
+          },
+          "Experts arrondissements Paris": {
+            "vol": 630,
+            "n": 46,
+            "children": {
+              "expert comptable 75017": {
+                "vol": 370,
+                "n": 26
+              },
+              "expert comptable 13008": {
+                "vol": 260,
+                "n": 18
+              },
+              "157 rue ceralp lyo 3 expert-comptable": {
+                "vol": 0,
+                "n": 2
+              }
+            }
+          },
+          "Experts-comptables villes diverses": {
+            "vol": 220,
+            "n": 106,
+            "children": {
+              "suppression monopole expert comptable": {
+                "vol": 120,
+                "n": 23
+              },
+              "agence expert-comptable hossegor": {
+                "vol": 70,
+                "n": 40
+              },
+              "fin monopole expert comptable": {
+                "vol": 20,
+                "n": 14
+              },
+              "agnes bricard expert comptable": {
+                "vol": 10,
+                "n": 9
+              },
+              "couturier expert comptable limoges": {
+                "vol": 0,
+                "n": 7
+              },
+              "diplome expert comptable pau": {
+                "vol": 0,
+                "n": 8
+              },
+              "aga vendee expert comptable la fidal en 1980": {
+                "vol": 0,
+                "n": 5
+              }
+            }
+          },
+          "Experts-comptables Royan/Roanne/Rodez": {
+            "vol": 250,
+            "n": 41,
+            "children": {
+              "experts comptables royan": {
+                "vol": 230,
+                "n": 33
+              },
+              "romain froment expert comptable": {
+                "vol": 20,
+                "n": 8
+              }
+            }
+          },
+          "Experts-comptables Checy et cabinets spécifiques": {
+            "vol": 110,
+            "n": 57,
+            "children": {
+              "expert-comptable checy": {
+                "vol": 60,
+                "n": 34
+              },
+              "echarpe rouge expert comptable": {
+                "vol": 50,
+                "n": 18
+              },
+              "cassr expert comptable": {
+                "vol": 0,
+                "n": 5
+              }
+            }
+          },
+          "Experts-comptables Chartres/Doisneau": {
+            "vol": 0,
+            "n": 12,
+            "children": {
+              "duguet expert comptable chartres": {
+                "vol": 0,
+                "n": 1
+              },
+              "doisneau expert comptable cgt 2017": {
+                "vol": 0,
+                "n": 11
+              }
+            }
+          }
+        }
+      },
+      "Expert-comptable Perpignan": {
+        "vol": 1880,
+        "n": 87,
+        "children": {
+          "Cabinets Perpignan": {
+            "vol": 1610,
+            "n": 74,
+            "children": {
+              "expert comptable perpignan": {
+                "vol": 1260,
+                "n": 32
+              },
+              "abc expert comptable perpignan": {
+                "vol": 200,
+                "n": 31
+              },
+              "expert comptable perpignan polygone nord les mieux notés": {
+                "vol": 80,
+                "n": 5
+              },
+              "expert comptable perpignan boulevard kennedy ouvert actuellement": {
+                "vol": 70,
+                "n": 6
+              }
+            }
+          },
+          "Expert transport Perpignan": {
+            "vol": 270,
+            "n": 13,
+            "children": {
+              "expert comptable transport de marchandises": {
+                "vol": 160,
+                "n": 6
+              },
+              "expert comptable transport": {
+                "vol": 110,
+                "n": 7
+              }
+            }
+          }
+        }
+      },
+      "Experts internationaux": {
+        "vol": 600,
+        "n": 93,
+        "children": {
+          "Experts comptables Espagne": {
+            "vol": 480,
+            "n": 24,
+            "children": {
+              "expert comptable antibes": {
+                "vol": 320,
+                "n": 15
+              },
+              "expert comptable espagne": {
+                "vol": 160,
+                "n": 9
+              }
+            }
+          },
+          "Avis experts en ligne": {
+            "vol": 120,
+            "n": 69,
+            "children": {
+              "avis expert comptable en ligne": {
+                "vol": 70,
+                "n": 11
+              },
+              "avis expert comptable": {
+                "vol": 50,
+                "n": 19
+              },
+              "avis expert comptable logiciel quadra": {
+                "vol": 0,
+                "n": 4
+              },
+              "avis expert comptable lille": {
+                "vol": 0,
+                "n": 35
+              }
+            }
+          }
+        }
+      },
+      "Emploi & événements DOM-TOM": {
+        "vol": 880,
+        "n": 114,
+        "children": {
+          "Emploi grandes villes": {
+            "vol": 350,
+            "n": 79,
+            "children": {
+              "emploi expert comptable": {
+                "vol": 280,
+                "n": 22
+              },
+              "emploi expert comptable bordeaux": {
+                "vol": 50,
+                "n": 17
+              },
+              "emploi expert comptable grenoble": {
+                "vol": 20,
+                "n": 15
+              },
+              "emploi expert comptable brest": {
+                "vol": 0,
+                "n": 15
+              },
+              "emploi collaborateur expert comptable rennes": {
+                "vol": 0,
+                "n": 10
+              }
+            }
+          },
+          "DOM-TOM & salons": {
+            "vol": 530,
+            "n": 35,
+            "children": {
+              "expert comptable la reunion": {
+                "vol": 390,
+                "n": 21
+              },
+              "relation expert-comptable saint martin de seignanx": {
+                "vol": 140,
+                "n": 14
+              }
+            }
+          }
+        }
+      },
+      "Experts comptables par département": {
+        "vol": 1830,
+        "n": 104,
+        "children": {
+          "Experts départements Île-de-France": {
+            "vol": 1830,
+            "n": 88,
+            "children": {
+              "expert comptable 77": {
+                "vol": 830,
+                "n": 33
+              },
+              "expert comptable 91": {
+                "vol": 490,
+                "n": 16
+              },
+              "expert comptable 44": {
+                "vol": 500,
+                "n": 21
+              },
+              "expert comptable 35h": {
+                "vol": 10,
+                "n": 11
+              },
+              "cout fourchette expert comptable": {
+                "vol": 0,
+                "n": 7
+              }
+            }
+          },
+          "Experts contacts locaux": {
+            "vol": 0,
+            "n": 16,
+            "children": {
+              "01 44 15 60 36 experts comptables": {
+                "vol": 0,
+                "n": 3
+              },
+              "ales 30100 expert comptabilité": {
+                "vol": 0,
+                "n": 13
+              }
+            }
+          }
+        }
+      },
+      "Experts villes": {
+        "vol": 1150,
+        "n": 43,
+        "children": {
+          "Experts villes moyennes": {
+            "vol": 990,
+            "n": 35,
+            "children": {
+              "expert comptable joinville le pont": {
+                "vol": 700,
+                "n": 25
+              },
+              "expert comptable pontarlier": {
+                "vol": 290,
+                "n": 10
+              }
+            }
+          },
+          "Experts secteurs Obernai": {
+            "vol": 160,
+            "n": 8,
+            "children": {
+              "expert comptable obernai agriculture": {
+                "vol": 160,
+                "n": 8
+              }
+            }
+          }
+        }
+      },
+      "Experts comptables internationaux": {
+        "vol": 780,
+        "n": 49,
+        "children": {
+          "Experts Maghreb & Dubai": {
+            "vol": 540,
+            "n": 34,
+            "children": {
+              "expert comptable casablanca": {
+                "vol": 540,
+                "n": 31
+              },
+              "associations experts comptable conseils rfcomptable": {
+                "vol": 0,
+                "n": 3
+              }
+            }
+          },
+          "Experts Afrique francophone": {
+            "vol": 240,
+            "n": 15,
+            "children": {
+              "expert comptable malgache france": {
+                "vol": 140,
+                "n": 9
+              },
+              "expert comptable abidjan": {
+                "vol": 100,
+                "n": 6
+              }
+            }
+          }
+        }
+      },
+      "Expert-comptable Tunisie": {
+        "vol": 390,
+        "n": 41,
+        "children": {
+          "Experts-comptables Tunisie": {
+            "vol": 270,
+            "n": 30,
+            "children": {
+              "expert comptable tunis": {
+                "vol": 250,
+                "n": 22
+              },
+              "comment devenir un expert comptable en tunisie": {
+                "vol": 20,
+                "n": 8
+              }
+            }
+          },
+          "Ordre Tunisie inscription": {
+            "vol": 120,
+            "n": 11,
+            "children": {
+              "ordre des experts comptables tunisie": {
+                "vol": 120,
+                "n": 11
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "Secteurs d'activité": {
+    "vol": 5680,
+    "n": 120,
+    "children": {
+      "Expert-comptable immobilier": {
+        "vol": 5680,
+        "n": 120,
+        "children": {
+          "Fiscalité immobilière": {
+            "vol": 4250,
+            "n": 106,
+            "children": {
+              "expert comptable immobilier": {
+                "vol": 2860,
+                "n": 43
+              },
+              "amarris immo expert comptable immobilier": {
+                "vol": 460,
+                "n": 6
+              },
+              "expert comptable location meublée": {
+                "vol": 490,
+                "n": 17
+              },
+              "expert-comptable immobilier locatif": {
+                "vol": 330,
+                "n": 15
+              },
+              "expert comptable immoblier rouen": {
+                "vol": 80,
+                "n": 2
+              },
+              "comptable expert immobilier": {
+                "vol": 30,
+                "n": 14
+              },
+              "coût expert comptable amortissement location": {
+                "vol": 0,
+                "n": 9
+              }
+            }
+          },
+          "Expert-comptable Pennylane": {
+            "vol": 1430,
+            "n": 14,
+            "children": {
+              "expert comptable pennylane": {
+                "vol": 1060,
+                "n": 10
+              },
+              "pennylane expert comptable": {
+                "vol": 370,
+                "n": 4
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "Services & Spécialités": {
+    "vol": 5990,
+    "n": 511,
+    "children": {
+      "Experts comptables spécialisés": {
+        "vol": 2760,
+        "n": 103,
+        "children": {
+          "Experts-comptables par ville moyenne": {
+            "vol": 1990,
+            "n": 67,
+            "children": {
+              "expert comptable annecy": {
+                "vol": 810,
+                "n": 24
+              },
+              "expert comptable cannes": {
+                "vol": 420,
+                "n": 12
+              },
+              "expert comptable pamiers": {
+                "vol": 440,
+                "n": 16
+              },
+              "expert comptable montpellier tpe": {
+                "vol": 320,
+                "n": 15
+              }
+            }
+          },
+          "Experts-comptables agricoles": {
+            "vol": 770,
+            "n": 36,
+            "children": {
+              "expert comptable agricole": {
+                "vol": 750,
+                "n": 26
+              },
+              "emploi expert comptable agricole": {
+                "vol": 20,
+                "n": 10
+              }
+            }
+          }
+        }
+      },
+      "Expert digital": {
+        "vol": 690,
+        "n": 47,
+        "children": {
+          "Experts comptables numériques": {
+            "vol": 490,
+            "n": 29,
+            "children": {
+              "expert comptable digital": {
+                "vol": 490,
+                "n": 23
+              },
+              "05 12 2019 l'expert-comptable numérique dijon bourgogne-franche-comté 5 décembre": {
+                "vol": 0,
+                "n": 6
+              }
+            }
+          },
+          "Digitalisation métier expert": {
+            "vol": 200,
+            "n": 18,
+            "children": {
+              "digitalisation expert comptable": {
+                "vol": 160,
+                "n": 8
+              },
+              "transformation digitale expert comptable": {
+                "vol": 40,
+                "n": 10
+              }
+            }
+          }
+        }
+      },
+      "Missions & Accompagnement": {
+        "vol": 760,
+        "n": 95,
+        "children": {
+          "Missions et accompagnement général": {
+            "vol": 720,
+            "n": 84,
+            "children": {
+              "expert comptable mission": {
+                "vol": 420,
+                "n": 25
+              },
+              "expert comptable reprise d'entreprise": {
+                "vol": 110,
+                "n": 12
+              },
+              "accompagnement expert comptable": {
+                "vol": 120,
+                "n": 21
+              },
+              "passerelle expert comptable": {
+                "vol": 70,
+                "n": 21
+              },
+              "cout d'une dissolution par l'expert comptable": {
+                "vol": 0,
+                "n": 5
+              }
+            }
+          },
+          "Domiciliation entreprise": {
+            "vol": 40,
+            "n": 11,
+            "children": {
+              "domiciliation expert comptable": {
+                "vol": 40,
+                "n": 11
+              }
+            }
+          }
+        }
+      },
+      "Business plan": {
+        "vol": 400,
+        "n": 48,
+        "children": {
+          "Business plan accompagnement": {
+            "vol": 400,
+            "n": 43,
+            "children": {
+              "business plan expert comptable": {
+                "vol": 400,
+                "n": 37
+              },
+              "business plan et mission d'assurance de l'expert comptable": {
+                "vol": 0,
+                "n": 6
+              }
+            }
+          },
+          "EBP business plan": {
+            "vol": 0,
+            "n": 5,
+            "children": {
+              "ebp business plan ligne expert-comptable": {
+                "vol": 0,
+                "n": 5
+              }
+            }
+          }
+        }
+      },
+      "Paie & Prévisionnel": {
+        "vol": 920,
+        "n": 147,
+        "children": {
+          "Fiche de paie & prévisionnel": {
+            "vol": 910,
+            "n": 134,
+            "children": {
+              "expert comptable verification fiche de paie": {
+                "vol": 400,
+                "n": 18
+              },
+              "previsionnel expert comptable": {
+                "vol": 160,
+                "n": 24
+              },
+              "relation client expert comptable": {
+                "vol": 190,
+                "n": 45
+              },
+              "base documentaire expert comptable": {
+                "vol": 60,
+                "n": 7
+              },
+              "expert comptable cout annuel": {
+                "vol": 70,
+                "n": 9
+              },
+              "suivi des affectations bancaires expert-comptable": {
+                "vol": 30,
+                "n": 12
+              },
+              "distribution dividente expert comptable": {
+                "vol": 0,
+                "n": 3
+              },
+              "bureaux expert comptable calculatrice": {
+                "vol": 0,
+                "n": 16
+              }
+            }
+          },
+          "Logiciel Ciel intégration": {
+            "vol": 10,
+            "n": 13,
+            "children": {
+              "ciel expert comptable": {
+                "vol": 10,
+                "n": 9
+              },
+              "ciel devis facture export relation expert comptable": {
+                "vol": 0,
+                "n": 4
+              }
+            }
+          }
+        }
+      },
+      "Choix expert-comptable": {
+        "vol": 460,
+        "n": 71,
+        "children": {
+          "Conseils choix expert-comptable": {
+            "vol": 420,
+            "n": 58,
+            "children": {
+              "comment choisir un expert-comptable": {
+                "vol": 350,
+                "n": 35
+              },
+              "choix expert comptable": {
+                "vol": 30,
+                "n": 17
+              },
+              "quel expert comptable en ligne choisir": {
+                "vol": 40,
+                "n": 6
+              }
+            }
+          },
+          "Adopte un expert-comptable": {
+            "vol": 40,
+            "n": 13,
+            "children": {
+              "adopte un expert comptable": {
+                "vol": 20,
+                "n": 6
+              },
+              "adopte 1 expert comptable": {
+                "vol": 20,
+                "n": 7
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "Autre": {
+    "vol": 420,
+    "n": 104,
+    "children": {
+      "Informations administratives": {
+        "vol": 420,
+        "n": 104,
+        "children": {
+          "Codes & statuts administratifs": {
+            "vol": 310,
+            "n": 30,
+            "children": {
+              "code naf expert comptable": {
+                "vol": 210,
+                "n": 15
+              },
+              "rse expert comptable": {
+                "vol": 100,
+                "n": 15
+              }
+            }
+          },
+          "Contacts & newsletters": {
+            "vol": 110,
+            "n": 74,
+            "children": {
+              "newsletter expert comptable": {
+                "vol": 70,
+                "n": 13
+              },
+              "adresse mail expert comptable": {
+                "vol": 20,
+                "n": 21
+              },
+              "adresse expert comptable": {
+                "vol": 20,
+                "n": 24
+              },
+              "adresse du cabinet expert comptable guy cohen 84310": {
+                "vol": 0,
+                "n": 16
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "Fiscalité & Comptabilité": {
+    "vol": 100,
+    "n": 58,
+    "children": {
+      "Chiffre d'affaires & attestations": {
+        "vol": 100,
+        "n": 58,
+        "children": {
+          "Attestation CA expert-comptable": {
+            "vol": 70,
+            "n": 18,
+            "children": {
+              "modele attestation chiffre d'affaires expert comptable": {
+                "vol": 70,
+                "n": 17
+              },
+              "amateos caninet d'expert comptable chiffre d'affaires": {
+                "vol": 0,
+                "n": 1
+              }
+            }
+          },
+          "Chiffre d'affaires expert": {
+            "vol": 30,
+            "n": 40,
+            "children": {
+              "revenu moyen expert comptable": {
+                "vol": 20,
+                "n": 7
+              },
+              "chiffre d'affaire cabinet expert comptable": {
+                "vol": 10,
+                "n": 33
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

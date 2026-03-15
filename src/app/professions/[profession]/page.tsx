@@ -35,6 +35,9 @@ export default async function ProfessionPage({ params }: Props) {
   const seo = getSEOForProfession(profession);
   const linkGroups = getProfessionLinks(slug);
   const services = db.getServices();
+  const siblingProfessions = db.getProfessionsByCategory(profession.category_slug)
+    .filter((p) => p.slug !== slug)
+    .slice(0, 8);
 
   return (
     <ClusterPage
@@ -78,10 +81,10 @@ export default async function ProfessionPage({ params }: Props) {
             <a
               key={svc.slug}
               href={`/expertises/${svc.slug}/${slug}`}
-              className="border border-pierre-12 bg-blanc px-6 py-5 transition-colors hover:border-or"
+              className="group border border-pierre-12 bg-blanc px-6 py-5 transition-all hover:-translate-y-0.5 hover:border-or hover:shadow-md"
             >
               <span className="mb-2 block text-[1.1rem]">{svc.icon}</span>
-              <h3 className="mb-1 text-[0.95rem] font-medium text-encre">
+              <h3 className="mb-1 text-[0.95rem] font-medium text-encre group-hover:text-or-fonce">
                 {svc.title}
               </h3>
               <p className="text-[0.72rem] text-ardoise">{svc.description}</p>
@@ -89,6 +92,26 @@ export default async function ProfessionPage({ params }: Props) {
           ))}
         </div>
       </div>
+
+      {/* Professions similaires */}
+      {siblingProfessions.length > 0 && (
+        <div className="mb-12">
+          <h2 className="mb-4 font-serif text-[1.25rem] font-light text-encre">
+            Professions similaires
+          </h2>
+          <div className="flex flex-wrap gap-2">
+            {siblingProfessions.map((p) => (
+              <a
+                key={p.slug}
+                href={`/professions/${p.slug}`}
+                className="border border-pierre-12 bg-blanc px-4 py-2 text-[0.78rem] text-encre-75 transition-colors hover:border-or hover:text-or-fonce"
+              >
+                {p.name}
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
     </ClusterPage>
   );
 }

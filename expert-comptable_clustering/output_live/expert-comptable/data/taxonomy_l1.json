@@ -1,0 +1,290 @@
+{
+  "Métier & Formation": {
+    "n_kw": 14513,
+    "volume": 332010,
+    "topics": {
+      "Expert-comptable général": {
+        "n": 13705,
+        "vol": 313450
+      },
+      "Études & formation expert-comptable": {
+        "n": 121,
+        "vol": 9610
+      },
+      "Mémorialiste & alternance": {
+        "n": 65,
+        "vol": 2430
+      },
+      "Formation & métier expert-comptable": {
+        "n": 186,
+        "vol": 3180
+      },
+      "Différences métiers": {
+        "n": 157,
+        "vol": 1540
+      },
+      "Offres d'emploi expert-comptable": {
+        "n": 127,
+        "vol": 1210
+      },
+      "Devenir expert-comptable": {
+        "n": 91,
+        "vol": 490
+      },
+      "Avantages métier": {
+        "n": 61,
+        "vol": 100
+      }
+    }
+  },
+  "Ordre & Réglementation": {
+    "n_kw": 3304,
+    "volume": 53640,
+    "topics": {
+      "Ordre & Annuaire": {
+        "n": 2186,
+        "vol": 46570
+      },
+      "Déontologie experts-comptables": {
+        "n": 310,
+        "vol": 2590
+      },
+      "Ordre experts comptables PACA": {
+        "n": 45,
+        "vol": 530
+      },
+      "Normes & législation": {
+        "n": 304,
+        "vol": 1570
+      },
+      "Réglementation & exercice": {
+        "n": 163,
+        "vol": 1110
+      },
+      "Ordonnance 1945 & congrès": {
+        "n": 142,
+        "vol": 480
+      },
+      "Cotisations ordre": {
+        "n": 100,
+        "vol": 460
+      },
+      "Bibliothèque experts-comptables": {
+        "n": 54,
+        "vol": 330
+      }
+    }
+  },
+  "Cabinets & Annuaires": {
+    "n_kw": 5845,
+    "volume": 47770,
+    "topics": {
+      "Cabinets experts comptables": {
+        "n": 3725,
+        "vol": 28700
+      },
+      "Avis & présence en ligne": {
+        "n": 319,
+        "vol": 10120
+      },
+      "Cabinet Bordeaux": {
+        "n": 40,
+        "vol": 440
+      },
+      "Cabinets experts comptables locaux": {
+        "n": 146,
+        "vol": 800
+      },
+      "Bureaux & Experts": {
+        "n": 95,
+        "vol": 450
+      },
+      "Recherche d'expert-comptable": {
+        "n": 76,
+        "vol": 1200
+      },
+      "Experts comptables associés": {
+        "n": 126,
+        "vol": 540
+      },
+      "Experts comptables nominatifs": {
+        "n": 592,
+        "vol": 2430
+      },
+      "Listes régionales": {
+        "n": 86,
+        "vol": 1490
+      },
+      "Experts Christophe": {
+        "n": 147,
+        "vol": 310
+      },
+      "Dossiers & Cession": {
+        "n": 96,
+        "vol": 440
+      },
+      "Elza expert-comptable": {
+        "n": 72,
+        "vol": 110
+      },
+      "Experts comptables célèbres": {
+        "n": 38,
+        "vol": 470
+      },
+      "Experts comptables individuels": {
+        "n": 58,
+        "vol": 50
+      },
+      "Experts Christian": {
+        "n": 78,
+        "vol": 70
+      },
+      "Experts Benoît": {
+        "n": 42,
+        "vol": 110
+      },
+      "Catherine expert-comptable": {
+        "n": 52,
+        "vol": 40
+      },
+      "Experts comptables femmes": {
+        "n": 57,
+        "vol": 0
+      }
+    }
+  },
+  "Tarifs & Devis": {
+    "n_kw": 626,
+    "volume": 13520,
+    "topics": {
+      "Experts comptables en ligne & devis": {
+        "n": 319,
+        "vol": 10130
+      },
+      "Déclaration & Honoraires": {
+        "n": 307,
+        "vol": 3390
+      }
+    }
+  },
+  "Salaires & Rémunération": {
+    "n_kw": 783,
+    "volume": 11570,
+    "topics": {
+      "Convention collective": {
+        "n": 719,
+        "vol": 11240
+      },
+      "Retraite experts-comptables": {
+        "n": 64,
+        "vol": 330
+      }
+    }
+  },
+  "Géolocalisation": {
+    "n_kw": 1593,
+    "volume": 33640,
+    "topics": {
+      "Experts comptables grandes villes": {
+        "n": 422,
+        "vol": 11960
+      },
+      "Experts Marseille": {
+        "n": 117,
+        "vol": 2920
+      },
+      "Experts comptables par ville": {
+        "n": 523,
+        "vol": 11250
+      },
+      "Expert-comptable Perpignan": {
+        "n": 87,
+        "vol": 1880
+      },
+      "Experts internationaux": {
+        "n": 93,
+        "vol": 600
+      },
+      "Emploi & événements DOM-TOM": {
+        "n": 114,
+        "vol": 880
+      },
+      "Experts comptables par département": {
+        "n": 104,
+        "vol": 1830
+      },
+      "Experts villes": {
+        "n": 43,
+        "vol": 1150
+      },
+      "Experts comptables internationaux": {
+        "n": 49,
+        "vol": 780
+      },
+      "Expert-comptable Tunisie": {
+        "n": 41,
+        "vol": 390
+      }
+    }
+  },
+  "Secteurs d'activité": {
+    "n_kw": 120,
+    "volume": 5680,
+    "topics": {
+      "Expert-comptable immobilier": {
+        "n": 120,
+        "vol": 5680
+      }
+    }
+  },
+  "Services & Spécialités": {
+    "n_kw": 511,
+    "volume": 5990,
+    "topics": {
+      "Experts comptables spécialisés": {
+        "n": 103,
+        "vol": 2760
+      },
+      "Expert digital": {
+        "n": 47,
+        "vol": 690
+      },
+      "Missions & Accompagnement": {
+        "n": 95,
+        "vol": 760
+      },
+      "Business plan": {
+        "n": 48,
+        "vol": 400
+      },
+      "Paie & Prévisionnel": {
+        "n": 147,
+        "vol": 920
+      },
+      "Choix expert-comptable": {
+        "n": 71,
+        "vol": 460
+      }
+    }
+  },
+  "Autre": {
+    "n_kw": 104,
+    "volume": 420,
+    "topics": {
+      "Informations administratives": {
+        "n": 104,
+        "vol": 420
+      }
+    }
+  },
+  "Fiscalité & Comptabilité": {
+    "n_kw": 58,
+    "volume": 100,
+    "topics": {
+      "Chiffre d'affaires & attestations": {
+        "n": 58,
+        "vol": 100
+      }
+    }
+  }
+}

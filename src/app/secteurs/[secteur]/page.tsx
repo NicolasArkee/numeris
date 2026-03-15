@@ -34,6 +34,7 @@ export default async function SecteurPage({ params }: Props) {
   const seo = getSEOForSecteur(secteur);
   const linkGroups = getSecteurLinks(slug);
   const services = db.getServices();
+  const villes = db.getVilles().slice(0, 12);
 
   return (
     <ClusterPage
@@ -49,6 +50,7 @@ export default async function SecteurPage({ params }: Props) {
       faqs={seo.faqs}
       linkGroups={linkGroups}
     >
+      {/* Services for this secteur */}
       <div className="mb-12">
         <h2 className="mb-6 font-serif text-[1.5rem] font-light text-encre">
           Nos services pour le secteur {secteur.name}
@@ -58,11 +60,29 @@ export default async function SecteurPage({ params }: Props) {
             <a
               key={svc.slug}
               href={`/expertises/${svc.slug}/${slug}`}
-              className="border border-pierre-12 bg-blanc px-6 py-5 transition-colors hover:border-or"
+              className="group border border-pierre-12 bg-blanc px-6 py-5 transition-all hover:-translate-y-0.5 hover:border-or hover:shadow-md"
             >
               <span className="mb-2 block text-[1.1rem]">{svc.icon}</span>
-              <h3 className="mb-1 text-[0.95rem] font-medium text-encre">{svc.title}</h3>
+              <h3 className="mb-1 text-[0.95rem] font-medium text-encre group-hover:text-or-fonce">{svc.title}</h3>
               <p className="text-[0.72rem] text-ardoise">{svc.description}</p>
+            </a>
+          ))}
+        </div>
+      </div>
+
+      {/* Villes for this secteur */}
+      <div className="mb-12">
+        <h2 className="mb-6 font-serif text-[1.25rem] font-light text-encre">
+          {secteur.name} par ville
+        </h2>
+        <div className="flex flex-wrap gap-2">
+          {villes.map((v) => (
+            <a
+              key={v.slug}
+              href={`/villes/${v.slug}`}
+              className="border border-pierre-12 bg-blanc px-4 py-2 text-[0.78rem] text-encre-75 transition-colors hover:border-or hover:text-or-fonce"
+            >
+              {v.name}
             </a>
           ))}
         </div>
