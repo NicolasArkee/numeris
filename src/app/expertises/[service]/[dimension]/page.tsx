@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { db } from "@/libs/db";
 import { AppConfig } from "@/utils/AppConfig";
 import { ClusterPage } from "@/components/ClusterPage";
+import { ProfessionalServiceJsonLd } from "@/components/JsonLd";
 import { getSEOForServiceSecteur, getSEOForServiceVille, getSEOForServiceProfession } from "@/data/seo";
 import { getCrossServiceSecteurLinks, getServiceLinks, getCrossServiceProfessionLinks } from "@/utils/taxonomy";
 
@@ -97,6 +98,20 @@ export default async function CrossDimensionPage({ params }: Props) {
         badges={[service.title, secteur.name]}
         faqs={seo.faqs}
         linkGroups={linkGroups}
+        keyTakeaways={[
+          `${service.title} adaptée aux spécificités du secteur ${secteur.name.toLowerCase()}`,
+          `Expertise sectorielle et conformité réglementaire garanties`,
+          `Devis personnalisé gratuit pour votre activité`,
+        ]}
+        schema={
+          <ProfessionalServiceJsonLd
+            name={seo.h1}
+            description={seo.metaDescription}
+            url={`/expertises/${svcSlug}/${dimSlug}`}
+            serviceType={service.title}
+            audience={`Professionnels du secteur ${secteur.name}`}
+          />
+        }
       />
     );
   }
@@ -120,6 +135,15 @@ export default async function CrossDimensionPage({ params }: Props) {
         badges={[service.title, ville.name, ville.region || ""].filter(Boolean)}
         faqs={seo.faqs}
         linkGroups={linkGroups}
+        schema={
+          <ProfessionalServiceJsonLd
+            name={seo.h1}
+            description={seo.metaDescription}
+            url={`/expertises/${svcSlug}/${dimSlug}`}
+            serviceType={service.title}
+            areaServed={ville.name}
+          />
+        }
       />
     );
   }
@@ -144,6 +168,20 @@ export default async function CrossDimensionPage({ params }: Props) {
         badges={[service.title, category?.icon || "", profession.name, category?.name || ""].filter(Boolean)}
         faqs={seo.faqs}
         linkGroups={linkGroups}
+        keyTakeaways={[
+          `${service.title} spécifiquement adaptée aux ${profession.name.toLowerCase()}`,
+          `Connaissance des obligations comptables et fiscales de votre métier`,
+          `Accompagnement dédié par un expert-comptable spécialisé`,
+        ]}
+        schema={
+          <ProfessionalServiceJsonLd
+            name={seo.h1}
+            description={seo.metaDescription}
+            url={`/expertises/${svcSlug}/${dimSlug}`}
+            serviceType={service.title}
+            audience={profession.name}
+          />
+        }
       >
         {profession.obligations && (
           <div className="mb-12">

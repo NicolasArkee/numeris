@@ -1,7 +1,10 @@
 import Link from "next/link";
 import { AppConfig } from "@/utils/AppConfig";
-import { BreadcrumbJsonLd, FaqJsonLd } from "./JsonLd";
+import { BreadcrumbJsonLd, FaqJsonLd, WebPageJsonLd } from "./JsonLd";
 import { InternalLinks } from "./InternalLinks";
+import { ExpertAuthorBox } from "./ExpertAuthorBox";
+import { LastUpdated } from "./LastUpdated";
+import { KeyTakeaways } from "./KeyTakeaways";
 import type { LinkGroup } from "@/libs/db";
 
 interface ClusterPageProps {
@@ -12,7 +15,9 @@ interface ClusterPageProps {
   badges?: string[];
   faqs?: { question: string; answer: string }[];
   linkGroups: LinkGroup[];
+  keyTakeaways?: string[];
   children?: React.ReactNode;
+  schema?: React.ReactNode;
 }
 
 export function ClusterPage({
@@ -23,12 +28,23 @@ export function ClusterPage({
   badges,
   faqs,
   linkGroups,
+  keyTakeaways,
   children,
+  schema,
 }: ClusterPageProps) {
+  const currentUrl = breadcrumbs[breadcrumbs.length - 1]?.url || "/";
+
   return (
     <>
       <BreadcrumbJsonLd items={breadcrumbs} />
       {faqs && faqs.length > 0 && <FaqJsonLd items={faqs} />}
+      <WebPageJsonLd
+        name={h1}
+        description={intro}
+        url={currentUrl}
+        dateModified={new Date().toISOString().split("T")[0]}
+      />
+      {schema}
 
       {/* Hero */}
       <section className="relative overflow-hidden bg-nuit px-6 py-20 lg:px-[4.5rem] lg:py-24">
@@ -63,7 +79,7 @@ export function ClusterPage({
             {h1}
           </h1>
 
-          <p className="mb-8 max-w-2xl text-[0.95rem] leading-relaxed text-white/40">
+          <p className="mb-8 max-w-2xl text-[0.95rem] leading-relaxed text-white/40" data-speakable="true">
             {intro}
           </p>
 
@@ -83,13 +99,25 @@ export function ClusterPage({
       </section>
 
       {/* Content */}
-      <section className="bg-creme px-6 py-20 lg:px-[4.5rem]">
+      <article className="bg-creme px-6 py-20 lg:px-[4.5rem]">
         <div className="mx-auto max-w-[82rem]">
+          {/* Freshness + E-E-A-T signals */}
+          <div className="mb-10">
+            <LastUpdated readingTime="3 min" />
+          </div>
+
+          {/* Key takeaways (featured snippet targeting) */}
+          {keyTakeaways && keyTakeaways.length > 0 && (
+            <div className="mb-12">
+              <KeyTakeaways items={keyTakeaways} />
+            </div>
+          )}
+
           {children}
 
           {/* FAQ */}
           {faqs && faqs.length > 0 && (
-            <div className="mt-16">
+            <div className="mt-16" id="faq">
               <h2 className="mb-8 font-serif text-[1.75rem] font-light leading-tight text-encre">
                 Questions fréquentes
               </h2>
@@ -113,6 +141,11 @@ export function ClusterPage({
               </div>
             </div>
           )}
+
+          {/* Expert author box (E-E-A-T) */}
+          <div className="mt-12">
+            <ExpertAuthorBox />
+          </div>
 
           {/* CTA */}
           <div className="mt-16 border border-pierre-12 border-t-2 border-t-or bg-blanc p-10 text-center">
@@ -138,7 +171,7 @@ export function ClusterPage({
             <InternalLinks groups={linkGroups} />
           </div>
         </div>
-      </section>
+      </article>
     </>
   );
 }

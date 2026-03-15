@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { db } from "@/libs/db";
 import { AppConfig } from "@/utils/AppConfig";
 import { ClusterPage } from "@/components/ClusterPage";
+import { ServiceJsonLd } from "@/components/JsonLd";
 import { getSEOForService } from "@/data/seo";
 import { getServiceLinks } from "@/utils/taxonomy";
 
@@ -65,6 +66,19 @@ export default async function ServicePage({ params }: Props) {
       badges={[service.icon, service.title]}
       faqs={seo.faqs}
       linkGroups={linkGroups}
+      keyTakeaways={[
+        `${service.title} adaptée à votre structure et votre secteur d'activité`,
+        `Équipe dédiée de ${AppConfig.name}, inscrite à l'Ordre des Experts-Comptables`,
+        `Devis gratuit et premier rendez-vous sans engagement`,
+      ]}
+      schema={
+        <ServiceJsonLd
+          name={`${service.title} — ${AppConfig.name}`}
+          description={seo.metaDescription}
+          url={`/expertises/${slug}`}
+          category="Expertise comptable"
+        />
+      }
     >
       {/* Secteurs for this service */}
       {secteurs.length > 0 && (

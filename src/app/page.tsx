@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { db } from "@/libs/db";
-import { Nav } from "@/components/Nav";
 import { Hero } from "@/components/Hero";
 import { TrustBar } from "@/components/TrustBar";
 import { Services } from "@/components/Services";
@@ -12,7 +11,6 @@ import { SimulatorTeaser } from "@/components/SimulatorTeaser";
 import { PressLogos } from "@/components/PressLogos";
 import { Faq } from "@/components/Faq";
 import { CtaContact } from "@/components/CtaContact";
-import { Footer } from "@/components/Footer";
 import { StickyMobileCTA } from "@/components/StickyMobileCTA";
 import { LocalBusinessJsonLd, FaqJsonLd } from "@/components/JsonLd";
 import { AppConfig } from "@/utils/AppConfig";
@@ -41,21 +39,17 @@ export default function HomePage() {
           answer: f.answer,
         }))}
       />
-      <Nav />
-      <main>
-        <Hero />
-        <TrustBar />
-        <Services services={services} />
-        <ProcessSteps />
-        <Team members={teamMembers} />
-        <Testimonials testimonials={testimonials} />
-        <SimulatorTeaser />
-        <Pricing plans={pricingPlans} />
-        <PressLogos />
-        <Faq items={faqItems} />
-        <CtaContact />
-      </main>
-      <Footer />
+      <Hero />
+      <TrustBar />
+      <Services services={services} />
+      <ProcessSteps />
+      <Team members={teamMembers} />
+      <Testimonials testimonials={testimonials} />
+      <SimulatorTeaser />
+      <Pricing plans={pricingPlans} />
+      <PressLogos />
+      <Faq items={faqItems} />
+      <CtaContact />
       <StickyMobileCTA />
     </>
   );
