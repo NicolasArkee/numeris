@@ -6,6 +6,13 @@ import { ClusterPage } from "@/components/ClusterPage";
 import { ServiceJsonLd } from "@/components/JsonLd";
 import { getSEOForService } from "@/data/seo";
 import { getServiceLinks } from "@/utils/taxonomy";
+import { getServiceMarketing } from "@/data/marketing";
+import { BenefitsGrid } from "@/components/BenefitsGrid";
+import { NumberedSteps } from "@/components/NumberedSteps";
+import { StatHighlight } from "@/components/StatHighlight";
+import { Checklist } from "@/components/Checklist";
+import { AlertBox } from "@/components/AlertBox";
+import { QuoteBlock } from "@/components/QuoteBlock";
 
 interface Props {
   params: Promise<{ service: string }>;
@@ -34,6 +41,7 @@ export default async function ServicePage({ params }: Props) {
 
   const seo = getSEOForService(service);
   const linkGroups = getServiceLinks(slug);
+  const mkt = getServiceMarketing(service);
   const secteurs = db.getServiceSecteurs(slug);
   const allSecteurs = db.getSecteurs();
   const secteurMap = new Map(allSecteurs.map((s) => [s.slug, s]));
@@ -80,6 +88,15 @@ export default async function ServicePage({ params }: Props) {
         />
       }
     >
+      {/* Benefits */}
+      <BenefitsGrid
+        title={`Pourquoi choisir ${AppConfig.name} pour votre ${service.title.toLowerCase()} ?`}
+        benefits={mkt.benefits}
+      />
+
+      {/* Stats */}
+      <StatHighlight stats={mkt.stats} />
+
       {/* Secteurs for this service */}
       {secteurs.length > 0 && (
         <div className="mb-12">
@@ -143,6 +160,30 @@ export default async function ServicePage({ params }: Props) {
           </div>
         </div>
       )}
+      {/* How it works */}
+      <NumberedSteps
+        title={`Comment se passe votre ${service.title.toLowerCase()} ?`}
+        steps={mkt.steps}
+      />
+
+      {/* Checklist */}
+      <Checklist
+        title={`Ce que comprend notre service de ${service.title.toLowerCase()}`}
+        items={mkt.checklist}
+        columns={2}
+      />
+
+      {/* Testimonial */}
+      <QuoteBlock
+        quote={mkt.quote.text}
+        author={mkt.quote.author}
+        role={mkt.quote.role}
+      />
+
+      {/* Alert */}
+      <AlertBox type="tip">
+        {mkt.alert}
+      </AlertBox>
     </ClusterPage>
   );
 }

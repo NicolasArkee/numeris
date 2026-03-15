@@ -5,6 +5,10 @@ import { AppConfig } from "@/utils/AppConfig";
 import { ClusterPage } from "@/components/ClusterPage";
 import { getSEOForSecteur } from "@/data/seo";
 import { getSecteurLinks } from "@/utils/taxonomy";
+import { getSecteurMarketing } from "@/data/marketing";
+import { ContentSection } from "@/components/ContentSection";
+import { BenefitsGrid } from "@/components/BenefitsGrid";
+import { StatHighlight } from "@/components/StatHighlight";
 
 interface Props {
   params: Promise<{ secteur: string }>;
@@ -33,6 +37,7 @@ export default async function SecteurPage({ params }: Props) {
 
   const seo = getSEOForSecteur(secteur);
   const linkGroups = getSecteurLinks(slug);
+  const mkt = getSecteurMarketing(secteur);
   const services = db.getServices();
   const villes = db.getVilles().slice(0, 12);
 
@@ -49,7 +54,27 @@ export default async function SecteurPage({ params }: Props) {
       badges={[secteur.name]}
       faqs={seo.faqs}
       linkGroups={linkGroups}
+      keyTakeaways={[
+        `Expert-comptable spécialisé ${secteur.name.toLowerCase()}`,
+        `Connaissance des normes et obligations sectorielles`,
+        `Accompagnement sur mesure et interlocuteur dédié`,
+      ]}
     >
+      {/* Marketing content */}
+      {mkt.contentSections.map((cs) => (
+        <ContentSection key={cs.title} title={cs.title} paragraphs={cs.paragraphs} />
+      ))}
+
+      {/* Benefits */}
+      <BenefitsGrid
+        title={`Les avantages d'un expert-comptable spécialisé ${secteur.name.toLowerCase()}`}
+        benefits={mkt.benefits}
+        columns={4}
+      />
+
+      {/* Stats */}
+      <StatHighlight stats={mkt.stats} />
+
       {/* Services for this secteur */}
       <div className="mb-12">
         <h2 className="mb-6 font-serif text-[1.5rem] font-light text-encre">

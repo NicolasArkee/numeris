@@ -5,6 +5,10 @@ import { AppConfig } from "@/utils/AppConfig";
 import { ClusterPage } from "@/components/ClusterPage";
 import { getSEOForProfession } from "@/data/seo";
 import { getProfessionLinks } from "@/utils/taxonomy";
+import { getProfessionMarketing } from "@/data/marketing";
+import { ContentSection } from "@/components/ContentSection";
+import { BenefitsGrid } from "@/components/BenefitsGrid";
+import { StatHighlight } from "@/components/StatHighlight";
 
 interface Props {
   params: Promise<{ profession: string }>;
@@ -34,6 +38,7 @@ export default async function ProfessionPage({ params }: Props) {
   const category = db.getProfessionCategoryBySlug(profession.category_slug);
   const seo = getSEOForProfession(profession);
   const linkGroups = getProfessionLinks(slug);
+  const mkt = getProfessionMarketing(profession);
   const services = db.getServices();
   const siblingProfessions = db.getProfessionsByCategory(profession.category_slug)
     .filter((p) => p.slug !== slug)
@@ -56,20 +61,35 @@ export default async function ProfessionPage({ params }: Props) {
       ].filter(Boolean)}
       faqs={seo.faqs}
       linkGroups={linkGroups}
+      keyTakeaways={[
+        `Expert-comptable spécialisé pour les ${profession.name.toLowerCase()}`,
+        `Maîtrise des obligations comptables et fiscales de votre métier`,
+        `Accompagnement dédié et conseils personnalisés`,
+      ]}
     >
       {/* Obligations comptables */}
       {profession.obligations && (
-        <div className="mb-12">
-          <h2 className="mb-4 font-serif text-[1.5rem] font-light text-encre">
-            Obligations comptables des {profession.name.toLowerCase()}
-          </h2>
-          <div className="border border-pierre-12 border-l-2 border-l-or bg-blanc p-7">
-            <p className="text-[0.88rem] leading-relaxed text-ardoise">
-              {profession.obligations}
-            </p>
-          </div>
-        </div>
+        <ContentSection
+          title={`Obligations comptables des ${profession.name.toLowerCase()}`}
+          paragraphs={[profession.obligations]}
+          variant="highlighted"
+        />
       )}
+
+      {/* Marketing content */}
+      {mkt.contentSections.map((cs) => (
+        <ContentSection key={cs.title} title={cs.title} paragraphs={cs.paragraphs} />
+      ))}
+
+      {/* Benefits */}
+      <BenefitsGrid
+        title={`Pourquoi choisir ${AppConfig.name} pour les ${profession.name.toLowerCase()} ?`}
+        benefits={mkt.benefits}
+        columns={4}
+      />
+
+      {/* Stats */}
+      <StatHighlight stats={mkt.stats} />
 
       {/* Services pour cette profession */}
       <div className="mb-12">

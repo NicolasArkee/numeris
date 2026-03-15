@@ -6,6 +6,13 @@ import { ClusterPage } from "@/components/ClusterPage";
 import { ProfessionalServiceJsonLd } from "@/components/JsonLd";
 import { getSEOForServiceSecteur, getSEOForServiceVille, getSEOForServiceProfession } from "@/data/seo";
 import { getCrossServiceSecteurLinks, getServiceLinks, getCrossServiceProfessionLinks } from "@/utils/taxonomy";
+import { getServiceSecteurMarketing, getServiceVilleMarketing, getServiceProfessionMarketing } from "@/data/marketing";
+import { ContentSection } from "@/components/ContentSection";
+import { Checklist } from "@/components/Checklist";
+import { StatHighlight } from "@/components/StatHighlight";
+import { BenefitsGrid } from "@/components/BenefitsGrid";
+import { AlertBox } from "@/components/AlertBox";
+import { QuoteBlock } from "@/components/QuoteBlock";
 
 interface Props {
   params: Promise<{ service: string; dimension: string }>;
@@ -84,6 +91,7 @@ export default async function CrossDimensionPage({ params }: Props) {
   if (secteur) {
     const seo = getSEOForServiceSecteur(service, secteur);
     const linkGroups = getCrossServiceSecteurLinks(svcSlug, dimSlug);
+    const mkt = getServiceSecteurMarketing(service, secteur);
     return (
       <ClusterPage
         eyebrow={`${service.title} × ${secteur.name}`}
@@ -112,7 +120,17 @@ export default async function CrossDimensionPage({ params }: Props) {
             audience={`Professionnels du secteur ${secteur.name}`}
           />
         }
-      />
+      >
+        {mkt.contentSections.map((cs) => (
+          <ContentSection key={cs.title} title={cs.title} paragraphs={cs.paragraphs} />
+        ))}
+        <StatHighlight stats={mkt.stats} />
+        <Checklist
+          title={`Ce que nous couvrons en ${service.title.toLowerCase()} pour le ${secteur.name.toLowerCase()}`}
+          items={mkt.checklist}
+          columns={2}
+        />
+      </ClusterPage>
     );
   }
 
@@ -121,6 +139,7 @@ export default async function CrossDimensionPage({ params }: Props) {
   if (ville) {
     const seo = getSEOForServiceVille(service, ville);
     const linkGroups = getServiceLinks(svcSlug);
+    const mkt = getServiceVilleMarketing(service, ville);
     return (
       <ClusterPage
         eyebrow={`${service.title} à ${ville.name}`}
@@ -135,6 +154,11 @@ export default async function CrossDimensionPage({ params }: Props) {
         badges={[service.title, ville.name, ville.region || ""].filter(Boolean)}
         faqs={seo.faqs}
         linkGroups={linkGroups}
+        keyTakeaways={[
+          `${service.title} à ${ville.name} avec ${AppConfig.name}`,
+          `Rendez-vous en présentiel ou en visio, selon vos préférences`,
+          `Devis gratuit et premier échange sans engagement`,
+        ]}
         schema={
           <ProfessionalServiceJsonLd
             name={seo.h1}
@@ -144,7 +168,13 @@ export default async function CrossDimensionPage({ params }: Props) {
             areaServed={ville.name}
           />
         }
-      />
+      >
+        {mkt.contentSections.map((cs) => (
+          <ContentSection key={cs.title} title={cs.title} paragraphs={cs.paragraphs} />
+        ))}
+        <BenefitsGrid benefits={mkt.benefits} columns={3} />
+        <AlertBox type="tip">{mkt.alert}</AlertBox>
+      </ClusterPage>
     );
   }
 
@@ -154,6 +184,7 @@ export default async function CrossDimensionPage({ params }: Props) {
     const category = db.getProfessionCategoryBySlug(profession.category_slug);
     const seo = getSEOForServiceProfession(service, profession);
     const linkGroups = getCrossServiceProfessionLinks(svcSlug, dimSlug);
+    const mkt = getServiceProfessionMarketing(service, profession);
     return (
       <ClusterPage
         eyebrow={`${service.title} × ${profession.name}`}
@@ -184,17 +215,25 @@ export default async function CrossDimensionPage({ params }: Props) {
         }
       >
         {profession.obligations && (
-          <div className="mb-12">
-            <h2 className="mb-4 font-serif text-[1.25rem] font-light text-encre">
-              Spécificités {service.title.toLowerCase()} pour les {profession.name.toLowerCase()}
-            </h2>
-            <div className="border border-pierre-12 border-l-2 border-l-or bg-blanc p-7">
-              <p className="text-[0.88rem] leading-relaxed text-ardoise">
-                {profession.obligations}
-              </p>
-            </div>
-          </div>
+          <ContentSection
+            title={`Spécificités ${service.title.toLowerCase()} pour les ${profession.name.toLowerCase()}`}
+            paragraphs={[profession.obligations]}
+            variant="highlighted"
+          />
         )}
+        {mkt.contentSections.map((cs) => (
+          <ContentSection key={cs.title} title={cs.title} paragraphs={cs.paragraphs} />
+        ))}
+        <Checklist
+          title={`Notre accompagnement pour les ${profession.name.toLowerCase()}`}
+          items={mkt.checklist}
+          columns={2}
+        />
+        <QuoteBlock
+          quote={mkt.quote.text}
+          author={mkt.quote.author}
+          role={mkt.quote.role}
+        />
       </ClusterPage>
     );
   }

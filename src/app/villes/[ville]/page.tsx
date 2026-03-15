@@ -5,6 +5,10 @@ import { AppConfig } from "@/utils/AppConfig";
 import { ClusterPage } from "@/components/ClusterPage";
 import { getSEOForVille } from "@/data/seo";
 import { getVilleLinks } from "@/utils/taxonomy";
+import { getVilleMarketing } from "@/data/marketing";
+import { ContentSection } from "@/components/ContentSection";
+import { BenefitsGrid } from "@/components/BenefitsGrid";
+import { QuoteBlock } from "@/components/QuoteBlock";
 
 interface Props {
   params: Promise<{ ville: string }>;
@@ -33,6 +37,7 @@ export default async function VillePage({ params }: Props) {
 
   const seo = getSEOForVille(ville);
   const linkGroups = getVilleLinks(slug);
+  const mkt = getVilleMarketing(ville);
   const services = db.getServices();
 
   return (
@@ -48,6 +53,11 @@ export default async function VillePage({ params }: Props) {
       badges={[ville.name, ville.region || "", ville.departement ? `Dept. ${ville.departement}` : ""].filter(Boolean)}
       faqs={seo.faqs}
       linkGroups={linkGroups}
+      keyTakeaways={[
+        `Expert-comptable à ${ville.name}, inscrit à l'Ordre`,
+        `Rendez-vous en présentiel ou en visio`,
+        `Premier échange gratuit et sans engagement`,
+      ]}
     >
       {/* Local info card */}
       <div className="mb-12 border border-pierre-12 border-l-2 border-l-or bg-blanc p-7">
@@ -77,6 +87,21 @@ export default async function VillePage({ params }: Props) {
           </div>
         </div>
       </div>
+
+      {/* Marketing content */}
+      {mkt.contentSections.map((cs) => (
+        <ContentSection key={cs.title} title={cs.title} paragraphs={cs.paragraphs} />
+      ))}
+
+      {/* Benefits */}
+      <BenefitsGrid benefits={mkt.benefits} columns={4} />
+
+      {/* Testimonial */}
+      <QuoteBlock
+        quote={mkt.quote.text}
+        author={mkt.quote.author}
+        role={mkt.quote.role}
+      />
 
       {/* Services in this ville */}
       <div className="mb-12">
