@@ -8,6 +8,11 @@
     "start": "next start",
     "lint": "next lint",
     "db:seed": "tsx src/libs/db/seed.ts",
+    "db:seed-geo": "tsx scripts/seed-geo.ts",
+    "db:import": "tsx scripts/import-clustering.ts",
+    "kg:generate": "tsx scripts/generate-kg.ts",
+    "db:seed-professions": "tsx scripts/seed-professions.ts",
+    "db:all": "npm run db:seed && npm run db:seed-geo && npm run db:seed-professions && npm run db:import && npm run kg:generate",
     "db:migrate:supabase": "tsx src/libs/db/migrate-supabase.ts"
   },
   "dependencies": {

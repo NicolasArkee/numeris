@@ -10,15 +10,7 @@
  */
 
 // import { createClient } from "@supabase/supabase-js";
-import type {
-  DbAdapter,
-  FaqItem,
-  Page,
-  PricingPlan,
-  Service,
-  TeamMember,
-  Testimonial,
-} from "./types";
+import type { DbAdapter } from "./types";
 
 /*
 const supabase = createClient(
@@ -27,34 +19,40 @@ const supabase = createClient(
 );
 */
 
+const notConfigured = () => {
+  throw new Error("Supabase adapter not configured. See migration steps in this file.");
+};
+
 export const supabaseAdapter: DbAdapter = {
-  getServices(): Service[] {
-    // const { data } = await supabase.from("services").select("*").order("order_index");
-    // return data ?? [];
-    throw new Error("Supabase adapter not configured. See migration steps in this file.");
-  },
-
-  getTeamMembers(): TeamMember[] {
-    throw new Error("Supabase adapter not configured.");
-  },
-
-  getTestimonials(): Testimonial[] {
-    throw new Error("Supabase adapter not configured.");
-  },
-
-  getPricingPlans(): PricingPlan[] {
-    throw new Error("Supabase adapter not configured.");
-  },
-
-  getFaqItems(): FaqItem[] {
-    throw new Error("Supabase adapter not configured.");
-  },
-
-  getPageBySlug(_slug: string): Page | undefined {
-    throw new Error("Supabase adapter not configured.");
-  },
-
-  getAllPages(): Page[] {
-    throw new Error("Supabase adapter not configured.");
-  },
+  getServices: notConfigured,
+  getTeamMembers: notConfigured,
+  getTestimonials: notConfigured,
+  getPricingPlans: notConfigured,
+  getFaqItems: notConfigured,
+  getPageBySlug: notConfigured,
+  getAllPages: notConfigured,
+  getSilos: notConfigured,
+  getSiloBySlug: notConfigured,
+  getHubsBySilo: notConfigured,
+  getHubBySlug: notConfigured,
+  getClustersByHub: notConfigured,
+  getClusterBySlug: notConfigured,
+  getKeywordsByCluster: notConfigured,
+  getKeywordBySlug: notConfigured,
+  getVilles: notConfigured,
+  getVilleBySlug: notConfigured,
+  getDepartements: notConfigured,
+  getDepartementBySlug: notConfigured,
+  getSecteurs: notConfigured,
+  getSecteurBySlug: notConfigured,
+  getServiceSecteurs: notConfigured,
+  getServiceVilles: notConfigured,
+  getServiceProfessions: notConfigured,
+  getProfessionCategories: notConfigured,
+  getProfessionCategoryBySlug: notConfigured,
+  getProfessionsByCategory: notConfigured,
+  getProfessions: notConfigured,
+  getProfessionBySlug: notConfigured,
+  getEdgesFrom: notConfigured,
+  getEdgesTo: notConfigured,
 };

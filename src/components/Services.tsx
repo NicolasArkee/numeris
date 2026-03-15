@@ -45,7 +45,7 @@ export function Services({ services }: { services: Service[] }) {
                 {service.description}
               </p>
               <Link
-                href={`/nos-expertises/${service.slug}`}
+                href={`/expertises/${service.slug}`}
                 className="inline-flex items-center gap-1.5 border-b border-or-clair pb-px text-[0.72rem] font-semibold text-or-fonce transition-all group-hover:gap-2.5 group-hover:border-or"
               >
                 En savoir plus →
