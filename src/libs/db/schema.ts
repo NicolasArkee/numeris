@@ -1,0 +1,65 @@
+// SQLite schema for local database
+export const SCHEMA = `
+CREATE TABLE IF NOT EXISTS services (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  slug TEXT UNIQUE NOT NULL,
+  title TEXT NOT NULL,
+  description TEXT NOT NULL,
+  icon TEXT NOT NULL DEFAULT '📊',
+  order_index INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS team_members (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  slug TEXT UNIQUE NOT NULL,
+  name TEXT NOT NULL,
+  role TEXT NOT NULL,
+  initials TEXT NOT NULL,
+  description TEXT NOT NULL,
+  specialties TEXT NOT NULL DEFAULT '[]',
+  badge TEXT,
+  order_index INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS testimonials (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  author_name TEXT NOT NULL,
+  author_initials TEXT NOT NULL,
+  author_role TEXT NOT NULL,
+  body TEXT NOT NULL,
+  stars INTEGER NOT NULL DEFAULT 5,
+  featured INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS pricing_plans (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  slug TEXT UNIQUE NOT NULL,
+  tag TEXT NOT NULL,
+  name TEXT NOT NULL,
+  description TEXT NOT NULL,
+  price TEXT NOT NULL,
+  period TEXT NOT NULL DEFAULT '/mois',
+  features TEXT NOT NULL DEFAULT '[]',
+  featured INTEGER NOT NULL DEFAULT 0,
+  cta_label TEXT NOT NULL DEFAULT 'Choisir',
+  note TEXT,
+  order_index INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS faq_items (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  question TEXT NOT NULL,
+  answer TEXT NOT NULL,
+  order_index INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS pages (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  slug TEXT UNIQUE NOT NULL,
+  title TEXT NOT NULL,
+  meta_title TEXT NOT NULL,
+  meta_description TEXT NOT NULL,
+  h1 TEXT NOT NULL,
+  content TEXT
+);
+`;

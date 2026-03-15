@@ -1,0 +1,77 @@
+@import "tailwindcss";
+
+/* ─── NUMERIS DESIGN TOKENS ─── */
+@theme {
+  /* Marque */
+  --color-nuit: #0d1b2a;
+  --color-nuit-alt: #162439;
+  --color-nuit-25: #1e3148;
+  --color-or: #c09a52;
+  --color-or-clair: #f2e8d0;
+  --color-or-fonce: #7a5e28;
+  --color-or-pale: #fdf9f0;
+
+  /* Neutres chauds */
+  --color-encre: #1a1a18;
+  --color-encre-75: #2e2e2b;
+  --color-encre-50: #4a4a46;
+  --color-ardoise: #6b6b65;
+  --color-pierre-37: #9c9c95;
+  --color-pierre-25: #c4c4bc;
+  --color-pierre-12: #e2e2d9;
+  --color-creme-06: #f5f4f0;
+  --color-creme: #faf9f5;
+  --color-blanc: #ffffff;
+
+  /* États */
+  --color-succes-bg: #dff0e5;
+  --color-succes-text: #0d3d20;
+  --color-warning-bg: #fef5dc;
+  --color-warning-text: #5c4710;
+  --color-erreur-bg: #fce8e4;
+  --color-erreur-text: #4a0d09;
+
+  /* Fonts */
+  --font-serif: "Cormorant", "Georgia", serif;
+  --font-sans: "Outfit", system-ui, sans-serif;
+}
+
+/* ─── BASE ─── */
+body {
+  font-family: var(--font-sans);
+  background: var(--color-creme);
+  color: var(--color-encre);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── UTILITIES ─── */
+.grid-bg {
+  background-image:
+    linear-gradient(var(--color-nuit-25) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-nuit-25) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
+.radial-or {
+  background: radial-gradient(
+    circle,
+    rgba(192, 154, 82, 0.13) 0%,
+    transparent 65%
+  );
+}
+
+/* ─── ANIMATIONS ─── */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fadeUp 0.6s ease both;
+}
