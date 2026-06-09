@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { AppConfig } from "@/utils/AppConfig";
 import { db } from "@/libs/db";
+import { expertisesSlugKey } from "@/libs/content/keys";
 
 /**
  * Convert a SQLite `datetime('now')` string ("YYYY-MM-DD HH:MM:SS" or
@@ -63,12 +64,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     });
 
-    // Service × Secteur
+    // Service × Secteur — lastmod lue avec la clé pipeline `{svc}__{type}__{dim}`
     const secteurs = db.getServiceSecteurs(s.slug);
     for (const ss of secteurs) {
       entries.push({
         url: `${baseUrl}/expertises/${s.slug}/${ss.secteur_slug}`,
-        lastModified: lastmodFor("expertises", `${s.slug}/${ss.secteur_slug}`),
+        lastModified: lastmodFor("expertises", expertisesSlugKey(s.slug, "secteur", ss.secteur_slug)),
         changeFrequency: "monthly",
         priority: 0.6,
       });
@@ -79,7 +80,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     for (const sv of villes) {
       entries.push({
         url: `${baseUrl}/expertises/${s.slug}/${sv.ville_slug}`,
-        lastModified: lastmodFor("expertises", `${s.slug}/${sv.ville_slug}`),
+        lastModified: lastmodFor("expertises", expertisesSlugKey(s.slug, "ville", sv.ville_slug)),
         changeFrequency: "monthly",
         priority: 0.6,
       });
@@ -90,7 +91,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     for (const sp of professions) {
       entries.push({
         url: `${baseUrl}/expertises/${s.slug}/${sp.profession_slug}`,
-        lastModified: lastmodFor("expertises", `${s.slug}/${sp.profession_slug}`),
+        lastModified: lastmodFor("expertises", expertisesSlugKey(s.slug, "profession", sp.profession_slug)),
         changeFrequency: "monthly",
         priority: 0.6,
       });
@@ -141,20 +142,29 @@ export default function sitemap(): MetadataRoute.Sitemap {
     });
   }
 
-  // ─── Ressource pages (hubs + clusters) ───
+  // ─── Ressource pages (hubs + clusters + keywords) ───
+  // `seenRessources` déduplique : un slug keyword peut coïncider avec un slug
+  // hub/cluster (même règle que le Set `seen` de generateStaticParams dans
+  // ressources/[theme]/page.tsx).
+  const seenRessources = new Set<string>();
   const silos = db.getSilos();
   for (const silo of silos) {
     const hubs = db.getHubsBySilo(silo.slug);
     for (const hub of hubs) {
-      entries.push({
-        url: `${baseUrl}/ressources/${hub.slug}`,
-        lastModified: lastmodFor("ressources", hub.slug),
-        changeFrequency: "monthly",
-        priority: 0.6,
-      });
+      if (!seenRessources.has(hub.slug)) {
+        seenRessources.add(hub.slug);
+        entries.push({
+          url: `${baseUrl}/ressources/${hub.slug}`,
+          lastModified: lastmodFor("ressources", hub.slug),
+          changeFrequency: "monthly",
+          priority: 0.6,
+        });
+      }
 
       const clusters = db.getClustersByHub(hub.slug);
       for (const c of clusters) {
+        if (seenRessources.has(c.slug)) continue;
+        seenRessources.add(c.slug);
         entries.push({
           url: `${baseUrl}/ressources/${c.slug}`,
           lastModified: lastmodFor("ressources", c.slug),
@@ -163,6 +173,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
         });
       }
     }
+  }
+
+  // Keyword pages — construites par generateStaticParams (getAllKeywords)
+  // mais historiquement absentes du sitemap (couverture max).
+  for (const kw of db.getAllKeywords()) {
+    if (seenRessources.has(kw.slug)) continue;
+    seenRessources.add(kw.slug);
+    entries.push({
+      url: `${baseUrl}/ressources/${kw.slug}`,
+      lastModified: lastmodFor("ressources", kw.slug),
+      changeFrequency: "monthly",
+      priority: 0.4,
+    });
   }
 
   return entries;
