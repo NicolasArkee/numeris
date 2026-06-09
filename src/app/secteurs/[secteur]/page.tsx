@@ -12,6 +12,8 @@ import { getSecteurMarketing } from "@/data/marketing";
 import { ContentSection } from "@/components/ContentSection";
 import { BenefitsGrid } from "@/components/BenefitsGrid";
 import { StatHighlight } from "@/components/StatHighlight";
+import { ServicesGrid } from "@/components/ServicesGrid";
+import { VillesStrip } from "@/components/VillesStrip";
 
 interface Props {
   params: Promise<{ secteur: string }>;
@@ -50,6 +52,21 @@ export default async function SecteurPage({ params }: Props) {
   const { sections: dbSections, seo: dbSeo, lastUpdatedDate, hasDbContent } = bundle;
   const canonicalUrl = `${AppConfig.url}/secteurs/${slug}`;
 
+  // ─── Maillage interne — rendu dans les DEUX chemins (DB et fallback) ───
+  const internalMesh = (
+    <>
+      <ServicesGrid
+        title={`Nos services pour le secteur ${secteur.name}`}
+        services={db.getServices()}
+        hrefBuilder={(svc) => `/expertises/${svc.slug}/${slug}`}
+      />
+      <VillesStrip
+        title={`${secteur.name} par ville`}
+        villes={db.getVilles().slice(0, 12)}
+      />
+    </>
+  );
+
   if (hasDbContent) {
     const seoFallback = getSEOForSecteur(secteur);
     const h1 = dbSeo?.h1 ?? seoFallback.h1;
@@ -82,6 +99,7 @@ export default async function SecteurPage({ params }: Props) {
           .map((s) => (
             <DynamicSection key={s.id} section={s} />
           ))}
+        {internalMesh}
       </ClusterPage>
     );
   }
@@ -89,8 +107,6 @@ export default async function SecteurPage({ params }: Props) {
   // ─── Fallback static path ───
   const seo = getSEOForSecteur(secteur);
   const mkt = getSecteurMarketing(secteur);
-  const services = db.getServices();
-  const villes = db.getVilles().slice(0, 12);
 
   return (
     <ClusterPage
@@ -105,11 +121,17 @@ export default async function SecteurPage({ params }: Props) {
       badges={[secteur.name]}
       faqs={seo.faqs}
       linkGroups={linkGroups}
-      keyTakeaways={[
+      keyTakeaways={bundle.keyTakeaways ?? [
         `Expert-comptable spécialisé ${secteur.name.toLowerCase()}`,
         `Connaissance des normes et obligations sectorielles`,
         `Accompagnement sur mesure et interlocuteur dédié`,
       ]}
+      schema={<ExtraJsonLd raw={dbSeo?.json_ld_extra ?? null} />}
+      lastUpdatedDate={lastUpdatedDate}
+      articleSchema={true}
+      articleHeadline={seo.h1}
+      articleSection="Secteurs d'activité"
+      canonicalUrl={canonicalUrl}
     >
       {/* Marketing content */}
       {mkt.contentSections.map((cs) => (
@@ -126,43 +148,8 @@ export default async function SecteurPage({ params }: Props) {
       {/* Stats */}
       <StatHighlight stats={mkt.stats} />
 
-      {/* Services for this secteur */}
-      <div className="mb-12">
-        <h2 className="mb-6 font-serif text-[1.5rem] font-light text-encre">
-          Nos services pour le secteur {secteur.name}
-        </h2>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {services.map((svc) => (
-            <a
-              key={svc.slug}
-              href={`/expertises/${svc.slug}/${slug}`}
-              className="group border border-pierre-12 bg-blanc px-6 py-5 transition-all hover:-translate-y-0.5 hover:border-or hover:shadow-md"
-            >
-              <span className="mb-2 block text-[1.1rem]">{svc.icon}</span>
-              <h3 className="mb-1 text-[0.95rem] font-medium text-encre group-hover:text-or-fonce">{svc.title}</h3>
-              <p className="text-[0.72rem] text-ardoise">{svc.description}</p>
-            </a>
-          ))}
-        </div>
-      </div>
-
-      {/* Villes for this secteur */}
-      <div className="mb-12">
-        <h2 className="mb-6 font-serif text-[1.25rem] font-light text-encre">
-          {secteur.name} par ville
-        </h2>
-        <div className="flex flex-wrap gap-2">
-          {villes.map((v) => (
-            <a
-              key={v.slug}
-              href={`/villes/${v.slug}`}
-              className="border border-pierre-12 bg-blanc px-4 py-2 text-[0.78rem] text-encre-75 transition-colors hover:border-or hover:text-or-fonce"
-            >
-              {v.name}
-            </a>
-          ))}
-        </div>
-      </div>
+      {/* Maillage interne (services + villes) */}
+      {internalMesh}
     </ClusterPage>
   );
 }

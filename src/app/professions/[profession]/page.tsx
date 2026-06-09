@@ -12,6 +12,7 @@ import { getProfessionMarketing } from "@/data/marketing";
 import { ContentSection } from "@/components/ContentSection";
 import { BenefitsGrid } from "@/components/BenefitsGrid";
 import { StatHighlight } from "@/components/StatHighlight";
+import { ServicesGrid } from "@/components/ServicesGrid";
 
 interface Props {
   params: Promise<{ profession: string }>;
@@ -50,6 +51,40 @@ export default async function ProfessionPage({ params }: Props) {
   const bundle = getDbPageBundle(ROUTE, slug);
   const { sections: dbSections, seo: dbSeo, lastUpdatedDate, hasDbContent } = bundle;
   const canonicalUrl = `${AppConfig.url}/professions/${slug}`;
+
+  // ─── Maillage interne — rendu dans les DEUX chemins (DB et fallback) ───
+  const services = db.getServices();
+  const siblingProfessions = db
+    .getProfessionsByCategory(profession.category_slug)
+    .filter((p) => p.slug !== slug)
+    .slice(0, 8);
+  const internalMesh = (
+    <>
+      <ServicesGrid
+        title={`Nos services pour les ${profession.name.toLowerCase()}`}
+        services={services}
+        hrefBuilder={(svc) => `/expertises/${svc.slug}/${slug}`}
+      />
+      {siblingProfessions.length > 0 && (
+        <div className="mb-12">
+          <h2 className="mb-4 font-serif text-[1.25rem] font-light text-encre">
+            Professions similaires
+          </h2>
+          <div className="flex flex-wrap gap-2">
+            {siblingProfessions.map((p) => (
+              <a
+                key={p.slug}
+                href={`/professions/${p.slug}`}
+                className="border border-pierre-12 bg-blanc px-4 py-2 text-[0.78rem] text-encre-75 transition-colors hover:border-or hover:text-or-fonce"
+              >
+                {p.name}
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+    </>
+  );
 
   if (hasDbContent) {
     const seoFallback = getSEOForProfession(profession);
@@ -90,17 +125,14 @@ export default async function ProfessionPage({ params }: Props) {
           .map((s) => (
             <DynamicSection key={s.id} section={s} />
           ))}
+        {internalMesh}
       </ClusterPage>
     );
   }
 
-  // ─── Fallback static path (existing render, unchanged) ───
+  // ─── Fallback static path ───
   const seo = getSEOForProfession(profession);
   const mkt = getProfessionMarketing(profession);
-  const services = db.getServices();
-  const siblingProfessions = db.getProfessionsByCategory(profession.category_slug)
-    .filter((p) => p.slug !== slug)
-    .slice(0, 8);
 
   return (
     <ClusterPage
@@ -119,11 +151,17 @@ export default async function ProfessionPage({ params }: Props) {
       ].filter(Boolean)}
       faqs={seo.faqs}
       linkGroups={linkGroups}
-      keyTakeaways={[
+      keyTakeaways={bundle.keyTakeaways ?? [
         `Expert-comptable spécialisé pour les ${profession.name.toLowerCase()}`,
         `Maîtrise des obligations comptables et fiscales de votre métier`,
         `Accompagnement dédié et conseils personnalisés`,
       ]}
+      schema={<ExtraJsonLd raw={dbSeo?.json_ld_extra ?? null} />}
+      lastUpdatedDate={lastUpdatedDate}
+      articleSchema={true}
+      articleHeadline={seo.h1}
+      articleSection="Professions libérales et indépendants"
+      canonicalUrl={canonicalUrl}
     >
       {/* Obligations comptables */}
       {profession.obligations && (
@@ -149,47 +187,8 @@ export default async function ProfessionPage({ params }: Props) {
       {/* Stats */}
       <StatHighlight stats={mkt.stats} />
 
-      {/* Services pour cette profession */}
-      <div className="mb-12">
-        <h2 className="mb-6 font-serif text-[1.5rem] font-light text-encre">
-          Nos services pour les {profession.name.toLowerCase()}
-        </h2>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {services.map((svc) => (
-            <a
-              key={svc.slug}
-              href={`/expertises/${svc.slug}/${slug}`}
-              className="group border border-pierre-12 bg-blanc px-6 py-5 transition-all hover:-translate-y-0.5 hover:border-or hover:shadow-md"
-            >
-              <span className="mb-2 block text-[1.1rem]">{svc.icon}</span>
-              <h3 className="mb-1 text-[0.95rem] font-medium text-encre group-hover:text-or-fonce">
-                {svc.title}
-              </h3>
-              <p className="text-[0.72rem] text-ardoise">{svc.description}</p>
-            </a>
-          ))}
-        </div>
-      </div>
-
-      {/* Professions similaires */}
-      {siblingProfessions.length > 0 && (
-        <div className="mb-12">
-          <h2 className="mb-4 font-serif text-[1.25rem] font-light text-encre">
-            Professions similaires
-          </h2>
-          <div className="flex flex-wrap gap-2">
-            {siblingProfessions.map((p) => (
-              <a
-                key={p.slug}
-                href={`/professions/${p.slug}`}
-                className="border border-pierre-12 bg-blanc px-4 py-2 text-[0.78rem] text-encre-75 transition-colors hover:border-or hover:text-or-fonce"
-              >
-                {p.name}
-              </a>
-            ))}
-          </div>
-        </div>
-      )}
+      {/* Maillage interne (services + professions similaires) */}
+      {internalMesh}
     </ClusterPage>
   );
 }
