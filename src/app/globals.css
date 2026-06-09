@@ -1,26 +1,26 @@
 @import "tailwindcss";
 
-/* ─── NUMERIS DESIGN TOKENS ─── */
+/* ─── NUMERIS DESIGN TOKENS — V2 (navy · or · crème) ─── */
 @theme {
   /* Marque */
-  --color-nuit: #0d1b2a;
-  --color-nuit-alt: #162439;
-  --color-nuit-25: #1e3148;
-  --color-or: #c09a52;
-  --color-or-clair: #f2e8d0;
-  --color-or-fonce: #7a5e28;
-  --color-or-pale: #fdf9f0;
+  --color-nuit: #0e2336;
+  --color-nuit-alt: #13293e;
+  --color-nuit-25: #16314a;
+  --color-or: #c2a15c;
+  --color-or-clair: #ebe0c8;
+  --color-or-fonce: #7c6130;
+  --color-or-pale: #f4eee1;
 
-  /* Neutres chauds */
-  --color-encre: #1a1a18;
-  --color-encre-75: #2e2e2b;
-  --color-encre-50: #4a4a46;
-  --color-ardoise: #6b6b65;
-  --color-pierre-37: #9c9c95;
-  --color-pierre-25: #c4c4bc;
-  --color-pierre-12: #e2e2d9;
-  --color-creme-06: #f5f4f0;
-  --color-creme: #faf9f5;
+  /* Neutres (calés sur la V2 — lisibilité AA+) */
+  --color-encre: #1a2a38;
+  --color-encre-75: #33414f;
+  --color-encre-50: #4a5663;
+  --color-ardoise: #566472;
+  --color-pierre-37: #606c7a;
+  --color-pierre-25: #c9c3b6;
+  --color-pierre-12: #e8e2d5;
+  --color-creme-06: #f4f1ea;
+  --color-creme: #faf7f1;
   --color-blanc: #ffffff;
 
   /* États */
@@ -31,9 +31,9 @@
   --color-erreur-bg: #fce8e4;
   --color-erreur-text: #4a0d09;
 
-  /* Fonts */
-  --font-serif: "Cormorant", "Georgia", serif;
-  --font-sans: "Outfit", system-ui, sans-serif;
+  /* Fonts — V2 (Space Grotesk display + Inter body) */
+  --font-serif: "Space Grotesk", "Inter", system-ui, sans-serif;
+  --font-sans: "Inter", system-ui, sans-serif;
 }
 
 /* ─── BASE ─── */
@@ -42,22 +42,21 @@ body {
   background: var(--color-creme);
   color: var(--color-encre);
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
+/* Les titres utilisent l'utilitaire `font-serif` → mappé sur Space Grotesk. */
+
 /* ─── UTILITIES ─── */
+/* Aplaties pour un rendu net et premium : suppression des effets « glow » et
+   de la grille décorative (rendu jugé trop « IA »). Conservées en no-op pour
+   ne pas casser le markup existant qui référence encore ces classes. */
 .grid-bg {
-  background-image:
-    linear-gradient(var(--color-nuit-25) 1px, transparent 1px),
-    linear-gradient(90deg, var(--color-nuit-25) 1px, transparent 1px);
-  background-size: 64px 64px;
+  background-image: none;
 }
 
 .radial-or {
-  background: radial-gradient(
-    circle,
-    rgba(192, 154, 82, 0.13) 0%,
-    transparent 65%
-  );
+  background: none;
 }
 
 /* ─── ANIMATIONS ─── */

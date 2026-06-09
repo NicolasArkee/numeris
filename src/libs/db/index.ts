@@ -12,6 +12,7 @@ export type {
   TeamMember,
   Testimonial,
   PricingPlan,
+  PricingTier,
   FaqItem,
   Page,
   Silo,
@@ -25,4 +26,8 @@ export type {
   LinkGroup,
   ProfessionCategory,
   Profession,
+  PageSection,
+  SeoOverride,
+  PageMeta,
+  PublishStatus,
 } from "./types";

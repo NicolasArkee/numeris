@@ -119,7 +119,7 @@ export default function ContactPage() {
               </div>
               <button
                 type="submit"
-                className="mt-2 w-full bg-or py-4 text-[0.88rem] font-semibold text-blanc transition-colors hover:bg-[#b08844]"
+                className="mt-2 w-full bg-or py-4 text-[0.88rem] font-semibold text-nuit transition-colors hover:bg-[#b08844]"
               >
                 Envoyer ma demande →
               </button>

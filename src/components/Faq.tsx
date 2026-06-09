@@ -31,7 +31,7 @@ export function Faq({ items }: { items: FaqItem[] }) {
             </p>
             <Link
               href="/contact"
-              className="block w-full bg-or py-2.5 text-center text-[0.75rem] font-semibold text-blanc transition-colors hover:bg-[#b08844]"
+              className="block w-full bg-or py-2.5 text-center text-[0.75rem] font-semibold text-nuit transition-colors hover:bg-[#b08844]"
             >
               Nous contacter
             </Link>
@@ -52,7 +52,7 @@ export function Faq({ items }: { items: FaqItem[] }) {
                 </span>
               </summary>
               <div
-                className="max-w-[540px] pb-6 text-[0.85rem] leading-relaxed text-ardoise"
+                className="max-w-prose pb-6 text-base leading-relaxed text-ardoise"
                 dangerouslySetInnerHTML={{ __html: item.answer }}
               />
             </details>

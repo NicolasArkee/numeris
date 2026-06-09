@@ -88,7 +88,7 @@ export function Pricing({ plans }: { plans: PricingPlan[] }) {
                     href="/contact"
                     className={`block w-full py-3.5 text-center text-[0.8rem] font-semibold tracking-wide transition-colors ${
                       isFeatured
-                        ? "bg-or text-blanc hover:bg-[#b08844]"
+                        ? "bg-or text-nuit hover:bg-[#b08844]"
                         : "border border-pierre-12 bg-transparent text-nuit hover:border-nuit"
                     }`}
                   >

@@ -116,7 +116,7 @@ export function PageHero({
             {cta && (
               <Link
                 href={cta.href}
-                className="inline-flex items-center gap-2 bg-or px-9 py-4 font-sans text-[0.875rem] font-semibold text-blanc transition-colors hover:bg-[#b08844]"
+                className="inline-flex items-center gap-2 bg-or px-9 py-4 font-sans text-[0.875rem] font-semibold text-nuit transition-colors hover:bg-[#b08844]"
               >
                 {cta.label} →
               </Link>

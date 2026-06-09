@@ -44,3 +44,6 @@ next-env.d.ts
 *.db-shm
 *.db-wal
 *.db-journal
+
+# fuse artifacts (fichiers tenus ouverts par un process fuse — ne pas supprimer)
+.fuse_hidden*

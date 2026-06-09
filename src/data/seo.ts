@@ -176,8 +176,24 @@ export function getSEOForServiceProfession(
   };
 }
 
-// ─── Ressource / Theme pages (silos, hubs, clusters) ───
-export function getSEOForRessource(node: { slug: string; label: string; volume: number }, type: "silo" | "hub" | "cluster"): SEOData {
+// ─── Ressource / Theme pages (silos, hubs, clusters, keywords) ───
+export function getSEOForRessource(
+  node: { slug: string; label: string; volume: number },
+  type: "silo" | "hub" | "cluster" | "keyword",
+): SEOData {
+  if (type === "keyword") {
+    const volumeStr = node.volume > 0
+      ? ` Plus de ${node.volume.toLocaleString("fr-FR")} recherches mensuelles sur ce sujet.`
+      : "";
+    return {
+      metaTitle: `${node.label} : guide & conseils | ${AppConfig.name}`,
+      metaDescription: `${node.label} — l'essentiel par ${AppConfig.name}, expert-comptable. Définitions, démarches et conseils pratiques pour les professionnels et entreprises.`,
+      h1: node.label,
+      intro: `Comprendre ${node.label.toLowerCase()} : définition, enjeux et démarches expliqués par l'équipe ${AppConfig.name}.${volumeStr} Retrouvez ci-dessous nos conseils et les ressources liées.`,
+      faqs: [],
+    };
+  }
+
   const typeLabel = type === "silo" ? "Guide complet" : type === "hub" ? "Tout savoir sur" : "";
   const prefix = typeLabel ? `${typeLabel} : ` : "";
   return {

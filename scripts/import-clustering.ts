@@ -94,6 +94,10 @@ const insertKw = db.prepare(
   `INSERT OR REPLACE INTO keyword_pages (slug, cluster_slug, label, volume) VALUES (@slug, @cluster_slug, @label, @volume)`,
 );
 
+const updateKwEnrichment = db.prepare(
+  `UPDATE keyword_pages SET intent = @intent, kd = @kd, cpc = @cpc, serp_features = @serp_features WHERE slug = @slug`,
+);
+
 let clusterCount = 0;
 let kwCount = 0;
 
@@ -135,5 +139,145 @@ for (const [siloLabel, siloNode] of Object.entries(tree)) {
 
 console.log(`  Clusters (L3): ${clusterCount}`);
 console.log(`  Keyword pages (L4): ${kwCount}`);
+
+// ─── Enrich keyword_pages with intent/kd/cpc/serp_features from AO clustered CSV ───
+const ENRICH_CSV = path.join(
+  process.cwd(),
+  "expert-comptable_clustering/output_live/expert-comptable/AO_expert_comptable_clustered.csv",
+);
+
+/**
+ * Minimal CSV parser supporting double-quoted fields with embedded commas.
+ * Returns an array of objects keyed by the header row.
+ */
+function parseCsv(content: string): Record<string, string>[] {
+  const rows: string[][] = [];
+  let field = "";
+  let row: string[] = [];
+  let inQuotes = false;
+
+  for (let i = 0; i < content.length; i++) {
+    const ch = content[i];
+    if (inQuotes) {
+      if (ch === '"') {
+        if (content[i + 1] === '"') {
+          field += '"';
+          i++;
+        } else {
+          inQuotes = false;
+        }
+      } else {
+        field += ch;
+      }
+    } else {
+      if (ch === '"') {
+        inQuotes = true;
+      } else if (ch === ",") {
+        row.push(field);
+        field = "";
+      } else if (ch === "\n") {
+        row.push(field);
+        rows.push(row);
+        row = [];
+        field = "";
+      } else if (ch === "\r") {
+        // skip — handled by \n
+      } else {
+        field += ch;
+      }
+    }
+  }
+  if (field.length > 0 || row.length > 0) {
+    row.push(field);
+    rows.push(row);
+  }
+
+  if (rows.length === 0) return [];
+  const headers = rows[0];
+  const out: Record<string, string>[] = [];
+  for (let r = 1; r < rows.length; r++) {
+    const cur = rows[r];
+    if (cur.length === 1 && cur[0] === "") continue;
+    const obj: Record<string, string> = {};
+    for (let c = 0; c < headers.length; c++) {
+      obj[headers[c]] = cur[c] ?? "";
+    }
+    out.push(obj);
+  }
+  return out;
+}
+
+if (fs.existsSync(ENRICH_CSV)) {
+  console.log(`\n  Enriching keyword_pages from ${path.basename(ENRICH_CSV)}…`);
+  const csvText = fs.readFileSync(ENRICH_CSV, "utf-8");
+  const records = parseCsv(csvText);
+  console.log(`    CSV rows parsed: ${records.length}`);
+
+  // Index by slug — keep highest-volume row when duplicates collide
+  type EnrichRow = {
+    intent: string | null;
+    kd: number | null;
+    cpc: number | null;
+    serp_features: string | null;
+    volume: number;
+  };
+  const bySlug = new Map<string, EnrichRow>();
+  for (const rec of records) {
+    const query = (rec["query"] || rec["normalized"] || "").trim();
+    if (!query) continue;
+    const slug = slugify(query);
+    if (!slug) continue;
+    const volume = Number(rec["Volume_Y"]) || 0;
+    const existing = bySlug.get(slug);
+    if (existing && existing.volume >= volume) continue;
+    const kdRaw = rec["kd"];
+    const cpcRaw = rec["cpc"];
+    bySlug.set(slug, {
+      intent: rec["intent"]?.trim() || null,
+      kd: kdRaw && kdRaw.trim() !== "" ? Number(kdRaw) : null,
+      cpc: cpcRaw && cpcRaw.trim() !== "" ? Number(cpcRaw) : null,
+      serp_features: rec["serp_features"]?.trim() || null,
+      volume,
+    });
+  }
+  console.log(`    Unique slugs in CSV: ${bySlug.size}`);
+
+  const allKwSlugs = db
+    .prepare(`SELECT slug FROM keyword_pages`)
+    .all() as { slug: string }[];
+
+  const updateTxn = db.transaction((slugs: { slug: string }[]) => {
+    let matched = 0;
+    let unmatched = 0;
+    for (const { slug } of slugs) {
+      const enrich = bySlug.get(slug);
+      if (!enrich) {
+        unmatched++;
+        continue;
+      }
+      updateKwEnrichment.run({
+        slug,
+        intent: enrich.intent,
+        kd: enrich.kd,
+        cpc: enrich.cpc,
+        serp_features: enrich.serp_features,
+      });
+      matched++;
+    }
+    return { matched, unmatched };
+  });
+
+  const { matched, unmatched } = updateTxn(allKwSlugs) as {
+    matched: number;
+    unmatched: number;
+  };
+  const total = allKwSlugs.length;
+  const pct = total > 0 ? ((matched / total) * 100).toFixed(1) : "0.0";
+  console.log(`    Matched: ${matched}/${total} (${pct}%)`);
+  console.log(`    Unmatched: ${unmatched}`);
+} else {
+  console.warn(`  ⚠️  Enrichment CSV not found: ${ENRICH_CSV}`);
+}
+
 console.log(`✅ Clustering data imported`);
 db.close();

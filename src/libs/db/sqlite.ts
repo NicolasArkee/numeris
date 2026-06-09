@@ -10,10 +10,14 @@ import type {
   KeywordPage,
   KgEdge,
   Page,
+  PageMeta,
+  PageSection,
   PricingPlan,
+  PricingTier,
   Profession,
   ProfessionCategory,
   Secteur,
+  SeoOverride,
   Service,
   Silo,
   TeamMember,
@@ -101,6 +105,9 @@ export const sqliteAdapter: DbAdapter = {
   getKeywordBySlug(slug: string): KeywordPage | undefined {
     return getDb().prepare("SELECT * FROM keyword_pages WHERE slug = ?").get(slug) as KeywordPage | undefined;
   },
+  getAllKeywords(): KeywordPage[] {
+    return getDb().prepare("SELECT * FROM keyword_pages ORDER BY volume DESC").all() as KeywordPage[];
+  },
 
   // ─── Geo ───
 
@@ -173,5 +180,130 @@ export const sqliteAdapter: DbAdapter = {
     return getDb()
       .prepare("SELECT * FROM kg_edges WHERE target_slug = ? ORDER BY weight DESC")
       .all(slug) as KgEdge[];
+  },
+
+  // ─── Pricing tiers (P4a) ───
+
+  getPricingTiers(): PricingTier[] {
+    return getDb()
+      .prepare("SELECT * FROM pricing_tiers ORDER BY order_index ASC")
+      .all() as PricingTier[];
+  },
+
+  // ─── Testimonials filtering (P4a) ───
+
+  getTestimonialsByProfession(slug: string, limit = 3): Testimonial[] {
+    return getDb()
+      .prepare(
+        "SELECT * FROM testimonials WHERE profession_slug = ? ORDER BY RANDOM() LIMIT ?",
+      )
+      .all(slug, limit) as Testimonial[];
+  },
+
+  getTestimonialsBySecteur(slug: string, limit = 3): Testimonial[] {
+    return getDb()
+      .prepare(
+        "SELECT * FROM testimonials WHERE secteur_slug = ? ORDER BY RANDOM() LIMIT ?",
+      )
+      .all(slug, limit) as Testimonial[];
+  },
+
+  getTestimonialsByVille(slug: string, limit = 3): Testimonial[] {
+    return getDb()
+      .prepare(
+        "SELECT * FROM testimonials WHERE ville_slug = ? ORDER BY RANDOM() LIMIT ?",
+      )
+      .all(slug, limit) as Testimonial[];
+  },
+
+  // ─── Page content (sections, SEO, meta) ───
+
+  getPageSections(route: string, slug: string): PageSection[] {
+    return getDb()
+      .prepare(
+        "SELECT * FROM page_sections WHERE route = ? AND slug = ? ORDER BY section_order ASC",
+      )
+      .all(route, slug) as PageSection[];
+  },
+
+  getSeoOverride(route: string, slug: string): SeoOverride | null {
+    const row = getDb()
+      .prepare("SELECT * FROM seo_overrides WHERE route = ? AND slug = ?")
+      .get(route, slug) as SeoOverride | undefined;
+    return row ?? null;
+  },
+
+  getPageMeta(route: string, slug: string): PageMeta | null {
+    const row = getDb()
+      .prepare("SELECT * FROM page_meta WHERE route = ? AND slug = ?")
+      .get(route, slug) as PageMeta | undefined;
+    return row ?? null;
+  },
+
+  getAllPageMeta(): PageMeta[] {
+    return getDb().prepare("SELECT * FROM page_meta").all() as PageMeta[];
+  },
+
+  upsertPageSection(section: Omit<PageSection, "id" | "generated_at">): void {
+    getDb()
+      .prepare(
+        `INSERT INTO page_sections
+           (route, slug, section_type, section_order, title, body, items, citations, generated_by_model)
+         VALUES
+           (@route, @slug, @section_type, @section_order, @title, @body, @items, @citations, @generated_by_model)
+         ON CONFLICT(route, slug, section_order) DO UPDATE SET
+           section_type       = excluded.section_type,
+           title              = excluded.title,
+           body               = excluded.body,
+           items              = excluded.items,
+           citations          = excluded.citations,
+           generated_by_model = excluded.generated_by_model,
+           generated_at       = datetime('now')`,
+      )
+      .run(section);
+  },
+
+  upsertSeoOverride(override: Omit<SeoOverride, "id" | "generated_at">): void {
+    getDb()
+      .prepare(
+        `INSERT INTO seo_overrides
+           (route, slug, meta_title, meta_description, h1, key_takeaways, json_ld_extra, generated_by_model)
+         VALUES
+           (@route, @slug, @meta_title, @meta_description, @h1, @key_takeaways, @json_ld_extra, @generated_by_model)
+         ON CONFLICT(route, slug) DO UPDATE SET
+           meta_title         = excluded.meta_title,
+           meta_description   = excluded.meta_description,
+           h1                 = excluded.h1,
+           key_takeaways      = excluded.key_takeaways,
+           json_ld_extra      = excluded.json_ld_extra,
+           generated_by_model = excluded.generated_by_model,
+           generated_at       = datetime('now')`,
+      )
+      .run(override);
+  },
+
+  upsertPageMeta(meta: Omit<PageMeta, "id" | "reviewed_at">): void {
+    getDb()
+      .prepare(
+        `INSERT INTO page_meta
+           (route, slug, author_persona_id, reviewed_by, content_hash, publish_status, published_at, pipeline_run_id)
+         VALUES
+           (@route, @slug, @author_persona_id, @reviewed_by, @content_hash, @publish_status, @published_at, @pipeline_run_id)
+         ON CONFLICT(route, slug) DO UPDATE SET
+           author_persona_id = excluded.author_persona_id,
+           reviewed_by       = excluded.reviewed_by,
+           content_hash      = excluded.content_hash,
+           publish_status    = excluded.publish_status,
+           published_at      = excluded.published_at,
+           pipeline_run_id   = excluded.pipeline_run_id,
+           reviewed_at       = datetime('now')`,
+      )
+      .run(meta);
+  },
+
+  deletePageSections(route: string, slug: string): void {
+    getDb()
+      .prepare("DELETE FROM page_sections WHERE route = ? AND slug = ?")
+      .run(route, slug);
   },
 };

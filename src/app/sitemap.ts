@@ -2,21 +2,55 @@ import type { MetadataRoute } from "next";
 import { AppConfig } from "@/utils/AppConfig";
 import { db } from "@/libs/db";
 
+/**
+ * Convert a SQLite `datetime('now')` string ("YYYY-MM-DD HH:MM:SS" or
+ * "YYYY-MM-DDTHH:MM:SS") into a real Date. Falls back to `fallback`
+ * when the string is empty / invalid.
+ *
+ * `page_meta.reviewed_at` is stored without a timezone suffix; we treat
+ * it as UTC (SQLite `datetime('now')` returns UTC by default) so the
+ * sitemap exposes a stable ISO 8601 lastmod.
+ */
+function parsePageMetaDate(raw: string | null | undefined, fallback: Date): Date {
+  if (!raw) return fallback;
+  // Normalize "YYYY-MM-DD HH:MM:SS" → "YYYY-MM-DDTHH:MM:SSZ"
+  const iso = raw.includes("T") ? raw : raw.replace(" ", "T");
+  const withTz = /[zZ]|[+-]\d{2}:?\d{2}$/.test(iso) ? iso : `${iso}Z`;
+  const d = new Date(withTz);
+  return Number.isNaN(d.getTime()) ? fallback : d;
+}
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = AppConfig.url;
-  const now = new Date();
+  const buildDate = new Date();
+
+  // ─── Pull every page_meta row up front; build a Map keyed by `${route}/${slug}` ───
+  // Sitemap routes use this Map to surface real `reviewed_at` lastmod values
+  // (P3c — replaces uniform `new Date()` for all 1668 URLs).
+  const allMeta = db.getAllPageMeta();
+  const metaByKey = new Map<string, Date>();
+  for (const m of allMeta) {
+    metaByKey.set(`${m.route}/${m.slug}`, parsePageMetaDate(m.reviewed_at, buildDate));
+  }
+
+  const lastmodFor = (route: string, slug: string): Date =>
+    metaByKey.get(`${route}/${slug}`) ?? buildDate;
 
   const entries: MetadataRoute.Sitemap = [];
 
-  // ─── Static pages ───
+  // ─── Static pages (no slug → always buildDate) ───
   entries.push(
-    { url: baseUrl, lastModified: now, changeFrequency: "weekly", priority: 1 },
-    { url: `${baseUrl}/expertises`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
-    { url: `${baseUrl}/secteurs`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
-    { url: `${baseUrl}/villes`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
-    { url: `${baseUrl}/professions`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
-    { url: `${baseUrl}/ressources`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
-    { url: `${baseUrl}/contact`, lastModified: now, changeFrequency: "yearly", priority: 0.9 },
+    { url: baseUrl, lastModified: buildDate, changeFrequency: "weekly", priority: 1 },
+    { url: `${baseUrl}/expertises`, lastModified: buildDate, changeFrequency: "monthly", priority: 0.9 },
+    { url: `${baseUrl}/secteurs`, lastModified: buildDate, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${baseUrl}/villes`, lastModified: buildDate, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${baseUrl}/professions`, lastModified: buildDate, changeFrequency: "monthly", priority: 0.9 },
+    { url: `${baseUrl}/ressources`, lastModified: buildDate, changeFrequency: "weekly", priority: 0.8 },
+    { url: `${baseUrl}/contact`, lastModified: buildDate, changeFrequency: "yearly", priority: 0.9 },
+    { url: `${baseUrl}/qui-sommes-nous`, lastModified: buildDate, changeFrequency: "yearly", priority: 0.6 },
+    { url: `${baseUrl}/mentions-legales`, lastModified: buildDate, changeFrequency: "yearly", priority: 0.3 },
+    { url: `${baseUrl}/confidentialite`, lastModified: buildDate, changeFrequency: "yearly", priority: 0.3 },
+    { url: `${baseUrl}/cgu`, lastModified: buildDate, changeFrequency: "yearly", priority: 0.3 },
   );
 
   // ─── Service pages ───
@@ -24,7 +58,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   for (const s of services) {
     entries.push({
       url: `${baseUrl}/expertises/${s.slug}`,
-      lastModified: now,
+      lastModified: lastmodFor("expertises", s.slug),
       changeFrequency: "monthly",
       priority: 0.8,
     });
@@ -34,7 +68,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     for (const ss of secteurs) {
       entries.push({
         url: `${baseUrl}/expertises/${s.slug}/${ss.secteur_slug}`,
-        lastModified: now,
+        lastModified: lastmodFor("expertises", `${s.slug}/${ss.secteur_slug}`),
         changeFrequency: "monthly",
         priority: 0.6,
       });
@@ -45,7 +79,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     for (const sv of villes) {
       entries.push({
         url: `${baseUrl}/expertises/${s.slug}/${sv.ville_slug}`,
-        lastModified: now,
+        lastModified: lastmodFor("expertises", `${s.slug}/${sv.ville_slug}`),
         changeFrequency: "monthly",
         priority: 0.6,
       });
@@ -56,7 +90,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     for (const sp of professions) {
       entries.push({
         url: `${baseUrl}/expertises/${s.slug}/${sp.profession_slug}`,
-        lastModified: now,
+        lastModified: lastmodFor("expertises", `${s.slug}/${sp.profession_slug}`),
         changeFrequency: "monthly",
         priority: 0.6,
       });
@@ -68,7 +102,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   for (const s of secteurs) {
     entries.push({
       url: `${baseUrl}/secteurs/${s.slug}`,
-      lastModified: now,
+      lastModified: lastmodFor("secteurs", s.slug),
       changeFrequency: "monthly",
       priority: 0.7,
     });
@@ -79,7 +113,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   for (const v of villes) {
     entries.push({
       url: `${baseUrl}/villes/${v.slug}`,
-      lastModified: now,
+      lastModified: lastmodFor("villes", v.slug),
       changeFrequency: "monthly",
       priority: 0.7,
     });
@@ -90,7 +124,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   for (const d of departements) {
     entries.push({
       url: `${baseUrl}/departements/${d.slug}`,
-      lastModified: now,
+      lastModified: lastmodFor("departements", d.slug),
       changeFrequency: "monthly",
       priority: 0.6,
     });
@@ -101,7 +135,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   for (const p of allProfessions) {
     entries.push({
       url: `${baseUrl}/professions/${p.slug}`,
-      lastModified: now,
+      lastModified: lastmodFor("professions", p.slug),
       changeFrequency: "monthly",
       priority: 0.7,
     });
@@ -114,7 +148,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     for (const hub of hubs) {
       entries.push({
         url: `${baseUrl}/ressources/${hub.slug}`,
-        lastModified: now,
+        lastModified: lastmodFor("ressources", hub.slug),
         changeFrequency: "monthly",
         priority: 0.6,
       });
@@ -123,7 +157,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       for (const c of clusters) {
         entries.push({
           url: `${baseUrl}/ressources/${c.slug}`,
-          lastModified: now,
+          lastModified: lastmodFor("ressources", c.slug),
           changeFrequency: "monthly",
           priority: 0.5,
         });

@@ -23,7 +23,7 @@ export function Team({ members }: { members: TeamMember[] }) {
                 className="cursor-default overflow-hidden border border-pierre-12 bg-creme-06 transition-shadow hover:shadow-lg"
               >
                 {/* Photo placeholder */}
-                <div className="relative flex h-[200px] items-center justify-center bg-gradient-to-b from-nuit-25 to-nuit">
+                <div className="relative flex h-[200px] items-center justify-center bg-nuit-25">
                   <span className="relative z-10 font-serif text-[2.5rem] font-light italic text-white/50">
                     {member.initials}
                   </span>

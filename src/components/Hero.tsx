@@ -31,7 +31,7 @@ export function Hero() {
           <div className="animate-fade-up mb-12 flex flex-wrap items-center gap-5">
             <Link
               href="/contact"
-              className="inline-flex items-center gap-2 bg-or px-9 py-4 font-sans text-[0.875rem] font-semibold text-blanc transition-colors hover:bg-[#b08844]"
+              className="inline-flex items-center gap-2 bg-or px-9 py-4 font-sans text-[0.875rem] font-semibold text-nuit transition-colors hover:bg-[#b08844]"
             >
               Premier rendez-vous gratuit →
             </Link>
@@ -109,7 +109,7 @@ export function Hero() {
             </span>
             <Link
               href="/contact"
-              className="bg-or px-5 py-2.5 text-[0.72rem] font-bold text-white transition-colors hover:bg-[#b08844]"
+              className="bg-or px-5 py-2.5 text-[0.72rem] font-bold text-nuit transition-colors hover:bg-[#b08844]"
             >
               Nous contacter
             </Link>

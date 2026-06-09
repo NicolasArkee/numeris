@@ -297,9 +297,9 @@ export function getCrossServiceProfessionLinks(serviceSlug: string, professionSl
 }
 
 /**
- * Get link groups for ressource pages (silos, hubs, clusters)
+ * Get link groups for ressource pages (silos, hubs, clusters, keywords)
  */
-export function getRessourceLinks(slug: string, type: "silo" | "hub" | "cluster"): LinkGroup[] {
+export function getRessourceLinks(slug: string, type: "silo" | "hub" | "cluster" | "keyword"): LinkGroup[] {
   const groups: LinkGroup[] = [];
 
   if (type === "silo") {
@@ -359,6 +359,50 @@ export function getRessourceLinks(slug: string, type: "silo" | "hub" | "cluster"
           title: "Thème",
           links: [{ label: hub.label, href: `/ressources/${hub.slug}` }],
         });
+      }
+    }
+  }
+
+  if (type === "keyword") {
+    const keyword = db.getKeywordBySlug(slug);
+    if (keyword) {
+      const parentCluster = db.getClusterBySlug(keyword.cluster_slug);
+      // Sibling keywords in same cluster
+      const siblings = db
+        .getKeywordsByCluster(keyword.cluster_slug)
+        .filter((kw) => kw.slug !== slug)
+        .slice(0, 8);
+      if (siblings.length > 0) {
+        groups.push({
+          title: "Mots-clés liés",
+          links: siblings.map((kw) => ({
+            label: kw.label,
+            href: `/ressources/${kw.slug}`,
+          })),
+        });
+      }
+      // Parent cluster
+      if (parentCluster) {
+        groups.push({
+          title: "Article principal",
+          links: [{ label: parentCluster.label, href: `/ressources/${parentCluster.slug}` }],
+        });
+        // Parent hub
+        const parentHub = db.getHubBySlug(parentCluster.hub_slug);
+        if (parentHub) {
+          groups.push({
+            title: "Thème",
+            links: [{ label: parentHub.label, href: `/ressources/${parentHub.slug}` }],
+          });
+          // Parent silo
+          const silo = db.getSiloBySlug(parentHub.silo_slug);
+          if (silo) {
+            groups.push({
+              title: "Catégorie",
+              links: [{ label: silo.label, href: `/ressources/${silo.slug}` }],
+            });
+          }
+        }
       }
     }
   }

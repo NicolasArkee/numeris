@@ -1,21 +1,26 @@
-import { AppConfig } from "@/utils/AppConfig";
+import { legalEntity } from "@/data/legal-entity";
 
 interface ExpertAuthorBoxProps {
   name?: string;
   role?: string;
   credentials?: string[];
   date?: string;
+  initials?: string;
+  /** Public path to the author photo. Falls back to initials square if empty. */
+  photoUrl?: string;
 }
 
 export function ExpertAuthorBox({
-  name = "L'équipe Numeris",
-  role = "Experts-comptables inscrits à l'Ordre",
+  name = legalEntity.presidentName,
+  role = `${legalEntity.presidentTitle} — Expert-comptable diplômée, inscrite à l'Ordre ${legalEntity.oecNumberFormatted}`,
   credentials = [
-    "Inscrits à l'Ordre des Experts-Comptables",
-    `${new Date().getFullYear() - AppConfig.foundedYear} ans d'expérience`,
-    "500+ clients accompagnés",
+    `Inscrite au Tableau de l'Ordre depuis ${legalEntity.oecInscriptionYear}`,
+    `${new Date().getFullYear() - legalEntity.oecInscriptionYear} ans d'exercice`,
+    `${legalEntity.companyName} — fondé en ${legalEntity.creationYear}`,
   ],
   date,
+  initials = legalEntity.presidentInitials,
+  photoUrl = legalEntity.presidentPhotoUrl,
 }: ExpertAuthorBoxProps) {
   const displayDate = date || new Date().toLocaleDateString("fr-FR", {
     day: "numeric",
@@ -26,9 +31,23 @@ export function ExpertAuthorBox({
   return (
     <aside className="border border-pierre-12 bg-blanc p-6" aria-label="Auteur">
       <div className="flex items-start gap-4">
-        <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center bg-nuit text-[0.75rem] font-semibold text-or">
-          {name.split(" ").map((n) => n[0]).join("").slice(0, 2)}
-        </div>
+        {photoUrl ? (
+          <div className="flex h-12 w-12 flex-shrink-0 overflow-hidden">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={photoUrl}
+              alt={name}
+              width={48}
+              height={48}
+              loading="lazy"
+              className="h-full w-full object-cover"
+            />
+          </div>
+        ) : (
+          <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center bg-nuit text-[0.75rem] font-semibold text-or">
+            {initials}
+          </div>
+        )}
         <div className="flex-1">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
             <span className="text-[0.88rem] font-semibold text-encre">{name}</span>

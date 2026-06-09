@@ -51,7 +51,7 @@ export function ComparisonTable({
               {/* Header */}
               <div className={`p-7 ${plan.highlighted ? "" : ""}`}>
                 {plan.highlighted && (
-                  <span className="mb-3 inline-block bg-or px-2.5 py-1 text-[0.6rem] font-bold uppercase tracking-wider text-blanc">
+                  <span className="mb-3 inline-block bg-or px-2.5 py-1 text-[0.6rem] font-bold uppercase tracking-wider text-nuit">
                     Recommandé
                   </span>
                 )}
@@ -98,7 +98,7 @@ export function ComparisonTable({
                     href={plan.cta.href}
                     className={`block w-full py-3.5 text-center text-[0.82rem] font-semibold transition-colors ${
                       plan.highlighted
-                        ? "bg-or text-blanc hover:bg-[#b08844]"
+                        ? "bg-or text-nuit hover:bg-[#b08844]"
                         : "border border-pierre-12 text-encre hover:border-or hover:text-or-fonce"
                     }`}
                   >

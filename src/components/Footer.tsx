@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AppConfig } from "@/utils/AppConfig";
+import { legalEntity } from "@/data/legal-entity";
 
 const expertises = [
   { href: "/expertises/comptabilite", label: "Comptabilité" },
@@ -11,6 +12,7 @@ const expertises = [
 ];
 
 const cabinet = [
+  { href: "/qui-sommes-nous", label: "Qui sommes-nous" },
   { href: "/professions", label: "Professions" },
   { href: "/secteurs", label: "Secteurs" },
   { href: "/villes", label: "Villes" },
@@ -18,12 +20,19 @@ const cabinet = [
   { href: "/contact", label: "Contact" },
 ];
 
+const legal = [
+  { href: "/mentions-legales", label: "Mentions légales" },
+  { href: "/confidentialite", label: "Politique de confidentialité" },
+  { href: "/cgu", label: "Conditions générales d'utilisation" },
+  { href: "/qui-sommes-nous", label: "Qui sommes-nous" },
+];
+
 export function Footer() {
   return (
     <footer className="bg-encre px-6 pb-10 pt-20 lg:px-[4.5rem]">
       <div className="mx-auto max-w-[82rem]">
         {/* Top */}
-        <div className="mb-10 grid gap-10 border-b border-white/[0.07] pb-16 md:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr] lg:gap-16">
+        <div className="mb-10 grid gap-10 border-b border-white/[0.07] pb-16 md:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr_1fr] lg:gap-16">
           {/* Brand */}
           <div>
             <div className="mb-1 flex items-baseline gap-2 font-serif text-[1.5rem] font-normal text-blanc">
@@ -90,6 +99,25 @@ export function Footer() {
             </ul>
           </div>
 
+          {/* Mentions légales */}
+          <div>
+            <h4 className="mb-5 text-[0.62rem] font-bold uppercase tracking-[0.12em] text-white/25">
+              Mentions légales
+            </h4>
+            <ul className="flex flex-col gap-2.5">
+              {legal.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="text-[0.8rem] text-white/[0.38] transition-colors hover:text-white/80"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
           {/* Certifications */}
           <div>
             <h4 className="mb-5 text-[0.62rem] font-bold uppercase tracking-[0.12em] text-white/25">
@@ -110,19 +138,13 @@ export function Footer() {
         </div>
 
         {/* Bottom */}
-        <div className="flex flex-wrap items-center justify-between gap-4 text-[0.68rem] text-white/[0.18]">
+        <div className="flex flex-wrap items-center justify-between gap-4 text-[0.68rem] text-white/[0.22]">
           <span>
-            © {new Date().getFullYear()} {AppConfig.name} {AppConfig.tagline}.
-            Tous droits réservés.
+            © {new Date().getFullYear()} {legalEntity.companyName} — Tous droits réservés.
           </span>
-          <div className="flex gap-7">
-            <span className="text-white/[0.18]">
-              Mentions légales
-            </span>
-            <span className="text-white/[0.18]">
-              Politique de confidentialité
-            </span>
-          </div>
+          <span className="text-white/[0.32]">
+            {legalEntity.legalForm} au capital de {legalEntity.capital} · SIRET {legalEntity.siretFormatted} · {legalEntity.rcs} · TVA {legalEntity.tvaIntra}
+          </span>
           <div className="flex items-center gap-2.5">
             <span className="border border-white/15 px-2.5 py-0.5 text-[0.6rem] font-bold uppercase tracking-[0.06em] text-white/25">
               OEC

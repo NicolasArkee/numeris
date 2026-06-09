@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { db } from "@/libs/db";
 import { AppConfig } from "@/utils/AppConfig";
 import { ClusterPage } from "@/components/ClusterPage";
+import { DynamicSection } from "@/components/DynamicSection";
 import { getSEOForProfession } from "@/data/seo";
 import { getProfessionLinks } from "@/utils/taxonomy";
 import { getProfessionMarketing } from "@/data/marketing";
@@ -14,6 +15,8 @@ interface Props {
   params: Promise<{ profession: string }>;
 }
 
+const ROUTE = "professions";
+
 export async function generateStaticParams() {
   return db.getProfessions().map((p) => ({ profession: p.slug }));
 }
@@ -22,12 +25,47 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { profession: slug } = await params;
   const profession = db.getProfessionBySlug(slug);
   if (!profession) return {};
-  const seo = getSEOForProfession(profession);
+
+  const dbSeo = db.getSeoOverride(ROUTE, slug);
+  const fallback = getSEOForProfession(profession);
+
   return {
-    title: seo.metaTitle,
-    description: seo.metaDescription,
+    title: dbSeo?.meta_title ?? fallback.metaTitle,
+    description: dbSeo?.meta_description ?? fallback.metaDescription,
     alternates: { canonical: `${AppConfig.url}/professions/${slug}` },
   };
+}
+
+// ─── JSON-LD extra (parsed from seo_overrides.json_ld_extra) ───
+// The pipeline can store one or more extra @graph objects (Article,
+// ProfessionalService...) as a JSON-encoded array. We emit each one as its
+// own <script> so they coexist cleanly with the ClusterPage breadcrumb/FAQ
+// schemas already rendered downstream.
+function ExtraJsonLd({ raw }: { raw: string | null }) {
+  if (!raw) return null;
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw) as unknown;
+  } catch {
+    return null;
+  }
+  const entries = Array.isArray(parsed) ? parsed : [parsed];
+  const valid = entries.filter(
+    (e): e is Record<string, unknown> =>
+      e !== null && typeof e === "object" && Object.keys(e as object).length > 0,
+  );
+  if (valid.length === 0) return null;
+  return (
+    <>
+      {valid.map((entry, i) => (
+        <script
+          key={i}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(entry) }}
+        />
+      ))}
+    </>
+  );
 }
 
 export default async function ProfessionPage({ params }: Props) {
@@ -36,8 +74,77 @@ export default async function ProfessionPage({ params }: Props) {
   if (!profession) notFound();
 
   const category = db.getProfessionCategoryBySlug(profession.category_slug);
-  const seo = getSEOForProfession(profession);
   const linkGroups = getProfessionLinks(slug);
+
+  // ─── DB-first path ───
+  const dbSections = db.getPageSections(ROUTE, slug);
+  const dbSeo = db.getSeoOverride(ROUTE, slug);
+  const dbMeta = db.getPageMeta(ROUTE, slug);
+  const lastUpdatedDate = dbMeta?.reviewed_at;
+  const canonicalUrl = `${AppConfig.url}/professions/${slug}`;
+  const hasDbContent = dbSections.length > 0;
+
+  if (hasDbContent) {
+    const seoFallback = getSEOForProfession(profession);
+    const h1 = dbSeo?.h1 ?? seoFallback.h1;
+    // Intro: use the first Hero/ContentSection body if no metaDescription seed.
+    const heroSection = dbSections.find(
+      (s) => s.section_type === "Hero" || s.section_type === "ContentSection",
+    );
+    const intro = dbSeo?.meta_description ?? heroSection?.body ?? seoFallback.intro;
+    const keyTakeaways = (() => {
+      if (!dbSeo?.key_takeaways) return undefined;
+      try {
+        const parsed = JSON.parse(dbSeo.key_takeaways) as unknown;
+        if (Array.isArray(parsed)) {
+          return parsed.filter((x): x is string => typeof x === "string");
+        }
+      } catch {
+        // fall through
+      }
+      return undefined;
+    })();
+
+    // Faq + Hero are rendered inline via DynamicSection — skip the
+    // ClusterPage built-in FAQ rail to avoid duplication.
+    const inlineFaq = dbSections.some((s) => s.section_type === "Faq");
+
+    return (
+      <ClusterPage
+        eyebrow={category?.name || "Professions"}
+        h1={h1}
+        intro={intro}
+        breadcrumbs={[
+          { name: "Accueil", url: "/" },
+          { name: "Professions", url: "/professions" },
+          { name: profession.name, url: `/professions/${slug}` },
+        ]}
+        badges={[
+          category?.icon || "",
+          profession.name,
+          category?.name || "",
+        ].filter(Boolean)}
+        faqs={inlineFaq ? undefined : seoFallback.faqs}
+        linkGroups={linkGroups}
+        keyTakeaways={keyTakeaways}
+        schema={<ExtraJsonLd raw={dbSeo?.json_ld_extra ?? null} />}
+        lastUpdatedDate={lastUpdatedDate}
+        articleSchema={true}
+        articleHeadline={h1}
+        articleSection="Professions libérales et indépendants"
+        canonicalUrl={canonicalUrl}
+      >
+        {dbSections
+          .filter((s) => s.section_type !== "Hero")
+          .map((s) => (
+            <DynamicSection key={s.id} section={s} />
+          ))}
+      </ClusterPage>
+    );
+  }
+
+  // ─── Fallback static path (existing render, unchanged) ───
+  const seo = getSEOForProfession(profession);
   const mkt = getProfessionMarketing(profession);
   const services = db.getServices();
   const siblingProfessions = db.getProfessionsByCategory(profession.category_slug)

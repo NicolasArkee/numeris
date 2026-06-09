@@ -32,7 +32,7 @@ export function PricingTeaser({
             }`}
           >
             {tier.highlighted && (
-              <span className="mb-2 inline-block w-fit bg-or px-2 py-0.5 text-[0.58rem] font-bold uppercase tracking-wider text-blanc">
+              <span className="mb-2 inline-block w-fit bg-or px-2 py-0.5 text-[0.58rem] font-bold uppercase tracking-wider text-nuit">
                 Populaire
               </span>
             )}

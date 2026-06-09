@@ -1,3 +1,5 @@
+import { RichText } from "./RichText";
+
 interface ContentSectionProps {
   id?: string;
   title: string;
@@ -17,21 +19,16 @@ export function ContentSection({
     bordered: "border border-pierre-12 bg-blanc p-7",
   }[variant];
 
+  // Join paragraphs with blank lines so RichText can detect block boundaries
+  // (handles both array-of-paragraphs AND single string with embedded `### `).
+  const text = paragraphs.join("\n\n");
+
   return (
     <div className={`mb-12 ${wrapperStyles}`} id={id}>
       <h2 className="mb-4 font-serif text-[1.25rem] font-light text-encre">
         {title}
       </h2>
-      <div className="space-y-4">
-        {paragraphs.map((p, i) => (
-          <p
-            key={i}
-            className="text-[0.88rem] leading-relaxed text-ardoise"
-          >
-            {p}
-          </p>
-        ))}
-      </div>
+      <RichText text={text} className="max-w-prose" />
     </div>
   );
 }

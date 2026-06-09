@@ -25,7 +25,7 @@ export function CtaContact() {
           <div className="flex flex-wrap items-center gap-5">
             <Link
               href="/contact"
-              className="inline-flex items-center gap-2 bg-or px-9 py-4 font-sans text-[0.875rem] font-semibold text-blanc transition-colors hover:bg-[#b08844]"
+              className="inline-flex items-center gap-2 bg-or px-9 py-4 font-sans text-[0.875rem] font-semibold text-nuit transition-colors hover:bg-[#b08844]"
             >
               Prendre rendez-vous →
             </Link>
@@ -97,7 +97,7 @@ export function CtaContact() {
             </div>
             <button
               type="submit"
-              className="mt-3.5 w-full bg-or py-3.5 text-[0.82rem] font-semibold text-blanc transition-colors hover:bg-[#b08844]"
+              className="mt-3.5 w-full bg-or py-3.5 text-[0.82rem] font-semibold text-nuit transition-colors hover:bg-[#b08844]"
             >
               Demander un rappel
             </button>

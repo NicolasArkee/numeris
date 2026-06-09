@@ -29,7 +29,7 @@ export function Checklist({
             <span className={`mt-0.5 flex-shrink-0 text-[0.78rem] font-bold ${iconColor}`}>
               {icon}
             </span>
-            <span className="text-[0.85rem] leading-relaxed text-encre-75">
+            <span className="text-base leading-relaxed text-encre-75">
               {item}
             </span>
           </li>

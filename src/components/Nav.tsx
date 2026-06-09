@@ -41,7 +41,7 @@ export function Nav() {
         </span>
         <Link
           href="/contact"
-          className="bg-or px-5 py-2.5 font-sans text-[0.75rem] font-semibold text-blanc transition-colors hover:bg-[#b08844]"
+          className="bg-or px-5 py-2.5 font-sans text-[0.75rem] font-semibold text-nuit transition-colors hover:bg-[#b08844]"
         >
           Prendre rendez-vous
         </Link>

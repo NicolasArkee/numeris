@@ -81,10 +81,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {};
 }
 
+const EXPERTISES_ROUTE = "expertises";
+
 export default async function CrossDimensionPage({ params }: Props) {
   const { service: svcSlug, dimension: dimSlug } = await params;
   const service = db.getServices().find((s) => s.slug === svcSlug);
   if (!service) notFound();
+
+  // ─── DB-first metadata (canonical + lastUpdatedDate from page_meta) ───
+  // Slug convention for expertises is `${svcSlug}--${dimSlug}` since the URL
+  // segment is composite. dbSections lookup is wired via the same key; the
+  // pipeline will populate page_sections/page_meta with that key in Wave 5.
+  const expertisesSlug = `${svcSlug}--${dimSlug}`;
+  const dbMeta = db.getPageMeta(EXPERTISES_ROUTE, expertisesSlug);
+  const lastUpdatedDate = dbMeta?.reviewed_at;
+  const canonicalUrl = `${AppConfig.url}/expertises/${svcSlug}/${dimSlug}`;
 
   // ─── Secteur ───
   const secteur = db.getSecteurBySlug(dimSlug);
@@ -120,6 +131,11 @@ export default async function CrossDimensionPage({ params }: Props) {
             audience={`Professionnels du secteur ${secteur.name}`}
           />
         }
+        lastUpdatedDate={lastUpdatedDate}
+        articleSchema={true}
+        articleHeadline={seo.h1}
+        articleSection="Expertises comptables"
+        canonicalUrl={canonicalUrl}
       >
         {mkt.contentSections.map((cs) => (
           <ContentSection key={cs.title} title={cs.title} paragraphs={cs.paragraphs} />
@@ -168,6 +184,11 @@ export default async function CrossDimensionPage({ params }: Props) {
             areaServed={ville.name}
           />
         }
+        lastUpdatedDate={lastUpdatedDate}
+        articleSchema={true}
+        articleHeadline={seo.h1}
+        articleSection="Expertises comptables"
+        canonicalUrl={canonicalUrl}
       >
         {mkt.contentSections.map((cs) => (
           <ContentSection key={cs.title} title={cs.title} paragraphs={cs.paragraphs} />
@@ -213,6 +234,11 @@ export default async function CrossDimensionPage({ params }: Props) {
             audience={profession.name}
           />
         }
+        lastUpdatedDate={lastUpdatedDate}
+        articleSchema={true}
+        articleHeadline={seo.h1}
+        articleSection="Expertises comptables"
+        canonicalUrl={canonicalUrl}
       >
         {profession.obligations && (
           <ContentSection

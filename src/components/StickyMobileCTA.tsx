@@ -38,7 +38,7 @@ export function StickyMobileCTA({
         </Link>
         <Link
           href={href}
-          className="flex h-11 flex-1 items-center justify-center bg-or text-[0.82rem] font-semibold text-blanc transition-colors hover:bg-[#b08844]"
+          className="flex h-11 flex-1 items-center justify-center bg-or text-[0.82rem] font-semibold text-nuit transition-colors hover:bg-[#b08844]"
         >
           {label} →
         </Link>

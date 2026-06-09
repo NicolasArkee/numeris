@@ -12,6 +12,11 @@
     "db:import": "tsx scripts/import-clustering.ts",
     "kg:generate": "tsx scripts/generate-kg.ts",
     "db:seed-professions": "tsx scripts/seed-professions.ts",
+    "db:migrate-page-content": "tsx scripts/migrate-page-content.ts",
+    "db:migrate-pricing-testimonials": "tsx scripts/migrate-pricing-testimonials.ts",
+    "db:seed-pricing-tiers": "tsx scripts/seed-pricing-tiers.ts",
+    "db:seed-page-content-sample": "tsx scripts/seed-page-content-sample.ts",
+    "db:seed-testimonials-fictifs": "tsx scripts/generate-fictional-testimonials.ts",
     "db:all": "npm run db:seed && npm run db:seed-geo && npm run db:seed-professions && npm run db:import && npm run kg:generate",
     "db:migrate:supabase": "tsx src/libs/db/migrate-supabase.ts"
   },

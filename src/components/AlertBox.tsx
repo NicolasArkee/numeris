@@ -57,7 +57,7 @@ export function AlertBox({
           {title || c.label}
         </span>
       </div>
-      <p className="text-[0.85rem] leading-relaxed text-encre-75">
+      <p className="max-w-prose text-base leading-relaxed text-encre-75">
         {children}
       </p>
     </div>

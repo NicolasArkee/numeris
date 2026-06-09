@@ -21,8 +21,8 @@ export function KeyTakeaways({
       </h2>
       <ul className="space-y-2.5">
         {items.map((item, i) => (
-          <li key={i} className="flex items-start gap-2.5 text-[0.85rem] leading-relaxed text-encre-75">
-            <span className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center bg-or text-[0.6rem] font-bold text-blanc">
+          <li key={i} className="flex items-start gap-2.5 text-base leading-relaxed text-encre-75">
+            <span className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center bg-or text-[0.6rem] font-bold text-nuit">
               {i + 1}
             </span>
             {item}

@@ -9,6 +9,7 @@ import { getVilleMarketing } from "@/data/marketing";
 import { ContentSection } from "@/components/ContentSection";
 import { BenefitsGrid } from "@/components/BenefitsGrid";
 import { QuoteBlock } from "@/components/QuoteBlock";
+import { LocalBusinessVilleJsonLd } from "@/components/JsonLd";
 
 interface Props {
   params: Promise<{ ville: string }>;
@@ -30,6 +31,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
+const VILLES_ROUTE = "villes";
+
 export default async function VillePage({ params }: Props) {
   const { ville: slug } = await params;
   const ville = db.getVilleBySlug(slug);
@@ -39,6 +42,13 @@ export default async function VillePage({ params }: Props) {
   const linkGroups = getVilleLinks(slug);
   const mkt = getVilleMarketing(ville);
   const services = db.getServices();
+
+  // ─── DB-first metadata (canonical + lastUpdatedDate from page_meta).
+  // ville pages stay LocalBusiness (articleSchema=false). DB sections wiring
+  // can be added when the pipeline populates `villes` rows in Wave 5+.
+  const dbMeta = db.getPageMeta(VILLES_ROUTE, slug);
+  const lastUpdatedDate = dbMeta?.reviewed_at;
+  const canonicalUrl = `${AppConfig.url}/villes/${slug}`;
 
   return (
     <ClusterPage
@@ -58,8 +68,14 @@ export default async function VillePage({ params }: Props) {
         `Rendez-vous en présentiel ou en visio`,
         `Premier échange gratuit et sans engagement`,
       ]}
+      lastUpdatedDate={lastUpdatedDate}
+      articleSchema={false}
+      canonicalUrl={canonicalUrl}
     >
-      {/* Local info card */}
+      {/* LocalBusiness JSON-LD (per ville) */}
+      <LocalBusinessVilleJsonLd ville={ville} />
+
+      {/* Local info card — fully driven by per-ville DB columns */}
       <div className="mb-12 border border-pierre-12 border-l-2 border-l-or bg-blanc p-7">
         <h2 className="mb-4 font-serif text-[1.25rem] font-light text-encre">
           Votre cabinet à {ville.name}
@@ -69,13 +85,30 @@ export default async function VillePage({ params }: Props) {
             <span className="mb-1 block text-[0.68rem] font-bold uppercase tracking-[0.1em] text-ardoise">
               Adresse
             </span>
-            <p className="text-[0.85rem] text-encre">{AppConfig.address}</p>
+            <p className="text-[0.85rem] text-encre">
+              {ville.address ? (
+                <>
+                  {ville.address}
+                  <br />
+                  {ville.postal_code} {ville.name}
+                </>
+              ) : (
+                AppConfig.address
+              )}
+            </p>
           </div>
           <div>
             <span className="mb-1 block text-[0.68rem] font-bold uppercase tracking-[0.1em] text-ardoise">
               Téléphone
             </span>
-            <p className="text-[0.85rem] font-medium text-or-fonce">{AppConfig.phone}</p>
+            <p className="text-[0.85rem] font-medium text-or-fonce">
+              {ville.phone ?? AppConfig.phone}
+            </p>
+            {ville.opening_hours && (
+              <p className="mt-1 text-[0.72rem] text-ardoise">
+                Lun.–Ven. 9h–18h
+              </p>
+            )}
           </div>
           <div>
             <span className="mb-1 block text-[0.68rem] font-bold uppercase tracking-[0.1em] text-ardoise">

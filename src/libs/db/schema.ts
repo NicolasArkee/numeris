@@ -112,7 +112,16 @@ CREATE TABLE IF NOT EXISTS villes (
   name TEXT NOT NULL,
   departement TEXT,
   region TEXT,
-  population INTEGER DEFAULT 0
+  population INTEGER DEFAULT 0,
+  address TEXT,
+  postal_code TEXT,
+  phone TEXT,
+  opening_hours TEXT,
+  latitude REAL,
+  longitude REAL,
+  ape_code TEXT DEFAULT '6920Z',
+  siret_etablissement TEXT
+  -- TODO: replace siret_etablissement SIREN root with real SIREN from Patch D once provisioned
 );
 
 CREATE TABLE IF NOT EXISTS departements (
@@ -178,4 +187,88 @@ CREATE TABLE IF NOT EXISTS kg_edges (
   weight REAL DEFAULT 1.0,
   PRIMARY KEY (source_slug, target_slug, edge_type)
 );
+
+-- ─── PAGE CONTENT TABLES (sections, SEO, meta) ───
+-- Populated by the numeris_pipeline (teams/content/tools/numeris_pipeline)
+-- Read at build time by route templates (src/app/[locale]/...)
+-- Schema reference: teams/content/tools/numeris_pipeline/06_persist_db.py (DDL constant)
+-- Detailed spec: ARKEE_ORG Vague 2.B brief
+
+CREATE TABLE IF NOT EXISTS page_sections (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  route TEXT NOT NULL,           -- 'professions' | 'villes' | 'expertises' | 'ressources' | 'secteurs' | 'departements'
+  slug TEXT NOT NULL,            -- page slug (ex: 'boulangers')
+  section_type TEXT NOT NULL,    -- 'Hero' | 'ContentSection' | 'BenefitsGrid' | 'Checklist' | 'AlertBox' | 'Faq' | 'KeyTakeaways' | 'InternalLinks'
+  section_order INTEGER NOT NULL DEFAULT 0,
+  title TEXT,
+  body TEXT,                     -- markdown or simple HTML
+  items TEXT,                    -- JSON array (BenefitsGrid items, Checklist items, Faq pairs, etc.)
+  citations TEXT,                -- JSON array [{text, url, source: 'legifrance'|'bofip'|'urssaf'|...}]
+  generated_at TEXT NOT NULL DEFAULT (datetime('now')),
+  generated_by_model TEXT,       -- 'gemini-2.5-pro' | ...
+  UNIQUE(route, slug, section_order)
+);
+CREATE INDEX IF NOT EXISTS idx_page_sections_route_slug ON page_sections(route, slug);
+
+CREATE TABLE IF NOT EXISTS seo_overrides (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  route TEXT NOT NULL,
+  slug TEXT NOT NULL,
+  meta_title TEXT,
+  meta_description TEXT,
+  h1 TEXT,
+  key_takeaways TEXT,            -- JSON array
+  json_ld_extra TEXT,            -- JSON object — extra schemas (Article, ProfessionalService, ...)
+  generated_at TEXT NOT NULL DEFAULT (datetime('now')),
+  generated_by_model TEXT,
+  UNIQUE(route, slug)
+);
+CREATE INDEX IF NOT EXISTS idx_seo_overrides_route_slug ON seo_overrides(route, slug);
+
+CREATE TABLE IF NOT EXISTS page_meta (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  route TEXT NOT NULL,
+  slug TEXT NOT NULL,
+  author_persona_id TEXT NOT NULL DEFAULT 'helene-marchand',
+  reviewed_at TEXT NOT NULL DEFAULT (datetime('now')),
+  reviewed_by TEXT NOT NULL DEFAULT 'helene-marchand',
+  content_hash TEXT,             -- SHA256 of sections JSON — change detection
+  publish_status TEXT NOT NULL DEFAULT 'draft' CHECK(publish_status IN ('draft', 'review', 'published', 'archived')),
+  published_at TEXT,
+  pipeline_run_id TEXT,
+  UNIQUE(route, slug)
+);
+CREATE INDEX IF NOT EXISTS idx_page_meta_route_slug ON page_meta(route, slug);
+CREATE INDEX IF NOT EXISTS idx_page_meta_publish_status ON page_meta(publish_status);
+
+-- ─── PRICING TIERS (P4a) ───
+-- New table backing the V2 PricingTeaser component (3 tiers 59/99/159 EUR).
+-- Distinct from legacy pricing_plans table (Home pricing block). Will be seeded in P4b.
+
+CREATE TABLE IF NOT EXISTS pricing_tiers (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  slug TEXT UNIQUE NOT NULL,        -- 'essential', 'pro', 'premium'
+  name TEXT NOT NULL,                -- 'Essential', 'Pro', 'Premium'
+  from_price TEXT NOT NULL,          -- 'À partir de 59€ HT/mois'
+  price_value INTEGER NOT NULL,      -- 59, 99, 159
+  features TEXT NOT NULL,            -- JSON array of strings
+  highlighted INTEGER NOT NULL DEFAULT 0,  -- 1 = "Best value" badge
+  cta_label TEXT NOT NULL DEFAULT 'Choisir',
+  order_index INTEGER NOT NULL DEFAULT 0,
+  description TEXT,
+  target_audience TEXT               -- ex: 'TPE solo', 'PME 5-15 salariés'
+);
+CREATE INDEX IF NOT EXISTS idx_pricing_tiers_order ON pricing_tiers(order_index);
+
+-- ─── TESTIMONIALS extension (P4a) ───
+-- ALTERs are applied imperatively by scripts/migrate-pricing-testimonials.ts
+-- (via PRAGMA table_info check) because CREATE TABLE IF NOT EXISTS does NOT
+-- backfill columns on an existing table. Pattern mirrors seed-geo.ts.
+-- Columns added (idempotently):
+--   - profession_slug TEXT
+--   - secteur_slug    TEXT
+--   - ville_slug      TEXT
+--   - _fictional      INTEGER NOT NULL DEFAULT 0  (internal audit flag, not exposed)
+-- Index:
+--   - idx_testimonials_profession ON testimonials(profession_slug)
 `;
