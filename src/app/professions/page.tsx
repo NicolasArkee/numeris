@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { db } from "@/libs/db";
 import { AppConfig } from "@/utils/AppConfig";
-import { BreadcrumbJsonLd } from "@/components/JsonLd";
+import { BreadcrumbJsonLd, WebPageJsonLd } from "@/components/JsonLd";
+import { PageHero } from "@/components/PageHero";
 
 export const metadata: Metadata = {
   title: `Expert-Comptable par Profession | ${AppConfig.name}`,
@@ -21,25 +22,22 @@ export default function ProfessionsPage() {
           { name: "Professions", url: "/professions" },
         ]}
       />
+      <WebPageJsonLd
+        name="Expert-comptable par profession"
+        description={`Chaque métier a ses obligations comptables et fiscales spécifiques. ${AppConfig.name} adapte son accompagnement à votre réalité professionnelle.`}
+        url="/professions"
+      />
 
-      <section className="relative overflow-hidden bg-nuit px-6 py-20 lg:px-[4.5rem] lg:py-24">
-        <div className="grid-bg pointer-events-none absolute inset-0 opacity-35" />
-        <div className="relative z-10 mx-auto max-w-[82rem]">
-          <div className="mb-6 flex items-center gap-3.5">
-            <span className="block h-px w-7 bg-or" />
-            <span className="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-or">
-              +100 professions accompagnées
-            </span>
-          </div>
-          <h1 className="mb-6 font-serif text-[2.75rem] font-light leading-[1.08] tracking-tight text-blanc lg:text-[4rem]">
-            Expert-comptable par profession
-          </h1>
-          <p className="max-w-2xl text-[0.95rem] leading-relaxed text-white/40">
-            Chaque métier a ses obligations comptables et fiscales spécifiques.
-            {AppConfig.name} adapte son accompagnement à votre réalité professionnelle.
-          </p>
-        </div>
-      </section>
+      <PageHero
+        eyebrow="+100 professions accompagnées"
+        title="Expert-comptable par profession"
+        subtitle={`Chaque métier a ses obligations comptables et fiscales spécifiques. ${AppConfig.name} adapte son accompagnement à votre réalité professionnelle.`}
+        breadcrumbs={[
+          { name: "Accueil", url: "/" },
+          { name: "Professions", url: "/professions" },
+        ]}
+        cta={{ label: "Prendre rendez-vous", href: "/contact" }}
+      />
 
       <section className="bg-creme px-6 py-20 lg:px-[4.5rem]">
         <div className="mx-auto max-w-[82rem]">

@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { db } from "@/libs/db";
 import { AppConfig } from "@/utils/AppConfig";
-import { BreadcrumbJsonLd } from "@/components/JsonLd";
+import { BreadcrumbJsonLd, WebPageJsonLd } from "@/components/JsonLd";
+import { PageHero } from "@/components/PageHero";
 
 export const metadata: Metadata = {
   title: `Ressources Expert-Comptable | ${AppConfig.name}`,
@@ -21,25 +22,22 @@ export default function RessourcesPage() {
           { name: "Ressources", url: "/ressources" },
         ]}
       />
+      <WebPageJsonLd
+        name="Ressources & guides"
+        description="Tout ce que vous devez savoir sur l'expertise comptable : métier, réglementation, tarifs, salaires et spécialités."
+        url="/ressources"
+      />
 
-      <section className="relative overflow-hidden bg-nuit px-6 py-20 lg:px-[4.5rem] lg:py-24">
-        <div className="grid-bg pointer-events-none absolute inset-0 opacity-35" />
-        <div className="relative z-10 mx-auto max-w-[82rem]">
-          <div className="mb-6 flex items-center gap-3.5">
-            <span className="block h-px w-7 bg-or" />
-            <span className="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-or">
-              Centre de ressources
-            </span>
-          </div>
-          <h1 className="mb-6 font-serif text-[2.75rem] font-light leading-[1.08] tracking-tight text-blanc lg:text-[4rem]">
-            Ressources &amp; guides
-          </h1>
-          <p className="max-w-2xl text-[0.95rem] leading-relaxed text-white/40">
-            Tout ce que vous devez savoir sur l&apos;expertise comptable : métier,
-            réglementation, tarifs, salaires et spécialités.
-          </p>
-        </div>
-      </section>
+      <PageHero
+        eyebrow="Centre de ressources"
+        title="Ressources & guides"
+        subtitle="Tout ce que vous devez savoir sur l'expertise comptable : métier, réglementation, tarifs, salaires et spécialités."
+        breadcrumbs={[
+          { name: "Accueil", url: "/" },
+          { name: "Ressources", url: "/ressources" },
+        ]}
+        cta={{ label: "Prendre rendez-vous", href: "/contact" }}
+      />
 
       <section className="bg-creme px-6 py-20 lg:px-[4.5rem]">
         <div className="mx-auto max-w-[82rem]">

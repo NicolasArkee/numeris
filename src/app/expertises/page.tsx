@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { db } from "@/libs/db";
 import { AppConfig } from "@/utils/AppConfig";
-import { BreadcrumbJsonLd } from "@/components/JsonLd";
+import { BreadcrumbJsonLd, WebPageJsonLd } from "@/components/JsonLd";
 import { PageHero } from "@/components/PageHero";
 import { TrustBar } from "@/components/TrustBar";
 
@@ -24,6 +24,11 @@ export default function ExpertisesPage() {
           { name: "Accueil", url: "/" },
           { name: "Expertises", url: "/expertises" },
         ]}
+      />
+      <WebPageJsonLd
+        name="Nos expertises"
+        description={`De la tenue comptable au conseil stratégique, ${AppConfig.name} couvre l'ensemble de vos besoins en expertise comptable et financière.`}
+        url="/expertises"
       />
 
       <PageHero

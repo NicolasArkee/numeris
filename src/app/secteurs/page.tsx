@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { db } from "@/libs/db";
 import { AppConfig } from "@/utils/AppConfig";
-import { BreadcrumbJsonLd } from "@/components/JsonLd";
+import { BreadcrumbJsonLd, WebPageJsonLd } from "@/components/JsonLd";
+import { PageHero } from "@/components/PageHero";
 
 export const metadata: Metadata = {
   title: `Expert-Comptable par Secteur d'Activité | ${AppConfig.name}`,
@@ -22,25 +23,22 @@ export default function SecteursPage() {
           { name: "Secteurs", url: "/secteurs" },
         ]}
       />
+      <WebPageJsonLd
+        name="Expertise par secteur"
+        description={`Chaque secteur a ses spécificités comptables, fiscales et sociales. ${AppConfig.name} adapte ses services à votre réalité métier.`}
+        url="/secteurs"
+      />
 
-      <section className="relative overflow-hidden bg-nuit px-6 py-20 lg:px-[4.5rem] lg:py-24">
-        <div className="grid-bg pointer-events-none absolute inset-0 opacity-35" />
-        <div className="relative z-10 mx-auto max-w-[82rem]">
-          <div className="mb-6 flex items-center gap-3.5">
-            <span className="block h-px w-7 bg-or" />
-            <span className="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-or">
-              Secteurs d&apos;activité
-            </span>
-          </div>
-          <h1 className="mb-6 font-serif text-[2.75rem] font-light leading-[1.08] tracking-tight text-blanc lg:text-[4rem]">
-            Expertise par secteur
-          </h1>
-          <p className="max-w-2xl text-[0.95rem] leading-relaxed text-white/40">
-            Chaque secteur a ses spécificités comptables, fiscales et sociales.
-            {AppConfig.name} adapte ses services à votre réalité métier.
-          </p>
-        </div>
-      </section>
+      <PageHero
+        eyebrow="Secteurs d'activité"
+        title="Expertise par secteur"
+        subtitle={`Chaque secteur a ses spécificités comptables, fiscales et sociales. ${AppConfig.name} adapte ses services à votre réalité métier.`}
+        breadcrumbs={[
+          { name: "Accueil", url: "/" },
+          { name: "Secteurs", url: "/secteurs" },
+        ]}
+        cta={{ label: "Prendre rendez-vous", href: "/contact" }}
+      />
 
       <section className="bg-creme px-6 py-20 lg:px-[4.5rem]">
         <div className="mx-auto max-w-[82rem]">

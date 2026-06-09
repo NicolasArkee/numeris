@@ -46,7 +46,7 @@ export function PageHero({
         {/* Breadcrumbs */}
         {breadcrumbs && breadcrumbs.length > 0 && (
           <nav aria-label="Fil d'Ariane" className="mb-8">
-            <ol className={`flex flex-wrap items-center gap-1.5 text-[0.72rem] text-white/30 ${isCentered ? "justify-center" : ""}`}>
+            <ol className={`flex flex-wrap items-center gap-1.5 text-[0.72rem] text-white/70 ${isCentered ? "justify-center" : ""}`}>
               {breadcrumbs.map((item, i) => (
                 <li key={item.url} className="flex items-center gap-1.5">
                   {i > 0 && <span>/</span>}
@@ -55,7 +55,7 @@ export function PageHero({
                       {item.name}
                     </Link>
                   ) : (
-                    <span className="text-white/50">{item.name}</span>
+                    <span className="text-white/90">{item.name}</span>
                   )}
                 </li>
               ))}
@@ -91,7 +91,7 @@ export function PageHero({
 
         {/* Subtitle */}
         {subtitle && (
-          <p className={`mb-8 text-[0.95rem] leading-relaxed text-white/40 ${isCentered ? "mx-auto max-w-2xl" : "max-w-2xl"}`}>
+          <p className={`mb-8 text-[0.95rem] leading-relaxed text-white/85 ${isCentered ? "mx-auto max-w-2xl" : "max-w-2xl"}`}>
             {subtitle}
           </p>
         )}
@@ -102,7 +102,7 @@ export function PageHero({
             {badges.map((badge) => (
               <span
                 key={badge}
-                className="border border-white/10 px-3 py-1.5 text-[0.68rem] font-medium text-white/40"
+                className="border border-white/20 px-3 py-1.5 text-[0.68rem] font-medium text-white/80"
               >
                 {badge}
               </span>
