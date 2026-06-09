@@ -3,7 +3,10 @@ import { notFound } from "next/navigation";
 import { db } from "@/libs/db";
 import { AppConfig } from "@/utils/AppConfig";
 import { ClusterPage } from "@/components/ClusterPage";
+import { DynamicSection } from "@/components/DynamicSection";
+import { ExtraJsonLd } from "@/components/ExtraJsonLd";
 import { ServiceJsonLd } from "@/components/JsonLd";
+import { getDbPageBundle } from "@/libs/content/dbFirst";
 import { getSEOForService } from "@/data/seo";
 import { getServiceLinks } from "@/utils/taxonomy";
 import { getServiceMarketing } from "@/data/marketing";
@@ -22,14 +25,19 @@ export async function generateStaticParams() {
   return db.getServices().map((s) => ({ service: s.slug }));
 }
 
+const ROUTE = "expertises";
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { service: slug } = await params;
   const service = db.getServices().find((s) => s.slug === slug);
   if (!service) return {};
+  // Clé racine = slug du service (pas de collision avec les clés composites
+  // `{svc}__{type}__{dim}` des pages croisées).
+  const dbSeo = db.getSeoOverride(ROUTE, slug);
   const seo = getSEOForService(service);
   return {
-    title: seo.metaTitle,
-    description: seo.metaDescription,
+    title: dbSeo?.meta_title ?? seo.metaTitle,
+    description: dbSeo?.meta_description ?? seo.metaDescription,
     alternates: { canonical: `${AppConfig.url}/expertises/${slug}` },
   };
 }
@@ -61,43 +69,37 @@ export default async function ServicePage({ params }: Props) {
     professionsByCategory.get(catSlug)!.push({ name: prof.name, slug: prof.slug });
   }
 
-  return (
-    <ClusterPage
-      eyebrow={AppConfig.tagline}
-      h1={seo.h1}
-      intro={seo.intro}
-      breadcrumbs={[
-        { name: "Accueil", url: "/" },
-        { name: "Expertises", url: "/expertises" },
-        { name: service.title, url: `/expertises/${slug}` },
-      ]}
-      badges={[service.icon, service.title]}
-      faqs={seo.faqs}
-      linkGroups={linkGroups}
-      keyTakeaways={[
-        `${service.title} adaptée à votre structure et votre secteur d'activité`,
-        `Équipe dédiée de ${AppConfig.name}, inscrite à l'Ordre des Experts-Comptables`,
-        `Devis gratuit et premier rendez-vous sans engagement`,
-      ]}
-      schema={
-        <ServiceJsonLd
-          name={`${service.title} — ${AppConfig.name}`}
-          description={seo.metaDescription}
-          url={`/expertises/${slug}`}
-          category="Expertise comptable"
-        />
-      }
-    >
-      {/* Benefits */}
-      <BenefitsGrid
-        title={`Pourquoi choisir ${AppConfig.name} pour votre ${service.title.toLowerCase()} ?`}
-        benefits={mkt.benefits}
+  // ─── DB-first path ───
+  const bundle = getDbPageBundle(ROUTE, slug);
+  const { sections: dbSections, seo: dbSeo, lastUpdatedDate, hasDbContent } = bundle;
+  const canonicalUrl = `${AppConfig.url}/expertises/${slug}`;
+
+  // ─── Chrome partagé DB + fallback ───
+  const breadcrumbs = [
+    { name: "Accueil", url: "/" },
+    { name: "Expertises", url: "/expertises" },
+    { name: service.title, url: `/expertises/${slug}` },
+  ];
+  const keyTakeaways = bundle.keyTakeaways ?? [
+    `${service.title} adaptée à votre structure et votre secteur d'activité`,
+    `Équipe dédiée de ${AppConfig.name}, inscrite à l'Ordre des Experts-Comptables`,
+    `Devis gratuit et premier rendez-vous sans engagement`,
+  ];
+  const schema = (
+    <>
+      <ServiceJsonLd
+        name={`${service.title} — ${AppConfig.name}`}
+        description={seo.metaDescription}
+        url={`/expertises/${slug}`}
+        category="Expertise comptable"
       />
+      <ExtraJsonLd raw={dbSeo?.json_ld_extra ?? null} />
+    </>
+  );
 
-      {/* Stats */}
-      <StatHighlight stats={mkt.stats} />
-
-      {/* Secteurs for this service */}
+  // ─── Maillage interne (secteurs + professions) — rendu dans les DEUX chemins ───
+  const internalMesh = (
+    <>
       {secteurs.length > 0 && (
         <div className="mb-12">
           <h2 className="mb-6 font-serif text-[1.5rem] font-light text-encre">
@@ -121,8 +123,6 @@ export default async function ServicePage({ params }: Props) {
           </div>
         </div>
       )}
-
-      {/* Professions for this service */}
       {professionsByCategory.size > 0 && (
         <div className="mb-12">
           <h2 className="mb-6 font-serif text-[1.5rem] font-light text-encre">
@@ -160,6 +160,70 @@ export default async function ServicePage({ params }: Props) {
           </div>
         </div>
       )}
+    </>
+  );
+
+  if (hasDbContent) {
+    const h1 = dbSeo?.h1 ?? seo.h1;
+    const intro = dbSeo?.meta_description ?? bundle.heroSection?.body ?? seo.intro;
+    const { inlineFaq } = bundle;
+
+    return (
+      <ClusterPage
+        eyebrow={AppConfig.tagline}
+        h1={h1}
+        intro={intro}
+        breadcrumbs={breadcrumbs}
+        badges={[service.icon, service.title]}
+        faqs={inlineFaq ? undefined : seo.faqs}
+        linkGroups={linkGroups}
+        keyTakeaways={keyTakeaways}
+        schema={schema}
+        lastUpdatedDate={lastUpdatedDate}
+        articleSchema={true}
+        articleHeadline={h1}
+        articleSection="Expertises comptables"
+        canonicalUrl={canonicalUrl}
+      >
+        {dbSections
+          .filter((s) => s.section_type !== "Hero")
+          .map((s) => (
+            <DynamicSection key={s.id} section={s} />
+          ))}
+        {internalMesh}
+      </ClusterPage>
+    );
+  }
+
+  return (
+    <ClusterPage
+      eyebrow={AppConfig.tagline}
+      h1={seo.h1}
+      intro={seo.intro}
+      breadcrumbs={breadcrumbs}
+      badges={[service.icon, service.title]}
+      faqs={seo.faqs}
+      linkGroups={linkGroups}
+      keyTakeaways={keyTakeaways}
+      schema={schema}
+      lastUpdatedDate={lastUpdatedDate}
+      articleSchema={true}
+      articleHeadline={seo.h1}
+      articleSection="Expertises comptables"
+      canonicalUrl={canonicalUrl}
+    >
+      {/* Benefits */}
+      <BenefitsGrid
+        title={`Pourquoi choisir ${AppConfig.name} pour votre ${service.title.toLowerCase()} ?`}
+        benefits={mkt.benefits}
+      />
+
+      {/* Stats */}
+      <StatHighlight stats={mkt.stats} />
+
+      {/* Maillage interne (secteurs + professions) */}
+      {internalMesh}
+
       {/* How it works */}
       <NumberedSteps
         title={`Comment se passe votre ${service.title.toLowerCase()} ?`}
