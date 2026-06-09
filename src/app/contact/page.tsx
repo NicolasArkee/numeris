@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { AppConfig } from "@/utils/AppConfig";
-import { BreadcrumbJsonLd } from "@/components/JsonLd";
+import { BreadcrumbJsonLd, WebPageJsonLd } from "@/components/JsonLd";
+import { PageHero } from "@/components/PageHero";
 
 export const metadata: Metadata = {
   title: `Contact | ${AppConfig.name}`,
@@ -19,33 +19,21 @@ export default function ContactPage() {
         ]}
       />
 
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-nuit px-6 py-20 lg:px-[4.5rem] lg:py-24">
-        <div className="grid-bg pointer-events-none absolute inset-0 opacity-35" />
-        <div className="radial-or pointer-events-none absolute -bottom-1/4 -right-[8%] h-[560px] w-[560px]" />
+      <WebPageJsonLd
+        name="Contactez-nous"
+        description="Premier entretien gratuit et sans engagement. Nous vous répondons sous 24 heures."
+        url="/contact"
+      />
 
-        <div className="relative z-10 mx-auto max-w-[82rem]">
-          <nav aria-label="Fil d'Ariane" className="mb-8">
-            <ol className="flex items-center gap-1.5 text-[0.72rem] text-white/30">
-              <li><Link href="/" className="hover:text-or">Accueil</Link></li>
-              <li className="flex items-center gap-1.5"><span>/</span><span className="text-white/50">Contact</span></li>
-            </ol>
-          </nav>
-
-          <div className="mb-6 flex items-center gap-3.5">
-            <span className="block h-px w-7 bg-or" />
-            <span className="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-or">
-              Parlons de votre projet
-            </span>
-          </div>
-          <h1 className="mb-6 font-serif text-[2.75rem] font-light leading-[1.08] tracking-tight text-blanc lg:text-[4rem]">
-            Contactez-nous
-          </h1>
-          <p className="max-w-2xl text-[0.95rem] leading-relaxed text-white/40">
-            Premier entretien gratuit et sans engagement. Nous vous répondons sous 24 heures.
-          </p>
-        </div>
-      </section>
+      <PageHero
+        eyebrow="Parlons de votre projet"
+        title="Contactez-nous"
+        subtitle="Premier entretien gratuit et sans engagement. Nous vous répondons sous 24 heures."
+        breadcrumbs={[
+          { name: "Accueil", url: "/" },
+          { name: "Contact", url: "/contact" },
+        ]}
+      />
 
       {/* Contact content */}
       <section className="bg-creme px-6 py-20 lg:px-[4.5rem]">

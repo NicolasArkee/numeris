@@ -12,27 +12,36 @@ import { PressLogos } from "@/components/PressLogos";
 import { Faq } from "@/components/Faq";
 import { CtaContact } from "@/components/CtaContact";
 import { StickyMobileCTA } from "@/components/StickyMobileCTA";
-import { LocalBusinessJsonLd, FaqJsonLd } from "@/components/JsonLd";
+import { LocalBusinessJsonLd, FaqJsonLd, WebPageJsonLd } from "@/components/JsonLd";
 import { AppConfig } from "@/utils/AppConfig";
 
 export const metadata: Metadata = {
   title: `${AppConfig.name} Expertise Comptable à Paris | Cabinet comptable depuis ${AppConfig.foundedYear}`,
   description: AppConfig.description,
   alternates: {
-    canonical: "/",
+    canonical: `${AppConfig.url}/`,
   },
 };
 
 export default function HomePage() {
   const services = db.getServices();
   const teamMembers = db.getTeamMembers();
-  const testimonials = db.getTestimonials();
+  // 33 rows en DB (dont 30 fictifs gen IA) — la section homepage est bornée
+  // aux témoignages featured, plafonnée à 9.
+  const allTestimonials = db.getTestimonials();
+  const featured = allTestimonials.filter((t) => t.featured);
+  const testimonials = (featured.length > 0 ? featured : allTestimonials).slice(0, 9);
   const pricingPlans = db.getPricingPlans();
   const faqItems = db.getFaqItems();
 
   return (
     <>
       <LocalBusinessJsonLd />
+      <WebPageJsonLd
+        name={`${AppConfig.name} Expertise Comptable à Paris`}
+        description={AppConfig.description}
+        url="/"
+      />
       <FaqJsonLd
         items={faqItems.map((f) => ({
           question: f.question,
