@@ -1,6 +1,10 @@
 import Link from "next/link";
 import { AppConfig } from "@/utils/AppConfig";
 
+/**
+ * @deprecated Réservé à la homepage (layout 2 colonnes avec carte services,
+ * non réplicable par PageHero). Toute nouvelle page utilise PageHero.
+ */
 export function Hero() {
   return (
     <section className="relative overflow-hidden bg-nuit px-6 py-24 lg:px-[4.5rem] lg:py-28">

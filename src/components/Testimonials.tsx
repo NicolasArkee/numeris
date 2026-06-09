@@ -1,3 +1,8 @@
+// ─── Testimonials ───
+// Section homepage full-width (grille statique 3 colonnes, rows DB
+// `testimonials`). Pour les témoignages inline dans une page pSEO
+// (carousel, lookup par profession/secteur/ville), voir TestimonialSlider.
+
 import type { Testimonial } from "@/libs/db";
 
 export function Testimonials({

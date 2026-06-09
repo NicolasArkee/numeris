@@ -1,15 +1,9 @@
 import Link from "next/link";
-
-interface PricingTier {
-  name: string;
-  from: string;
-  features: string[];
-  highlighted?: boolean;
-}
+import type { PricingTierShape } from "./pricing-shared";
 
 interface PricingTeaserProps {
   title?: string;
-  tiers: PricingTier[];
+  tiers: PricingTierShape[];
 }
 
 export function PricingTeaser({

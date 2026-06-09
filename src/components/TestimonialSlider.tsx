@@ -1,5 +1,10 @@
 "use client";
 
+// ─── TestimonialSlider ───
+// Carousel inline pour ClusterPage/DynamicSection (section_type
+// "TestimonialSlider", lookup DB par profession/secteur/ville). Pour la
+// section statique homepage, voir Testimonials.
+
 import { useState } from "react";
 
 interface TestimonialItem {

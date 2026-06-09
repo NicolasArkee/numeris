@@ -1,4 +1,4 @@
-interface Stat {
+export interface Stat {
   value: string;
   label: string;
   detail?: string;
@@ -6,13 +6,35 @@ interface Stat {
 
 interface StatHighlightProps {
   stats: Stat[];
-  variant?: "inline" | "cards";
+  /** inline = bande bordée centrée · cards = cartes · band = grille pleine
+   *  largeur 2/4 colonnes (markup historique de StatsBand homepage). */
+  variant?: "inline" | "cards" | "band";
 }
 
 export function StatHighlight({
   stats,
   variant = "inline",
 }: StatHighlightProps) {
+  if (variant === "band") {
+    return (
+      <div className="grid grid-cols-2 gap-0 lg:grid-cols-4">
+        {stats.map((stat, i) => (
+          <div
+            key={stat.label}
+            className={`px-2 py-2 text-center lg:px-10 ${i < stats.length - 1 ? "lg:border-r lg:border-pierre-12" : ""} ${i === 0 ? "lg:text-left" : ""}`}
+          >
+            <span className="block font-serif text-[3rem] font-light italic leading-none text-or">
+              {stat.value}
+            </span>
+            <span className="mt-1 text-[0.78rem] text-ardoise">
+              {stat.label}
+            </span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   if (variant === "cards") {
     return (
       <div className="mb-12 grid gap-4 md:grid-cols-3">

@@ -28,6 +28,7 @@ import { QuoteBlock } from "./QuoteBlock";
 import { StatHighlight } from "./StatHighlight";
 import { SimulatorTeaser } from "./SimulatorTeaser";
 import { PricingTeaser } from "./PricingTeaser";
+import { pricingTierToProp, type PricingTierShape } from "./pricing-shared";
 import { ProcessSteps } from "./ProcessSteps";
 import { TestimonialSlider } from "./TestimonialSlider";
 import { TableOfContents } from "./TableOfContents";
@@ -649,16 +650,9 @@ function coerceStatsItems(
 // ─── Coerce PricingTeaser items → component props (or empty → read DB) ───
 // Note: the <PricingTeaser> component expects `from` (not `from_price`) so we
 // adapt the field name when mapping from DB.PricingTier or Gemini-emitted objects.
-interface PricingItemShape {
-  name: string;
-  from: string;
-  features: string[];
-  highlighted?: boolean;
-}
-
-function coercePricingItems(parsed: unknown): PricingItemShape[] {
+function coercePricingItems(parsed: unknown): PricingTierShape[] {
   if (!Array.isArray(parsed)) return [];
-  const out: PricingItemShape[] = [];
+  const out: PricingTierShape[] = [];
   for (const raw of parsed) {
     if (typeof raw !== "object" || raw === null) continue;
     const obj = raw as Record<string, unknown>;
@@ -678,24 +672,6 @@ function coercePricingItems(parsed: unknown): PricingItemShape[] {
     out.push({ name, from, features, ...(highlighted !== undefined && { highlighted }) });
   }
   return out;
-}
-
-function pricingTierToProp(tier: PricingTier): PricingItemShape {
-  let features: string[] = [];
-  try {
-    const parsed = JSON.parse(tier.features) as unknown;
-    if (Array.isArray(parsed)) {
-      features = parsed.filter((f): f is string => typeof f === "string");
-    }
-  } catch {
-    features = [];
-  }
-  return {
-    name: tier.name,
-    from: tier.from_price,
-    features,
-    highlighted: tier.highlighted === 1,
-  };
 }
 
 // ─── Coerce RelatedArticles items → {slug, title, route?} ───
