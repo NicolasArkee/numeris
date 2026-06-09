@@ -4,6 +4,8 @@ import { db } from "@/libs/db";
 import { AppConfig } from "@/utils/AppConfig";
 import { ClusterPage } from "@/components/ClusterPage";
 import { DynamicSection } from "@/components/DynamicSection";
+import { ExtraJsonLd } from "@/components/ExtraJsonLd";
+import { getDbPageBundle } from "@/libs/content/dbFirst";
 import { getSEOForProfession } from "@/data/seo";
 import { getProfessionLinks } from "@/utils/taxonomy";
 import { getProfessionMarketing } from "@/data/marketing";
@@ -36,38 +38,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-// ─── JSON-LD extra (parsed from seo_overrides.json_ld_extra) ───
-// The pipeline can store one or more extra @graph objects (Article,
-// ProfessionalService...) as a JSON-encoded array. We emit each one as its
-// own <script> so they coexist cleanly with the ClusterPage breadcrumb/FAQ
-// schemas already rendered downstream.
-function ExtraJsonLd({ raw }: { raw: string | null }) {
-  if (!raw) return null;
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(raw) as unknown;
-  } catch {
-    return null;
-  }
-  const entries = Array.isArray(parsed) ? parsed : [parsed];
-  const valid = entries.filter(
-    (e): e is Record<string, unknown> =>
-      e !== null && typeof e === "object" && Object.keys(e as object).length > 0,
-  );
-  if (valid.length === 0) return null;
-  return (
-    <>
-      {valid.map((entry, i) => (
-        <script
-          key={i}
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(entry) }}
-        />
-      ))}
-    </>
-  );
-}
-
 export default async function ProfessionPage({ params }: Props) {
   const { profession: slug } = await params;
   const profession = db.getProfessionBySlug(slug);
@@ -77,37 +47,18 @@ export default async function ProfessionPage({ params }: Props) {
   const linkGroups = getProfessionLinks(slug);
 
   // ─── DB-first path ───
-  const dbSections = db.getPageSections(ROUTE, slug);
-  const dbSeo = db.getSeoOverride(ROUTE, slug);
-  const dbMeta = db.getPageMeta(ROUTE, slug);
-  const lastUpdatedDate = dbMeta?.reviewed_at;
+  const bundle = getDbPageBundle(ROUTE, slug);
+  const { sections: dbSections, seo: dbSeo, lastUpdatedDate, hasDbContent } = bundle;
   const canonicalUrl = `${AppConfig.url}/professions/${slug}`;
-  const hasDbContent = dbSections.length > 0;
 
   if (hasDbContent) {
     const seoFallback = getSEOForProfession(profession);
     const h1 = dbSeo?.h1 ?? seoFallback.h1;
     // Intro: use the first Hero/ContentSection body if no metaDescription seed.
-    const heroSection = dbSections.find(
-      (s) => s.section_type === "Hero" || s.section_type === "ContentSection",
-    );
-    const intro = dbSeo?.meta_description ?? heroSection?.body ?? seoFallback.intro;
-    const keyTakeaways = (() => {
-      if (!dbSeo?.key_takeaways) return undefined;
-      try {
-        const parsed = JSON.parse(dbSeo.key_takeaways) as unknown;
-        if (Array.isArray(parsed)) {
-          return parsed.filter((x): x is string => typeof x === "string");
-        }
-      } catch {
-        // fall through
-      }
-      return undefined;
-    })();
-
+    const intro = dbSeo?.meta_description ?? bundle.heroSection?.body ?? seoFallback.intro;
     // Faq + Hero are rendered inline via DynamicSection — skip the
     // ClusterPage built-in FAQ rail to avoid duplication.
-    const inlineFaq = dbSections.some((s) => s.section_type === "Faq");
+    const { inlineFaq, keyTakeaways } = bundle;
 
     return (
       <ClusterPage

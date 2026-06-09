@@ -5,6 +5,8 @@ import { db } from "@/libs/db";
 import { AppConfig } from "@/utils/AppConfig";
 import { ClusterPage } from "@/components/ClusterPage";
 import { DynamicSection } from "@/components/DynamicSection";
+import { ExtraJsonLd } from "@/components/ExtraJsonLd";
+import { getDbPageBundle } from "@/libs/content/dbFirst";
 import { getSEOForRessource } from "@/data/seo";
 import { getRessourceLinks } from "@/utils/taxonomy";
 
@@ -87,46 +89,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {};
 }
 
-function ExtraJsonLd({ raw }: { raw: string | null }) {
-  if (!raw) return null;
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(raw) as unknown;
-  } catch {
-    return null;
-  }
-  const entries = Array.isArray(parsed) ? parsed : [parsed];
-  const valid = entries.filter(
-    (e): e is Record<string, unknown> =>
-      e !== null && typeof e === "object" && Object.keys(e as object).length > 0,
-  );
-  if (valid.length === 0) return null;
-  return (
-    <>
-      {valid.map((entry, i) => (
-        <script
-          key={i}
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(entry) }}
-        />
-      ))}
-    </>
-  );
-}
-
-function parseTakeaways(raw: string | null): string[] | undefined {
-  if (!raw) return undefined;
-  try {
-    const parsed = JSON.parse(raw) as unknown;
-    if (Array.isArray(parsed)) {
-      return parsed.filter((x): x is string => typeof x === "string");
-    }
-  } catch {
-    // fall through
-  }
-  return undefined;
-}
-
 export default async function ThemePage({ params }: Props) {
   const { theme: slug } = await params;
 
@@ -137,12 +99,9 @@ export default async function ThemePage({ params }: Props) {
   if (!hub && !cluster && !keyword) notFound();
 
   // ─── DB-first short-circuit (applies regardless of entity type) ───
-  const dbSections = db.getPageSections(ROUTE, slug);
-  const dbSeo = db.getSeoOverride(ROUTE, slug);
-  const dbMeta = db.getPageMeta(ROUTE, slug);
-  const lastUpdatedDate = dbMeta?.reviewed_at;
+  const bundle = getDbPageBundle(ROUTE, slug);
+  const { sections: dbSections, seo: dbSeo, lastUpdatedDate, hasDbContent } = bundle;
   const canonicalUrl = `${AppConfig.url}/ressources/${slug}`;
-  const hasDbContent = dbSections.length > 0;
 
   if (hasDbContent) {
     // Build chrome (eyebrow + breadcrumbs + linkGroups) from the matched entity.
@@ -214,13 +173,9 @@ export default async function ThemePage({ params }: Props) {
       fallbackH1 = keyword.h1 || fb.h1;
     }
 
-    const heroSection = dbSections.find(
-      (s) => s.section_type === "Hero" || s.section_type === "ContentSection",
-    );
     const h1 = dbSeo?.h1 ?? fallbackH1 ?? label;
-    const intro = dbSeo?.meta_description ?? heroSection?.body ?? fallbackIntro;
-    const inlineFaq = dbSections.some((s) => s.section_type === "Faq");
-    const keyTakeaways = parseTakeaways(dbSeo?.key_takeaways ?? null);
+    const intro = dbSeo?.meta_description ?? bundle.heroSection?.body ?? fallbackIntro;
+    const { inlineFaq, keyTakeaways } = bundle;
 
     return (
       <ClusterPage
