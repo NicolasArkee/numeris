@@ -18,6 +18,9 @@
 
 import { ContentSection } from "./ContentSection";
 import { RichText } from "./RichText";
+import { HonorairesSimulator } from "./simulateurs/HonorairesSimulator";
+import { StatutsSimulator } from "./simulateurs/StatutsSimulator";
+import { ImmobilierSimulator } from "./simulateurs/ImmobilierSimulator";
 import { BenefitsGrid } from "./BenefitsGrid";
 import { Checklist } from "./Checklist";
 import { AlertBox } from "./AlertBox";
@@ -1154,7 +1157,35 @@ export function DynamicSection({ section }: { section: PageSection }) {
       );
 
     case "Calculator": {
-      // Pas de moteur de calcul côté front — rendu en carte simulateur :
+      // Heuristique de famille sur le titre : quand un moteur interactif
+      // existe (simulateurs P1/P2), on le rend inline ; sinon carte CTA.
+      const calcKey = `${title} ${section.slug}`.toLowerCase();
+      const interactive = /lmnp|meubl|loyer|locati/.test(calcKey) ? (
+        <ImmobilierSimulator />
+      ) : /honoraire|accompagnement comptable|budget pour votre accompagnement|co[ûu]t de votre accompagnement/.test(calcKey) ? (
+        <HonorairesSimulator />
+      ) : /r[ée]gime|micro|r[ée]el|\bis\b|\bir\b|sasu|bnc|statut/.test(calcKey) ? (
+        <StatutsSimulator />
+      ) : null;
+      if (interactive) {
+        return (
+          <div className="mb-12">
+            {title && (
+              <h2 className="mb-3 font-serif text-[1.25rem] font-light text-encre">
+                {title}
+              </h2>
+            )}
+            {body && (
+              <p className="mb-5 max-w-prose text-base leading-relaxed text-ardoise">
+                {body}
+              </p>
+            )}
+            {interactive}
+            <CitationsFooter citations={citations} />
+          </div>
+        );
+      }
+      // Pas de moteur de calcul correspondant — carte simulateur :
       // champs décrits par la pipeline ({label, hint}) + CTA contact.
       const fields = asObjectArray(parsedItems)
         .map((o) => ({

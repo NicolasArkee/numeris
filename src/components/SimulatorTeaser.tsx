@@ -30,8 +30,8 @@ const defaultSimulators: Simulator[] = [
   },
   {
     icon: "🏠",
-    title: "Simulateur LMNP / SCI",
-    description: "Estimez la fiscalité de votre investissement immobilier en LMNP ou SCI.",
+    title: "Simulateur LMNP",
+    description: "Micro-BIC ou régime réel avec amortissement : comparez la fiscalité de votre meublé.",
     href: "/simulateurs/immobilier",
   },
 ];
@@ -87,6 +87,15 @@ export function SimulatorTeaser({
               </span>
             </Link>
           ))}
+        </div>
+
+        <div className="mt-8">
+          <Link
+            href="/simulateurs"
+            className="inline-flex items-center gap-2 text-[0.85rem] font-medium text-or-fonce transition-colors hover:text-or"
+          >
+            Tous nos outils gratuits →
+          </Link>
         </div>
       </div>
     </section>

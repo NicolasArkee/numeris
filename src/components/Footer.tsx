@@ -17,6 +17,7 @@ const cabinet = [
   { href: "/secteurs", label: "Secteurs" },
   { href: "/villes", label: "Villes" },
   { href: "/ressources", label: "Ressources" },
+  { href: "/simulateurs", label: "Simulateurs" },
   { href: "/contact", label: "Contact" },
 ];
 

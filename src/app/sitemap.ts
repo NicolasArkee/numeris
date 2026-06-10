@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { AppConfig } from "@/utils/AppConfig";
 import { db } from "@/libs/db";
 import { expertisesSlugKey } from "@/libs/content/keys";
+import { SIMULATEURS } from "@/app/simulateurs/registry";
 
 /**
  * Convert a SQLite `datetime('now')` string ("YYYY-MM-DD HH:MM:SS" or
@@ -48,11 +49,22 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/professions`, lastModified: buildDate, changeFrequency: "monthly", priority: 0.9 },
     { url: `${baseUrl}/ressources`, lastModified: buildDate, changeFrequency: "weekly", priority: 0.8 },
     { url: `${baseUrl}/contact`, lastModified: buildDate, changeFrequency: "yearly", priority: 0.9 },
+    { url: `${baseUrl}/simulateurs`, lastModified: buildDate, changeFrequency: "monthly", priority: 0.8 },
     { url: `${baseUrl}/qui-sommes-nous`, lastModified: buildDate, changeFrequency: "yearly", priority: 0.6 },
     { url: `${baseUrl}/mentions-legales`, lastModified: buildDate, changeFrequency: "yearly", priority: 0.3 },
     { url: `${baseUrl}/confidentialite`, lastModified: buildDate, changeFrequency: "yearly", priority: 0.3 },
     { url: `${baseUrl}/cgu`, lastModified: buildDate, changeFrequency: "yearly", priority: 0.3 },
   );
+
+  // ─── Simulateurs (registre = source unique) ───
+  for (const sim of SIMULATEURS) {
+    entries.push({
+      url: `${baseUrl}/simulateurs/${sim.slug}`,
+      lastModified: buildDate,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    });
+  }
 
   // ─── Service pages ───
   const services = db.getServices();
