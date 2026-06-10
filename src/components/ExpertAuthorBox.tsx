@@ -1,4 +1,5 @@
 import { legalEntity } from "@/data/legal-entity";
+import { formatDateFr } from "@/libs/content/format";
 
 interface ExpertAuthorBoxProps {
   name?: string;
@@ -22,11 +23,7 @@ export function ExpertAuthorBox({
   initials = legalEntity.presidentInitials,
   photoUrl = legalEntity.presidentPhotoUrl,
 }: ExpertAuthorBoxProps) {
-  const displayDate = date || new Date().toLocaleDateString("fr-FR", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
+  const displayDate = formatDateFr(date);
 
   return (
     <aside className="border border-pierre-12 bg-blanc p-6" aria-label="Auteur">

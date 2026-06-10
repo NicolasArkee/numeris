@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { PricingTierShape } from "./pricing-shared";
+import { normalizeFromPrice } from "@/libs/content/format";
 
 interface PricingTeaserProps {
   title?: string;
@@ -44,7 +45,7 @@ export function PricingTeaser({
                   tier.highlighted ? "text-or" : "text-or-fonce"
                 }`}
               >
-                {tier.from}
+                {normalizeFromPrice(tier.from)}
               </span>
               <span
                 className={`text-[0.68rem] ${

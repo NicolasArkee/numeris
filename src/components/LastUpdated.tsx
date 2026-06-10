@@ -1,14 +1,13 @@
+import { formatDateFr } from "@/libs/content/format";
+
 interface LastUpdatedProps {
+  /** ISO 8601 ou "YYYY-MM-DD HH:MM:SS" — formatée fr-FR au rendu. */
   date?: string;
   readingTime?: string;
 }
 
 export function LastUpdated({ date, readingTime }: LastUpdatedProps) {
-  const displayDate = date || new Date().toLocaleDateString("fr-FR", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
+  const displayDate = formatDateFr(date);
 
   return (
     <div className="flex flex-wrap items-center gap-4 text-[0.72rem] text-ardoise">
