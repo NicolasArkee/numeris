@@ -95,11 +95,9 @@ export default async function DepartementPage({ params }: Props) {
         intro={intro}
         faqs={inlineFaq ? undefined : seo.faqs}
       >
-        {dbSections
-          .filter((s) => s.section_type !== "Hero")
-          .map((s) => (
-            <DynamicSection key={s.id} section={s} />
-          ))}
+        {bundle.renderableSections.map((s) => (
+          <DynamicSection key={s.id} section={s} />
+        ))}
         {internalMesh}
       </ClusterPage>
     );

@@ -94,11 +94,9 @@ export default async function SecteurPage({ params }: Props) {
         articleSection="Secteurs d'activité"
         canonicalUrl={canonicalUrl}
       >
-        {dbSections
-          .filter((s) => s.section_type !== "Hero")
-          .map((s) => (
-            <DynamicSection key={s.id} section={s} />
-          ))}
+        {bundle.renderableSections.map((s) => (
+          <DynamicSection key={s.id} section={s} />
+        ))}
         {internalMesh}
       </ClusterPage>
     );

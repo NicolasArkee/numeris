@@ -185,11 +185,9 @@ export default async function ServicePage({ params }: Props) {
         articleSection="Expertises comptables"
         canonicalUrl={canonicalUrl}
       >
-        {dbSections
-          .filter((s) => s.section_type !== "Hero")
-          .map((s) => (
-            <DynamicSection key={s.id} section={s} />
-          ))}
+        {bundle.renderableSections.map((s) => (
+          <DynamicSection key={s.id} section={s} />
+        ))}
         {internalMesh}
       </ClusterPage>
     );

@@ -120,11 +120,9 @@ export default async function ProfessionPage({ params }: Props) {
         articleSection="Professions libérales et indépendants"
         canonicalUrl={canonicalUrl}
       >
-        {dbSections
-          .filter((s) => s.section_type !== "Hero")
-          .map((s) => (
-            <DynamicSection key={s.id} section={s} />
-          ))}
+        {bundle.renderableSections.map((s) => (
+          <DynamicSection key={s.id} section={s} />
+        ))}
         {internalMesh}
       </ClusterPage>
     );

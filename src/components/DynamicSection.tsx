@@ -889,14 +889,17 @@ export function DynamicSection({ section }: { section: PageSection }) {
         </div>
       );
 
-    case "Faq": {
+    case "Faq":
+    case "FAQSection_PAA": {
+      // FAQSection_PAA = FAQ quick-answer PAA émise par la pipeline V2-bis
+      // (même shape {q,a} que Faq — KPI K2 du validateur).
       const faqItems = asFaqArray(parsedItems);
       if (faqItems.length === 0) return null;
       const faqId = `${section.route}-${section.slug}-${section.section_order}`;
       return (
         <>
           <FaqJsonLd items={faqItems} id={faqId} />
-          <FaqInline title={title} items={faqItems} />
+          <FaqInline title={title || "Questions fréquentes"} items={faqItems} />
         </>
       );
     }
@@ -1149,6 +1152,56 @@ export function DynamicSection({ section }: { section: PageSection }) {
           <CitationsFooter citations={citations} />
         </>
       );
+
+    case "Calculator": {
+      // Pas de moteur de calcul côté front — rendu en carte simulateur :
+      // champs décrits par la pipeline ({label, hint}) + CTA contact.
+      const fields = asObjectArray(parsedItems)
+        .map((o) => ({
+          label: typeof o.label === "string" ? o.label : "",
+          hint: typeof o.hint === "string" ? o.hint : "",
+        }))
+        .filter((f) => f.label);
+      return (
+        <div className="mb-12 border border-pierre-12 border-l-2 border-l-or bg-blanc p-7">
+          <p className="mb-2 text-[0.65rem] font-bold uppercase tracking-[0.12em] text-or-fonce">
+            Simulateur
+          </p>
+          {title && (
+            <h2 className="mb-3 font-serif text-[1.25rem] font-light text-encre">
+              {title}
+            </h2>
+          )}
+          {body && (
+            <p className="mb-5 max-w-prose text-base leading-relaxed text-ardoise">
+              {body}
+            </p>
+          )}
+          {fields.length > 0 && (
+            <ul className="mb-6 space-y-2">
+              {fields.map((f) => (
+                <li key={f.label} className="flex items-start gap-2 text-[0.85rem] text-encre-75">
+                  <span className="mt-0.5 text-or">→</span>
+                  <span>
+                    {f.label}
+                    {f.hint && (
+                      <span className="ml-2 text-[0.72rem] text-ardoise">({f.hint})</span>
+                    )}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+          <a
+            href="/contact"
+            className="inline-flex items-center gap-2 bg-or px-6 py-3 font-sans text-[0.82rem] font-semibold text-nuit transition-colors hover:bg-[#b08844]"
+          >
+            Obtenir mon estimation personnalisée →
+          </a>
+          <CitationsFooter citations={citations} />
+        </div>
+      );
+    }
 
     default:
       return <UnknownSection section={section} />;

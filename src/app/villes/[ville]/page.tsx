@@ -156,11 +156,9 @@ export default async function VillePage({ params }: Props) {
         canonicalUrl={canonicalUrl}
       >
         <VilleInfoCard ville={ville} />
-        {dbSections
-          .filter((s) => s.section_type !== "Hero")
-          .map((s) => (
-            <DynamicSection key={s.id} section={s} />
-          ))}
+        {bundle.renderableSections.map((s) => (
+          <DynamicSection key={s.id} section={s} />
+        ))}
         {servicesGrid}
       </ClusterPage>
     );
