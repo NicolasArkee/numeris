@@ -237,7 +237,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // ─── Couche commerciale / affiliation (/comparatifs, /avis, /codes-parrainage) ───
   // Gating SEO : seules les pages publish_status='published' entrent au sitemap.
   // Tant que le contenu (Gemini) n'est pas généré + publié, ce bloc est vide.
-  for (const c of getPublishedCommercialPages()) {
+  for (const c of await getPublishedCommercialPages()) {
     entries.push({
       url: `${baseUrl}${c.url}`,
       lastModified: lastmodFor(c.route, c.slug),

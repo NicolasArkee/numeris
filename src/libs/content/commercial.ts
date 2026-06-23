@@ -1,20 +1,12 @@
-// ─── Couche commerciale / affiliation — accès lecture ───
-// Lit les tables isolées commercial_pages / affiliate_programs /
-// page_affiliate_programs / commercial_links (remplies par
-// scripts/import-affiliate-clustering.ts). Connexion readonly dédiée — ne touche
-// pas à l'adaptateur DbAdapter éditorial. Référence pattern : scripts/generate-kg.ts.
+// ─── Couche commerciale / affiliation — accès lecture (Supabase) ───
+// Migré de better-sqlite3 (numeris.db local) → adapter Supabase pour être
+// serverless-safe : permet le rendu on-demand (dynamicParams) + ISR sur Vercel,
+// où aucun fichier sqlite local n'existe au runtime. Tables :
+// commercial_pages / affiliate_programs / page_affiliate_programs / commercial_links
+// (remplies par scripts/import-affiliate-clustering.ts puis migrées vers Supabase).
 
-import Database from "better-sqlite3";
-import path from "node:path";
+import { getSupabaseClient } from "@/libs/db/supabase";
 import type { LinkGroup } from "@/libs/db";
-
-const DB_PATH = path.join(process.cwd(), "numeris.db");
-
-let _cdb: Database.Database | null = null;
-function cdb(): Database.Database {
-  if (!_cdb) _cdb = new Database(DB_PATH, { readonly: true });
-  return _cdb;
-}
 
 export type CommercialRoute = "comparatifs" | "avis" | "codes-parrainage";
 
@@ -71,42 +63,73 @@ function segmentOf(url: string): string {
 }
 
 /** generateStaticParams : segments des pages PUBLIÉES d'une route (gating SEO). */
-export function getCommercialSegments(route: CommercialRoute): string[] {
-  const rows = cdb()
-    .prepare(
-      "SELECT url FROM commercial_pages WHERE route = ? AND publish_status = 'published'",
-    )
-    .all(route) as { url: string }[];
-  return rows.map((r) => segmentOf(r.url));
+export async function getCommercialSegments(
+  route: CommercialRoute,
+): Promise<string[]> {
+  const { data, error } = await getSupabaseClient()
+    .from("commercial_pages")
+    .select("url")
+    .eq("route", route)
+    .eq("publish_status", "published");
+  if (error || !data) return [];
+  return data.map((r) => segmentOf((r as { url: string }).url));
 }
 
-export function getCommercialPageBySegment(
+export async function getCommercialPageBySegment(
   route: CommercialRoute,
   segment: string,
-): CommercialPage | undefined {
+): Promise<CommercialPage | undefined> {
   const url = `/${route}/${segment}`;
-  return cdb()
-    .prepare("SELECT * FROM commercial_pages WHERE route = ? AND url = ?")
-    .get(route, url) as CommercialPage | undefined;
+  const { data } = await getSupabaseClient()
+    .from("commercial_pages")
+    .select("*")
+    .eq("route", route)
+    .eq("url", url)
+    .maybeSingle();
+  return (data ?? undefined) as CommercialPage | undefined;
 }
 
-export function getCommercialPageBySlug(slug: string): CommercialPage | undefined {
-  return cdb()
-    .prepare("SELECT * FROM commercial_pages WHERE slug = ?")
-    .get(slug) as CommercialPage | undefined;
+export async function getCommercialPageBySlug(
+  slug: string,
+): Promise<CommercialPage | undefined> {
+  const { data } = await getSupabaseClient()
+    .from("commercial_pages")
+    .select("*")
+    .eq("slug", slug)
+    .maybeSingle();
+  return (data ?? undefined) as CommercialPage | undefined;
 }
 
-/** Programmes mis en avant sur une page (ordonnés), join sur affiliate_programs. */
-export function getPagePrograms(route: string, pageSlug: string): PageProgram[] {
-  return cdb()
-    .prepare(
-      `SELECT ap.*, pap.rank AS rank, pap.is_primary AS is_primary
-       FROM page_affiliate_programs pap
-       JOIN affiliate_programs ap ON ap.slug = pap.program_slug
-       WHERE pap.route = ? AND pap.page_slug = ? AND ap.is_active = 1
-       ORDER BY pap.rank ASC`,
-    )
-    .all(route, pageSlug) as PageProgram[];
+/** Programmes mis en avant sur une page (ordonnés par rank), joints sur affiliate_programs. */
+export async function getPagePrograms(
+  route: string,
+  pageSlug: string,
+): Promise<PageProgram[]> {
+  const supa = getSupabaseClient();
+  const { data: paps } = await supa
+    .from("page_affiliate_programs")
+    .select("program_slug, rank, is_primary")
+    .eq("route", route)
+    .eq("page_slug", pageSlug)
+    .order("rank", { ascending: true });
+  if (!paps || paps.length === 0) return [];
+  const slugs = paps.map((p) => (p as { program_slug: string }).program_slug);
+  const { data: progs } = await supa
+    .from("affiliate_programs")
+    .select("*")
+    .in("slug", slugs)
+    .eq("is_active", 1);
+  const bySlug = new Map(
+    (progs ?? []).map((p) => [(p as AffiliateProgram).slug, p as AffiliateProgram]),
+  );
+  // Préserve l'ordre `rank` ; ignore les programmes inactifs/absents.
+  return (paps as { program_slug: string; rank: number; is_primary: number }[])
+    .filter((p) => bySlug.has(p.program_slug))
+    .map((p) => ({
+      ...(bySlug.get(p.program_slug) as AffiliateProgram),
+      rank: p.rank,
+      is_primary: p.is_primary,
+    }));
 }
 
 const EDGE_TITLES: Record<string, string> = {
@@ -125,12 +148,33 @@ const EDGE_TITLES: Record<string, string> = {
 };
 
 /** Liens internes (LinkGroup[]) pour une page : maillage commercial + secteurs existants. */
-export function getCommercialLinks(slug: string): LinkGroup[] {
-  const edges = cdb()
-    .prepare(
-      "SELECT target_slug, target_route, edge_type FROM commercial_links WHERE source_slug = ?",
-    )
-    .all(slug) as { target_slug: string; target_route: string | null; edge_type: string }[];
+export async function getCommercialLinks(slug: string): Promise<LinkGroup[]> {
+  const supa = getSupabaseClient();
+  const { data: edgesRaw } = await supa
+    .from("commercial_links")
+    .select("target_slug, target_route, edge_type")
+    .eq("source_slug", slug);
+  const edges = (edgesRaw ?? []) as {
+    target_slug: string;
+    target_route: string | null;
+    edge_type: string;
+  }[];
+  if (edges.length === 0) return [];
+
+  // Résout les pages cibles (non-secteur) en UNE requête (évite N+1).
+  const pageSlugs = edges
+    .filter((e) => e.target_route !== "secteurs")
+    .map((e) => e.target_slug);
+  const targetMap = new Map<string, { url: string; label: string }>();
+  if (pageSlugs.length > 0) {
+    const { data: targets } = await supa
+      .from("commercial_pages")
+      .select("slug, url, label")
+      .in("slug", pageSlugs);
+    for (const t of (targets ?? []) as { slug: string; url: string; label: string }[]) {
+      targetMap.set(t.slug, { url: t.url, label: t.label });
+    }
+  }
 
   const groups = new Map<string, { label: string; href: string }[]>();
   for (const e of edges) {
@@ -140,10 +184,10 @@ export function getCommercialLinks(slug: string): LinkGroup[] {
       href = `/secteurs/${e.target_slug}`;
       label = `Experts-comptables ${e.target_slug.replace(/-/g, " ")}`;
     } else {
-      const target = getCommercialPageBySlug(e.target_slug);
-      if (target) {
-        href = target.url;
-        label = target.label;
+      const t = targetMap.get(e.target_slug);
+      if (t) {
+        href = t.url;
+        label = t.label;
       }
     }
     if (!href || !label) continue; // ignore cibles non résolues (jamais de lien cassé)
@@ -156,12 +200,14 @@ export function getCommercialLinks(slug: string): LinkGroup[] {
 }
 
 /** Pages commerciales PUBLIÉES — pour sitemap.ts (gating SEO : draft exclu). */
-export function getPublishedCommercialPages(): { route: string; slug: string; url: string }[] {
-  return cdb()
-    .prepare(
-      "SELECT route, slug, url FROM commercial_pages WHERE publish_status = 'published'",
-    )
-    .all() as { route: string; slug: string; url: string }[];
+export async function getPublishedCommercialPages(): Promise<
+  { route: string; slug: string; url: string }[]
+> {
+  const { data } = await getSupabaseClient()
+    .from("commercial_pages")
+    .select("route, slug, url")
+    .eq("publish_status", "published");
+  return (data ?? []) as { route: string; slug: string; url: string }[];
 }
 
 export function formatProgramType(p: AffiliateProgram): string {

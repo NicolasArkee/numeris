@@ -26,18 +26,19 @@ const DISCLOSURE =
   "si vous souscrivez, nous pouvons percevoir une commission, sans surcoût pour vous. " +
   "Cela n'influence pas notre classement, fondé sur des critères objectifs.";
 
-export function commercialGenerateStaticParams(
+export async function commercialGenerateStaticParams(
   route: CommercialRoute,
   paramName: string,
-): Record<string, string>[] {
-  return getCommercialSegments(route).map((segment) => ({ [paramName]: segment }));
+): Promise<Record<string, string>[]> {
+  const segments = await getCommercialSegments(route);
+  return segments.map((segment) => ({ [paramName]: segment }));
 }
 
 export async function commercialGenerateMetadata(
   route: CommercialRoute,
   segment: string,
 ): Promise<Metadata> {
-  const page = getCommercialPageBySegment(route, segment);
+  const page = await getCommercialPageBySegment(route, segment);
   if (!page) return {};
   const bundle = await getDbPageBundle(route, page.slug);
   const canonical = `${AppConfig.url}${page.url}`;
@@ -103,12 +104,12 @@ export async function CommercialRouteView({
   route: CommercialRoute;
   segment: string;
 }) {
-  const page = getCommercialPageBySegment(route, segment);
+  const page = await getCommercialPageBySegment(route, segment);
   if (!page) notFound();
 
   const bundle = await getDbPageBundle(route, page.slug);
-  const linkGroups = getCommercialLinks(page.slug);
-  const programs = getPagePrograms(route, page.slug);
+  const linkGroups = await getCommercialLinks(page.slug);
+  const programs = await getPagePrograms(route, page.slug);
   const canonicalUrl = `${AppConfig.url}${page.url}`;
 
   const breadcrumbs: { name: string; url: string }[] = [

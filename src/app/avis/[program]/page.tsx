@@ -7,9 +7,9 @@ import {
 
 const ROUTE = "avis" as const;
 
-export const dynamicParams = false; // serverless-safe: sqlite lu au build only
+export const dynamicParams = true;
 
-export const revalidate = false;
+export const revalidate = 86400;
 
 export function generateStaticParams() {
   return commercialGenerateStaticParams(ROUTE, "program");

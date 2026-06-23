@@ -1,4 +1,7 @@
-# Gros artefacts inutiles au build/runtime (numeris.db EST nécessaire au build → NON exclu)
+# Gros artefacts inutiles au build/runtime.
+# numeris.db : l'app lit 100% Supabase (éditorial + commercial) → plus lue au build/runtime → exclue (-80M).
+# (Les scripts CLI seed/migrate-supabase la lisent en local hors déploiement.)
+numeris.db
 numeris.db.bak-pre-affiliate-2026-06-15
 *.bak-*
 affiliate_clustering/

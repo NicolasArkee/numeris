@@ -35,12 +35,13 @@ const META: Record<
   },
 };
 
-export function CommercialHubPage({ route }: { route: CommercialRoute }) {
+export async function CommercialHubPage({ route }: { route: CommercialRoute }) {
   const { label, subtitle, metaDescription } = META[route];
 
-  const items = getCommercialSegments(route)
-    .map((seg) => getCommercialPageBySegment(route, seg))
-    .filter((p): p is NonNullable<typeof p> => Boolean(p));
+  const segments = await getCommercialSegments(route);
+  const items = (
+    await Promise.all(segments.map((seg) => getCommercialPageBySegment(route, seg)))
+  ).filter((p): p is NonNullable<typeof p> => Boolean(p));
 
   return (
     <>
