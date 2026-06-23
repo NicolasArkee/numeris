@@ -11,6 +11,7 @@ import type {
   Hub,
   KeywordPage,
   KgEdge,
+  MaillageLink,
   Page,
   PageMeta,
   PageSection,
@@ -774,5 +775,22 @@ export const sqliteAdapter: DbAdapter = {
          LIMIT ?`,
       )
       .all(limit) as Profession[];
+  },
+
+  async getMaillageLinks(sourceUrl: string, limit = 8): Promise<MaillageLink[]> {
+    // Match by PATH suffix: the crawl stored source_url on one domain (skoria.fr)
+    // while the runtime canonical (AppConfig.url) may differ per env → key on path.
+    const path = sourceUrl.replace(/^https?:\/\/[^/]+/, "");
+    if (!path || path === "/") return []; // never whole-site match (home)
+    try {
+      return getDb()
+        .prepare(
+          "SELECT * FROM maillage_links WHERE source_url LIKE '%' || ? ORDER BY priority DESC LIMIT ?",
+        )
+        .all(path, limit) as MaillageLink[];
+    } catch {
+      // Table absent (not yet migrated) — degrade gracefully.
+      return [];
+    }
   },
 };

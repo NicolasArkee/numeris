@@ -213,6 +213,23 @@ CREATE TABLE IF NOT EXISTS page_sections (
 );
 CREATE INDEX IF NOT EXISTS idx_page_sections_route_slug ON page_sections(route, slug);
 
+-- Internal maillage (contextual links injected by maillage-v3). Rendered as a
+-- "Liens utiles" block on the page whose canonical URL == source_url.
+CREATE TABLE IF NOT EXISTS maillage_links (
+  id BIGSERIAL PRIMARY KEY,
+  source_route TEXT,
+  source_slug TEXT,
+  source_url TEXT NOT NULL,
+  target_url TEXT NOT NULL,
+  anchor TEXT NOT NULL,
+  family TEXT,
+  priority REAL,
+  wave TEXT,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  UNIQUE(source_url, target_url)
+);
+CREATE INDEX IF NOT EXISTS idx_maillage_links_source ON maillage_links(source_url);
+
 CREATE TABLE IF NOT EXISTS seo_overrides (
   id BIGSERIAL PRIMARY KEY,
   route TEXT NOT NULL,
@@ -523,6 +540,9 @@ CREATE POLICY "public_read_kg_edges" ON kg_edges FOR SELECT TO anon, authenticat
 
 ALTER TABLE page_sections ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "public_read_page_sections" ON page_sections FOR SELECT TO anon, authenticated USING (true);
+
+ALTER TABLE maillage_links ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "public_read_maillage_links" ON maillage_links FOR SELECT TO anon, authenticated USING (true);
 
 ALTER TABLE seo_overrides ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "public_read_seo_overrides" ON seo_overrides FOR SELECT TO anon, authenticated USING (true);

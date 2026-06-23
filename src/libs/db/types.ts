@@ -247,6 +247,23 @@ export interface PageMeta {
   pipeline_run_id: string | null;
 }
 
+// ─── Internal maillage (contextual links injected by maillage-v3) ───
+// Universal link table: rendered as a "Liens utiles" block on ANY page (taxonomy
+// or DB-rendered) keyed by the page's canonical URL, without touching its sections.
+
+export interface MaillageLink {
+  id: number;
+  source_route: string | null;
+  source_slug: string | null;
+  source_url: string;
+  target_url: string;
+  anchor: string;
+  family: string | null;
+  priority: number | null;
+  wave: string | null;
+  created_at: string | null;
+}
+
 // ─── Directory data integration types ───
 
 export interface DirectoryCabinet {
@@ -386,6 +403,10 @@ export interface DbAdapter {
   upsertPageMeta(meta: Omit<PageMeta, "id" | "reviewed_at">): Promise<void>;
   /** Delete every row for (route, slug) — used when regenerating a page in full. */
   deletePageSections(route: string, slug: string): Promise<void>;
+
+  // ─── Internal maillage ───
+  /** Contextual links to render on the page whose canonical URL == sourceUrl. Returns [] if the table is absent. */
+  getMaillageLinks(sourceUrl: string, limit?: number): Promise<MaillageLink[]>;
 
   // ─── Directory public reads ───
   getDirectoryCities(): Promise<DirectoryCity[]>;

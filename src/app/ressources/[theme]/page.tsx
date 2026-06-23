@@ -17,6 +17,10 @@ interface Props {
 const ROUTE = "ressources";
 
 export const revalidate = 86400;
+// Serve DB-only ressources slugs (ex. maillage-v3 dossier hubs `dossier-*`,
+// `tous-les-dossiers`) that aren't taxonomy hubs/clusters/keywords → rendered
+// on-demand (ISR) the first time they're requested, then cached per `revalidate`.
+export const dynamicParams = true;
 
 export async function generateStaticParams() {
   const params: { theme: string }[] = [];
@@ -98,12 +102,15 @@ export default async function ThemePage({ params }: Props) {
   const hub = await db.getHubBySlug(slug);
   const cluster = !hub ? await db.getClusterBySlug(slug) : undefined;
   const keyword = !hub && !cluster ? await db.getKeywordBySlug(slug) : undefined;
-  if (!hub && !cluster && !keyword) notFound();
 
   // ─── DB-first short-circuit (applies regardless of entity type) ───
   const bundle = await getDbPageBundle(ROUTE, slug);
   const { sections: dbSections, seo: dbSeo, lastUpdatedDate, hasDbContent } = bundle;
   const canonicalUrl = `${AppConfig.url}/ressources/${slug}`;
+
+  // 404 only when the slug is neither a taxonomy entity NOR a DB-rendered page
+  // (the latter covers maillage-v3 `dossier-*` hubs that have no hub/cluster/keyword).
+  if (!hub && !cluster && !keyword && !hasDbContent) notFound();
 
   if (hasDbContent) {
     // Build chrome (eyebrow + breadcrumbs + linkGroups) from the matched entity.
@@ -173,6 +180,15 @@ export default async function ThemePage({ params }: Props) {
       const fb = getSEOForRessource(keyword, "keyword");
       fallbackIntro = fb.intro;
       fallbackH1 = keyword.h1 || fb.h1;
+    } else {
+      // DB-only page with no taxonomy entity (ex. maillage-v3 `dossier-*` hub).
+      // Generic "Ressources" chrome; H1/intro come from the SEO override + hero section.
+      label =
+        dbSeo?.h1 ??
+        slug.replace(/^dossier-/, "").replace(/-/g, " ").replace(/^\w/, (c) => c.toUpperCase());
+      breadcrumbs.push({ name: label, url: `/ressources/${slug}` });
+      fallbackH1 = label;
+      fallbackIntro = bundle.heroSection?.body ?? "";
     }
 
     const h1 = dbSeo?.h1 ?? fallbackH1 ?? label;

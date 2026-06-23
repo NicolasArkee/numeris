@@ -31,6 +31,7 @@ export type {
   PageSection,
   SeoOverride,
   PageMeta,
+  MaillageLink,
   PublishStatus,
   DirectoryCabinet,
   DirectoryEstablishment,

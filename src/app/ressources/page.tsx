@@ -82,6 +82,22 @@ export default async function RessourcesPage() {
               );
             })}
           </div>
+
+          {/* Dossiers thématiques (maillage-v3) — point d'entrée vers les ressources éditoriales regroupées */}
+          <div className="mt-10 border border-border-soft border-l-2 border-l-accent-500 bg-surface px-8 py-7">
+            <h2 className="mb-2 font-display text-[1.2rem] font-medium text-ink">
+              Tous nos dossiers
+            </h2>
+            <p className="mb-4 text-[0.85rem] text-ink-muted">
+              Retrouvez l’ensemble de nos ressources éditoriales regroupées par thème.
+            </p>
+            <Link
+              href="/ressources/tous-les-dossiers"
+              className="inline-flex items-center gap-2 text-[0.85rem] font-semibold text-accent-700 transition-colors hover:text-accent-500"
+            >
+              Parcourir les dossiers →
+            </Link>
+          </div>
         </div>
       </section>
     </>

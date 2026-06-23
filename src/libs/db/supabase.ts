@@ -22,6 +22,7 @@ import type {
   Hub,
   KeywordPage,
   KgEdge,
+  MaillageLink,
   Page,
   PageMeta,
   PageSection,
@@ -1188,6 +1189,22 @@ const adapter: DbAdapter = {
       .limit(limit);
     if (error) throw error;
     return (data ?? []) as Profession[];
+  },
+
+  async getMaillageLinks(sourceUrl: string, limit = 8): Promise<MaillageLink[]> {
+    // Match by PATH suffix (domain-agnostic): crawl stored skoria.fr, runtime
+    // canonical (AppConfig.url) may differ per env.
+    const path = sourceUrl.replace(/^https?:\/\/[^/]+/, "");
+    if (!path || path === "/") return [];
+    const { data, error } = await getSupabaseClient()
+      .from("maillage_links")
+      .select("*")
+      .like("source_url", `%${path}`)
+      .order("priority", { ascending: false })
+      .limit(limit);
+    // Table may not exist yet (pre-migration) — degrade gracefully instead of 500.
+    if (error) return [];
+    return (data ?? []) as MaillageLink[];
   },
 };
 

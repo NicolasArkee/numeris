@@ -13,6 +13,7 @@ import { LastUpdated } from "./LastUpdated";
 import { KeyTakeaways } from "./KeyTakeaways";
 import { CtaContact } from "./CtaContact";
 import { StickyMobileCTA } from "./StickyMobileCTA";
+import { MaillageLinks } from "./MaillageLinks";
 import type { LinkGroup } from "@/libs/db";
 
 interface ClusterPageProps {
@@ -167,6 +168,9 @@ export function ClusterPage({
           )}
 
           {children}
+
+          {/* Liens utiles — maillage interne v3 (table maillage_links, par URL canonique) */}
+          <MaillageLinks sourceUrl={effectiveCanonical} />
 
           {/* CTA mid-page (mini-banner) — placée après le body editorial, avant FAQ */}
           <aside

@@ -77,6 +77,7 @@ const TABLES: TableSpec[] = [
   { name: "page_sections", onConflict: "route,slug,section_order" },
   { name: "seo_overrides", onConflict: "route,slug" },
   { name: "page_meta", onConflict: "route,slug" },
+  { name: "maillage_links", onConflict: "source_url,target_url" },
 
   // ── Geo / taxonomy ─────────────────────────────────────────────────────
   // NB: local SQLite uses singular table names (villes/departements/secteurs).
