@@ -7,10 +7,10 @@ interface TrustItem {
 }
 
 const defaultItems: TrustItem[] = [
-  { icon: "⭐", value: "4.9/5", label: "Google (120+ avis)" },
-  { icon: "🏛", value: "OEC", label: "Inscrit à l'Ordre" },
-  { icon: "👥", value: "500+", label: "Clients accompagnés" },
-  { icon: "📅", value: `${new Date().getFullYear() - AppConfig.foundedYear} ans`, label: "D'expérience" },
+  { icon: "◇", value: "Indépendant", label: "Pas un cabinet" },
+  { icon: "◌", value: "Sources", label: "Données publiques" },
+  { icon: "↔", value: "Comparer", label: "Méthode transparente" },
+  { icon: "✓", value: `${new Date().getFullYear() - AppConfig.foundedYear} ans`, label: "Veille éditoriale" },
 ];
 
 interface TrustBarProps {
@@ -21,22 +21,22 @@ interface TrustBarProps {
 export function TrustBar({ items = defaultItems, variant = "light" }: TrustBarProps) {
   const styles = {
     light: {
-      bg: "bg-blanc border-b border-pierre-12",
-      value: "text-encre",
-      label: "text-ardoise",
-      divider: "bg-pierre-12",
+      bg: "bg-surface border-b border-border-soft",
+      value: "text-ink",
+      label: "text-ink-muted",
+      divider: "bg-border-soft",
     },
     dark: {
-      bg: "bg-nuit border-b border-white/10",
-      value: "text-blanc",
+      bg: "bg-brand-ink border-b border-white/10",
+      value: "text-surface",
       label: "text-white/40",
       divider: "bg-white/10",
     },
     gold: {
-      bg: "bg-or-pale border-b border-or-clair",
-      value: "text-or-fonce",
-      label: "text-encre-50",
-      divider: "bg-or-clair",
+      bg: "bg-accent-50 border-b border-accent-300",
+      value: "text-accent-700",
+      label: "text-ink-muted",
+      divider: "bg-accent-300",
     },
   }[variant];
 

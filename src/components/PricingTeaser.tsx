@@ -13,7 +13,7 @@ export function PricingTeaser({
 }: PricingTeaserProps) {
   return (
     <div className="mb-12">
-      <h2 className="mb-6 font-serif text-[1.25rem] font-light text-encre">
+      <h2 className="mb-6 font-display text-[1.25rem] font-bold text-ink">
         {title}
       </h2>
       <div className="grid gap-4 md:grid-cols-3">
@@ -22,34 +22,34 @@ export function PricingTeaser({
             key={tier.name}
             className={`flex flex-col p-6 ${
               tier.highlighted
-                ? "border-t-2 border-t-or bg-nuit text-blanc"
-                : "border border-pierre-12 bg-blanc"
+                ? "border-t-2 border-t-accent-500 bg-brand-ink text-surface"
+                : "border border-border-soft bg-surface"
             }`}
           >
             {tier.highlighted && (
-              <span className="mb-2 inline-block w-fit bg-or px-2 py-0.5 text-[0.58rem] font-bold uppercase tracking-wider text-nuit">
+              <span className="mb-2 inline-block w-fit bg-accent-500 px-2 py-0.5 text-[0.58rem] font-bold uppercase tracking-wider text-brand-ink">
                 Populaire
               </span>
             )}
             <h3
               className={`mb-1 text-[0.92rem] font-semibold ${
-                tier.highlighted ? "text-blanc" : "text-encre"
+                tier.highlighted ? "text-surface" : "text-ink"
               }`}
             >
               {tier.name}
             </h3>
             <div className="mb-4 flex items-baseline gap-1">
-              <span className="text-[0.72rem] text-ardoise">à partir de</span>
+              <span className="text-[0.72rem] text-ink-muted">à partir de</span>
               <span
-                className={`font-serif text-[1.75rem] font-light italic leading-none ${
-                  tier.highlighted ? "text-or" : "text-or-fonce"
+                className={`font-display text-[1.75rem] font-bold italic leading-none ${
+                  tier.highlighted ? "text-accent-500" : "text-accent-700"
                 }`}
               >
                 {normalizeFromPrice(tier.from)}
               </span>
               <span
                 className={`text-[0.68rem] ${
-                  tier.highlighted ? "text-white/30" : "text-ardoise"
+                  tier.highlighted ? "text-white/30" : "text-ink-muted"
                 }`}
               >
                 HT/mois
@@ -60,10 +60,10 @@ export function PricingTeaser({
                 <li
                   key={f}
                   className={`flex items-start gap-2 text-[0.78rem] ${
-                    tier.highlighted ? "text-white/60" : "text-ardoise"
+                    tier.highlighted ? "text-white/60" : "text-ink-muted"
                   }`}
                 >
-                  <span className="mt-0.5 flex-shrink-0 text-or">✓</span>
+                  <span className="mt-0.5 flex-shrink-0 text-accent-500">✓</span>
                   {f}
                 </li>
               ))}
@@ -74,7 +74,7 @@ export function PricingTeaser({
       <div className="mt-4 text-center">
         <Link
           href="/contact"
-          className="inline-flex items-center gap-2 text-[0.82rem] font-medium text-or-fonce transition-colors hover:text-or"
+          className="inline-flex items-center gap-2 text-[0.82rem] font-medium text-accent-700 transition-colors hover:text-accent-500"
         >
           Demander un devis personnalisé →
         </Link>

@@ -21,12 +21,12 @@ export function StatHighlight({
         {stats.map((stat, i) => (
           <div
             key={stat.label}
-            className={`px-2 py-2 text-center lg:px-10 ${i < stats.length - 1 ? "lg:border-r lg:border-pierre-12" : ""} ${i === 0 ? "lg:text-left" : ""}`}
+            className={`px-2 py-2 text-center lg:px-10 ${i < stats.length - 1 ? "lg:border-r lg:border-border-soft" : ""} ${i === 0 ? "lg:text-left" : ""}`}
           >
-            <span className="block font-serif text-[3rem] font-light italic leading-none text-or">
+            <span className="block font-display text-[3rem] font-bold italic leading-none text-accent-500">
               {stat.value}
             </span>
-            <span className="mt-1 text-[0.78rem] text-ardoise">
+            <span className="mt-1 text-[0.78rem] text-ink-muted">
               {stat.label}
             </span>
           </div>
@@ -41,16 +41,16 @@ export function StatHighlight({
         {stats.map((s) => (
           <div
             key={s.label}
-            className="border border-pierre-12 bg-blanc p-6 text-center"
+            className="border border-border-soft bg-surface p-6 text-center"
           >
-            <span className="block font-serif text-[2.5rem] font-light italic leading-none text-or-fonce">
+            <span className="block font-display text-[2.5rem] font-bold italic leading-none text-accent-700">
               {s.value}
             </span>
-            <span className="mt-2 block text-[0.85rem] font-medium text-encre">
+            <span className="mt-2 block text-[0.85rem] font-medium text-ink">
               {s.label}
             </span>
             {s.detail && (
-              <span className="mt-1 block text-[0.72rem] text-ardoise">
+              <span className="mt-1 block text-[0.72rem] text-ink-muted">
                 {s.detail}
               </span>
             )}
@@ -61,19 +61,19 @@ export function StatHighlight({
   }
 
   return (
-    <div className="mb-12 flex flex-wrap items-center justify-center gap-6 border border-pierre-12 bg-blanc px-6 py-8 md:justify-between md:px-10">
+    <div className="mb-12 flex flex-wrap items-center justify-center gap-6 border border-border-soft bg-surface px-6 py-8 md:justify-between md:px-10">
       {stats.map((s, i) => (
         <div key={s.label} className="flex items-center gap-6">
           <div className="text-center">
-            <span className="block font-serif text-[2rem] font-light italic leading-none text-or-fonce">
+            <span className="block font-display text-[2rem] font-bold italic leading-none text-accent-700">
               {s.value}
             </span>
-            <span className="mt-1 block text-[0.75rem] text-ardoise">
+            <span className="mt-1 block text-[0.75rem] text-ink-muted">
               {s.label}
             </span>
           </div>
           {i < stats.length - 1 && (
-            <div className="hidden h-10 w-px bg-pierre-12 md:block" />
+            <div className="hidden h-10 w-px bg-border-soft md:block" />
           )}
         </div>
       ))}

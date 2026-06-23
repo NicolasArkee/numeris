@@ -1,13 +1,12 @@
 export const AppConfig = {
-  name: "Numeris",
-  tagline: "Expertise Comptable",
-  url:
-    process.env.NEXT_PUBLIC_SITE_URL || "https://numeris-expertise.fr",
+  name: "Skoria",
+  tagline: "Comparateur indépendant",
+  url: process.env.NEXT_PUBLIC_SITE_URL || "https://www.skoria.eu",
   locale: "fr",
   phone: "01 42 36 XX XX",
-  email: "contact@numeris-expertise.fr",
-  address: "12 rue de Rivoli, 75001 Paris",
-  foundedYear: 1996,
+  email: "contact@skoria.fr",
+  address: "14, rue de la Bourse, 75002 Paris",
+  foundedYear: 2024,
   description:
-    "Cabinet d'expertise comptable à Paris. Comptabilité, fiscalité, conseil en gestion et accompagnement des entreprises depuis 1996.",
+    "Skoria est le comparateur indépendant des experts-comptables en Europe. Comparez, notez et choisissez le professionnel adapté à votre activité, à partir de sources publiques et d'avis vérifiés.",
 };

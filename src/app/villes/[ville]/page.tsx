@@ -20,17 +20,19 @@ interface Props {
   params: Promise<{ ville: string }>;
 }
 
+export const revalidate = 86400;
+
 export async function generateStaticParams() {
-  return db.getVilles().map((v) => ({ ville: v.slug }));
+  return (await db.getVilles()).map((v) => ({ ville: v.slug }));
 }
 
 const VILLES_ROUTE = "villes";
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { ville: slug } = await params;
-  const ville = db.getVilleBySlug(slug);
+  const ville = await db.getVilleBySlug(slug);
   if (!ville) return {};
-  const dbSeo = db.getSeoOverride(VILLES_ROUTE, slug);
+  const dbSeo = await db.getSeoOverride(VILLES_ROUTE, slug);
   const seo = getSEOForVille(ville);
   return {
     title: dbSeo?.meta_title ?? seo.metaTitle,
@@ -43,46 +45,44 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 // Entièrement pilotée par les colonnes per-ville de la DB.
 function VilleInfoCard({ ville }: { ville: Ville }) {
   return (
-    <div className="mb-12 border border-pierre-12 border-l-2 border-l-or bg-blanc p-7">
-      <h2 className="mb-4 font-serif text-[1.25rem] font-light text-encre">
-        Votre cabinet à {ville.name}
+    <div className="mb-12 border border-border-soft border-l-2 border-l-accent-500 bg-surface p-7">
+      <h2 className="mb-4 font-display text-[1.25rem] font-bold text-ink">
+        Comparer à {ville.name}
       </h2>
       <div className="grid gap-6 md:grid-cols-3">
         <div>
-          <span className="mb-1 block text-[0.68rem] font-bold uppercase tracking-[0.1em] text-ardoise">
-            Adresse
+          <span className="mb-1 block text-[0.68rem] font-bold uppercase tracking-[0.1em] text-ink-muted">
+            Zone
           </span>
-          <p className="text-[0.85rem] text-encre">
+          <p className="text-[0.85rem] text-ink">
             {ville.address ? (
               <>
-                {ville.address}
-                <br />
                 {ville.postal_code} {ville.name}
               </>
             ) : (
-              AppConfig.address
+              ville.name
             )}
           </p>
         </div>
         <div>
-          <span className="mb-1 block text-[0.68rem] font-bold uppercase tracking-[0.1em] text-ardoise">
-            Téléphone
+          <span className="mb-1 block text-[0.68rem] font-bold uppercase tracking-[0.1em] text-ink-muted">
+            Données
           </span>
-          <p className="text-[0.85rem] font-medium text-or-fonce">
-            {ville.phone ?? AppConfig.phone}
+          <p className="text-[0.85rem] text-ink">
+            Fiches publiques et critères de comparaison.
           </p>
           {ville.opening_hours && (
-            <p className="mt-1 text-[0.72rem] text-ardoise">
-              Lun.–Ven. 9h–18h
+            <p className="mt-1 text-[0.72rem] text-ink-muted">
+              Informations à confirmer auprès du professionnel.
             </p>
           )}
         </div>
         <div>
-          <span className="mb-1 block text-[0.68rem] font-bold uppercase tracking-[0.1em] text-ardoise">
-            Rendez-vous
+          <span className="mb-1 block text-[0.68rem] font-bold uppercase tracking-[0.1em] text-ink-muted">
+            Orientation
           </span>
-          <a href="/contact" className="text-[0.85rem] font-medium text-or-fonce hover:underline">
-            Prendre rendez-vous →
+          <a href="/contact" className="text-[0.85rem] font-medium text-accent-700 hover:underline">
+            Préparer ma demande →
           </a>
         </div>
       </div>
@@ -92,14 +92,14 @@ function VilleInfoCard({ ville }: { ville: Ville }) {
 
 export default async function VillePage({ params }: Props) {
   const { ville: slug } = await params;
-  const ville = db.getVilleBySlug(slug);
+  const ville = await db.getVilleBySlug(slug);
   if (!ville) notFound();
 
   const seo = getSEOForVille(ville);
-  const linkGroups = getVilleLinks(slug);
+  const linkGroups = await getVilleLinks(slug);
 
   // ─── DB-first path ───
-  const bundle = getDbPageBundle(VILLES_ROUTE, slug);
+  const bundle = await getDbPageBundle(VILLES_ROUTE, slug);
   const { sections: dbSections, seo: dbSeo, lastUpdatedDate, hasDbContent } = bundle;
   const canonicalUrl = `${AppConfig.url}/villes/${slug}`;
 
@@ -111,10 +111,11 @@ export default async function VillePage({ params }: Props) {
       <ExtraJsonLd raw={dbSeo?.json_ld_extra ?? null} />
     </>
   );
+  const servicesForGrid = await db.getServices();
   const servicesGrid = (
     <ServicesGrid
-      title={`Nos services à ${ville.name}`}
-      services={db.getServices()}
+      title={`Expertises à comparer à ${ville.name}`}
+      services={servicesForGrid}
       hrefBuilder={(svc) => `/expertises/${svc.slug}/${slug}`}
       cardTitleBuilder={(svc) => `${svc.title} à ${ville.name}`}
     />
@@ -130,9 +131,9 @@ export default async function VillePage({ params }: Props) {
     ville.departement ? `Dept. ${ville.departement}` : "",
   ].filter(Boolean);
   const keyTakeaways = bundle.keyTakeaways ?? [
-    `Expert-comptable à ${ville.name}, inscrit à l'Ordre`,
-    `Rendez-vous en présentiel ou en visio`,
-    `Premier échange gratuit et sans engagement`,
+    `Professionnels comptables à comparer à ${ville.name}`,
+    `Présentiel, visio ou distance à arbitrer`,
+    `Périmètre et habilitations à confirmer avant engagement`,
   ];
 
   if (hasDbContent) {
@@ -142,7 +143,7 @@ export default async function VillePage({ params }: Props) {
 
     return (
       <ClusterPage
-        eyebrow={`Expert-comptable ${ville.name}`}
+        eyebrow={`Comparateur à ${ville.name}`}
         h1={h1}
         intro={intro}
         breadcrumbs={breadcrumbs}
@@ -169,7 +170,7 @@ export default async function VillePage({ params }: Props) {
 
   return (
     <ClusterPage
-      eyebrow={`Expert-comptable ${ville.name}`}
+      eyebrow={`Comparateur à ${ville.name}`}
       h1={seo.h1}
       intro={seo.intro}
       breadcrumbs={breadcrumbs}

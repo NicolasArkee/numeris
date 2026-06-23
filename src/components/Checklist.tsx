@@ -12,12 +12,12 @@ export function Checklist({
   columns = 1,
 }: ChecklistProps) {
   const icon = { check: "✓", arrow: "→", star: "★" }[variant];
-  const iconColor = { check: "text-or", arrow: "text-or-fonce", star: "text-or" }[variant];
+  const iconColor = { check: "text-accent-500", arrow: "text-accent-700", star: "text-accent-500" }[variant];
 
   return (
-    <div className="mb-12 border border-pierre-12 bg-blanc p-7">
+    <div className="mb-12 border border-border-soft bg-surface p-7">
       {title && (
-        <h2 className="mb-5 font-serif text-[1.15rem] font-light text-encre">
+        <h2 className="mb-5 font-display text-[1.15rem] font-bold text-ink">
           {title}
         </h2>
       )}
@@ -29,7 +29,7 @@ export function Checklist({
             <span className={`mt-0.5 flex-shrink-0 text-[0.78rem] font-bold ${iconColor}`}>
               {icon}
             </span>
-            <span className="text-base leading-relaxed text-encre-75">
+            <span className="text-base leading-relaxed text-ink-muted">
               {item}
             </span>
           </li>

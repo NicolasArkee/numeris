@@ -30,7 +30,7 @@ export const SIMULATEURS: SimulateurDef[] = [
     icon: "📊",
     title: "Simulateur de charges sociales",
     h1: "Simulateur de charges sociales 2026",
-    metaTitle: "Simulateur de Charges Sociales 2026 (Micro, TNS, SASU) | Numeris",
+    metaTitle: "Simulateur de Charges Sociales 2026 (Micro, TNS, SASU) | Skoria",
     metaDescription:
       "Estimez vos cotisations sociales et votre net selon votre statut : micro-entreprise, TNS au réel ou assimilé salarié. Gratuit, barèmes 2026.",
     eyebrow: "Outil gratuit",
@@ -60,7 +60,7 @@ export const SIMULATEURS: SimulateurDef[] = [
     icon: "⚖️",
     title: "Comparateur de statuts",
     h1: "Comparateur de statuts : micro, EI ou SASU ?",
-    metaTitle: "Micro-entreprise, EI ou SASU ? Comparateur de Statuts 2026 | Numeris",
+    metaTitle: "Micro-entreprise, EI ou SASU ? Comparateur de Statuts 2026 | Skoria",
     metaDescription:
       "Comparez le revenu net selon votre statut juridique et fiscal : micro-entreprise, entreprise individuelle au réel ou SASU à l'IS. Simulation gratuite.",
     eyebrow: "Outil gratuit",
@@ -90,7 +90,7 @@ export const SIMULATEURS: SimulateurDef[] = [
     icon: "💶",
     title: "Calculateur de TJM",
     h1: "Calculateur de TJM freelance",
-    metaTitle: "Calcul du TJM Freelance 2026 : quel taux journalier viser ? | Numeris",
+    metaTitle: "Calcul du TJM Freelance 2026 : quel taux journalier viser ? | Skoria",
     metaDescription:
       "Calculez le taux journalier moyen (TJM) nécessaire pour atteindre votre objectif de revenu net, selon votre statut et vos jours facturés. Gratuit.",
     eyebrow: "Outil gratuit",
@@ -120,7 +120,7 @@ export const SIMULATEURS: SimulateurDef[] = [
     icon: "🏠",
     title: "Simulateur LMNP",
     h1: "Simulateur LMNP : micro-BIC ou régime réel ?",
-    metaTitle: "Simulateur LMNP 2026 : Micro-BIC ou Réel (amortissement) ? | Numeris",
+    metaTitle: "Simulateur LMNP 2026 : Micro-BIC ou Réel (amortissement) ? | Skoria",
     metaDescription:
       "Comparez la base imposable de votre location meublée au micro-BIC (abattement 50 %) et au régime réel avec amortissement. Simulation gratuite.",
     eyebrow: "Outil gratuit",
@@ -150,7 +150,7 @@ export const SIMULATEURS: SimulateurDef[] = [
     icon: "🧾",
     title: "Simulateur d'honoraires",
     h1: "Combien coûte un expert-comptable ? Estimez vos honoraires",
-    metaTitle: "Tarif Expert-Comptable : Simulateur d'Honoraires 2026 | Numeris",
+    metaTitle: "Tarif Expert-Comptable : Simulateur d'Honoraires 2026 | Skoria",
     metaDescription:
       "Estimez en 2 minutes le tarif mensuel de votre expert-comptable selon votre forme juridique, votre chiffre d'affaires et vos salariés. Devis ferme sous 24h.",
     eyebrow: "Outil gratuit",
@@ -180,7 +180,7 @@ export const SIMULATEURS: SimulateurDef[] = [
     icon: "📈",
     title: "Grille des salaires expert-comptable",
     h1: "Salaire d'un expert-comptable : grille interactive 2026",
-    metaTitle: "Salaire Expert-Comptable 2026 : Grille par Expérience et Région | Numeris",
+    metaTitle: "Salaire Expert-Comptable 2026 : Grille par Expérience et Région | Skoria",
     metaDescription:
       "Du collaborateur débutant à l'associé : explorez les salaires de la profession comptable par expérience et région, avec les minima de la CCN 787.",
     eyebrow: "Données métier",

@@ -146,7 +146,7 @@ export interface Ville {
   longitude: number | null;
   ape_code: string | null;
   // SIRET = SIREN (9 digits) + NIC (5 digits). SIREN root is a placeholder until Patch D.
-  // TODO: replace SIREN root with real Numeris SIREN from Patch D once provisioned
+  // TODO: replace SIREN root with real Skoria SIREN from Patch D once provisioned
   siret_etablissement: string | null;
 }
 
@@ -247,74 +247,161 @@ export interface PageMeta {
   pipeline_run_id: string | null;
 }
 
+// ─── Directory data integration types ───
+
+export interface DirectoryCabinet {
+  id: number;
+  siren: string | null;
+  legal_name: string;
+  display_name: string | null;
+  naf_code: string | null;
+  legal_form: string | null;
+  is_active: number;
+  oec_status:
+    | "unverified"
+    | "verified"
+    | "manual_verified"
+    | "not_found"
+    | "ambiguous"
+    | "stale";
+  oec_profile_url: string | null;
+  oec_verified_at: string | null;
+  confidence_score: number;
+  publish_status: "draft" | "review" | "published" | "archived" | "blocked";
+  source_summary: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DirectoryEstablishment {
+  id: number;
+  cabinet_id: number;
+  siret: string;
+  is_headquarter: number;
+  is_active: number;
+  address_line1: string | null;
+  address_line2: string | null;
+  postal_code: string | null;
+  city_name: string | null;
+  city_code_insee: string | null;
+  department_code: string | null;
+  region_code: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  geocode_score: number | null;
+  source_key: string | null;
+  retrieved_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DirectoryCity {
+  code_insee: string;
+  name: string;
+  slug: string;
+  postal_codes: string;
+  department_code: string | null;
+  department_name: string | null;
+  region_code: string | null;
+  region_name: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  population: number;
+  updated_at: string;
+}
+
+export interface DirectoryCabinetCard {
+  cabinet: DirectoryCabinet;
+  establishment: DirectoryEstablishment;
+  city: DirectoryCity | null;
+}
+
 // ─── Database adapter interface ───
 export interface DbAdapter {
   // Home page
-  getServices(): Service[];
-  getTeamMembers(): TeamMember[];
-  getTestimonials(): Testimonial[];
-  getPricingPlans(): PricingPlan[];
-  getFaqItems(): FaqItem[];
-  getPageBySlug(slug: string): Page | undefined;
-  getAllPages(): Page[];
+  getServices(): Promise<Service[]>;
+  getTeamMembers(): Promise<TeamMember[]>;
+  getTestimonials(): Promise<Testimonial[]>;
+  getPricingPlans(): Promise<PricingPlan[]>;
+  getFaqItems(): Promise<FaqItem[]>;
+  getPageBySlug(slug: string): Promise<Page | undefined>;
+  getAllPages(): Promise<Page[]>;
 
   // Clustering / KG
-  getSilos(): Silo[];
-  getSiloBySlug(slug: string): Silo | undefined;
-  getHubsBySilo(siloSlug: string): Hub[];
-  getHubBySlug(slug: string): Hub | undefined;
-  getClustersByHub(hubSlug: string): Cluster[];
-  getClusterBySlug(slug: string): Cluster | undefined;
-  getKeywordsByCluster(clusterSlug: string): KeywordPage[];
-  getKeywordBySlug(slug: string): KeywordPage | undefined;
-  getAllKeywords(): KeywordPage[];
+  getSilos(): Promise<Silo[]>;
+  getSiloBySlug(slug: string): Promise<Silo | undefined>;
+  getHubsBySilo(siloSlug: string): Promise<Hub[]>;
+  getHubBySlug(slug: string): Promise<Hub | undefined>;
+  getClustersByHub(hubSlug: string): Promise<Cluster[]>;
+  getClusterBySlug(slug: string): Promise<Cluster | undefined>;
+  getKeywordsByCluster(clusterSlug: string): Promise<KeywordPage[]>;
+  getKeywordBySlug(slug: string): Promise<KeywordPage | undefined>;
+  getAllKeywords(): Promise<KeywordPage[]>;
 
   // Geo
-  getVilles(): Ville[];
-  getVilleBySlug(slug: string): Ville | undefined;
-  getDepartements(): Departement[];
-  getDepartementBySlug(slug: string): Departement | undefined;
+  getVilles(): Promise<Ville[]>;
+  getVilleBySlug(slug: string): Promise<Ville | undefined>;
+  getDepartements(): Promise<Departement[]>;
+  getDepartementBySlug(slug: string): Promise<Departement | undefined>;
 
   // Secteurs
-  getSecteurs(): Secteur[];
-  getSecteurBySlug(slug: string): Secteur | undefined;
+  getSecteurs(): Promise<Secteur[]>;
+  getSecteurBySlug(slug: string): Promise<Secteur | undefined>;
 
   // Professions
-  getProfessionCategories(): ProfessionCategory[];
-  getProfessionCategoryBySlug(slug: string): ProfessionCategory | undefined;
-  getProfessionsByCategory(categorySlug: string): Profession[];
-  getProfessions(): Profession[];
-  getProfessionBySlug(slug: string): Profession | undefined;
+  getProfessionCategories(): Promise<ProfessionCategory[]>;
+  getProfessionCategoryBySlug(slug: string): Promise<ProfessionCategory | undefined>;
+  getProfessionsByCategory(categorySlug: string): Promise<Profession[]>;
+  getProfessions(): Promise<Profession[]>;
+  getProfessionBySlug(slug: string): Promise<Profession | undefined>;
 
   // Cross-dimensions
-  getServiceSecteurs(serviceSlug: string): { secteur_slug: string; volume: number }[];
-  getServiceVilles(serviceSlug: string): { ville_slug: string; volume: number }[];
-  getServiceProfessions(serviceSlug: string): { profession_slug: string; volume: number }[];
+  getServiceSecteurs(serviceSlug: string): Promise<{ secteur_slug: string; volume: number }[]>;
+  getServiceVilles(serviceSlug: string): Promise<{ ville_slug: string; volume: number }[]>;
+  getServiceProfessions(serviceSlug: string): Promise<{ profession_slug: string; volume: number }[]>;
 
   // KG edges
-  getEdgesFrom(slug: string): KgEdge[];
-  getEdgesTo(slug: string): KgEdge[];
+  getEdgesFrom(slug: string): Promise<KgEdge[]>;
+  getEdgesTo(slug: string): Promise<KgEdge[]>;
 
   // ─── Pricing tiers (P4a) ───
-  getPricingTiers(): PricingTier[];
+  getPricingTiers(): Promise<PricingTier[]>;
 
   // ─── Testimonials filtering (P4a) ───
-  getTestimonialsByProfession(slug: string, limit?: number): Testimonial[];
-  getTestimonialsBySecteur(slug: string, limit?: number): Testimonial[];
-  getTestimonialsByVille(slug: string, limit?: number): Testimonial[];
+  getTestimonialsByProfession(slug: string, limit?: number): Promise<Testimonial[]>;
+  getTestimonialsBySecteur(slug: string, limit?: number): Promise<Testimonial[]>;
+  getTestimonialsByVille(slug: string, limit?: number): Promise<Testimonial[]>;
 
   // ─── Page content (sections, SEO, meta) ───
   // READ
-  getPageSections(route: string, slug: string): PageSection[];
-  getSeoOverride(route: string, slug: string): SeoOverride | null;
-  getPageMeta(route: string, slug: string): PageMeta | null;
+  getPageSections(route: string, slug: string): Promise<PageSection[]>;
+  getSeoOverride(route: string, slug: string): Promise<SeoOverride | null>;
+  getPageMeta(route: string, slug: string): Promise<PageMeta | null>;
   /** P4a — needed by sitemap.ts for real lastmod from page_meta.reviewed_at. */
-  getAllPageMeta(): PageMeta[];
+  getAllPageMeta(): Promise<PageMeta[]>;
 
   // WRITE — used by pipeline import scripts + future admin API
-  upsertPageSection(section: Omit<PageSection, "id" | "generated_at">): void;
-  upsertSeoOverride(override: Omit<SeoOverride, "id" | "generated_at">): void;
-  upsertPageMeta(meta: Omit<PageMeta, "id" | "reviewed_at">): void;
+  upsertPageSection(section: Omit<PageSection, "id" | "generated_at">): Promise<void>;
+  upsertSeoOverride(override: Omit<SeoOverride, "id" | "generated_at">): Promise<void>;
+  upsertPageMeta(meta: Omit<PageMeta, "id" | "reviewed_at">): Promise<void>;
   /** Delete every row for (route, slug) — used when regenerating a page in full. */
-  deletePageSections(route: string, slug: string): void;
+  deletePageSections(route: string, slug: string): Promise<void>;
+
+  // ─── Directory public reads ───
+  getDirectoryCities(): Promise<DirectoryCity[]>;
+  getDirectoryCityBySlug(slug: string): Promise<DirectoryCity | null>;
+  getDirectoryCabinetsByCity(codeInsee: string, limit?: number): Promise<DirectoryCabinetCard[]>;
+  getDirectoryCabinetBySiret(siret: string): Promise<DirectoryCabinetCard | null>;
+  getDirectoryCabinetCountByCity(codeInsee: string): Promise<number>;
+  getPublishedDirectoryCabinetCount(): Promise<number>;
+  getDirectoryListingCities(): Promise<DirectoryCity[]>;
+  getDirectoryListingCabinetsByCity(codeInsee: string, limit?: number): Promise<DirectoryCabinetCard[]>;
+  getDirectoryListingCabinetBySiret(siret: string): Promise<DirectoryCabinetCard | null>;
+  getDirectoryListingCabinetCountByCity(codeInsee: string): Promise<number>;
+  getDirectoryListingCabinetCount(): Promise<number>;
+  /** Top published cabinets nationally, ordered by confidence_score DESC. Powers the homepage Hero TOP X. */
+  getTopDirectoryListingCabinets(limit?: number): Promise<DirectoryCabinetCard[]>;
+  getDirectoryRelatedListingCabinetsByCity(codeInsee: string, excludeSiret: string, limit?: number): Promise<DirectoryCabinetCard[]>;
+  getDirectoryProfileServices(): Promise<Service[]>;
+  getDirectoryProfileProfessions(limit?: number): Promise<Profession[]>;
 }

@@ -5,13 +5,13 @@ import { db, type LinkGroup } from "@/libs/db";
 /**
  * Get link groups for a service page: related secteurs + top villes
  */
-export function getServiceLinks(serviceSlug: string): LinkGroup[] {
+export async function getServiceLinks(serviceSlug: string): Promise<LinkGroup[]> {
   const groups: LinkGroup[] = [];
 
   // Cross: service × secteur
-  const secteurs = db.getServiceSecteurs(serviceSlug);
+  const secteurs = await db.getServiceSecteurs(serviceSlug);
   if (secteurs.length > 0) {
-    const allSecteurs = db.getSecteurs();
+    const allSecteurs = await db.getSecteurs();
     const secteurMap = new Map(allSecteurs.map((s) => [s.slug, s]));
     groups.push({
       title: "Par secteur d'activité",
@@ -25,9 +25,9 @@ export function getServiceLinks(serviceSlug: string): LinkGroup[] {
   }
 
   // Cross: service × ville
-  const villes = db.getServiceVilles(serviceSlug);
+  const villes = await db.getServiceVilles(serviceSlug);
   if (villes.length > 0) {
-    const allVilles = db.getVilles();
+    const allVilles = await db.getVilles();
     const villeMap = new Map(allVilles.map((v) => [v.slug, v]));
     groups.push({
       title: "Par ville",
@@ -41,7 +41,7 @@ export function getServiceLinks(serviceSlug: string): LinkGroup[] {
   }
 
   // Sibling services
-  const allServices = db.getServices();
+  const allServices = await db.getServices();
   const siblings = allServices.filter((s) => s.slug !== serviceSlug);
   if (siblings.length > 0) {
     groups.push({
@@ -59,13 +59,13 @@ export function getServiceLinks(serviceSlug: string): LinkGroup[] {
 /**
  * Get link groups for a secteur page: related services + top villes
  */
-export function getSecteurLinks(secteurSlug: string): LinkGroup[] {
+export async function getSecteurLinks(secteurSlug: string): Promise<LinkGroup[]> {
   const groups: LinkGroup[] = [];
-  const allServices = db.getServices();
+  const allServices = await db.getServices();
 
   // Services available for this secteur
   groups.push({
-    title: "Nos services pour votre secteur",
+    title: "Expertises à comparer pour votre secteur",
     links: allServices.map((s) => ({
       label: s.title,
       href: `/expertises/${s.slug}/${secteurSlug}`,
@@ -73,7 +73,7 @@ export function getSecteurLinks(secteurSlug: string): LinkGroup[] {
   });
 
   // Sibling secteurs
-  const allSecteurs = db.getSecteurs();
+  const allSecteurs = await db.getSecteurs();
   const siblings = allSecteurs.filter((s) => s.slug !== secteurSlug).slice(0, 8);
   if (siblings.length > 0) {
     groups.push({
@@ -91,14 +91,14 @@ export function getSecteurLinks(secteurSlug: string): LinkGroup[] {
 /**
  * Get link groups for a ville page: services + nearby departments
  */
-export function getVilleLinks(villeSlug: string): LinkGroup[] {
+export async function getVilleLinks(villeSlug: string): Promise<LinkGroup[]> {
   const groups: LinkGroup[] = [];
-  const allServices = db.getServices();
-  const ville = db.getVilleBySlug(villeSlug);
+  const allServices = await db.getServices();
+  const ville = await db.getVilleBySlug(villeSlug);
 
   // Services in this ville
   groups.push({
-    title: "Nos services",
+    title: "Expertises à comparer",
     links: allServices.map((s) => ({
       label: `${s.title} à ${ville?.name || villeSlug}`,
       href: `/expertises/${s.slug}/${villeSlug}`,
@@ -106,7 +106,7 @@ export function getVilleLinks(villeSlug: string): LinkGroup[] {
   });
 
   // Other villes
-  const allVilles = db.getVilles();
+  const allVilles = await db.getVilles();
   const otherVilles = allVilles.filter((v) => v.slug !== villeSlug).slice(0, 10);
   if (otherVilles.length > 0) {
     groups.push({
@@ -124,13 +124,13 @@ export function getVilleLinks(villeSlug: string): LinkGroup[] {
 /**
  * Get link groups for a departement page
  */
-export function getDepartementLinks(deptSlug: string): LinkGroup[] {
+export async function getDepartementLinks(deptSlug: string): Promise<LinkGroup[]> {
   const groups: LinkGroup[] = [];
-  const dept = db.getDepartementBySlug(deptSlug);
+  const dept = await db.getDepartementBySlug(deptSlug);
 
   // Villes in same region
   if (dept?.region) {
-    const allVilles = db.getVilles();
+    const allVilles = await db.getVilles();
     const regionVilles = allVilles.filter((v) => v.region === dept.region).slice(0, 10);
     if (regionVilles.length > 0) {
       groups.push({
@@ -144,7 +144,7 @@ export function getDepartementLinks(deptSlug: string): LinkGroup[] {
   }
 
   // Other departments
-  const allDepts = db.getDepartements();
+  const allDepts = await db.getDepartements();
   const otherDepts = allDepts.filter((d) => d.slug !== deptSlug).slice(0, 10);
   if (otherDepts.length > 0) {
     groups.push({
@@ -162,9 +162,9 @@ export function getDepartementLinks(deptSlug: string): LinkGroup[] {
 /**
  * Get link groups for a cross-dimension page (service × secteur)
  */
-export function getCrossServiceSecteurLinks(serviceSlug: string, secteurSlug: string): LinkGroup[] {
+export async function getCrossServiceSecteurLinks(serviceSlug: string, secteurSlug: string): Promise<LinkGroup[]> {
   const groups: LinkGroup[] = [];
-  const allVilles = db.getVilles();
+  const allVilles = await db.getVilles();
 
   // Add geo dimension
   groups.push({
@@ -176,7 +176,7 @@ export function getCrossServiceSecteurLinks(serviceSlug: string, secteurSlug: st
   });
 
   // Other secteurs for same service
-  const allSecteurs = db.getSecteurs();
+  const allSecteurs = await db.getSecteurs();
   const otherSecteurs = allSecteurs.filter((s) => s.slug !== secteurSlug);
   if (otherSecteurs.length > 0) {
     groups.push({
@@ -189,7 +189,7 @@ export function getCrossServiceSecteurLinks(serviceSlug: string, secteurSlug: st
   }
 
   // Other services for same secteur
-  const allServices = db.getServices();
+  const allServices = await db.getServices();
   const otherServices = allServices.filter((s) => s.slug !== serviceSlug);
   if (otherServices.length > 0) {
     groups.push({
@@ -207,14 +207,14 @@ export function getCrossServiceSecteurLinks(serviceSlug: string, secteurSlug: st
 /**
  * Get link groups for a profession page
  */
-export function getProfessionLinks(professionSlug: string): LinkGroup[] {
+export async function getProfessionLinks(professionSlug: string): Promise<LinkGroup[]> {
   const groups: LinkGroup[] = [];
-  const allServices = db.getServices();
-  const profession = db.getProfessionBySlug(professionSlug);
+  const allServices = await db.getServices();
+  const profession = await db.getProfessionBySlug(professionSlug);
 
   // Services for this profession
   groups.push({
-    title: "Nos services",
+    title: "Expertises à comparer",
     links: allServices.map((s) => ({
       label: `${s.title} pour ${profession?.name || professionSlug}`,
       href: `/expertises/${s.slug}/${professionSlug}`,
@@ -223,10 +223,10 @@ export function getProfessionLinks(professionSlug: string): LinkGroup[] {
 
   // Same category professions
   if (profession) {
-    const siblings = db.getProfessionsByCategory(profession.category_slug);
+    const siblings = await db.getProfessionsByCategory(profession.category_slug);
     const others = siblings.filter((p) => p.slug !== professionSlug).slice(0, 8);
     if (others.length > 0) {
-      const cat = db.getProfessionCategoryBySlug(profession.category_slug);
+      const cat = await db.getProfessionCategoryBySlug(profession.category_slug);
       groups.push({
         title: cat?.name || "Professions similaires",
         links: others.map((p) => ({
@@ -238,7 +238,7 @@ export function getProfessionLinks(professionSlug: string): LinkGroup[] {
   }
 
   // Link to profession categories hub
-  const categories = db.getProfessionCategories();
+  const categories = await db.getProfessionCategories();
   groups.push({
     title: "Tous les métiers",
     links: categories.slice(0, 8).map((c) => ({
@@ -253,11 +253,11 @@ export function getProfessionLinks(professionSlug: string): LinkGroup[] {
 /**
  * Get link groups for a cross service × profession page
  */
-export function getCrossServiceProfessionLinks(serviceSlug: string, professionSlug: string): LinkGroup[] {
+export async function getCrossServiceProfessionLinks(serviceSlug: string, professionSlug: string): Promise<LinkGroup[]> {
   const groups: LinkGroup[] = [];
 
   // Other services for same profession
-  const allServices = db.getServices();
+  const allServices = await db.getServices();
   const otherServices = allServices.filter((s) => s.slug !== serviceSlug);
   if (otherServices.length > 0) {
     groups.push({
@@ -270,9 +270,9 @@ export function getCrossServiceProfessionLinks(serviceSlug: string, professionSl
   }
 
   // Same category professions for same service
-  const profession = db.getProfessionBySlug(professionSlug);
+  const profession = await db.getProfessionBySlug(professionSlug);
   if (profession) {
-    const siblings = db.getProfessionsByCategory(profession.category_slug);
+    const siblings = await db.getProfessionsByCategory(profession.category_slug);
     const others = siblings.filter((p) => p.slug !== professionSlug).slice(0, 8);
     if (others.length > 0) {
       groups.push({
@@ -299,11 +299,11 @@ export function getCrossServiceProfessionLinks(serviceSlug: string, professionSl
 /**
  * Get link groups for ressource pages (silos, hubs, clusters, keywords)
  */
-export function getRessourceLinks(slug: string, type: "silo" | "hub" | "cluster" | "keyword"): LinkGroup[] {
+export async function getRessourceLinks(slug: string, type: "silo" | "hub" | "cluster" | "keyword"): Promise<LinkGroup[]> {
   const groups: LinkGroup[] = [];
 
   if (type === "silo") {
-    const hubs = db.getHubsBySilo(slug);
+    const hubs = await db.getHubsBySilo(slug);
     if (hubs.length > 0) {
       groups.push({
         title: "Sujets",
@@ -316,8 +316,8 @@ export function getRessourceLinks(slug: string, type: "silo" | "hub" | "cluster"
   }
 
   if (type === "hub") {
-    const hub = db.getHubBySlug(slug);
-    const clusters = db.getClustersByHub(slug);
+    const hub = await db.getHubBySlug(slug);
+    const clusters = await db.getClustersByHub(slug);
     if (clusters.length > 0) {
       groups.push({
         title: "Articles",
@@ -329,7 +329,7 @@ export function getRessourceLinks(slug: string, type: "silo" | "hub" | "cluster"
     }
     // Parent silo
     if (hub) {
-      const silo = db.getSiloBySlug(hub.silo_slug);
+      const silo = await db.getSiloBySlug(hub.silo_slug);
       if (silo) {
         groups.push({
           title: "Catégorie",
@@ -340,8 +340,8 @@ export function getRessourceLinks(slug: string, type: "silo" | "hub" | "cluster"
   }
 
   if (type === "cluster") {
-    const cluster = db.getClusterBySlug(slug);
-    const keywords = db.getKeywordsByCluster(slug);
+    const cluster = await db.getClusterBySlug(slug);
+    const keywords = await db.getKeywordsByCluster(slug);
     if (keywords.length > 0) {
       groups.push({
         title: "Articles liés",
@@ -353,7 +353,7 @@ export function getRessourceLinks(slug: string, type: "silo" | "hub" | "cluster"
     }
     // Parent hub
     if (cluster) {
-      const hub = db.getHubBySlug(cluster.hub_slug);
+      const hub = await db.getHubBySlug(cluster.hub_slug);
       if (hub) {
         groups.push({
           title: "Thème",
@@ -364,12 +364,11 @@ export function getRessourceLinks(slug: string, type: "silo" | "hub" | "cluster"
   }
 
   if (type === "keyword") {
-    const keyword = db.getKeywordBySlug(slug);
+    const keyword = await db.getKeywordBySlug(slug);
     if (keyword) {
-      const parentCluster = db.getClusterBySlug(keyword.cluster_slug);
+      const parentCluster = await db.getClusterBySlug(keyword.cluster_slug);
       // Sibling keywords in same cluster
-      const siblings = db
-        .getKeywordsByCluster(keyword.cluster_slug)
+      const siblings = (await db.getKeywordsByCluster(keyword.cluster_slug))
         .filter((kw) => kw.slug !== slug)
         .slice(0, 8);
       if (siblings.length > 0) {
@@ -388,14 +387,14 @@ export function getRessourceLinks(slug: string, type: "silo" | "hub" | "cluster"
           links: [{ label: parentCluster.label, href: `/ressources/${parentCluster.slug}` }],
         });
         // Parent hub
-        const parentHub = db.getHubBySlug(parentCluster.hub_slug);
+        const parentHub = await db.getHubBySlug(parentCluster.hub_slug);
         if (parentHub) {
           groups.push({
             title: "Thème",
             links: [{ label: parentHub.label, href: `/ressources/${parentHub.slug}` }],
           });
           // Parent silo
-          const silo = db.getSiloBySlug(parentHub.silo_slug);
+          const silo = await db.getSiloBySlug(parentHub.silo_slug);
           if (silo) {
             groups.push({
               title: "Catégorie",
@@ -408,9 +407,9 @@ export function getRessourceLinks(slug: string, type: "silo" | "hub" | "cluster"
   }
 
   // Always link to services
-  const allServices = db.getServices();
+  const allServices = await db.getServices();
   groups.push({
-    title: "Nos expertises",
+    title: "Expertises à comparer",
     links: allServices.slice(0, 4).map((s) => ({
       label: s.title,
       href: `/expertises/${s.slug}`,

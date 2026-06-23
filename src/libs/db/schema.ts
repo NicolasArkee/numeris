@@ -260,6 +260,136 @@ CREATE TABLE IF NOT EXISTS pricing_tiers (
 );
 CREATE INDEX IF NOT EXISTS idx_pricing_tiers_order ON pricing_tiers(order_index);
 
+-- ─── DIRECTORY DATA INTEGRATION ───
+-- Public-source annuaire layer. RNE/Sirene records are candidates only; public
+-- SEO/indexable reads must gate on documented professional status, confidence
+-- score, active status, and suppression requests. Listing reads may expose
+-- review candidates only with explicit non-confirmation wording.
+
+CREATE TABLE IF NOT EXISTS source_registry (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  source_key TEXT UNIQUE NOT NULL,
+  source_name TEXT NOT NULL,
+  source_url TEXT,
+  source_type TEXT NOT NULL CHECK(source_type IN ('api','sftp','manual','authorized_export','claim')),
+  license_label TEXT,
+  legal_basis TEXT NOT NULL,
+  allowed_fields TEXT NOT NULL DEFAULT '[]',
+  refresh_frequency TEXT NOT NULL DEFAULT 'manual',
+  requires_legal_review INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS cities_official (
+  code_insee TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  slug TEXT NOT NULL,
+  postal_codes TEXT NOT NULL DEFAULT '[]',
+  department_code TEXT,
+  department_name TEXT,
+  region_code TEXT,
+  region_name TEXT,
+  latitude REAL,
+  longitude REAL,
+  population INTEGER NOT NULL DEFAULT 0,
+  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_cities_official_slug ON cities_official(slug);
+
+CREATE TABLE IF NOT EXISTS directory_cabinets (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  siren TEXT UNIQUE,
+  legal_name TEXT NOT NULL,
+  display_name TEXT,
+  naf_code TEXT,
+  legal_form TEXT,
+  is_active INTEGER NOT NULL DEFAULT 1,
+  oec_status TEXT NOT NULL DEFAULT 'unverified' CHECK(oec_status IN ('unverified','verified','manual_verified','not_found','ambiguous','stale')),
+  oec_profile_url TEXT,
+  oec_verified_at TEXT,
+  confidence_score INTEGER NOT NULL DEFAULT 0,
+  publish_status TEXT NOT NULL DEFAULT 'draft' CHECK(publish_status IN ('draft','review','published','archived','blocked')),
+  source_summary TEXT NOT NULL DEFAULT '{}',
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_directory_cabinets_publish ON directory_cabinets(publish_status, confidence_score, oec_status);
+
+CREATE TABLE IF NOT EXISTS directory_establishments (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  cabinet_id INTEGER NOT NULL REFERENCES directory_cabinets(id) ON DELETE CASCADE,
+  siret TEXT UNIQUE NOT NULL,
+  is_headquarter INTEGER NOT NULL DEFAULT 0,
+  is_active INTEGER NOT NULL DEFAULT 1,
+  address_line1 TEXT,
+  address_line2 TEXT,
+  postal_code TEXT,
+  city_name TEXT,
+  city_code_insee TEXT REFERENCES cities_official(code_insee),
+  department_code TEXT,
+  region_code TEXT,
+  latitude REAL,
+  longitude REAL,
+  geocode_score REAL,
+  source_key TEXT REFERENCES source_registry(source_key),
+  retrieved_at TEXT,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_directory_establishments_city ON directory_establishments(city_code_insee, is_active);
+
+CREATE TABLE IF NOT EXISTS directory_experts (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  cabinet_id INTEGER NOT NULL REFERENCES directory_cabinets(id) ON DELETE CASCADE,
+  full_name TEXT NOT NULL,
+  oec_status TEXT NOT NULL DEFAULT 'verified' CHECK(oec_status IN ('verified','manual_verified','unverified','stale')),
+  source_url TEXT,
+  source_retrieved_at TEXT,
+  is_displayable INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_directory_experts_cabinet ON directory_experts(cabinet_id, is_displayable);
+
+CREATE TABLE IF NOT EXISTS profile_claims (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  cabinet_id INTEGER NOT NULL REFERENCES directory_cabinets(id) ON DELETE CASCADE,
+  claimant_email_hash TEXT NOT NULL,
+  claimed_at TEXT NOT NULL DEFAULT (datetime('now')),
+  verified_at TEXT,
+  status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending','verified','rejected','expired')),
+  consent_version TEXT NOT NULL DEFAULT 'annuaire-rgpd-v1'
+);
+
+CREATE TABLE IF NOT EXISTS privacy_suppression_requests (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  siren TEXT,
+  siret TEXT,
+  requester_hash TEXT NOT NULL,
+  reason TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'active' CHECK(status IN ('active','resolved','rejected')),
+  received_at TEXT NOT NULL DEFAULT (datetime('now')),
+  resolved_at TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_privacy_suppression_siret ON privacy_suppression_requests(siret, status);
+
+CREATE TABLE IF NOT EXISTS directory_source_events (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  entity_type TEXT NOT NULL CHECK(entity_type IN ('cabinet','establishment','expert','city','claim','suppression')),
+  entity_key TEXT NOT NULL,
+  source_key TEXT NOT NULL REFERENCES source_registry(source_key),
+  source_url TEXT,
+  source_hash TEXT,
+  retrieved_at TEXT NOT NULL DEFAULT (datetime('now')),
+  parsed_ok INTEGER NOT NULL DEFAULT 1,
+  legal_basis TEXT NOT NULL,
+  old_value TEXT,
+  new_value TEXT,
+  change_reason TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_directory_source_events_entity ON directory_source_events(entity_type, entity_key);
+
 -- ─── TESTIMONIALS extension (P4a) ───
 -- ALTERs are applied imperatively by scripts/migrate-pricing-testimonials.ts
 -- (via PRAGMA table_info check) because CREATE TABLE IF NOT EXISTS does NOT
@@ -271,4 +401,87 @@ CREATE INDEX IF NOT EXISTS idx_pricing_tiers_order ON pricing_tiers(order_index)
 --   - _fictional      INTEGER NOT NULL DEFAULT 0  (internal audit flag, not exposed)
 -- Index:
 --   - idx_testimonials_profession ON testimonials(profession_slug)
+
+-- ─── AFFILIATION / COMMERCIAL LAYER (couche comparateur indépendant) ───
+-- Couche isolée : ne touche pas aux tables KG éditoriales (silos/hubs/clusters/
+-- keyword_pages) ni à /ressources. Routes dédiées : /comparatifs, /avis,
+-- /codes-parrainage. Données générées par ARKEE_ORG/CLIENTS/_standalone/numeris/
+-- (build_affiliate_taxonomy.py + Workflow) → importées par scripts/import-affiliate-clustering.ts.
+-- Le CONTENU (page_sections/seo_overrides/page_meta) reste produit par numeris_pipeline (Gemini).
+
+-- Programmes d'affiliation (source: Affiliation_Secteur_Comptable.xlsx, 77 programmes).
+CREATE TABLE IF NOT EXISTS affiliate_programs (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  slug TEXT UNIQUE NOT NULL,
+  name TEXT NOT NULL,
+  category_slug TEXT NOT NULL,
+  program_type TEXT NOT NULL,             -- 'AFF' | 'PAR' | 'APP' (+ combos)
+  has_affiliate INTEGER NOT NULL DEFAULT 0,
+  has_referral INTEGER NOT NULL DEFAULT 0,
+  has_apporteur INTEGER NOT NULL DEFAULT 0,
+  commission_display TEXT,                 -- 'Rémunération affichée' verbatim
+  recurrent INTEGER NOT NULL DEFAULT 0,
+  recurrent_note TEXT,
+  platform TEXT,                           -- 'Affilae' | 'Impact' | 'Interne' | ...
+  target_audience TEXT,
+  scale_public TEXT,                       -- 'Barème public': Oui/Partiel/Non
+  source_url TEXT,                         -- page programme (PAS le lien tracké)
+  affiliate_url TEXT,                      -- lien tracké/deeplink — NULL au seed
+  notes TEXT,
+  is_active INTEGER NOT NULL DEFAULT 1,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_affiliate_programs_category ON affiliate_programs(category_slug, is_active);
+
+-- Pages commerciales (334 topics : pillars/persona/subhub/tofu/avis/codes/alt/vs).
+-- Table isolée qui porte le routing + le fil d'ariane (hub/cluster labels) + la méta.
+CREATE TABLE IF NOT EXISTS commercial_pages (
+  slug TEXT PRIMARY KEY,
+  route TEXT NOT NULL,                      -- 'comparatifs' | 'avis' | 'codes-parrainage'
+  url TEXT NOT NULL,
+  archetype TEXT NOT NULL,                  -- pillar|persona|subhub|tofu|avis|code|alternatives|vs
+  silo_label TEXT,
+  hub_slug TEXT,
+  hub_label TEXT,
+  cluster_slug TEXT,
+  cluster_label TEXT,
+  label TEXT NOT NULL,
+  intent TEXT,
+  funnel_stage TEXT,
+  primary_program TEXT,
+  secondary_programs TEXT,                  -- 'a|b|c'
+  target_query TEXT,
+  est_volume INTEGER NOT NULL DEFAULT 0,
+  priority_ice REAL NOT NULL DEFAULT 0,
+  publish_wave INTEGER NOT NULL DEFAULT 0,
+  brief_json TEXT,                          -- brief éditorial enrichi (input pipeline gen-IA / Gemini)
+  publish_status TEXT NOT NULL DEFAULT 'draft' CHECK(publish_status IN ('draft','review','published','archived')),
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_commercial_pages_route ON commercial_pages(route, publish_status);
+CREATE INDEX IF NOT EXISTS idx_commercial_pages_cluster ON commercial_pages(cluster_slug);
+
+-- Association page ⟷ programme (rendu de la ComparisonTable + CTA d'affiliation).
+CREATE TABLE IF NOT EXISTS page_affiliate_programs (
+  route TEXT NOT NULL,
+  page_slug TEXT NOT NULL,
+  program_slug TEXT NOT NULL,
+  rank INTEGER NOT NULL DEFAULT 0,
+  is_primary INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY (route, page_slug, program_slug)
+);
+CREATE INDEX IF NOT EXISTS idx_page_affiliate_page ON page_affiliate_programs(route, page_slug);
+
+-- Maillage interne de la couche commerciale (pillar↔avis, avis↔code, persona↔secteur…).
+CREATE TABLE IF NOT EXISTS commercial_links (
+  source_slug TEXT NOT NULL,
+  source_route TEXT,
+  target_slug TEXT NOT NULL,
+  target_route TEXT,                        -- 'comparatifs'|'avis'|'codes-parrainage'|'secteurs' (page existante)
+  edge_type TEXT NOT NULL,
+  weight REAL NOT NULL DEFAULT 1.0,
+  PRIMARY KEY (source_slug, target_slug, edge_type)
+);
+CREATE INDEX IF NOT EXISTS idx_commercial_links_source ON commercial_links(source_slug);
 `;

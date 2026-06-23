@@ -35,27 +35,40 @@ export function PageHero({
 
   return (
     <section
-      className={`relative overflow-hidden bg-nuit px-6 lg:px-[4.5rem] ${
-        isCompact ? "py-16 lg:py-20" : "py-20 lg:py-24"
+      className={`relative overflow-hidden bg-brand-ink px-6 lg:px-12 ${
+        isCompact ? "py-14 lg:py-16" : "py-18 lg:py-22"
       }`}
     >
-      <div className="grid-bg pointer-events-none absolute inset-0 opacity-35" />
-      <div className="radial-or pointer-events-none absolute -bottom-1/4 -right-[8%] h-[560px] w-[560px]" />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -right-32 -bottom-32 h-115 w-115 rounded-full"
+        style={{
+          background:
+            "radial-gradient(circle, rgba(255,107,53,0.15) 0%, rgba(255,107,53,0) 60%)",
+        }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-32 -left-16 h-90 w-90 rounded-full"
+        style={{
+          background:
+            "radial-gradient(circle, rgba(44,93,184,0.28) 0%, rgba(44,93,184,0) 60%)",
+        }}
+      />
 
-      <div className={`relative z-10 mx-auto max-w-[82rem] ${isCentered ? "text-center" : ""}`}>
-        {/* Breadcrumbs */}
+      <div className={`relative z-10 mx-auto max-w-328 ${isCentered ? "text-center" : ""}`}>
         {breadcrumbs && breadcrumbs.length > 0 && (
-          <nav aria-label="Fil d'Ariane" className="mb-8">
-            <ol className={`flex flex-wrap items-center gap-1.5 text-[0.72rem] text-white/70 ${isCentered ? "justify-center" : ""}`}>
+          <nav aria-label="Fil d'Ariane" className="mb-7">
+            <ol className={`flex flex-wrap items-center gap-1.5 font-mono text-[0.75rem] text-white/55 ${isCentered ? "justify-center" : ""}`}>
               {breadcrumbs.map((item, i) => (
                 <li key={item.url} className="flex items-center gap-1.5">
-                  {i > 0 && <span>/</span>}
+                  {i > 0 && <span aria-hidden>/</span>}
                   {i < breadcrumbs.length - 1 ? (
-                    <Link href={item.url} className="transition-colors hover:text-or">
+                    <Link href={item.url} className="transition-colors hover:text-accent-300">
                       {item.name}
                     </Link>
                   ) : (
-                    <span className="text-white/90">{item.name}</span>
+                    <span className="text-white">{item.name}</span>
                   )}
                 </li>
               ))}
@@ -63,68 +76,64 @@ export function PageHero({
           </nav>
         )}
 
-        {/* Eyebrow */}
-        <div className={`mb-6 flex items-center gap-3.5 ${isCentered ? "justify-center" : ""}`}>
-          <span className="block h-px w-7 bg-or" />
-          <span className="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-or">
+        <div className={`mb-5 inline-flex items-center gap-2 rounded-full border border-accent-500/30 bg-accent-500/10 px-3.5 py-1.5 ${isCentered ? "mx-auto" : ""}`}>
+          <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-accent-500" />
+          <span className="font-display text-[0.6875rem] font-semibold uppercase tracking-[0.12em] text-accent-300">
             {eyebrow}
           </span>
-          {!isCentered && <span className="block h-px w-7 bg-or" />}
         </div>
 
-        {/* Title */}
         <h1
-          className={`mb-6 font-serif font-light leading-[1.08] tracking-tight text-blanc ${
+          className={`mb-5 font-display font-extrabold leading-[1.06] tracking-tight text-surface ${
             isCompact
-              ? "text-[2.25rem] lg:text-[3rem]"
-              : "text-[2.75rem] lg:text-[4rem]"
+              ? "text-[2rem] lg:text-[2.75rem]"
+              : "text-[2.5rem] lg:text-[3.75rem]"
           } ${isCentered ? "mx-auto max-w-4xl" : "max-w-3xl"}`}
         >
           {title}
           {titleAccent && (
             <>
               {" "}
-              <em className="font-normal italic text-or">{titleAccent}</em>
+              <span className="text-accent-500">{titleAccent}</span>
             </>
           )}
         </h1>
 
-        {/* Subtitle */}
         {subtitle && (
-          <p className={`mb-8 text-[0.95rem] leading-relaxed text-white/85 ${isCentered ? "mx-auto max-w-2xl" : "max-w-2xl"}`}>
+          <p className={`mb-7 text-[1rem] leading-relaxed text-white/75 lg:text-[1.0625rem] ${isCentered ? "mx-auto max-w-2xl" : "max-w-2xl"}`}>
             {subtitle}
           </p>
         )}
 
-        {/* Badges */}
         {badges && badges.length > 0 && (
-          <div className={`mb-8 flex flex-wrap gap-2 ${isCentered ? "justify-center" : ""}`}>
+          <div className={`mb-7 flex flex-wrap gap-2 ${isCentered ? "justify-center" : ""}`}>
             {badges.map((badge) => (
               <span
                 key={badge}
-                className="border border-white/20 px-3 py-1.5 text-[0.68rem] font-medium text-white/80"
+                className="inline-flex items-center gap-1.5 rounded-md border border-white/15 bg-white/5 px-3 py-1.5 text-[0.75rem] font-medium text-white/85"
               >
+                <span aria-hidden className="text-accent-500">✓</span>
                 {badge}
               </span>
             ))}
           </div>
         )}
 
-        {/* CTAs */}
         {(cta || ctaSecondary) && (
-          <div className={`flex flex-wrap items-center gap-5 ${isCentered ? "justify-center" : ""}`}>
+          <div className={`flex flex-wrap items-center gap-3 ${isCentered ? "justify-center" : ""}`}>
             {cta && (
               <Link
                 href={cta.href}
-                className="inline-flex items-center gap-2 bg-or px-9 py-4 font-sans text-[0.875rem] font-semibold text-nuit transition-colors hover:bg-[#b08844]"
+                className="inline-flex items-center gap-2 rounded-lg bg-accent-500 px-6 py-3 font-display text-[0.9375rem] font-semibold text-surface shadow-sm transition-colors hover:bg-accent-700"
               >
-                {cta.label} →
+                {cta.label}
+                <span aria-hidden>→</span>
               </Link>
             )}
             {ctaSecondary && (
               <Link
                 href={ctaSecondary.href}
-                className="border border-white/20 px-8 py-4 font-sans text-[0.875rem] font-medium text-white/50 transition-colors hover:border-white/40 hover:text-white/90"
+                className="inline-flex items-center gap-2 rounded-lg border border-white/20 bg-white/5 px-6 py-3 font-display text-[0.9375rem] font-semibold text-surface transition-colors hover:border-white/40 hover:bg-white/10"
               >
                 {ctaSecondary.label}
               </Link>
@@ -132,7 +141,6 @@ export function PageHero({
           </div>
         )}
 
-        {/* Extra content */}
         {children}
       </div>
     </section>

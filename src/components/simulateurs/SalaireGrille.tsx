@@ -34,7 +34,7 @@ export function SalaireGrille() {
         />
       </div>
       {profilData && (
-        <p className="mt-3 text-[0.75rem] text-ardoise">{profilData.detail}</p>
+        <p className="mt-3 text-[0.75rem] text-ink-muted">{profilData.detail}</p>
       )}
 
       <div className="mt-7 grid gap-4 md:grid-cols-2">
@@ -52,26 +52,26 @@ export function SalaireGrille() {
 
       {/* Grille CCN 787 — minima conventionnels indicatifs */}
       <div className="mt-9">
-        <h3 className="mb-4 font-serif text-[1.15rem] font-light text-encre">
+        <h3 className="mb-4 font-display text-[1.15rem] font-bold text-ink">
           Minima conventionnels — CCN des cabinets d&apos;experts-comptables (n° 787)
         </h3>
         <div className="overflow-x-auto">
           <table className="w-full border-collapse text-left">
             <thead>
-              <tr className="border-b-2 border-or">
-                <th className="px-4 py-2.5 text-[0.68rem] font-bold uppercase tracking-[0.08em] text-ardoise">Coefficient</th>
-                <th className="px-4 py-2.5 text-[0.68rem] font-bold uppercase tracking-[0.08em] text-ardoise">Niveau</th>
-                <th className="px-4 py-2.5 text-[0.68rem] font-bold uppercase tracking-[0.08em] text-ardoise">Brut annuel minimum</th>
-                <th className="px-4 py-2.5 text-[0.68rem] font-bold uppercase tracking-[0.08em] text-ardoise">Brut mensuel</th>
+              <tr className="border-b-2 border-accent-500">
+                <th className="px-4 py-2.5 text-[0.68rem] font-bold uppercase tracking-[0.08em] text-ink-muted">Coefficient</th>
+                <th className="px-4 py-2.5 text-[0.68rem] font-bold uppercase tracking-[0.08em] text-ink-muted">Niveau</th>
+                <th className="px-4 py-2.5 text-[0.68rem] font-bold uppercase tracking-[0.08em] text-ink-muted">Brut annuel minimum</th>
+                <th className="px-4 py-2.5 text-[0.68rem] font-bold uppercase tracking-[0.08em] text-ink-muted">Brut mensuel</th>
               </tr>
             </thead>
             <tbody>
               {GRILLE_CCN.map((row) => (
-                <tr key={row.coef} className="border-b border-pierre-12 bg-blanc">
-                  <td className="px-4 py-3 text-[0.85rem] font-medium text-encre">{row.coef}</td>
-                  <td className="px-4 py-3 text-[0.8rem] text-ardoise">{row.niveau}</td>
-                  <td className="px-4 py-3 text-[0.85rem] font-medium text-or-fonce">{fmtEur(row.brutAnnuel)}</td>
-                  <td className="px-4 py-3 text-[0.8rem] text-ardoise">{fmtEur(row.brutAnnuel / 12)}</td>
+                <tr key={row.coef} className="border-b border-border-soft bg-surface">
+                  <td className="px-4 py-3 text-[0.85rem] font-medium text-ink">{row.coef}</td>
+                  <td className="px-4 py-3 text-[0.8rem] text-ink-muted">{row.niveau}</td>
+                  <td className="px-4 py-3 text-[0.85rem] font-medium text-accent-700">{fmtEur(row.brutAnnuel)}</td>
+                  <td className="px-4 py-3 text-[0.8rem] text-ink-muted">{fmtEur(row.brutAnnuel / 12)}</td>
                 </tr>
               ))}
             </tbody>

@@ -35,8 +35,7 @@ function truncate(text: string, maxLen: number): string {
   return `${cut}…`;
 }
 
-/** Build the full Person schema object — extracted so PersonJsonLd and any
- *  inline embedding (Article author, ReviewedBy) can share the same shape. */
+/** Build the editorial Person schema object used by Article author/reviewer slots. */
 function buildPersonObject(
   person: LegalEntity,
   url: string,
@@ -55,44 +54,23 @@ function buildPersonObject(
     name: person.presidentName,
     givenName: person.presidentFirstName,
     familyName: person.presidentLastName,
-    jobTitle: `${person.presidentTitle}, Expert-comptable`,
-    image: `${AppConfig.url}${person.presidentPhotoUrl}`,
+    jobTitle: person.presidentTitle,
+    ...(person.presidentPhotoUrl && { image: `${AppConfig.url}${person.presidentPhotoUrl}` }),
     url,
     sameAs,
     worksFor: buildOrgRef(),
-    hasCredential: [
-      {
-        "@type": "EducationalOccupationalCredential",
-        credentialCategory: "diploma",
-        name: "Diplôme d'expertise comptable (DEC)",
-        dateCreated: String(person.oecInscriptionYear),
-        recognizedBy: {
-          "@type": "Organization",
-          name: "Conservatoire National des Arts et Métiers (CNAM Paris)",
-        },
-      },
-      {
-        "@type": "EducationalOccupationalCredential",
-        credentialCategory: "license",
-        name: "Inscription au Tableau de l'Ordre des Experts-Comptables",
-        identifier: `n°${person.oecNumber}`,
-        recognizedBy: {
-          "@type": "Organization",
-          name: person.oecRegion,
-        },
-      },
-    ],
     knowsAbout: person.presidentSpecialties,
     description: truncate(person.presidentBio, 200),
   };
 }
 
-// ─── LocalBusiness (homepage) ───
-export function LocalBusinessJsonLd() {
+// ─── Organization (publisher of the WebSite) ───
+export function OrganizationJsonLd() {
   const schema = {
     "@context": "https://schema.org",
-    "@type": "AccountingService",
-    name: `${AppConfig.name} ${AppConfig.tagline}`,
+    "@type": "Organization",
+    "@id": buildOrgId(),
+    name: AppConfig.name,
     legalName: legalEntity.companyName,
     url: AppConfig.url,
     telephone: legalEntity.phoneSiege,
@@ -106,24 +84,12 @@ export function LocalBusinessJsonLd() {
     },
     foundingDate: String(legalEntity.creationYear),
     description: AppConfig.description,
-    priceRange: "€€",
     taxID: legalEntity.siren,
     vatID: legalEntity.tvaIntra,
     iso6523Code: `0009:${legalEntity.siret}`,
-    naics: legalEntity.naf,
     areaServed: {
       "@type": "Country",
       name: "France",
-    },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "4.9",
-      reviewCount: "124",
-      bestRating: "5",
-    },
-    numberOfEmployees: {
-      "@type": "QuantitativeValue",
-      value: 15,
     },
     sameAs: [],
   };
@@ -136,29 +102,104 @@ export function LocalBusinessJsonLd() {
   );
 }
 
-// ─── LocalBusiness (per-ville page) ───
-// Uses ville-specific address/phone/coords/opening_hours/SIRET from the DB so each
-// /villes/[ville] page exposes a distinct local entity (no shared Paris address).
+// ─── WebSite + SearchAction (homepage, declares the search entrypoint) ───
+// Helps Google surface the Sitelinks Search Box for branded queries.
+export function WebSiteJsonLd({
+  searchPath = "/annuaire/experts-comptables",
+}: {
+  searchPath?: string;
+} = {}) {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": `${AppConfig.url}/#website`,
+    url: AppConfig.url,
+    name: AppConfig.name,
+    description: AppConfig.description,
+    inLanguage: AppConfig.locale,
+    publisher: buildOrgRef(),
+    potentialAction: {
+      "@type": "SearchAction",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: `${AppConfig.url}${searchPath}?q={search_term_string}`,
+      },
+      "query-input": "required name=search_term_string",
+    },
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  );
+}
+
+// ─── ItemList (directory listings: annuaire, city directory, …) ───
+// Drives rich snippets ("results in a list") for ranked directory pages.
+interface ItemListEntry {
+  name: string;
+  url: string;
+}
+
+export function ItemListJsonLd({
+  name,
+  description,
+  items,
+  numberOfItems,
+  url,
+  ordered = false,
+}: {
+  name: string;
+  description?: string;
+  items: ItemListEntry[];
+  /** Total count when the list is paginated/truncated (defaults to items.length). */
+  numberOfItems?: number;
+  url?: string;
+  /** Set true when the position reflects a real ranking (score-based). */
+  ordered?: boolean;
+}) {
+  if (items.length === 0) return null;
+  const schema: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name,
+    numberOfItems: numberOfItems ?? items.length,
+    itemListOrder: ordered
+      ? "https://schema.org/ItemListOrderDescending"
+      : "https://schema.org/ItemListUnordered",
+    itemListElement: items.map((item, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: item.name,
+      url: item.url.startsWith("http") ? item.url : `${AppConfig.url}${item.url}`,
+    })),
+  };
+  if (description) schema.description = description;
+  if (url) {
+    schema.url = url.startsWith("http") ? url : `${AppConfig.url}${url}`;
+  }
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  );
+}
+
+// ─── City comparison page ───
 export function LocalBusinessVilleJsonLd({ ville }: { ville: Ville }) {
   const pageUrl = `${AppConfig.url}/villes/${ville.slug}`;
   const schema: Record<string, unknown> = {
     "@context": "https://schema.org",
-    "@type": "AccountingService",
-    "@id": `${pageUrl}#localbusiness`,
-    name: `${AppConfig.name} ${AppConfig.tagline} — ${ville.name}`,
+    "@type": "CollectionPage",
+    "@id": `${pageUrl}#collection`,
+    name: `Comparateur de professionnels comptables à ${ville.name}`,
     url: pageUrl,
-    telephone: ville.phone ?? AppConfig.phone,
-    email: AppConfig.email,
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: ville.address ?? "",
-      addressLocality: ville.name,
-      postalCode: ville.postal_code ?? "",
-      addressRegion: ville.region ?? "",
-      addressCountry: "FR",
-    },
     description: AppConfig.description,
-    priceRange: "€€",
+    publisher: buildOrgRef(),
     areaServed: {
       "@type": "City",
       name: ville.name,
@@ -171,22 +212,6 @@ export function LocalBusinessVilleJsonLd({ ville }: { ville: Ville }) {
       latitude: ville.latitude,
       longitude: ville.longitude,
     };
-  }
-
-  if (ville.opening_hours) {
-    // Schema.org accepts the same compact format as OpeningHoursSpecification dayOfWeek strings
-    // (e.g. "Mo-Fr 09:00-18:00") via the openingHours property.
-    schema.openingHours = ville.opening_hours;
-  }
-
-  // SIRET / APE — French legal identifiers. SIREN root is a placeholder until Patch D.
-  if (ville.siret_etablissement) {
-    schema.identifier = [
-      { "@type": "PropertyValue", propertyID: "SIRET", value: ville.siret_etablissement },
-      ...(ville.ape_code
-        ? [{ "@type": "PropertyValue", propertyID: "APE", value: ville.ape_code }]
-        : []),
-    ];
   }
 
   return (
@@ -292,7 +317,7 @@ export function ServiceJsonLd({
     description,
     url: `${AppConfig.url}${url}`,
     provider: {
-      "@type": "AccountingService",
+      "@type": "Organization",
       name: `${AppConfig.name} ${AppConfig.tagline}`,
       url: AppConfig.url,
     },
@@ -334,10 +359,9 @@ export function ProfessionalServiceJsonLd({
     description,
     url: `${AppConfig.url}${url}`,
     provider: {
-      "@type": "AccountingService",
+      "@type": "Organization",
       name: `${AppConfig.name} ${AppConfig.tagline}`,
       url: AppConfig.url,
-      telephone: AppConfig.phone,
     },
     serviceType,
   };
@@ -432,7 +456,7 @@ export function WebPageJsonLd({
   );
 }
 
-// ─── Person (E-E-A-T — persona OEC, embedded on /qui-sommes-nous) ───
+// ─── Editorial person ───
 interface PersonJsonLdProps {
   person?: LegalEntity;
   url?: string;

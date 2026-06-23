@@ -33,15 +33,15 @@ export default function ConfidentialitePage() {
         ]}
       />
 
-      <section className="bg-creme px-6 py-20 lg:px-[4.5rem]">
+      <section className="bg-bg px-6 py-20 lg:px-[4.5rem]">
         <div className="mx-auto max-w-[60rem]">
           <ContentSection
             id="preambule"
             title="Préambule"
             variant="highlighted"
             paragraphs={[
-              `La présente politique de confidentialité décrit la manière dont ${legalEntity.companyName} collecte, utilise, conserve et protège les données à caractère personnel des utilisateurs du site ${legalEntity.websiteDomain} ainsi que de ses clients et prospects.`,
-              `Elle s'applique en complément de la lettre de mission signée avec chaque client, qui précise les traitements spécifiques liés à l'exécution des missions d'expertise comptable.`,
+              `La présente politique de confidentialité décrit la manière dont ${legalEntity.companyName} collecte, utilise, conserve et protège les données à caractère personnel des utilisateurs du site ${legalEntity.websiteDomain} et des personnes qui sollicitent la plateforme.`,
+              `Elle s'applique aux demandes d'information, d'orientation, de correction d'annuaire et à la navigation sur la plateforme Skoria.`,
               `Elle est établie en conformité avec le Règlement (UE) 2016/679 du 27 avril 2016 (RGPD) et la loi n° 78-17 du 6 janvier 1978 modifiée, dite « Informatique et Libertés ».`,
             ]}
           />
@@ -71,8 +71,7 @@ export default function ConfidentialitePage() {
             title="3. Finalités, bases légales et données collectées"
             paragraphs={[
               `Gestion des demandes de contact et de devis (formulaires du site, courriels, appels téléphoniques). Base légale : intérêt légitime du responsable de traitement à répondre aux sollicitations entrantes (article 6.1.f RGPD). Données collectées : nom, prénom, courriel, téléphone, raison sociale, message libre.`,
-              `Exécution de la mission d'expertise comptable. Base légale : exécution du contrat (article 6.1.b RGPD) et respect d'obligations légales et réglementaires (article 6.1.c RGPD — Code général des impôts, Code de commerce, Code de la sécurité sociale). Données collectées : données d'identification, données comptables, fiscales, sociales et bancaires du client et, le cas échéant, de ses salariés et de ses tiers.`,
-              `Lutte contre le blanchiment et le financement du terrorisme (LCB-FT). Base légale : obligation légale (articles L. 561-1 et suivants du Code monétaire et financier). Données collectées : données d'identification du client et de ses bénéficiaires effectifs, justificatifs de domicile, copies de pièces d'identité.`,
+              `Gestion des demandes de correction ou d'opposition concernant une fiche d'annuaire. Base légale : intérêt légitime à maintenir des informations exactes et à répondre aux demandes des personnes concernées. Données collectées : identité du demandeur, SIRET ou fiche concernée, justificatifs transmis volontairement.`,
               `Gestion de la relation commerciale et information éditoriale. Base légale : consentement (article 6.1.a RGPD) pour les communications électroniques à des prospects non clients, intérêt légitime pour les informations adressées aux clients existants.`,
               `Mesure d'audience du site et amélioration continue. Base légale : consentement (cookies non strictement nécessaires) ou intérêt légitime (mesure d'audience anonymisée).`,
             ]}
@@ -83,7 +82,7 @@ export default function ConfidentialitePage() {
             title="4. Destinataires des données"
             paragraphs={[
               `Les données collectées sont destinées aux collaborateurs habilités de ${legalEntity.companyName} dans la stricte limite de leurs attributions.`,
-              `Elles peuvent être communiquées, dans le cadre de l'exécution de la mission, aux administrations destinataires (Direction Générale des Finances Publiques, URSSAF, organismes sociaux, Greffes des tribunaux de commerce, INSEE) ainsi qu'à nos sous-traitants techniques (hébergeur, éditeur de logiciel comptable, prestataire de signature électronique) liés par contrat et soumis à des obligations équivalentes en matière de protection des données.`,
+              `Elles peuvent être communiquées à nos sous-traitants techniques (hébergeur, outil de formulaire, outil de mesure d'audience ou prestataire d'e-mail) liés par contrat et soumis à des obligations équivalentes en matière de protection des données.`,
               `Aucune donnée n'est cédée, louée ou vendue à des tiers à des fins commerciales.`,
               `Aucun transfert hors Union européenne n'est réalisé sans encadrement contractuel approprié (clauses contractuelles types de la Commission européenne) — à l'exception de l'hébergement du site, assuré par ${legalEntity.hostingProviderShort} et susceptible d'impliquer un transfert encadré vers les États-Unis sur la base des clauses contractuelles types.`,
             ]}
@@ -94,8 +93,7 @@ export default function ConfidentialitePage() {
             title="5. Durée de conservation"
             paragraphs={[
               `Données issues de demandes de contact non converties : 3 ans à compter du dernier contact.`,
-              `Données liées à l'exécution d'une mission d'expertise comptable : 10 ans à compter de la clôture de l'exercice concerné, conformément aux obligations légales de conservation des pièces comptables (article L. 123-22 du Code de commerce).`,
-              `Données collectées au titre des obligations LCB-FT : 5 ans à compter de la fin de la relation d'affaires, conformément à l'article L. 561-12 du Code monétaire et financier.`,
+              `Données liées aux demandes de correction d'annuaire : 3 ans à compter du dernier échange, sauf nécessité de conservation plus longue pour établir la preuve d'une demande ou d'une opposition.`,
               `Données de prospection commerciale électronique : jusqu'au retrait du consentement et au maximum 3 ans à compter du dernier contact.`,
               `Données de connexion (logs serveur) : 12 mois maximum, conformément aux recommandations de la CNIL.`,
             ]}
@@ -118,7 +116,7 @@ export default function ConfidentialitePage() {
             title="7. Sécurité des données"
             paragraphs={[
               `${legalEntity.companyName} met en œuvre les mesures techniques et organisationnelles appropriées afin de garantir un niveau de sécurité adapté au risque, conformément à l'article 32 du RGPD.`,
-              `Ces mesures incluent notamment : le chiffrement des échanges via TLS, le contrôle des accès par authentification forte, la sauvegarde régulière des données, la sensibilisation des collaborateurs au secret professionnel et à la sécurité des systèmes d'information, ainsi que des audits périodiques de notre infrastructure.`,
+              `Ces mesures incluent notamment : le chiffrement des échanges via TLS, le contrôle des accès, la sauvegarde régulière des données et la sensibilisation de l'équipe à la sécurité des systèmes d'information.`,
             ]}
           />
 
@@ -140,7 +138,7 @@ export default function ConfidentialitePage() {
             ]}
           />
 
-          <p className="mt-12 text-[0.72rem] text-ardoise/70">
+          <p className="mt-12 text-[0.72rem] text-ink-muted/70">
             Dernière mise à jour de la présente politique : juin 2026.
           </p>
         </div>

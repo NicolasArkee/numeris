@@ -1,36 +1,43 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, Inter } from "next/font/google";
+import { Inter_Tight, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { AppConfig } from "@/utils/AppConfig";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 
-const spaceGrotesk = Space_Grotesk({
+const interTight = Inter_Tight({
   subsets: ["latin"],
-  variable: "--font-serif",
+  variable: "--font-display",
   display: "swap",
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-sans",
+  variable: "--font-body",
   display: "swap",
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700"],
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+  display: "swap",
+  weight: ["400", "500"],
 });
 
 export const metadata: Metadata = {
   metadataBase: new URL(AppConfig.url),
   title: {
-    default: `${AppConfig.name} ${AppConfig.tagline} | Cabinet comptable Paris`,
-    template: `%s | ${AppConfig.name} ${AppConfig.tagline}`,
+    default: `${AppConfig.name} — ${AppConfig.tagline}`,
+    template: `%s | ${AppConfig.name}`,
   },
   description: AppConfig.description,
   openGraph: {
     type: "website",
     locale: AppConfig.locale,
     url: AppConfig.url,
-    siteName: `${AppConfig.name} ${AppConfig.tagline}`,
+    siteName: AppConfig.name,
     title: `${AppConfig.name} — ${AppConfig.tagline}`,
     description: AppConfig.description,
   },
@@ -38,6 +45,11 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: `${AppConfig.name} — ${AppConfig.tagline}`,
     description: AppConfig.description,
+  },
+  icons: {
+    icon: "/favicon.svg",
+    shortcut: "/favicon.svg",
+    apple: "/favicon.svg",
   },
   alternates: {
     canonical: "/",
@@ -61,7 +73,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="fr" className={`${spaceGrotesk.variable} ${inter.variable}`}>
+    <html
+      lang="fr"
+      className={`${interTight.variable} ${inter.variable} ${jetbrainsMono.variable}`}
+    >
       <body className="antialiased">
         <Nav />
         <main>{children}</main>

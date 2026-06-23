@@ -12,6 +12,8 @@ interface Props {
   params: Promise<{ outil: string }>;
 }
 
+export const revalidate = 86400;
+
 export function generateStaticParams() {
   return SIMULATEURS.map((s) => ({ outil: s.slug }));
 }
@@ -58,25 +60,25 @@ export default async function SimulateurPage({ params }: Props) {
         variant="compact"
       />
 
-      <section className="bg-creme px-6 py-16 lg:px-[4.5rem]">
+      <section className="bg-bg px-6 py-16 lg:px-[4.5rem]">
         <div className="mx-auto max-w-[82rem]">
           {sim.render()}
 
           {/* FAQ */}
           <div className="mt-16" id="faq">
-            <h2 className="mb-8 font-serif text-[1.75rem] font-light leading-tight text-encre">
+            <h2 className="mb-8 font-display text-[1.75rem] font-bold leading-tight text-ink">
               Questions fréquentes
             </h2>
             <div className="grid gap-4">
               {sim.faqs.map((faq) => (
-                <details key={faq.question} className="group border border-pierre-12 bg-blanc">
-                  <summary className="flex cursor-pointer items-center justify-between px-7 py-5 text-[0.95rem] font-medium text-encre transition-colors hover:text-or-fonce">
+                <details key={faq.question} className="group border border-border-soft bg-surface">
+                  <summary className="flex cursor-pointer items-center justify-between px-7 py-5 text-[0.95rem] font-medium text-ink transition-colors hover:text-accent-700">
                     {faq.question}
-                    <span className="ml-4 text-[0.8rem] text-pierre-12 transition-transform group-open:rotate-45">
+                    <span className="ml-4 text-[0.8rem] text-border-soft transition-transform group-open:rotate-45">
                       +
                     </span>
                   </summary>
-                  <div className="max-w-prose border-t border-pierre-12 px-7 py-5 text-base leading-relaxed text-ardoise">
+                  <div className="max-w-prose border-t border-border-soft px-7 py-5 text-base leading-relaxed text-ink-muted">
                     {faq.answer}
                   </div>
                 </details>
@@ -86,7 +88,7 @@ export default async function SimulateurPage({ params }: Props) {
 
           {/* Autres outils */}
           <div className="mt-16">
-            <h2 className="mb-6 font-serif text-[1.25rem] font-light text-encre">
+            <h2 className="mb-6 font-display text-[1.25rem] font-bold text-ink">
               Nos autres outils gratuits
             </h2>
             <div className="flex flex-wrap gap-2">
@@ -94,7 +96,7 @@ export default async function SimulateurPage({ params }: Props) {
                 <Link
                   key={o.slug}
                   href={`/simulateurs/${o.slug}`}
-                  className="border border-pierre-12 bg-blanc px-4 py-2 text-[0.78rem] text-encre-75 transition-colors hover:border-or hover:text-or-fonce"
+                  className="border border-border-soft bg-surface px-4 py-2 text-[0.78rem] text-ink-muted transition-colors hover:border-accent-500 hover:text-accent-700"
                 >
                   {o.icon} {o.title}
                 </Link>

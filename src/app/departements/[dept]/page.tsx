@@ -15,17 +15,19 @@ interface Props {
   params: Promise<{ dept: string }>;
 }
 
+export const revalidate = 86400;
+
 export async function generateStaticParams() {
-  return db.getDepartements().map((d) => ({ dept: d.slug }));
+  return (await db.getDepartements()).map((d) => ({ dept: d.slug }));
 }
 
 const ROUTE = "departements";
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { dept: slug } = await params;
-  const dept = db.getDepartementBySlug(slug);
+  const dept = await db.getDepartementBySlug(slug);
   if (!dept) return {};
-  const dbSeo = db.getSeoOverride(ROUTE, slug);
+  const dbSeo = await db.getSeoOverride(ROUTE, slug);
   const seo = getSEOForDepartement(dept);
   return {
     title: dbSeo?.meta_title ?? seo.metaTitle,
@@ -36,28 +38,29 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function DepartementPage({ params }: Props) {
   const { dept: slug } = await params;
-  const dept = db.getDepartementBySlug(slug);
+  const dept = await db.getDepartementBySlug(slug);
   if (!dept) notFound();
 
   const seo = getSEOForDepartement(dept);
-  const linkGroups = getDepartementLinks(slug);
+  const linkGroups = await getDepartementLinks(slug);
 
   // ─── DB-first path (route prête pour la pipeline — 0 rows aujourd'hui) ───
-  const bundle = getDbPageBundle(ROUTE, slug);
+  const bundle = await getDbPageBundle(ROUTE, slug);
   const { sections: dbSections, seo: dbSeo, lastUpdatedDate, hasDbContent } = bundle;
   const canonicalUrl = `${AppConfig.url}/departements/${slug}`;
 
   // ─── Maillage interne — rendu dans les DEUX chemins ───
-  const villesDuDept = db.getVilles().filter((v) => v.departement === dept.code);
+  const villesDuDept = (await db.getVilles()).filter((v) => v.departement === dept.code);
+  const meshServices = await db.getServices();
   const internalMesh = (
     <>
       <VillesStrip
-        title={`Nos villes d'intervention en ${dept.name}`}
+        title={`Villes à comparer en ${dept.name}`}
         villes={villesDuDept}
       />
       <ServicesGrid
-        title={`Nos services en ${dept.name}`}
-        services={db.getServices()}
+        title={`Expertises à comparer en ${dept.name}`}
+        services={meshServices}
         hrefBuilder={(svc) => `/expertises/${svc.slug}`}
       />
     </>
@@ -73,9 +76,9 @@ export default async function DepartementPage({ params }: Props) {
     badges: [dept.name, dept.code, dept.region || ""].filter(Boolean),
     linkGroups,
     keyTakeaways: bundle.keyTakeaways ?? [
-      `Expert-comptable intervenant dans tout le département ${dept.name}`,
-      `Rendez-vous en présentiel ou en visio, partout en ${dept.region || "France"}`,
-      `Premier échange gratuit et sans engagement`,
+      `Professionnels comptables à comparer dans le département ${dept.name}`,
+      `Présentiel, visio ou distance à arbitrer en ${dept.region || "France"}`,
+      `Périmètre et habilitations à confirmer avant engagement`,
     ],
     schema: <ExtraJsonLd raw={dbSeo?.json_ld_extra ?? null} />,
     lastUpdatedDate,

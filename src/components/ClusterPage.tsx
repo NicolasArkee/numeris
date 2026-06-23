@@ -36,6 +36,8 @@ interface ClusterPageProps {
   articleSection?: string;
   /** Canonical URL pour ArticleJsonLd.mainEntityOfPage. Fallback : breadcrumb final. */
   canonicalUrl?: string;
+  /** Label du signal de revue affiche sous le hero. */
+  reviewLabel?: string;
 }
 
 export function ClusterPage({
@@ -54,6 +56,7 @@ export function ClusterPage({
   articleHeadline,
   articleSection,
   canonicalUrl,
+  reviewLabel,
 }: ClusterPageProps) {
   const currentUrl = breadcrumbs[breadcrumbs.length - 1]?.url || "/";
   const effectiveDate = lastUpdatedDate || new Date().toISOString();
@@ -86,8 +89,15 @@ export function ClusterPage({
       {schema}
 
       {/* Hero */}
-      <section className="relative overflow-hidden bg-nuit px-6 py-20 lg:px-[4.5rem] lg:py-24">
-        <div className="grid-bg pointer-events-none absolute inset-0 opacity-35" />
+      <section className="relative overflow-hidden bg-brand-ink px-6 py-20 lg:px-[4.5rem] lg:py-24">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-32 -bottom-32 h-130 w-130 rounded-full"
+          style={{
+            background:
+              "radial-gradient(circle, rgba(255,107,53,0.15) 0%, rgba(255,107,53,0) 60%)",
+          }}
+        />
         <div className="relative z-10 mx-auto max-w-[82rem]">
           {/* Breadcrumbs */}
           <nav aria-label="Fil d'Ariane" className="mb-8">
@@ -96,7 +106,7 @@ export function ClusterPage({
                 <li key={item.url} className="flex items-center gap-1.5">
                   {i > 0 && <span>/</span>}
                   {i < breadcrumbs.length - 1 ? (
-                    <Link href={item.url} className="transition-colors hover:text-or">
+                    <Link href={item.url} className="transition-colors hover:text-accent-500">
                       {item.name}
                     </Link>
                   ) : (
@@ -108,13 +118,13 @@ export function ClusterPage({
           </nav>
 
           <div className="mb-6 flex items-center gap-3.5">
-            <span className="block h-px w-7 bg-or" />
-            <span className="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-or">
+            <span className="block h-px w-7 bg-accent-500" />
+            <span className="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-accent-500">
               {eyebrow}
             </span>
           </div>
 
-          <h1 className="mb-6 max-w-3xl font-serif text-[2.25rem] font-light leading-[1.12] tracking-tight text-blanc lg:text-[3.25rem]">
+          <h1 className="mb-6 max-w-3xl font-display text-[2.25rem] font-bold leading-[1.12] tracking-tight text-surface lg:text-[3.25rem]">
             {h1}
           </h1>
 
@@ -138,16 +148,20 @@ export function ClusterPage({
       </section>
 
       {/* Content */}
-      <article className="bg-creme px-6 py-20 lg:px-[4.5rem]">
+      <article className="bg-bg px-6 pt-20 pb-28 lg:px-[4.5rem] lg:py-20">
         <div className="mx-auto max-w-[82rem]">
           {/* Freshness + E-E-A-T signals */}
           <div className="mb-10">
-            <LastUpdated date={lastUpdatedDate} readingTime="3 min" />
+            <LastUpdated
+              date={lastUpdatedDate}
+              readingTime="3 min"
+              reviewLabel={reviewLabel}
+            />
           </div>
 
           {/* Key takeaways (featured snippet targeting) */}
           {keyTakeaways && keyTakeaways.length > 0 && (
-            <div className="mb-12">
+            <div className="mb-12 max-w-[72rem]">
               <KeyTakeaways items={keyTakeaways} />
             </div>
           )}
@@ -156,27 +170,27 @@ export function ClusterPage({
 
           {/* CTA mid-page (mini-banner) — placée après le body editorial, avant FAQ */}
           <aside
-            className="mt-16 flex flex-col items-start gap-5 border border-pierre-12 border-l-2 border-l-or bg-blanc p-7 lg:flex-row lg:items-center lg:justify-between"
+            className="mt-16 flex flex-col items-start gap-5 border border-border-soft border-l-2 border-l-accent-500 bg-surface p-7 lg:flex-row lg:items-center lg:justify-between"
             aria-label="Contact rapide"
           >
             <div>
-              <p className="font-serif text-[1.15rem] font-light text-encre">
+              <p className="font-display text-[1.15rem] font-bold text-ink">
                 Une question sur votre situation&nbsp;?
               </p>
-              <p className="mt-1 text-[0.8rem] text-ardoise">
-                Premier échange gratuit avec un expert-comptable diplômé.
+              <p className="mt-1 text-[0.8rem] text-ink-muted">
+                Recevez une orientation pour comparer les options pertinentes.
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-3">
               <Link
                 href="/contact"
-                className="inline-flex items-center gap-2 bg-or px-6 py-3 font-sans text-[0.82rem] font-semibold text-nuit transition-colors hover:bg-[#b08844]"
+                className="inline-flex items-center gap-2 bg-accent-500 px-6 py-3 font-body text-[0.82rem] font-semibold text-brand-ink transition-colors hover:bg-accent-700"
               >
-                Prendre rendez-vous →
+                Demander une orientation →
               </Link>
               <Link
                 href={`tel:${AppConfig.phone.replace(/\s/g, "")}`}
-                className="border border-pierre-12 px-5 py-3 font-sans text-[0.82rem] text-ardoise transition-colors hover:border-or hover:text-or-fonce"
+                className="border border-border-soft px-5 py-3 font-body text-[0.82rem] text-ink-muted transition-colors hover:border-accent-500 hover:text-accent-700"
               >
                 {AppConfig.phone}
               </Link>
@@ -186,22 +200,22 @@ export function ClusterPage({
           {/* FAQ */}
           {faqs && faqs.length > 0 && (
             <div className="mt-16" id="faq">
-              <h2 className="mb-8 font-serif text-[1.75rem] font-light leading-tight text-encre">
+              <h2 className="mb-8 font-display text-[1.75rem] font-bold leading-tight text-ink">
                 Questions fréquentes
               </h2>
               <div className="grid gap-4">
                 {faqs.map((faq) => (
                   <details
                     key={faq.question}
-                    className="group border border-pierre-12 bg-blanc"
+                    className="group border border-border-soft bg-surface"
                   >
-                    <summary className="flex cursor-pointer items-center justify-between px-7 py-5 text-[0.95rem] font-medium text-encre transition-colors hover:text-or-fonce">
+                    <summary className="flex cursor-pointer items-center justify-between px-7 py-5 text-[0.95rem] font-medium text-ink transition-colors hover:text-accent-700">
                       {faq.question}
-                      <span className="ml-4 text-[0.8rem] text-pierre-12 transition-transform group-open:rotate-45">
+                      <span className="ml-4 text-[0.8rem] text-border-soft transition-transform group-open:rotate-45">
                         +
                       </span>
                     </summary>
-                    <div className="max-w-prose border-t border-pierre-12 px-7 py-5 text-base leading-relaxed text-ardoise">
+                    <div className="max-w-prose border-t border-border-soft px-7 py-5 text-base leading-relaxed text-ink-muted">
                       {faq.answer}
                     </div>
                   </details>

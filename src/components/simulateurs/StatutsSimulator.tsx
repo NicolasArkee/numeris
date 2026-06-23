@@ -32,25 +32,25 @@ export function StatutsSimulator() {
       <div className="mt-7 overflow-x-auto">
         <table className="w-full border-collapse text-left">
           <thead>
-            <tr className="border-b-2 border-or">
-              <th className="px-4 py-3 text-[0.68rem] font-bold uppercase tracking-[0.08em] text-ardoise">Statut</th>
-              <th className="px-4 py-3 text-[0.68rem] font-bold uppercase tracking-[0.08em] text-ardoise">Net avant IR</th>
-              <th className="px-4 py-3 text-[0.68rem] font-bold uppercase tracking-[0.08em] text-ardoise">Prélèvements</th>
-              <th className="hidden px-4 py-3 text-[0.68rem] font-bold uppercase tracking-[0.08em] text-ardoise md:table-cell">À savoir</th>
+            <tr className="border-b-2 border-accent-500">
+              <th className="px-4 py-3 text-[0.68rem] font-bold uppercase tracking-[0.08em] text-ink-muted">Statut</th>
+              <th className="px-4 py-3 text-[0.68rem] font-bold uppercase tracking-[0.08em] text-ink-muted">Net avant IR</th>
+              <th className="px-4 py-3 text-[0.68rem] font-bold uppercase tracking-[0.08em] text-ink-muted">Prélèvements</th>
+              <th className="hidden px-4 py-3 text-[0.68rem] font-bold uppercase tracking-[0.08em] text-ink-muted md:table-cell">À savoir</th>
             </tr>
           </thead>
           <tbody>
             {rows.map((r) => (
-              <tr key={r.statut} className={`border-b border-pierre-12 ${r.net === best ? "bg-or-pale" : "bg-blanc"}`}>
-                <td className="px-4 py-4 text-[0.88rem] font-medium text-encre">
+              <tr key={r.statut} className={`border-b border-border-soft ${r.net === best ? "bg-accent-50" : "bg-surface"}`}>
+                <td className="px-4 py-4 text-[0.88rem] font-medium text-ink">
                   {r.statut}
                   {r.net === best && (
-                    <span className="ml-2 bg-or px-1.5 py-0.5 text-[0.58rem] font-bold uppercase text-nuit">Optimal</span>
+                    <span className="ml-2 bg-accent-500 px-1.5 py-0.5 text-[0.58rem] font-bold uppercase text-brand-ink">Optimal</span>
                   )}
                 </td>
-                <td className="px-4 py-4 font-serif text-[1.25rem] font-light italic text-or-fonce">{fmtEur(r.net)}</td>
-                <td className="px-4 py-4 text-[0.85rem] text-ardoise">{fmtEur(r.prelevements)}</td>
-                <td className="hidden px-4 py-4 text-[0.72rem] leading-relaxed text-ardoise md:table-cell">{r.commentaire}</td>
+                <td className="px-4 py-4 font-display text-[1.25rem] font-bold italic text-accent-700">{fmtEur(r.net)}</td>
+                <td className="px-4 py-4 text-[0.85rem] text-ink-muted">{fmtEur(r.prelevements)}</td>
+                <td className="hidden px-4 py-4 text-[0.72rem] leading-relaxed text-ink-muted md:table-cell">{r.commentaire}</td>
               </tr>
             ))}
           </tbody>

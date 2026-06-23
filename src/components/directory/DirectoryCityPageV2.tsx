@@ -1,0 +1,404 @@
+import React from "react";
+import Link from "next/link";
+import type {
+  DirectoryCabinetCard,
+  DirectoryCity,
+  Profession,
+  Service,
+} from "@/libs/db";
+import { AppConfig } from "@/utils/AppConfig";
+import { DirectoryComplianceNotice } from "./DirectoryComplianceNotice";
+import { DirectoryFaq } from "./DirectoryFaq";
+import { DirectoryInternalMesh } from "./DirectoryInternalMesh";
+import { DirectoryCityCabinetList } from "./DirectoryCityCabinetList";
+import { DirectoryCityStaticMap } from "./DirectoryCityStaticMap";
+import { ItemListJsonLd } from "@/components/JsonLd";
+import {
+  cabinetDirectoryPath,
+} from "./CabinetCard";
+import {
+  directoryDisplayName,
+} from "./profile-v2-helpers";
+import {
+  buildDirectoryCityFaqItems,
+  buildDirectoryCityStats,
+  buildNearbyDirectoryCityLinks,
+} from "./city-v2-helpers";
+
+const numberFormatter = new Intl.NumberFormat("fr-FR");
+
+function formatNumber(value: number): string {
+  return numberFormatter.format(value);
+}
+
+function StatusBadge({ verifiedCount }: { verifiedCount: number }) {
+  return (
+    <span
+      className={
+        verifiedCount > 0
+          ? "inline-flex w-fit items-center gap-1.5 rounded-md border border-success-500/30 bg-success-50 px-3 py-2 font-display text-[0.8125rem] font-semibold text-success-700"
+          : "inline-flex w-fit items-center gap-1.5 rounded-md border border-warning-500/30 bg-warning-50 px-3 py-2 font-display text-[0.8125rem] font-semibold text-warning-700"
+      }
+    >
+      <span aria-hidden>{verifiedCount > 0 ? "✓" : "?"}</span>
+      {verifiedCount > 0 ? "Fiches documentées présentes" : "Statut à confirmer"}
+    </span>
+  );
+}
+
+function CitySummaryPanel({
+  city,
+  totalCount,
+  verifiedCount,
+  candidateCount,
+}: {
+  city: DirectoryCity;
+  totalCount: number;
+  verifiedCount: number;
+  candidateCount: number;
+}) {
+  const rows = [
+    { label: "Cabinets listés", value: formatNumber(totalCount) },
+    { label: "Fiches documentées", value: formatNumber(verifiedCount) },
+    { label: "Candidats", value: formatNumber(candidateCount) },
+    { label: "Département", value: city.department_name ?? city.department_code ?? "Non renseigné" },
+    { label: "Région", value: city.region_name ?? city.region_code ?? "Non renseignée" },
+  ];
+
+  return (
+    <aside className="space-y-5 lg:sticky lg:top-24">
+      <section className="rounded-xl border border-border bg-surface p-6 shadow-sm">
+        <h2 className="font-display text-[1.125rem] font-semibold text-ink">
+          Synthèse publique
+        </h2>
+        <dl className="mt-5 divide-y divide-border-soft">
+          {rows.map((row) => (
+            <div key={row.label} className="flex justify-between gap-5 py-3">
+              <dt className="font-display text-[0.75rem] font-semibold uppercase tracking-[0.08em] text-ink-soft">
+                {row.label}
+              </dt>
+              <dd className="text-right font-mono text-[0.9375rem] font-semibold text-ink">
+                {row.value}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+
+      <section className="rounded-xl border border-border bg-surface p-6 shadow-sm">
+        <h2 className="font-display text-[1.125rem] font-semibold text-ink">
+          Statut des fiches
+        </h2>
+        <div className="mt-4">
+          <StatusBadge verifiedCount={verifiedCount} />
+        </div>
+        <p className="mt-3 text-[0.875rem] leading-6 text-ink-muted">
+          {verifiedCount > 0
+            ? "Les fiches documentées sont identifiées explicitement dans la liste. Les autres restent candidates tant que leur statut professionnel n'est pas confirmé."
+            : "Les fiches de cette ville sont candidates : statut professionnel à confirmer auprès des professionnels concernés."}
+        </p>
+      </section>
+
+      <section className="rounded-xl border border-border bg-bg-muted p-6">
+        <h2 className="font-display text-[1rem] font-semibold text-ink">
+          Correction ou opposition
+        </h2>
+        <p className="mt-3 text-[0.875rem] leading-6 text-ink-muted">
+          Un cabinet peut demander une correction, une mise à jour ou le retrait
+          d'une information inexacte.
+        </p>
+        <Link
+          href={`/contact?objet=correction-annuaire&ville=${city.slug}`}
+          className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-accent-500 px-5 py-3 font-display text-[0.875rem] font-semibold text-surface transition-colors hover:bg-accent-700"
+        >
+          Demander une correction
+        </Link>
+      </section>
+    </aside>
+  );
+}
+
+function NearbyCities({
+  currentCity,
+  cities,
+}: {
+  currentCity: DirectoryCity;
+  cities: DirectoryCity[];
+}) {
+  const links = buildNearbyDirectoryCityLinks(cities, currentCity, 8);
+  if (links.length === 0) return null;
+
+  const hasSameDepartment = cities.some(
+    (city) =>
+      city.code_insee !== currentCity.code_insee
+      && city.department_code != null
+      && city.department_code === currentCity.department_code,
+  );
+
+  return (
+    <section>
+      <h2 className="font-display text-[1.5rem] font-bold text-ink">
+        {hasSameDepartment ? "Autres villes proches" : "Autres villes du comparateur"}
+      </h2>
+      <p className="mt-2 max-w-2xl text-[0.9375rem] leading-6 text-ink-muted">
+        Poursuivez votre comparaison locale avec les pages ville les plus utiles
+        du comparateur {AppConfig.name}.
+      </p>
+      <div className="mt-5 flex flex-wrap gap-2">
+        {links.map((link) => (
+          <Link
+            key={link.href}
+            href={link.href}
+            className="rounded-full border border-border bg-surface px-4 py-2 font-display text-[0.8125rem] font-medium text-ink-muted transition-colors hover:border-brand-500 hover:bg-brand-50 hover:text-brand-700"
+          >
+            {link.label}
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+export function DirectoryCityPageV2({
+  city,
+  cabinets,
+  totalCount,
+  verifiedCount,
+  services,
+  professions,
+  allListingCities,
+}: {
+  city: DirectoryCity;
+  cabinets: DirectoryCabinetCard[];
+  totalCount: number;
+  verifiedCount: number;
+  services: Service[];
+  professions: Profession[];
+  allListingCities: DirectoryCity[];
+}) {
+  const stats = buildDirectoryCityStats(cabinets, totalCount, verifiedCount);
+  const faqItems = buildDirectoryCityFaqItems(city, stats);
+  const candidateCopy =
+    stats.candidateCount > 0
+      ? `${formatNumber(stats.candidateCount)} fiche${stats.candidateCount > 1 ? "s" : ""} candidate${stats.candidateCount > 1 ? "s" : ""} avec statut professionnel à confirmer.`
+      : "Toutes les fiches affichées disposent d'un statut documenté.";
+
+  return (
+    <>
+      <ItemListJsonLd
+        name={`Cabinets comptables à ${city.name}`}
+        description={`Liste des cabinets comptables référencés à ${city.name}, triée par documentation et confiance.`}
+        url={`/expert-comptable/${city.slug}`}
+        numberOfItems={stats.totalCount}
+        ordered
+        items={cabinets.slice(0, 25).map((card) => ({
+          name: directoryDisplayName(card),
+          url: cabinetDirectoryPath(card),
+        }))}
+      />
+      <section className="relative overflow-hidden bg-brand-ink px-6 py-14 text-surface lg:px-12 lg:py-18">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-32 -bottom-32 h-115 w-115 rounded-full"
+          style={{
+            background:
+              "radial-gradient(circle, rgba(255,107,53,0.15) 0%, rgba(255,107,53,0) 60%)",
+          }}
+        />
+        <div className="relative z-10 mx-auto max-w-328">
+          <nav aria-label="Fil d'Ariane" className="mb-7">
+            <ol className="flex flex-wrap items-center gap-1.5 font-mono text-[0.75rem] text-white/55">
+              <li>
+                <Link href="/" className="transition-colors hover:text-accent-300">
+                  Accueil
+                </Link>
+              </li>
+              <li aria-hidden>/</li>
+              <li>
+                <Link
+                  href="/annuaire/experts-comptables"
+                  className="transition-colors hover:text-accent-300"
+                >
+                  Annuaire des cabinets
+                </Link>
+              </li>
+              <li aria-hidden>/</li>
+              <li className="text-surface">{city.name}</li>
+            </ol>
+          </nav>
+
+          <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_25rem] lg:items-end">
+            <div>
+              <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-accent-500/30 bg-accent-500/10 px-3.5 py-1.5">
+                <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-accent-500" />
+                <span className="font-display text-[0.6875rem] font-semibold uppercase tracking-[0.12em] text-accent-300">
+                  Annuaire vérifié · {city.name}
+                </span>
+              </div>
+              <h1 className="max-w-4xl font-display text-[2.25rem] font-extrabold leading-[1.06] tracking-tight text-surface lg:text-[3.25rem]">
+                Cabinets comptables à <span className="text-accent-500">{city.name}</span>
+              </h1>
+              <p className="mt-4 max-w-2xl text-[1rem] leading-7 text-white/80 lg:text-[1.0625rem]">
+                Comparez les cabinets référencés à {city.name} avec provenance
+                administrative, statut de fiche et liens vers les fiches détaillées.
+              </p>
+              <div className="mt-5">
+                <StatusBadge verifiedCount={stats.verifiedCount} />
+              </div>
+              <p
+                className="mt-5 max-w-2xl text-[0.9375rem] leading-7 text-white/70"
+                data-speakable="true"
+              >
+                <span className="font-mono font-semibold text-surface">
+                  {formatNumber(stats.totalCount)}
+                </span>{" "}
+                cabinet
+                {stats.totalCount > 1 ? "s" : ""} candidat
+                {stats.totalCount > 1 ? "s" : ""} ou vérifié
+                {stats.totalCount > 1 ? "s" : ""}, dont{" "}
+                <span className="font-mono font-semibold text-surface">
+                  {formatNumber(stats.verifiedCount)}
+                </span>{" "}
+                vérifié{stats.verifiedCount > 1 ? "s" : ""} documenté
+                {stats.verifiedCount > 1 ? "s" : ""}. {candidateCopy}
+              </p>
+            </div>
+            <div className="flex flex-col gap-3 sm:flex-row lg:justify-end">
+              <Link
+                href="#liste-cabinets"
+                className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-accent-500 px-6 py-3 font-display text-[0.9375rem] font-semibold text-surface transition-colors hover:bg-accent-700"
+              >
+                Voir les cabinets
+                <span aria-hidden>→</span>
+              </Link>
+              <Link
+                href="/annuaire/experts-comptables"
+                className="inline-flex items-center justify-center whitespace-nowrap rounded-lg border border-white/20 bg-white/5 px-6 py-3 font-display text-[0.9375rem] font-semibold text-surface transition-colors hover:border-white/40 hover:bg-white/10"
+              >
+                Retour annuaire
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <article className="bg-bg px-6 py-14 lg:px-12 lg:py-18">
+        <div className="mx-auto max-w-328 space-y-14">
+          <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_23rem]">
+            <div className="space-y-10">
+              <section>
+                <h2 className="font-display text-[1.5rem] font-bold text-ink">
+                  Trouver un cabinet comptable à {city.name}
+                </h2>
+                <p className="mt-4 max-w-3xl text-[1rem] leading-7 text-ink-muted">
+                  Cette page rassemble les cabinets comptables référencés à{" "}
+                  {city.name} à partir de données administratives publiques. Le
+                  statut de la fiche est séparé du reste des informations pour éviter
+                  toute confusion entre présence administrative et vérification
+                  professionnelle.
+                </p>
+              </section>
+
+              <section>
+                <h2 className="font-display text-[1.375rem] font-bold text-ink">
+                  Ce que l'on peut vérifier publiquement
+                </h2>
+                <p className="mt-3 max-w-3xl text-[0.9375rem] leading-7 text-ink-muted">
+                  La page expose uniquement des signaux publics utiles à une
+                  première comparaison. Elle ne remplace pas la vérification
+                  directe auprès du professionnel concerné.
+                </p>
+                <ul className="mt-5 grid gap-3 text-[0.9375rem] text-ink-muted">
+                  <li className="flex gap-3">
+                    <span aria-hidden className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-500" />
+                    Identité administrative, SIRET et adresse publique lorsqu'ils
+                    sont disponibles.
+                  </li>
+                  <li className="flex gap-3">
+                    <span aria-hidden className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-500" />
+                    Statut actif de l'entreprise et de l'établissement selon la
+                    source publique.
+                  </li>
+                  <li className="flex gap-3">
+                    <span aria-hidden className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-500" />
+                    Code NAF / APE lié à l'activité comptable lorsque la source
+                    le fournit.
+                  </li>
+                  <li className="flex gap-3">
+                    <span aria-hidden className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-500" />
+                    Statut professionnel uniquement quand il est documenté par
+                    une source fiable ou une validation manuelle.
+                  </li>
+                </ul>
+              </section>
+
+              <DirectoryComplianceNotice />
+            </div>
+
+            <CitySummaryPanel
+              city={city}
+              totalCount={stats.totalCount}
+              verifiedCount={stats.verifiedCount}
+              candidateCount={stats.candidateCount}
+            />
+          </div>
+
+          <section>
+            <h2 className="mb-5 font-display text-[1.5rem] font-bold text-ink">
+              Carte des cabinets à {city.name}
+            </h2>
+            <DirectoryCityStaticMap city={city} totalCount={stats.totalCount} />
+          </section>
+
+          <DirectoryCityCabinetList cabinets={cabinets} stats={stats} />
+
+          <DirectoryInternalMesh
+            cityName={city.name}
+            services={services}
+            professions={professions}
+          />
+
+          <NearbyCities currentCity={city} cities={allListingCities} />
+
+          <DirectoryFaq items={faqItems} />
+
+          <div className="grid gap-5 md:grid-cols-2">
+            <section className="rounded-xl border border-border bg-surface p-7 shadow-sm">
+              <h2 className="font-display text-[1.125rem] font-semibold text-ink">
+                Transparence des données
+              </h2>
+              <p className="mt-3 text-[0.9375rem] leading-7 text-ink-muted">
+                {AppConfig.name} distingue les données administratives publiques, le
+                statut de fiche et les contenus de maillage interne.
+                Aucun avis, note ou horaire n'est inventé.
+              </p>
+              <Link
+                href="/confidentialite"
+                className="mt-4 inline-flex items-center gap-1.5 font-display text-[0.9375rem] font-semibold text-brand-700 transition-colors hover:text-brand-500"
+              >
+                Politique de données
+                <span aria-hidden>→</span>
+              </Link>
+            </section>
+            <section className="rounded-xl border border-border bg-surface p-7 shadow-sm">
+              <h2 className="font-display text-[1.125rem] font-semibold text-ink">
+                Besoin d'une mise à jour ?
+              </h2>
+              <p className="mt-3 text-[0.9375rem] leading-7 text-ink-muted">
+                Une demande de correction peut porter sur un SIRET, une adresse,
+                un statut administratif ou une opposition à l'affichage.
+              </p>
+              <Link
+                href={`/contact?objet=correction-annuaire&ville=${city.slug}`}
+                className="mt-4 inline-flex items-center gap-1.5 font-display text-[0.9375rem] font-semibold text-brand-700 transition-colors hover:text-brand-500"
+              >
+                Nous contacter
+                <span aria-hidden>→</span>
+              </Link>
+            </section>
+          </div>
+        </div>
+      </article>
+    </>
+  );
+}

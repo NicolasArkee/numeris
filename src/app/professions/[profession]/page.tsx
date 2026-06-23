@@ -13,6 +13,14 @@ import { ContentSection } from "@/components/ContentSection";
 import { BenefitsGrid } from "@/components/BenefitsGrid";
 import { StatHighlight } from "@/components/StatHighlight";
 import { ServicesGrid } from "@/components/ServicesGrid";
+import {
+  getProfessionSectionAside,
+  ProfessionSectionWithAside,
+} from "@/components/professions/ProfessionSidebarV2";
+import {
+  buildProfessionSidebarData,
+  dedupeProfessionRenderableSections,
+} from "@/components/professions/profession-v2-helpers";
 
 interface Props {
   params: Promise<{ profession: string }>;
@@ -20,16 +28,18 @@ interface Props {
 
 const ROUTE = "professions";
 
+export const revalidate = 86400;
+
 export async function generateStaticParams() {
-  return db.getProfessions().map((p) => ({ profession: p.slug }));
+  return (await db.getProfessions()).map((p) => ({ profession: p.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { profession: slug } = await params;
-  const profession = db.getProfessionBySlug(slug);
+  const profession = await db.getProfessionBySlug(slug);
   if (!profession) return {};
 
-  const dbSeo = db.getSeoOverride(ROUTE, slug);
+  const dbSeo = await db.getSeoOverride(ROUTE, slug);
   const fallback = getSEOForProfession(profession);
 
   return {
@@ -41,33 +51,39 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ProfessionPage({ params }: Props) {
   const { profession: slug } = await params;
-  const profession = db.getProfessionBySlug(slug);
+  const profession = await db.getProfessionBySlug(slug);
   if (!profession) notFound();
 
-  const category = db.getProfessionCategoryBySlug(profession.category_slug);
-  const linkGroups = getProfessionLinks(slug);
+  const category = await db.getProfessionCategoryBySlug(profession.category_slug);
+  const linkGroups = await getProfessionLinks(slug);
 
   // ─── DB-first path ───
-  const bundle = getDbPageBundle(ROUTE, slug);
-  const { sections: dbSections, seo: dbSeo, lastUpdatedDate, hasDbContent } = bundle;
+  const bundle = await getDbPageBundle(ROUTE, slug);
+  const { seo: dbSeo, lastUpdatedDate, hasDbContent } = bundle;
   const canonicalUrl = `${AppConfig.url}/professions/${slug}`;
 
   // ─── Maillage interne — rendu dans les DEUX chemins (DB et fallback) ───
-  const services = db.getServices();
-  const siblingProfessions = db
-    .getProfessionsByCategory(profession.category_slug)
+  const services = await db.getServices();
+  const siblingProfessions = (await db.getProfessionsByCategory(profession.category_slug))
     .filter((p) => p.slug !== slug)
     .slice(0, 8);
+  const sidebarData = buildProfessionSidebarData({
+    profession,
+    ...(category && { category }),
+    services,
+    siblingProfessions,
+    linkGroups,
+  });
   const internalMesh = (
     <>
       <ServicesGrid
-        title={`Nos services pour les ${profession.name.toLowerCase()}`}
+        title={`Expertises à comparer pour les ${profession.name.toLowerCase()}`}
         services={services}
         hrefBuilder={(svc) => `/expertises/${svc.slug}/${slug}`}
       />
       {siblingProfessions.length > 0 && (
         <div className="mb-12">
-          <h2 className="mb-4 font-serif text-[1.25rem] font-light text-encre">
+          <h2 className="mb-4 font-display text-[1.25rem] font-bold text-ink">
             Professions similaires
           </h2>
           <div className="flex flex-wrap gap-2">
@@ -75,7 +91,7 @@ export default async function ProfessionPage({ params }: Props) {
               <a
                 key={p.slug}
                 href={`/professions/${p.slug}`}
-                className="border border-pierre-12 bg-blanc px-4 py-2 text-[0.78rem] text-encre-75 transition-colors hover:border-or hover:text-or-fonce"
+                className="border border-border-soft bg-surface px-4 py-2 text-[0.78rem] text-ink-muted transition-colors hover:border-accent-500 hover:text-accent-700"
               >
                 {p.name}
               </a>
@@ -120,9 +136,17 @@ export default async function ProfessionPage({ params }: Props) {
         articleSection="Professions libérales et indépendants"
         canonicalUrl={canonicalUrl}
       >
-        {bundle.renderableSections.map((s) => (
-          <DynamicSection key={s.id} section={s} />
-        ))}
+        {dedupeProfessionRenderableSections(bundle.renderableSections).map((s) => {
+          const aside = getProfessionSectionAside(sidebarData, s);
+          return (
+            <ProfessionSectionWithAside key={s.id} aside={aside}>
+              <DynamicSection
+                section={s}
+                professionEditorialLayout={aside ? "single" : "grid"}
+              />
+            </ProfessionSectionWithAside>
+          );
+        })}
         {internalMesh}
       </ClusterPage>
     );
@@ -161,29 +185,54 @@ export default async function ProfessionPage({ params }: Props) {
       articleSection="Professions libérales et indépendants"
       canonicalUrl={canonicalUrl}
     >
-      {/* Obligations comptables */}
-      {profession.obligations && (
-        <ContentSection
-          title={`Obligations comptables des ${profession.name.toLowerCase()}`}
-          paragraphs={[profession.obligations]}
-          variant="highlighted"
-        />
-      )}
+      <ProfessionSectionWithAside
+        aside={getProfessionSectionAside(sidebarData, {
+          section_type: "ContentSection",
+          section_order: 1,
+          title: `Obligations comptables des ${profession.name.toLowerCase()}`,
+        })}
+      >
+        {profession.obligations && (
+          <ContentSection
+            title={`Obligations comptables des ${profession.name.toLowerCase()}`}
+            paragraphs={[profession.obligations]}
+            variant="highlighted"
+          />
+        )}
+      </ProfessionSectionWithAside>
 
-      {/* Marketing content */}
-      {mkt.contentSections.map((cs) => (
-        <ContentSection key={cs.title} title={cs.title} paragraphs={cs.paragraphs} />
+      {mkt.contentSections.map((cs, index) => (
+        <ProfessionSectionWithAside
+          key={cs.title}
+          aside={
+            index === 0
+              ? getProfessionSectionAside(sidebarData, {
+                  section_type: "Hero",
+                  section_order: index + 2,
+                  title: cs.title,
+                })
+              : undefined
+          }
+        >
+          <ContentSection title={cs.title} paragraphs={cs.paragraphs} />
+        </ProfessionSectionWithAside>
       ))}
 
-      {/* Benefits */}
       <BenefitsGrid
         title={`Pourquoi choisir ${AppConfig.name} pour les ${profession.name.toLowerCase()} ?`}
         benefits={mkt.benefits}
         columns={4}
       />
 
-      {/* Stats */}
-      <StatHighlight stats={mkt.stats} />
+      <ProfessionSectionWithAside
+        aside={getProfessionSectionAside(sidebarData, {
+          section_type: "StatsBand",
+          section_order: 6,
+          title: "Chiffres clés",
+        })}
+      >
+        <StatHighlight stats={mkt.stats} />
+      </ProfessionSectionWithAside>
 
       {/* Maillage interne (services + professions similaires) */}
       {internalMesh}

@@ -29,40 +29,40 @@ export function getServiceMarketing(service: { slug: string; title: string }) {
   };
 
   const benefits = benefitsMap[service.slug] || [
-    { icon: "✓", title: "Expertise dédiée", description: `Notre pôle ${t} vous accompagne avec rigueur et réactivité.` },
-    { icon: "📞", title: "Interlocuteur unique", description: "Un expert dédié qui connaît votre dossier et répond sous 24h." },
-    { icon: "💻", title: "Outils digitaux", description: "Plateforme en ligne pour déposer vos documents et suivre vos indicateurs." },
-    { icon: "🏛", title: "Conformité garantie", description: "Cabinet inscrit à l'Ordre des Experts-Comptables, assurance RC Pro." },
+    { icon: "✓", title: "Critères utiles", description: `Les points à comparer pour choisir un professionnel adapté en ${t}.` },
+    { icon: "📞", title: "Orientation claire", description: "Une demande structurée pour préparer vos échanges sans promesse de mission." },
+    { icon: "💻", title: "Ressources pratiques", description: "Documents à préparer, questions à poser et signaux à vérifier." },
+    { icon: "🏛", title: "Sources lisibles", description: "Données publiques et limites éditoriales explicitées quand elles existent." },
   ];
 
   const steps = [
-    { title: "Diagnostic gratuit", description: `Analyse de vos besoins en ${t} lors d'un premier rendez-vous de 30 minutes.` },
-    { title: "Proposition sur mesure", description: `Devis détaillé et lettre de mission adaptée à votre structure et votre volume d'activité.` },
-    { title: "Mise en place", description: `Récupération de vos documents, paramétrage des outils et affectation de votre expert dédié.` },
-    { title: "Suivi continu", description: `Accompagnement mensuel, alertes proactives et conseils personnalisés tout au long de l'année.` },
+    { title: "Cadrage du besoin", description: `Identifier le contexte, les échéances et les sujets prioritaires en ${t}.` },
+    { title: "Critères de comparaison", description: "Comparer le périmètre, les livrables, les outils, la localisation et le niveau d'accompagnement." },
+    { title: "Préparation du rendez-vous", description: "Lister les documents et questions utiles avant de contacter un professionnel habilité." },
+    { title: "Choix éclairé", description: "Conserver une trace claire des points à confirmer avant toute lettre de mission." },
   ];
 
   const stats = [
-    { value: "500+", label: "Entreprises accompagnées" },
-    { value: "98%", label: "Taux de satisfaction" },
-    { value: "24h", label: "Délai de réponse moyen" },
+    { value: "100+", label: "Pages métiers" },
+    { value: "30k+", label: "Fiches publiques" },
+    { value: "0", label: "Avis inventé" },
   ];
 
   const checklist = [
-    `Tenue et révision de votre ${t}`,
-    `Déclarations et obligations légales`,
-    `Conseil et optimisation personnalisés`,
-    `Reporting et tableaux de bord mensuels`,
-    `Interlocuteur dédié et réactif`,
-    `Outils digitaux et plateforme en ligne`,
+    `Périmètre exact de la mission en ${t}`,
+    `Déclarations et obligations à couvrir`,
+    `Niveau de conseil attendu`,
+    `Reporting et tableaux de bord utiles`,
+    `Modalités d'échange et délais de réponse`,
+    `Outils utilisés et accès aux données`,
   ];
 
-  const alert = `Vous changez d'expert-comptable ? ${AppConfig.name} s'occupe de tout : récupération de vos dossiers, transfert des données et continuité de service, sans interruption.`;
+  const alert = `Vous changez de professionnel comptable ? ${AppConfig.name} aide à préparer les questions, les documents et les critères à comparer avant tout engagement.`;
 
   const quote = {
-    text: `Depuis que nous travaillons avec ${AppConfig.name}, notre ${t} est parfaitement maîtrisée. L'équipe est réactive et les conseils toujours pertinents.`,
-    author: "Directeur général",
-    role: "PME – Île-de-France",
+    text: `Un bon choix commence par un périmètre clair : qui fait quoi, avec quels outils, à quel rythme et sur quelles obligations.`,
+    author: "Méthode Skoria",
+    role: "Comparateur indépendant",
   };
 
   return { benefits, steps, stats, checklist, alert, quote };
@@ -81,15 +81,15 @@ export function getServiceSecteurMarketing(
       {
         title: `Pourquoi une ${t} spécialisée en ${s} ?`,
         paragraphs: [
-          `Le secteur ${s} présente des particularités comptables, fiscales et réglementaires que seul un cabinet expérimenté peut appréhender efficacement. Plans comptables sectoriels, obligations déclaratives spécifiques, régimes fiscaux dédiés : autant de sujets qui nécessitent une expertise pointue.`,
-          `Chez ${AppConfig.name}, nos experts-comptables spécialisés en ${s} maîtrisent ces spécificités et vous garantissent une gestion optimisée, conforme et sereine.`,
+          `Le secteur ${s} présente des particularités comptables, fiscales et réglementaires qu'il faut clarifier avant de choisir un professionnel. Plans comptables sectoriels, obligations déclaratives spécifiques, régimes fiscaux dédiés : autant de sujets qui doivent être explicités dans le périmètre de mission.`,
+          `${AppConfig.name} vous aide à identifier les critères de comparaison utiles : expérience sectorielle, outils, livrables, rythme de suivi, documents attendus et limites de l'accompagnement.`,
         ],
       },
       {
-        title: `Notre approche pour le ${s}`,
+        title: `Comparer les options pour le ${s}`,
         paragraphs: [
-          `Nous commençons par un diagnostic complet de votre situation comptable et fiscale. Chaque entreprise du ${s} a ses propres contraintes : nous adaptons notre accompagnement à votre réalité opérationnelle.`,
-          `Notre équipe assure ensuite un suivi régulier, avec des points mensuels et des alertes proactives sur les échéances et les évolutions réglementaires de votre secteur.`,
+          `Chaque entreprise du ${s} a ses propres contraintes. Une bonne comparaison part du volume d'activité, du mode d'encaissement, des obligations déclaratives, des outils de caisse ou de facturation et du besoin réel de conseil.`,
+          `Les contenus Skoria servent à préparer les questions à poser avant rendez-vous et à distinguer les prestations indispensables des options secondaires.`,
         ],
       },
     ],
@@ -102,9 +102,9 @@ export function getServiceSecteurMarketing(
       `Accompagnement lors des contrôles`,
     ],
     stats: [
-      { value: "500+", label: "Clients accompagnés" },
-      { value: "15+", label: "Secteurs maîtrisés" },
-      { value: "4.9/5", label: "Satisfaction client" },
+      { value: "15+", label: "Secteurs couverts" },
+      { value: "100+", label: "Professions documentées" },
+      { value: "0", label: "Promesse inventée" },
     ],
   };
 }
@@ -120,19 +120,19 @@ export function getServiceVilleMarketing(
   return {
     contentSections: [
       {
-        title: `${service.title} à ${ville.name} : un accompagnement de proximité`,
+        title: `${service.title} à ${ville.name} : préparer une comparaison locale`,
         paragraphs: [
-          `Vous êtes basé à ${ville.name} et recherchez un expert-comptable pour votre ${t} ? ${AppConfig.name} combine la réactivité d'un cabinet digital avec l'accompagnement personnalisé d'un cabinet de proximité.`,
-          `Que vous soyez créateur d'entreprise, profession libérale ou dirigeant de PME à ${loc}, nous adaptons nos services à votre situation et à votre secteur d'activité.`,
+          `Vous êtes basé à ${ville.name} et recherchez un professionnel comptable pour votre ${t} ? ${AppConfig.name} vous aide à comparer les critères utiles : proximité, disponibilité, expérience métier, outils et périmètre de mission.`,
+          `Que vous soyez créateur d'entreprise, profession libérale ou dirigeant de PME à ${loc}, l'objectif est de préparer un échange clair avant toute décision.`,
         ],
       },
     ],
     benefits: [
-      { icon: "📍", title: `Présence à ${ville.name}`, description: `Rendez-vous en présentiel ou en visio, selon vos préférences.` },
-      { icon: "⚡", title: "Réactivité", description: "Réponse sous 24h et accès permanent à votre espace client en ligne." },
-      { icon: "🎯", title: "Sur mesure", description: `Offre adaptée aux entreprises de ${loc}, de la création à la croissance.` },
+      { icon: "📍", title: `Critère local`, description: `Présentiel, visio, distance et disponibilité à comparer selon vos préférences.` },
+      { icon: "⚡", title: "Réactivité", description: "Délais de réponse, urgence déclarative et rythme de suivi à clarifier." },
+      { icon: "🎯", title: "Périmètre", description: `Missions à définir pour les entreprises de ${loc}, de la création à la croissance.` },
     ],
-    alert: `Premier rendez-vous gratuit à ${ville.name}. Prenez contact pour un diagnostic personnalisé de vos besoins en ${t}.`,
+    alert: `Préparez votre demande à ${ville.name} : contexte, échéances, documents disponibles et points à comparer en ${t}.`,
   };
 }
 
@@ -149,8 +149,8 @@ export function getServiceProfessionMarketing(
       {
         title: `${service.title} adaptée aux ${p}`,
         paragraphs: [
-          `Les ${p} font face à des obligations comptables et fiscales qui leur sont propres. Régime fiscal spécifique, obligations déclaratives sectorielles, gestion des charges professionnelles : chaque aspect nécessite une expertise dédiée.`,
-          `Chez ${AppConfig.name}, nos experts-comptables connaissent les réalités de votre métier. Nous vous accompagnons pour sécuriser votre gestion et optimiser votre situation fiscale.`,
+          `Les ${p} font face à des obligations comptables et fiscales qui leur sont propres. Régime fiscal spécifique, obligations déclaratives sectorielles, gestion des charges professionnelles : chaque aspect doit être clarifié avant de choisir un professionnel.`,
+          `${AppConfig.name} transforme ces enjeux en critères de comparaison concrets : documents à préparer, questions à poser, livrables attendus et points à confirmer.`,
         ],
       },
     ],
@@ -163,9 +163,9 @@ export function getServiceProfessionMarketing(
       `Suivi de trésorerie adapté à votre activité`,
     ],
     quote: {
-      text: `En tant que ${profession.name.toLowerCase()}, j'avais besoin d'un expert-comptable qui comprenne mon métier. ${AppConfig.name} a su s'adapter à mes contraintes et m'apporter des conseils vraiment pertinents.`,
-      author: profession.name,
-      role: "Client depuis 2023",
+      text: `Pour les ${profession.name.toLowerCase()}, le bon échange commence par des données simples : volume d'activité, échéances, statut, outils et points de blocage.`,
+      author: "Méthode Skoria",
+      role: "Comparateur indépendant",
     },
   };
 }
@@ -186,14 +186,14 @@ export function getSecteurMarketing(secteur: { slug: string; name: string; descr
     ],
     benefits: [
       { icon: "🏛", title: "Expertise sectorielle", description: `Connaissance approfondie des normes comptables du ${s}.` },
-      { icon: "⚖️", title: "Conformité garantie", description: `Respect de toutes les obligations réglementaires spécifiques.` },
-      { icon: "📈", title: "Optimisation", description: `Leviers fiscaux et sociaux propres au ${s} activés pour vous.` },
-      { icon: "🤝", title: "Accompagnement dédié", description: `Un expert qui parle votre langue et connaît votre métier.` },
+      { icon: "⚖️", title: "Points à vérifier", description: `Obligations réglementaires spécifiques à confirmer avec le professionnel choisi.` },
+      { icon: "📈", title: "Pilotage", description: `Leviers fiscaux, sociaux et de gestion à comparer selon votre situation.` },
+      { icon: "🤝", title: "Choix éclairé", description: `Critères pour identifier un professionnel habitué à votre métier.` },
     ],
     stats: [
-      { value: "500+", label: "Entreprises accompagnées" },
-      { value: "15+", label: "Années d'expertise" },
-      { value: "100%", label: "Conformité assurée" },
+      { value: "100+", label: "Métiers couverts" },
+      { value: "15+", label: "Secteurs documentés" },
+      { value: "0", label: "Garantie inventée" },
     ],
   };
 }
@@ -203,22 +203,22 @@ export function getVilleMarketing(ville: { slug: string; name: string; region: s
   return {
     contentSections: [
       {
-        title: `Pourquoi choisir ${AppConfig.name} à ${ville.name} ?`,
+        title: `Comparer les professionnels comptables à ${ville.name}`,
         paragraphs: [
-          `${AppConfig.name} accompagne les entreprises de ${ville.name}${ville.region ? ` et de ${ville.region}` : ""} avec une approche qui combine expertise comptable et outils digitaux modernes. Notre cabinet est inscrit à l'Ordre des Experts-Comptables et dispose d'une assurance RC professionnelle.`,
-          `Que vous soyez en création, en développement ou en restructuration, nous adaptons notre accompagnement à votre stade de maturité et à votre secteur d'activité.`,
+          `${AppConfig.name} aide les entreprises de ${ville.name}${ville.region ? ` et de ${ville.region}` : ""} à préparer leur comparaison : localisation, périmètre de mission, outils utilisés, spécialisation métier et données publiques disponibles.`,
+          `Que vous soyez en création, en développement ou en restructuration, la page sert à formuler les bons critères avant de contacter un professionnel habilité.`,
         ],
       },
     ],
     benefits: [
-      { icon: "📍", title: "Proximité", description: `Cabinet accessible à ${ville.name}, rendez-vous en présentiel ou en visio.` },
-      { icon: "💻", title: "100% digital", description: "Plateforme en ligne pour déposer vos documents et suivre vos indicateurs en temps réel." },
-      { icon: "👤", title: "Expert dédié", description: "Un interlocuteur unique qui connaît votre dossier et votre activité." },
-      { icon: "📞", title: "Disponibilité", description: "Réponse sous 24h, disponibilité permanente par téléphone et par email." },
+      { icon: "📍", title: "Proximité", description: `Présentiel, visio ou à distance : un critère à pondérer à ${ville.name}.` },
+      { icon: "💻", title: "Outils", description: "Logiciels, portail documentaire et accès aux données à comparer." },
+      { icon: "👤", title: "Spécialisation", description: "Expérience métier, taille de clientèle et disponibilité à vérifier." },
+      { icon: "📞", title: "Contact", description: "Délais de réponse et mode d'échange à clarifier avant engagement." },
     ],
     quote: {
-      text: `Nous avons choisi ${AppConfig.name} pour leur réactivité et leur expertise. Un vrai partenaire pour notre entreprise à ${ville.name}.`,
-      author: "Dirigeant de PME",
+      text: `Comparer ne consiste pas à promettre le meilleur cabinet : il s'agit de rendre les critères visibles avant le premier échange.`,
+      author: "Méthode Skoria",
       role: ville.name,
     },
   };
@@ -231,23 +231,23 @@ export function getProfessionMarketing(profession: { slug: string; name: string;
   return {
     contentSections: [
       {
-        title: `L'expert-comptable, partenaire clé des ${p}`,
+        title: `Comparer un professionnel comptable pour les ${p}`,
         paragraphs: [
           `En tant que ${p.replace(/^les /, "")}, vous devez vous concentrer sur votre coeur de métier. La gestion comptable, fiscale et sociale demande pourtant un temps considérable et une expertise technique pointue.`,
-          `Confier ces missions à un expert-comptable spécialisé, c'est gagner en sérénité, en conformité et en performance. ${AppConfig.name} vous accompagne au quotidien avec des solutions adaptées à votre profession.`,
+          `Avant de confier ces missions, il est utile de comparer les professionnels sur leur expérience métier, leurs outils, leurs livrables, leurs délais et leur capacité à expliquer les choix fiscaux et sociaux.`,
         ],
       },
     ],
     benefits: [
       { icon: "🎯", title: "Spécialisation métier", description: `Expertise dédiée aux spécificités des ${p}.` },
-      { icon: "📋", title: "Obligations maîtrisées", description: "Toutes vos obligations comptables et fiscales sont gérées." },
-      { icon: "💡", title: "Conseil proactif", description: "Recommandations personnalisées pour optimiser votre situation." },
-      { icon: "⏱", title: "Gain de temps", description: "Vous vous concentrez sur votre métier, nous gérons le reste." },
+      { icon: "📋", title: "Obligations à couvrir", description: "Les sujets comptables et fiscaux à intégrer dans le périmètre." },
+      { icon: "💡", title: "Questions à poser", description: "Points de pilotage, régime fiscal, TVA, paie et outils à clarifier." },
+      { icon: "⏱", title: "Préparation", description: "Documents et échéances à rassembler avant le premier échange." },
     ],
     stats: [
-      { value: "500+", label: "Professionnels accompagnés" },
-      { value: "4.9/5", label: "Satisfaction client" },
-      { value: "24h", label: "Délai de réponse" },
+      { value: "100+", label: "Professions documentées" },
+      { value: "6", label: "Axes de comparaison" },
+      { value: "0", label: "Avis fictif" },
     ],
   };
 }

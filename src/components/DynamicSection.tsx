@@ -17,6 +17,7 @@
 // generators with looser shapes.
 
 import { ContentSection } from "./ContentSection";
+import React from "react";
 import { RichText } from "./RichText";
 import { HonorairesSimulator } from "./simulateurs/HonorairesSimulator";
 import { StatutsSimulator } from "./simulateurs/StatutsSimulator";
@@ -33,13 +34,13 @@ import { SimulatorTeaser } from "./SimulatorTeaser";
 import { PricingTeaser } from "./PricingTeaser";
 import { pricingTierToProp, type PricingTierShape } from "./pricing-shared";
 import { ProcessSteps } from "./ProcessSteps";
-import { TestimonialSlider } from "./TestimonialSlider";
+import { ProsCons } from "./ProsCons";
 import { TableOfContents } from "./TableOfContents";
 import { IconSet, isSupportedIcon } from "./IconSet";
 import type { IconName } from "./IconSet";
 import { FaqJsonLd } from "./JsonLd";
 import { db } from "@/libs/db";
-import type { PageSection, PricingTier, Testimonial } from "@/libs/db";
+import type { PageSection, PricingTier } from "@/libs/db";
 import { legalEntity } from "@/data/legal-entity";
 
 // ─── Parsed shapes for items column ───
@@ -52,6 +53,18 @@ interface Citation {
 interface FaqEntry {
   q: string;
   a: string;
+}
+
+const GENERATED_PROSE_SHELL = "mx-auto max-w-[48rem]";
+const GENERATED_WIDE_TEXT_SHELL = "max-w-[72rem]";
+const GENERATED_PROSE_TEXT = "max-w-none";
+const GENERATED_EDITORIAL_GRID_TEXT = "max-w-none";
+
+function isWideEditorialText(section: PageSection): boolean {
+  return (
+    section.section_type === "ContentSection"
+    && section.route === "professions"
+  );
 }
 
 // ─── Defensive JSON.parse → unknown (never throws) ───
@@ -137,7 +150,13 @@ function splitTitled(item: string): { title: string; description: string } {
 }
 
 // ─── Citations footnote block ───
-function CitationsFooter({ citations }: { citations: Citation[] }) {
+function CitationsFooter({
+  citations,
+  wide = false,
+}: {
+  citations: Citation[];
+  wide?: boolean;
+}) {
   // P0 defense-in-depth — strip stub/placeholder citations at render time
   // even if upstream pipeline (04_generate_sections._strip_stub_citations)
   // missed one. Drop when url is empty, contains "/stub", or text mentions
@@ -149,22 +168,22 @@ function CitationsFooter({ citations }: { citations: Citation[] }) {
   });
   if (safeCitations.length === 0) return null;
   return (
-    <div className="-mt-8 mb-12 border-l-2 border-l-pierre-12 bg-creme px-5 py-3">
-      <p className="mb-1 text-[0.65rem] font-bold uppercase tracking-[0.1em] text-pierre-37">
+    <div className={`${wide ? GENERATED_WIDE_TEXT_SHELL : GENERATED_PROSE_SHELL} -mt-8 mb-12 border-l-2 border-l-border-soft bg-bg px-5 py-3`}>
+      <p className="mb-1 text-[0.65rem] font-bold uppercase tracking-[0.1em] text-ink-soft">
         Sources
       </p>
       <ul className="space-y-1">
         {safeCitations.map((cit) => (
-          <li key={`${cit.source}-${cit.url}`} className="text-[0.7rem] text-ardoise">
+          <li key={`${cit.source}-${cit.url}`} className="text-[0.7rem] text-ink-muted">
             <a
               href={cit.url}
               target="_blank"
               rel="noopener nofollow noreferrer"
-              className="underline transition-colors hover:text-or-fonce"
+              className="underline transition-colors hover:text-accent-700"
             >
               {cit.text || cit.source}
             </a>
-            <span className="ml-2 text-pierre-37">({cit.source})</span>
+            <span className="ml-2 text-ink-soft">({cit.source})</span>
           </li>
         ))}
       </ul>
@@ -180,23 +199,23 @@ function CitationsFooter({ citations }: { citations: Citation[] }) {
 function FaqInline({ title, items }: { title: string; items: FaqEntry[] }) {
   if (items.length === 0) return null;
   return (
-    <div className="mb-12" id="faq">
-      <h2 className="mb-8 font-serif text-[1.75rem] font-light leading-tight text-encre">
+    <div className="mb-12 max-w-[72rem]" id="faq">
+      <h2 className="mb-8 font-display text-[1.75rem] font-bold leading-tight text-ink">
         {title || "Questions fréquentes"}
       </h2>
       <div className="grid gap-4">
         {items.map((item) => (
           <details
             key={item.q}
-            className="group border border-pierre-12 bg-blanc"
+            className="group border border-border-soft bg-surface"
           >
-            <summary className="flex cursor-pointer items-center justify-between px-7 py-5 text-[0.95rem] font-medium text-encre transition-colors hover:text-or-fonce">
+            <summary className="flex cursor-pointer items-center justify-between px-7 py-5 text-[0.95rem] font-medium text-ink transition-colors hover:text-accent-700">
               {item.q}
-              <span className="ml-4 text-[0.8rem] text-pierre-12 transition-transform group-open:rotate-45">
+              <span className="ml-4 text-[0.8rem] text-border-soft transition-transform group-open:rotate-45">
                 +
               </span>
             </summary>
-            <div className="max-w-prose border-t border-pierre-12 px-7 py-5 text-base leading-relaxed text-ardoise">
+            <div className="max-w-prose border-t border-border-soft px-7 py-5 text-base leading-relaxed text-ink-muted">
               {item.a}
             </div>
           </details>
@@ -212,27 +231,27 @@ function FaqInline({ title, items }: { title: string; items: FaqEntry[] }) {
 // for "régime A vs régime B" lists), we render a clean two-column-style list.
 function ComparisonInline({ title, body, items }: { title: string; body: string | null; items: string[] }) {
   return (
-    <div className="mb-12 border border-pierre-12 bg-blanc p-7">
+    <div className={`${GENERATED_PROSE_SHELL} mb-12 border border-border-soft bg-surface p-7`}>
       {title && (
-        <h2 className="mb-4 font-serif text-[1.25rem] font-light text-encre">
+        <h2 className="mb-4 font-display text-[1.25rem] font-bold text-ink">
           {title}
         </h2>
       )}
       {body && (
-        <p className="mb-4 max-w-prose text-base leading-relaxed text-ardoise">
+        <p className="mb-4 max-w-prose text-base leading-relaxed text-ink-muted">
           {body}
         </p>
       )}
       {items.length > 0 && (
-        <ul className="space-y-3 border-t border-pierre-12 pt-4">
+        <ul className="space-y-3 border-t border-border-soft pt-4">
           {items.map((item, i) => {
             const { title: rowTitle, description } = splitTitled(item);
             return (
               <li key={i} className="grid gap-1 md:grid-cols-[200px_1fr] md:gap-6">
-                <span className="text-[0.85rem] font-semibold text-encre">
+                <span className="text-[0.85rem] font-semibold text-ink">
                   {rowTitle}
                 </span>
-                <span className="text-[0.85rem] leading-relaxed text-ardoise">
+                <span className="text-[0.85rem] leading-relaxed text-ink-muted">
                   {description}
                 </span>
               </li>
@@ -250,7 +269,7 @@ function InternalLinksInline({ title, items }: { title: string; items: string[] 
   return (
     <div className="mb-12">
       {title && (
-        <h2 className="mb-5 font-serif text-[1.25rem] font-light text-encre">
+        <h2 className="mb-5 font-display text-[1.25rem] font-bold text-ink">
           {title}
         </h2>
       )}
@@ -258,9 +277,9 @@ function InternalLinksInline({ title, items }: { title: string; items: string[] 
         {items.map((label, i) => (
           <li
             key={i}
-            className="flex items-start gap-2 border border-pierre-12 bg-blanc px-4 py-3 text-[0.85rem] text-encre-75"
+            className="flex items-start gap-2 border border-border-soft bg-surface px-4 py-3 text-[0.85rem] text-ink-muted"
           >
-            <span className="text-or">→</span> {label}
+            <span className="text-accent-500">→</span> {label}
           </li>
         ))}
       </ul>
@@ -287,36 +306,36 @@ function StatsBandInline({
       {(title || body) && (
         <div className="mb-6 max-w-3xl">
           {title && (
-            <h2 className="mb-2 font-serif text-[1.25rem] font-light text-encre">
+            <h2 className="mb-2 font-display text-[1.25rem] font-bold text-ink">
               {title}
             </h2>
           )}
           {body && (
-            <p className="max-w-prose text-base leading-relaxed text-ardoise">
+            <p className="max-w-prose text-base leading-relaxed text-ink-muted">
               {body}
             </p>
           )}
         </div>
       )}
-      <div className="grid grid-cols-2 gap-0 border border-pierre-12 bg-blanc lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-0 border border-border-soft bg-surface lg:grid-cols-4">
         {stats.map((s, i) => (
           <div
             key={`${s.label}-${i}`}
-            className={`px-6 py-8 text-center ${i < stats.length - 1 ? "lg:border-r lg:border-pierre-12" : ""}`}
+            className={`px-6 py-8 text-center ${i < stats.length - 1 ? "lg:border-r lg:border-border-soft" : ""}`}
           >
-            <span className="block font-serif text-[2.25rem] font-light italic leading-none text-or-fonce">
+            <span className="block font-display text-[2.25rem] font-bold italic leading-none text-accent-700">
               {s.value}
             </span>
-            <span className="mt-2 block text-[0.8rem] font-medium text-encre">
+            <span className="mt-2 block text-[0.8rem] font-medium text-ink">
               {s.label}
             </span>
             {s.source && (
-              <span className="mt-1 block text-[0.65rem] uppercase tracking-wider text-pierre-37">
+              <span className="mt-1 block text-[0.65rem] uppercase tracking-wider text-ink-soft">
                 Source : {s.source}
               </span>
             )}
             {s.detail && !s.source && (
-              <span className="mt-1 block text-[0.7rem] text-ardoise">
+              <span className="mt-1 block text-[0.7rem] text-ink-muted">
                 {s.detail}
               </span>
             )}
@@ -336,23 +355,23 @@ function EditoIntroInline({ title, body }: { title: string; body: string }) {
   const cleanBody = hasSign ? body.split(SIGN_MARKER)[0]!.trim() : body;
 
   return (
-    <div className="mb-12 border border-pierre-12 border-l-2 border-l-or bg-blanc p-7">
+    <div className={`${GENERATED_PROSE_SHELL} mb-12 border border-border-soft border-l-2 border-l-accent-500 bg-surface p-7`}>
       {title && (
-        <h2 className="mb-4 font-serif text-[1.25rem] font-light text-encre">
+        <h2 className="mb-4 font-display text-[1.25rem] font-bold text-ink">
           {title}
         </h2>
       )}
-      <RichText text={cleanBody} className="max-w-prose" />
+      <RichText text={cleanBody} className="max-w-none" />
       {hasSign && (
-        <footer className="mt-6 flex items-center gap-3 border-t border-pierre-12 pt-4">
-          <div className="flex h-9 w-9 items-center justify-center bg-or-pale text-[0.72rem] font-bold text-or-fonce">
+        <footer className="mt-6 flex items-center gap-3 border-t border-border-soft pt-4">
+          <div className="flex h-9 w-9 items-center justify-center bg-accent-50 text-[0.72rem] font-bold text-accent-700">
             {legalEntity.presidentInitials}
           </div>
           <div>
-            <p className="text-[0.78rem] font-semibold text-encre">
+            <p className="text-[0.78rem] font-semibold text-ink">
               {legalEntity.presidentName}
             </p>
-            <p className="text-[0.66rem] text-ardoise">
+            <p className="text-[0.66rem] text-ink-muted">
               {legalEntity.presidentTitle}, Expert-comptable
             </p>
           </div>
@@ -374,7 +393,7 @@ function RelatedArticlesInline({
   if (items.length === 0) return null;
   return (
     <div className="mb-12">
-      <h2 className="mb-5 font-serif text-[1.25rem] font-light text-encre">
+      <h2 className="mb-5 font-display text-[1.25rem] font-bold text-ink">
         {title || "À lire également"}
       </h2>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -384,15 +403,15 @@ function RelatedArticlesInline({
             <a
               key={`${it.route ?? ""}-${it.slug}`}
               href={href}
-              className="group block border border-pierre-12 bg-blanc p-5 transition-colors hover:border-or"
+              className="group block border border-border-soft bg-surface p-5 transition-colors hover:border-accent-500"
             >
-              <span className="mb-2 block text-[0.65rem] font-bold uppercase tracking-[0.12em] text-or-fonce">
+              <span className="mb-2 block text-[0.65rem] font-bold uppercase tracking-[0.12em] text-accent-700">
                 Article lié
               </span>
-              <span className="text-[0.92rem] font-medium leading-snug text-encre transition-colors group-hover:text-or-fonce">
+              <span className="text-[0.92rem] font-medium leading-snug text-ink transition-colors group-hover:text-accent-700">
                 {it.title}
               </span>
-              <span className="mt-3 block text-[0.75rem] text-or">
+              <span className="mt-3 block text-[0.75rem] text-accent-500">
                 Lire l&apos;article →
               </span>
             </a>
@@ -426,12 +445,12 @@ function ServiceMatrixInline({
   return (
     <div className="mb-12">
       {title && (
-        <h2 className="mb-3 font-serif text-[1.25rem] font-light text-encre">
+        <h2 className="mb-3 font-display text-[1.25rem] font-bold text-ink">
           {title}
         </h2>
       )}
       {body && (
-        <p className="mb-6 max-w-prose text-base leading-relaxed text-ardoise">
+        <p className="mb-6 max-w-prose text-base leading-relaxed text-ink-muted">
           {body}
         </p>
       )}
@@ -443,23 +462,23 @@ function ServiceMatrixInline({
               key={`${it.service}-${i}`}
               className={`flex items-start gap-3 border p-4 ${
                 included
-                  ? "border-pierre-12 bg-blanc"
-                  : "border-pierre-12 bg-creme opacity-60"
+                  ? "border-border-soft bg-surface"
+                  : "border-border-soft bg-bg opacity-60"
               }`}
             >
               <span
                 className={`mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center text-[0.75rem] font-bold ${
-                  included ? "bg-or text-nuit" : "bg-pierre-12 text-pierre-37"
+                  included ? "bg-accent-500 text-brand-ink" : "bg-border-soft text-ink-soft"
                 }`}
               >
                 {included ? "✓" : "—"}
               </span>
               <div className="flex-1">
-                <span className="block text-[0.85rem] font-medium text-encre">
+                <span className="block text-[0.85rem] font-medium text-ink">
                   {it.service}
                 </span>
                 {(it.tier || it.dimension_value) && (
-                  <span className="mt-0.5 block text-[0.7rem] text-ardoise">
+                  <span className="mt-0.5 block text-[0.7rem] text-ink-muted">
                     {it.tier ?? it.dimension_value}
                   </span>
                 )}
@@ -502,12 +521,12 @@ function MapEmbedInline({ title, body }: { title: string; body: string }) {
   return (
     <div className="mb-12">
       {title && (
-        <h2 className="mb-4 font-serif text-[1.25rem] font-light text-encre">
+        <h2 className="mb-4 font-display text-[1.25rem] font-bold text-ink">
           {title}
         </h2>
       )}
       {hasCoords ? (
-        <div className="aspect-[16/9] w-full overflow-hidden border border-pierre-12 bg-blanc">
+        <div className="aspect-[16/9] w-full overflow-hidden border border-border-soft bg-surface">
           <iframe
             title={title || "Carte de localisation"}
             src={`https://www.google.com/maps?q=${data.lat},${data.lng}&z=${zoom}&output=embed`}
@@ -517,8 +536,8 @@ function MapEmbedInline({ title, body }: { title: string; body: string }) {
           />
         </div>
       ) : (
-        <div className="border border-dashed border-pierre-25 bg-creme p-7 text-center">
-          <p className="text-[0.85rem] text-ardoise">
+        <div className="border border-dashed border-border bg-bg p-7 text-center">
+          <p className="text-[0.85rem] text-ink-muted">
             {data.address || "Adresse non renseignée."}
           </p>
           {data.address && (
@@ -526,7 +545,7 @@ function MapEmbedInline({ title, body }: { title: string; body: string }) {
               href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(data.address)}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-3 inline-block text-[0.78rem] font-medium text-or-fonce hover:text-or"
+              className="mt-3 inline-block text-[0.78rem] font-medium text-accent-700 hover:text-accent-500"
             >
               Ouvrir dans Google Maps →
             </a>
@@ -546,14 +565,14 @@ function UnknownSection({ section }: { section: PageSection }) {
     );
   }
   return (
-    <div className="mb-12 border border-dashed border-pierre-25 bg-creme p-7">
+    <div className="mb-12 border border-dashed border-border bg-bg p-7">
       {section.title && (
-        <h2 className="mb-3 font-serif text-[1.25rem] font-light text-encre">
+        <h2 className="mb-3 font-display text-[1.25rem] font-bold text-ink">
           {section.title}
         </h2>
       )}
       {section.body && (
-        <p className="max-w-prose text-base leading-relaxed text-ardoise">
+        <p className="max-w-prose text-base leading-relaxed text-ink-muted">
           {section.body}
         </p>
       )}
@@ -764,25 +783,40 @@ function coerceTocItems(
   return out;
 }
 
-// ─── Map a DB Testimonial → TestimonialSlider prop shape ───
-function dbTestimonialToProp(t: Testimonial): {
-  body: string;
-  author: string;
-  role: string;
-  stars: number;
-  profession?: string;
-} {
-  return {
-    body: t.body,
-    author: t.author_name,
-    role: t.author_role,
-    stars: t.stars,
-    ...(t.profession_slug && { profession: t.profession_slug }),
-  };
+// items: { pros: string[], cons: string[] } OU [{type:'pro'|'con', text}]
+function coerceProsCons(parsed: unknown): { pros: string[]; cons: string[] } {
+  if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+    const o = parsed as Record<string, unknown>;
+    return { pros: asStringArray(o.pros), cons: asStringArray(o.cons) };
+  }
+  const pros: string[] = [];
+  const cons: string[] = [];
+  if (Array.isArray(parsed)) {
+    for (const it of parsed) {
+      if (it && typeof it === "object") {
+        const o = it as Record<string, unknown>;
+        const t = String(o.type ?? o.kind ?? "").toLowerCase();
+        const text = String(o.text ?? o.label ?? o.title ?? "");
+        if (!text) continue;
+        if (t.startsWith("con") || t.startsWith("inconv") || t === "minus" || t === "-") {
+          cons.push(text);
+        } else {
+          pros.push(text);
+        }
+      }
+    }
+  }
+  return { pros, cons };
 }
 
 // ─── Main switch ───
-export function DynamicSection({ section }: { section: PageSection }) {
+export async function DynamicSection({
+  section,
+  professionEditorialLayout = "grid",
+}: {
+  section: PageSection;
+  professionEditorialLayout?: "grid" | "single";
+}) {
   const parsedItems = safeParse(section.items);
   const citations = asCitations(safeParse(section.citations));
   const title = section.title ?? "";
@@ -795,7 +829,13 @@ export function DynamicSection({ section }: { section: PageSection }) {
       // intro block to avoid duplicating the page banner.
       return (
         <>
-          <ContentSection title={title} paragraphs={body ? [body] : []} variant="highlighted" />
+          <ContentSection
+            title={title}
+            paragraphs={body ? [body] : []}
+            variant="highlighted"
+            className={GENERATED_PROSE_SHELL}
+            contentClassName={GENERATED_PROSE_TEXT}
+          />
           <CitationsFooter citations={citations} />
         </>
       );
@@ -805,10 +845,20 @@ export function DynamicSection({ section }: { section: PageSection }) {
       const paragraphs = body
         ? body.split(/\n{2,}/u).map((p) => p.trim()).filter(Boolean)
         : [];
+      const wideText = isWideEditorialText(section);
+      const contentLayout = wideText
+        ? professionEditorialLayout === "single" ? "editorial-single" : "editorial-grid"
+        : "default";
       return (
         <>
-          <ContentSection title={title} paragraphs={paragraphs} />
-          <CitationsFooter citations={citations} />
+          <ContentSection
+            title={title}
+            paragraphs={paragraphs}
+            className={wideText ? GENERATED_WIDE_TEXT_SHELL : GENERATED_PROSE_SHELL}
+            contentClassName={wideText ? GENERATED_EDITORIAL_GRID_TEXT : GENERATED_PROSE_TEXT}
+            contentLayout={contentLayout}
+          />
+          <CitationsFooter citations={citations} wide={wideText} />
         </>
       );
     }
@@ -822,14 +872,14 @@ export function DynamicSection({ section }: { section: PageSection }) {
       return (
         <>
           {body && (
-            <p className="mb-6 max-w-prose text-base leading-relaxed text-ardoise">
+            <p className="mb-6 max-w-prose text-base leading-relaxed text-ink-muted">
               {body}
             </p>
           )}
           {benefits.length > 0 ? (
             <div className="mb-12">
               {title && (
-                <h2 className="mb-6 font-serif text-[1.25rem] font-light text-encre">
+                <h2 className="mb-6 font-display text-[1.25rem] font-bold text-ink">
                   {title}
                 </h2>
               )}
@@ -837,15 +887,15 @@ export function DynamicSection({ section }: { section: PageSection }) {
                 {benefits.map((b) => (
                   <div
                     key={b.title}
-                    className="border border-pierre-12 bg-blanc p-6 transition-colors hover:border-or"
+                    className="border border-border-soft bg-surface p-6 transition-colors hover:border-accent-500"
                   >
-                    <span className="mb-3 inline-flex h-10 w-10 items-center justify-center text-or-fonce">
+                    <span className="mb-3 inline-flex h-10 w-10 items-center justify-center text-accent-700">
                       <IconSet name={b.icon} size={32} />
                     </span>
-                    <h3 className="mb-1.5 text-[0.95rem] font-semibold text-encre">
+                    <h3 className="mb-1.5 text-[0.95rem] font-semibold text-ink">
                       {b.title}
                     </h3>
-                    <p className="text-[0.9rem] leading-relaxed text-ardoise">
+                    <p className="text-[0.9rem] leading-relaxed text-ink-muted">
                       {b.description}
                     </p>
                   </div>
@@ -866,7 +916,7 @@ export function DynamicSection({ section }: { section: PageSection }) {
       return (
         <>
           {body && (
-            <p className="mb-4 max-w-prose text-base leading-relaxed text-ardoise">
+            <p className="mb-4 max-w-prose text-base leading-relaxed text-ink-muted">
               {body}
             </p>
           )}
@@ -884,6 +934,20 @@ export function DynamicSection({ section }: { section: PageSection }) {
           <CitationsFooter citations={citations} />
         </>
       );
+
+    case "ProsCons": {
+      const { pros, cons } = coerceProsCons(parsedItems);
+      if (pros.length === 0 && cons.length === 0) return <UnknownSection section={section} />;
+      return (
+        <>
+          {body && (
+            <p className="mb-6 max-w-prose text-base leading-relaxed text-ink-muted">{body}</p>
+          )}
+          <ProsCons title={title} pros={pros} cons={cons} />
+          <CitationsFooter citations={citations} />
+        </>
+      );
+    }
 
     case "KeyTakeaways":
       return (
@@ -927,7 +991,7 @@ export function DynamicSection({ section }: { section: PageSection }) {
       return (
         <>
           {body && (
-            <p className="mb-4 max-w-prose text-base leading-relaxed text-ardoise">
+            <p className="mb-4 max-w-prose text-base leading-relaxed text-ink-muted">
               {body}
             </p>
           )}
@@ -941,7 +1005,7 @@ export function DynamicSection({ section }: { section: PageSection }) {
       // Body = quote text, title = author (best-effort mapping).
       return (
         <>
-          <QuoteBlock quote={body} author={title || "Numeris"} variant="citation" />
+          <QuoteBlock quote={body} author={title || "Skoria"} variant="citation" />
           <CitationsFooter citations={citations} />
         </>
       );
@@ -960,12 +1024,12 @@ export function DynamicSection({ section }: { section: PageSection }) {
           {(title || body) && (
             <div className="mb-4">
               {title && (
-                <h2 className="mb-2 font-serif text-[1.25rem] font-light text-encre">
+                <h2 className="mb-2 font-display text-[1.25rem] font-bold text-ink">
                   {title}
                 </h2>
               )}
               {body && (
-                <p className="max-w-prose text-base leading-relaxed text-ardoise">
+                <p className="max-w-prose text-base leading-relaxed text-ink-muted">
                   {body}
                 </p>
               )}
@@ -1010,13 +1074,13 @@ export function DynamicSection({ section }: { section: PageSection }) {
       );
 
     case "ExpertQuote":
-      // Body = quote text, author auto = persona OEC.
+      // Body = quote text, author auto = editorial publisher identity.
       return (
         <>
           <QuoteBlock
             quote={body}
             author={legalEntity.presidentName}
-            role={`${legalEntity.presidentTitle}, Expert-comptable`}
+            role={`${legalEntity.presidentTitle}, comparateur indépendant`}
             variant="citation"
           />
           <CitationsFooter citations={citations} />
@@ -1037,7 +1101,7 @@ export function DynamicSection({ section }: { section: PageSection }) {
       let tiers = coercePricingItems(parsedItems);
       if (tiers.length === 0) {
         try {
-          tiers = db.getPricingTiers().map(pricingTierToProp);
+          tiers = (await db.getPricingTiers()).map(pricingTierToProp);
         } catch (e) {
           if (process.env.NODE_ENV !== "production") {
             console.warn("[DynamicSection] PricingTeaser DB read failed:", e);
@@ -1049,7 +1113,7 @@ export function DynamicSection({ section }: { section: PageSection }) {
       return (
         <>
           {body && (
-            <p className="mb-4 max-w-prose text-base leading-relaxed text-ardoise">
+            <p className="mb-4 max-w-prose text-base leading-relaxed text-ink-muted">
               {body}
             </p>
           )}
@@ -1086,36 +1150,7 @@ export function DynamicSection({ section }: { section: PageSection }) {
     }
 
     case "TestimonialSlider": {
-      // Read DB by profession slug if we're on the /professions/ route.
-      // For other routes (secteurs/villes/...), fallback to a generic pull.
-      let testimonials: Testimonial[] = [];
-      try {
-        if (section.route === "professions") {
-          testimonials = db.getTestimonialsByProfession(section.slug, 6);
-        } else if (section.route === "secteurs") {
-          testimonials = db.getTestimonialsBySecteur(section.slug, 6);
-        } else if (section.route === "villes") {
-          testimonials = db.getTestimonialsByVille(section.slug, 6);
-        } else {
-          // Generic — pick 3 featured testimonials.
-          testimonials = db
-            .getTestimonials()
-            .filter((t) => t.featured)
-            .slice(0, 6);
-        }
-      } catch (e) {
-        if (process.env.NODE_ENV !== "production") {
-          console.warn("[DynamicSection] TestimonialSlider DB read failed:", e);
-        }
-        testimonials = [];
-      }
-      if (testimonials.length === 0) return null;
-      return (
-        <TestimonialSlider
-          {...(title && { title })}
-          testimonials={testimonials.map(dbTestimonialToProp)}
-        />
-      );
+      return null;
     }
 
     case "TableOfContents": {
@@ -1171,12 +1206,12 @@ export function DynamicSection({ section }: { section: PageSection }) {
         return (
           <div className="mb-12">
             {title && (
-              <h2 className="mb-3 font-serif text-[1.25rem] font-light text-encre">
+              <h2 className="mb-3 font-display text-[1.25rem] font-bold text-ink">
                 {title}
               </h2>
             )}
             {body && (
-              <p className="mb-5 max-w-prose text-base leading-relaxed text-ardoise">
+              <p className="mb-5 max-w-prose text-base leading-relaxed text-ink-muted">
                 {body}
               </p>
             )}
@@ -1194,29 +1229,29 @@ export function DynamicSection({ section }: { section: PageSection }) {
         }))
         .filter((f) => f.label);
       return (
-        <div className="mb-12 border border-pierre-12 border-l-2 border-l-or bg-blanc p-7">
-          <p className="mb-2 text-[0.65rem] font-bold uppercase tracking-[0.12em] text-or-fonce">
+        <div className="mb-12 border border-border-soft border-l-2 border-l-accent-500 bg-surface p-7">
+          <p className="mb-2 text-[0.65rem] font-bold uppercase tracking-[0.12em] text-accent-700">
             Simulateur
           </p>
           {title && (
-            <h2 className="mb-3 font-serif text-[1.25rem] font-light text-encre">
+            <h2 className="mb-3 font-display text-[1.25rem] font-bold text-ink">
               {title}
             </h2>
           )}
           {body && (
-            <p className="mb-5 max-w-prose text-base leading-relaxed text-ardoise">
+            <p className="mb-5 max-w-prose text-base leading-relaxed text-ink-muted">
               {body}
             </p>
           )}
           {fields.length > 0 && (
             <ul className="mb-6 space-y-2">
               {fields.map((f) => (
-                <li key={f.label} className="flex items-start gap-2 text-[0.85rem] text-encre-75">
-                  <span className="mt-0.5 text-or">→</span>
+                <li key={f.label} className="flex items-start gap-2 text-[0.85rem] text-ink-muted">
+                  <span className="mt-0.5 text-accent-500">→</span>
                   <span>
                     {f.label}
                     {f.hint && (
-                      <span className="ml-2 text-[0.72rem] text-ardoise">({f.hint})</span>
+                      <span className="ml-2 text-[0.72rem] text-ink-muted">({f.hint})</span>
                     )}
                   </span>
                 </li>
@@ -1225,7 +1260,7 @@ export function DynamicSection({ section }: { section: PageSection }) {
           )}
           <a
             href="/contact"
-            className="inline-flex items-center gap-2 bg-or px-6 py-3 font-sans text-[0.82rem] font-semibold text-nuit transition-colors hover:bg-[#b08844]"
+            className="inline-flex items-center gap-2 bg-accent-500 px-6 py-3 font-body text-[0.82rem] font-semibold text-brand-ink transition-colors hover:bg-accent-700"
           >
             Obtenir mon estimation personnalisée →
           </a>

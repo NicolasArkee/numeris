@@ -22,23 +22,25 @@ interface Props {
   params: Promise<{ service: string; dimension: string }>;
 }
 
+export const revalidate = 86400;
+
 export async function generateStaticParams() {
-  const services = db.getServices();
+  const services = await db.getServices();
   const params: { service: string; dimension: string }[] = [];
 
   for (const svc of services) {
     // Service × Secteur
-    const secteurs = db.getServiceSecteurs(svc.slug);
+    const secteurs = await db.getServiceSecteurs(svc.slug);
     for (const ss of secteurs) {
       params.push({ service: svc.slug, dimension: ss.secteur_slug });
     }
     // Service × Ville
-    const villes = db.getServiceVilles(svc.slug);
+    const villes = await db.getServiceVilles(svc.slug);
     for (const sv of villes) {
       params.push({ service: svc.slug, dimension: sv.ville_slug });
     }
     // Service × Profession
-    const professions = db.getServiceProfessions(svc.slug);
+    const professions = await db.getServiceProfessions(svc.slug);
     for (const sp of professions) {
       params.push({ service: svc.slug, dimension: sp.profession_slug });
     }
@@ -52,25 +54,25 @@ const EXPERTISES_ROUTE = "expertises";
 // ─── Résolution de la dimension (ordre de précédence : secteur > ville >
 // profession, identique à l'historique). La clé DB suit la convention
 // pipeline `{service}__{type}__{dimension}` — voir libs/content/keys.ts.
-function resolveDimension(dimSlug: string) {
-  const secteur = db.getSecteurBySlug(dimSlug);
+async function resolveDimension(dimSlug: string) {
+  const secteur = await db.getSecteurBySlug(dimSlug);
   if (secteur) return { dimType: "secteur" as ExpertiseDimType, secteur, ville: undefined, profession: undefined };
-  const ville = db.getVilleBySlug(dimSlug);
+  const ville = await db.getVilleBySlug(dimSlug);
   if (ville) return { dimType: "ville" as ExpertiseDimType, secteur: undefined, ville, profession: undefined };
-  const profession = db.getProfessionBySlug(dimSlug);
+  const profession = await db.getProfessionBySlug(dimSlug);
   if (profession) return { dimType: "profession" as ExpertiseDimType, secteur: undefined, ville: undefined, profession };
   return null;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { service: svcSlug, dimension: dimSlug } = await params;
-  const service = db.getServices().find((s) => s.slug === svcSlug);
+  const service = (await db.getServices()).find((s) => s.slug === svcSlug);
   if (!service) return {};
 
-  const dim = resolveDimension(dimSlug);
+  const dim = await resolveDimension(dimSlug);
   if (!dim) return {};
 
-  const dbSeo = db.getSeoOverride(
+  const dbSeo = await db.getSeoOverride(
     EXPERTISES_ROUTE,
     expertisesSlugKey(svcSlug, dim.dimType, dimSlug),
   );
@@ -89,16 +91,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function CrossDimensionPage({ params }: Props) {
   const { service: svcSlug, dimension: dimSlug } = await params;
-  const service = db.getServices().find((s) => s.slug === svcSlug);
+  const service = (await db.getServices()).find((s) => s.slug === svcSlug);
   if (!service) notFound();
 
-  const dim = resolveDimension(dimSlug);
+  const dim = await resolveDimension(dimSlug);
   if (!dim) notFound();
   const { dimType, secteur, ville, profession } = dim;
 
   // ─── DB-first bundle — clé composite alignée sur la pipeline ───
   const expertisesSlug = expertisesSlugKey(svcSlug, dimType, dimSlug);
-  const bundle = getDbPageBundle(EXPERTISES_ROUTE, expertisesSlug);
+  const bundle = await getDbPageBundle(EXPERTISES_ROUTE, expertisesSlug);
   const { sections: dbSections, seo: dbSeo, lastUpdatedDate, hasDbContent } = bundle;
   const canonicalUrl = `${AppConfig.url}/expertises/${svcSlug}/${dimSlug}`;
 
@@ -110,12 +112,12 @@ export default async function CrossDimensionPage({ params }: Props) {
       ? getSEOForServiceVille(service, ville)
       : getSEOForServiceProfession(service, profession!);
   const linkGroups = secteur
-    ? getCrossServiceSecteurLinks(svcSlug, dimSlug)
+    ? await getCrossServiceSecteurLinks(svcSlug, dimSlug)
     : ville
-      ? getServiceLinks(svcSlug)
-      : getCrossServiceProfessionLinks(svcSlug, dimSlug);
+      ? await getServiceLinks(svcSlug)
+      : await getCrossServiceProfessionLinks(svcSlug, dimSlug);
   const category = profession
-    ? db.getProfessionCategoryBySlug(profession.category_slug)
+    ? await db.getProfessionCategoryBySlug(profession.category_slug)
     : undefined;
   const eyebrow = ville
     ? `${service.title} à ${ville.name}`
@@ -134,19 +136,19 @@ export default async function CrossDimensionPage({ params }: Props) {
   const fallbackTakeaways = secteur
     ? [
         `${service.title} adaptée aux spécificités du secteur ${secteur.name.toLowerCase()}`,
-        `Expertise sectorielle et conformité réglementaire garanties`,
-        `Devis personnalisé gratuit pour votre activité`,
+        `Expérience sectorielle et points réglementaires à vérifier`,
+        `Critères de comparaison à préparer pour votre activité`,
       ]
     : ville
       ? [
-          `${service.title} à ${ville.name} avec ${AppConfig.name}`,
+          `${service.title} à ${ville.name} : options à comparer`,
           `Rendez-vous en présentiel ou en visio, selon vos préférences`,
-          `Devis gratuit et premier échange sans engagement`,
+          `Périmètre, délais et honoraires à clarifier avant engagement`,
         ]
       : [
           `${service.title} spécifiquement adaptée aux ${profession!.name.toLowerCase()}`,
           `Connaissance des obligations comptables et fiscales de votre métier`,
-          `Accompagnement dédié par un expert-comptable spécialisé`,
+          `Professionnel spécialisé à comparer selon vos besoins`,
         ];
   const keyTakeaways = bundle.keyTakeaways ?? fallbackTakeaways;
   const schema = (

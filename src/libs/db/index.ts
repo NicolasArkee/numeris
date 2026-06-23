@@ -1,10 +1,12 @@
 import type { DbAdapter } from "./types";
 
-// ─── V1: SQLite local ───
-// ─── V2: Swap this import for Supabase adapter ───
-import { sqliteAdapter } from "./sqlite";
+// ─── V2: Supabase adapter (live since juin 2026) ───
+// Switch back to sqliteAdapter ONLY for local CLI scripts that don't have the
+// Supabase env vars (e.g. `npm run db:import-directory-candidates` writing to
+// the local numeris.db before re-running migrate-supabase).
+import { supabaseAdapter } from "./supabase";
 
-export const db: DbAdapter = sqliteAdapter;
+export const db: DbAdapter = supabaseAdapter;
 
 export type { DbAdapter } from "./types";
 export type {
@@ -30,4 +32,8 @@ export type {
   SeoOverride,
   PageMeta,
   PublishStatus,
+  DirectoryCabinet,
+  DirectoryEstablishment,
+  DirectoryCity,
+  DirectoryCabinetCard,
 } from "./types";

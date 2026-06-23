@@ -8,16 +8,16 @@ interface Feature {
 
 export function Pricing({ plans }: { plans: PricingPlan[] }) {
   return (
-    <section className="bg-creme-06 px-6 py-24 lg:px-[4.5rem]">
+    <section className="bg-bg-muted px-6 py-24 lg:px-[4.5rem]">
       <div className="mx-auto max-w-[82rem]">
         <div className="mb-5 flex items-center gap-3.5">
-          <span className="block h-px w-6 flex-shrink-0 bg-or" />
-          <span className="text-[0.65rem] font-bold uppercase tracking-[0.14em] text-or-fonce">
-            Formules & tarifs
+          <span className="block h-px w-6 flex-shrink-0 bg-accent-500" />
+          <span className="text-[0.65rem] font-bold uppercase tracking-[0.14em] text-accent-700">
+            Repères de budget
           </span>
         </div>
-        <h2 className="mb-14 font-serif text-[2.75rem] font-light leading-[1.15] tracking-tight text-encre">
-          Des formules claires, sans surprise
+        <h2 className="mb-14 font-display text-[2.75rem] font-bold leading-[1.15] tracking-tight text-ink">
+          Comparer le périmètre avant le prix
         </h2>
 
         <div className="grid items-start gap-5 lg:grid-cols-3">
@@ -28,36 +28,36 @@ export function Pricing({ plans }: { plans: PricingPlan[] }) {
             return (
               <div
                 key={plan.slug}
-                className={`overflow-hidden border bg-blanc ${isFeatured ? "border-nuit border-t-[3px] border-t-or" : "border-pierre-12"}`}
+                className={`overflow-hidden border bg-surface ${isFeatured ? "border-brand-ink border-t-[3px] border-t-accent-500" : "border-border-soft"}`}
               >
                 {/* Head */}
                 <div
-                  className={`border-b border-pierre-12 p-8 ${isFeatured ? "bg-nuit" : ""}`}
+                  className={`border-b border-border-soft p-8 ${isFeatured ? "bg-brand-ink" : ""}`}
                 >
                   <span
-                    className={`mb-3.5 inline-block px-2.5 py-0.5 text-[0.6rem] font-bold uppercase tracking-[0.1em] ${isFeatured ? "bg-or/20 text-or-clair" : "bg-or-clair text-or-fonce"}`}
+                    className={`mb-3.5 inline-block px-2.5 py-0.5 text-[0.6rem] font-bold uppercase tracking-[0.1em] ${isFeatured ? "bg-accent-500/20 text-accent-300" : "bg-accent-300 text-accent-700"}`}
                   >
                     {plan.tag}
                   </span>
                   <h3
-                    className={`font-serif text-[1.5rem] font-normal ${isFeatured ? "text-blanc" : "text-encre"}`}
+                    className={`font-display text-[1.5rem] font-normal ${isFeatured ? "text-surface" : "text-ink"}`}
                   >
                     {plan.name}
                   </h3>
                   <p
-                    className={`text-[0.78rem] leading-relaxed ${isFeatured ? "text-white/40" : "text-ardoise"}`}
+                    className={`text-[0.78rem] leading-relaxed ${isFeatured ? "text-white/40" : "text-ink-muted"}`}
                   >
                     {plan.description}
                   </p>
                   <div className="mt-5 flex items-baseline gap-2.5">
                     <span
-                      className={`font-serif text-[2.5rem] font-light italic leading-none ${isFeatured ? "text-or" : "text-encre"}`}
+                      className={`font-display text-[2.5rem] font-bold italic leading-none ${isFeatured ? "text-accent-500" : "text-ink"}`}
                     >
                       {plan.price}
                     </span>
                     {plan.period && (
                       <span
-                        className={`text-[0.75rem] ${isFeatured ? "text-white/30" : "text-ardoise"}`}
+                        className={`text-[0.75rem] ${isFeatured ? "text-white/30" : "text-ink-muted"}`}
                       >
                         {plan.period}
                       </span>
@@ -70,10 +70,10 @@ export function Pricing({ plans }: { plans: PricingPlan[] }) {
                   {features.map((feat) => (
                     <div
                       key={feat.label}
-                      className="flex items-start gap-3 border-b border-pierre-12 py-2 text-[0.8rem] leading-snug text-encre-50 last:border-b-0"
+                      className="flex items-start gap-3 border-b border-border-soft py-2 text-[0.8rem] leading-snug text-ink-muted last:border-b-0"
                     >
                       <span
-                        className={`mt-0.5 flex-shrink-0 text-[0.8rem] ${feat.included ? "text-or" : "text-pierre-25"}`}
+                        className={`mt-0.5 flex-shrink-0 text-[0.8rem] ${feat.included ? "text-accent-500" : "text-border"}`}
                       >
                         {feat.included ? "✓" : "—"}
                       </span>
@@ -83,19 +83,19 @@ export function Pricing({ plans }: { plans: PricingPlan[] }) {
                 </div>
 
                 {/* Foot */}
-                <div className="border-t border-pierre-12 px-8 pb-8 pt-5">
+                <div className="border-t border-border-soft px-8 pb-8 pt-5">
                   <Link
                     href="/contact"
                     className={`block w-full py-3.5 text-center text-[0.8rem] font-semibold tracking-wide transition-colors ${
                       isFeatured
-                        ? "bg-or text-nuit hover:bg-[#b08844]"
-                        : "border border-pierre-12 bg-transparent text-nuit hover:border-nuit"
+                        ? "bg-accent-500 text-brand-ink hover:bg-accent-700"
+                        : "border border-border-soft bg-transparent text-brand-ink hover:border-brand-ink"
                     }`}
                   >
                     {plan.cta_label}
                   </Link>
                   {plan.note && (
-                    <p className="mt-2.5 text-center text-[0.65rem] text-pierre-37">
+                    <p className="mt-2.5 text-center text-[0.65rem] text-ink-soft">
                       {plan.note}
                     </p>
                   )}

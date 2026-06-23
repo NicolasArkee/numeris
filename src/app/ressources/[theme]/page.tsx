@@ -16,6 +16,8 @@ interface Props {
 
 const ROUTE = "ressources";
 
+export const revalidate = 86400;
+
 export async function generateStaticParams() {
   const params: { theme: string }[] = [];
   const seen = new Set<string>();
@@ -27,14 +29,14 @@ export async function generateStaticParams() {
   };
 
   // All hubs + clusters
-  const silos = db.getSilos();
+  const silos = await db.getSilos();
   for (const silo of silos) {
-    const hubs = db.getHubsBySilo(silo.slug);
+    const hubs = await db.getHubsBySilo(silo.slug);
     for (const hub of hubs) {
       push(hub.slug);
 
       // All clusters under this hub
-      const clusters = db.getClustersByHub(hub.slug);
+      const clusters = await db.getClustersByHub(hub.slug);
       for (const cluster of clusters) {
         push(cluster.slug);
       }
@@ -43,7 +45,7 @@ export async function generateStaticParams() {
 
   // All keyword_pages — required so cluster→keyword internal links don't 404
   // (cluster pages render up to 10 links per cluster via getRessourceLinks)
-  const keywords = db.getAllKeywords();
+  const keywords = await db.getAllKeywords();
   for (const kw of keywords) {
     push(kw.slug);
   }
@@ -53,10 +55,10 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { theme: slug } = await params;
-  const dbSeo = db.getSeoOverride(ROUTE, slug);
+  const dbSeo = await db.getSeoOverride(ROUTE, slug);
 
   // Try hub first, then cluster
-  const hub = db.getHubBySlug(slug);
+  const hub = await db.getHubBySlug(slug);
   if (hub) {
     const fallback = getSEOForRessource(hub, "hub");
     return {
@@ -66,7 +68,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
-  const cluster = db.getClusterBySlug(slug);
+  const cluster = await db.getClusterBySlug(slug);
   if (cluster) {
     const fallback = getSEOForRessource(cluster, "cluster");
     return {
@@ -76,7 +78,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
-  const keyword = db.getKeywordBySlug(slug);
+  const keyword = await db.getKeywordBySlug(slug);
   if (keyword) {
     const fallback = getSEOForRessource(keyword, "keyword");
     return {
@@ -93,13 +95,13 @@ export default async function ThemePage({ params }: Props) {
   const { theme: slug } = await params;
 
   // ─── Resolve which entity this slug maps to (hub | cluster | keyword) ───
-  const hub = db.getHubBySlug(slug);
-  const cluster = !hub ? db.getClusterBySlug(slug) : undefined;
-  const keyword = !hub && !cluster ? db.getKeywordBySlug(slug) : undefined;
+  const hub = await db.getHubBySlug(slug);
+  const cluster = !hub ? await db.getClusterBySlug(slug) : undefined;
+  const keyword = !hub && !cluster ? await db.getKeywordBySlug(slug) : undefined;
   if (!hub && !cluster && !keyword) notFound();
 
   // ─── DB-first short-circuit (applies regardless of entity type) ───
-  const bundle = getDbPageBundle(ROUTE, slug);
+  const bundle = await getDbPageBundle(ROUTE, slug);
   const { sections: dbSections, seo: dbSeo, lastUpdatedDate, hasDbContent } = bundle;
   const canonicalUrl = `${AppConfig.url}/ressources/${slug}`;
 
@@ -111,17 +113,17 @@ export default async function ThemePage({ params }: Props) {
       { name: "Accueil", url: "/" },
       { name: "Ressources", url: "/ressources" },
     ];
-    let linkGroups: ReturnType<typeof getRessourceLinks> = [];
+    let linkGroups: Awaited<ReturnType<typeof getRessourceLinks>> = [];
     let badges: string[] = [];
     let fallbackIntro = "";
     let fallbackH1 = "";
 
     if (hub) {
       label = hub.label;
-      const silo = db.getSiloBySlug(hub.silo_slug);
+      const silo = await db.getSiloBySlug(hub.silo_slug);
       eyebrow = silo?.label || "Ressources";
       breadcrumbs.push({ name: hub.label, url: `/ressources/${slug}` });
-      linkGroups = getRessourceLinks(slug, "hub");
+      linkGroups = await getRessourceLinks(slug, "hub");
       badges = [
         `${hub.volume.toLocaleString("fr-FR")} recherches/mois`,
         `${hub.n_keywords} mots-clés`,
@@ -131,13 +133,13 @@ export default async function ThemePage({ params }: Props) {
       fallbackH1 = fb.h1;
     } else if (cluster) {
       label = cluster.label;
-      const parentHub = db.getHubBySlug(cluster.hub_slug);
+      const parentHub = await db.getHubBySlug(cluster.hub_slug);
       eyebrow = parentHub?.label || "Ressources";
       if (parentHub) {
         breadcrumbs.push({ name: parentHub.label, url: `/ressources/${parentHub.slug}` });
       }
       breadcrumbs.push({ name: cluster.label, url: `/ressources/${slug}` });
-      linkGroups = getRessourceLinks(slug, "cluster");
+      linkGroups = await getRessourceLinks(slug, "cluster");
       badges = [
         `${cluster.volume.toLocaleString("fr-FR")} recherches/mois`,
         `${cluster.n_keywords} mots-clés`,
@@ -147,9 +149,9 @@ export default async function ThemePage({ params }: Props) {
       fallbackH1 = fb.h1;
     } else if (keyword) {
       label = keyword.label;
-      const parentCluster = db.getClusterBySlug(keyword.cluster_slug);
-      const parentHub = parentCluster ? db.getHubBySlug(parentCluster.hub_slug) : undefined;
-      const parentSilo = parentHub ? db.getSiloBySlug(parentHub.silo_slug) : undefined;
+      const parentCluster = await db.getClusterBySlug(keyword.cluster_slug);
+      const parentHub = parentCluster ? await db.getHubBySlug(parentCluster.hub_slug) : undefined;
+      const parentSilo = parentHub ? await db.getSiloBySlug(parentHub.silo_slug) : undefined;
       eyebrow = parentCluster?.label || parentHub?.label || "Ressources";
       if (parentSilo) {
         breadcrumbs.push({ name: parentSilo.label, url: `/ressources/${parentSilo.slug}` });
@@ -161,7 +163,7 @@ export default async function ThemePage({ params }: Props) {
         breadcrumbs.push({ name: parentCluster.label, url: `/ressources/${parentCluster.slug}` });
       }
       breadcrumbs.push({ name: keyword.label, url: `/ressources/${slug}` });
-      linkGroups = getRessourceLinks(slug, "keyword");
+      linkGroups = await getRessourceLinks(slug, "keyword");
       if (keyword.volume > 0) {
         badges.push(`${keyword.volume.toLocaleString("fr-FR")} recherches/mois`);
       }
@@ -204,9 +206,9 @@ export default async function ThemePage({ params }: Props) {
   // ─── Fallback static path (unchanged from pre-wire) ───
   if (hub) {
     const seo = getSEOForRessource(hub, "hub");
-    const linkGroups = getRessourceLinks(slug, "hub");
-    const clusters = db.getClustersByHub(slug);
-    const silo = db.getSiloBySlug(hub.silo_slug);
+    const linkGroups = await getRessourceLinks(slug, "hub");
+    const clusters = await db.getClustersByHub(slug);
+    const silo = await db.getSiloBySlug(hub.silo_slug);
 
     return (
       <ClusterPage
@@ -227,7 +229,7 @@ export default async function ThemePage({ params }: Props) {
       >
         {clusters.length > 0 && (
           <div className="mb-12">
-            <h2 className="mb-6 font-serif text-[1.5rem] font-light text-encre">
+            <h2 className="mb-6 font-display text-[1.5rem] font-bold text-ink">
               Articles dans ce thème
             </h2>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -235,10 +237,10 @@ export default async function ThemePage({ params }: Props) {
                 <Link
                   key={c.slug}
                   href={`/ressources/${c.slug}`}
-                  className="border border-pierre-12 bg-blanc px-6 py-5 transition-colors hover:border-or"
+                  className="border border-border-soft bg-surface px-6 py-5 transition-colors hover:border-accent-500"
                 >
-                  <h3 className="mb-1 text-[0.95rem] font-medium text-encre">{c.label}</h3>
-                  <p className="text-[0.68rem] text-ardoise">
+                  <h3 className="mb-1 text-[0.95rem] font-medium text-ink">{c.label}</h3>
+                  <p className="text-[0.68rem] text-ink-muted">
                     {c.volume.toLocaleString("fr-FR")} recherches · {c.n_keywords} mots-clés
                   </p>
                 </Link>
@@ -252,9 +254,9 @@ export default async function ThemePage({ params }: Props) {
 
   if (cluster) {
     const seo = getSEOForRessource(cluster, "cluster");
-    const linkGroups = getRessourceLinks(slug, "cluster");
-    const keywords = db.getKeywordsByCluster(slug);
-    const parentHub = db.getHubBySlug(cluster.hub_slug);
+    const linkGroups = await getRessourceLinks(slug, "cluster");
+    const keywords = await db.getKeywordsByCluster(slug);
+    const parentHub = await db.getHubBySlug(cluster.hub_slug);
 
     return (
       <ClusterPage
@@ -278,17 +280,17 @@ export default async function ThemePage({ params }: Props) {
       >
         {keywords.length > 0 && (
           <div className="mb-12">
-            <h2 className="mb-6 font-serif text-[1.5rem] font-light text-encre">
+            <h2 className="mb-6 font-display text-[1.5rem] font-bold text-ink">
               Mots-clés associés
             </h2>
             <div className="flex flex-wrap gap-2">
               {keywords.map((kw) => (
                 <span
                   key={kw.slug}
-                  className="border border-pierre-12 bg-blanc px-3 py-1.5 text-[0.72rem] text-ardoise"
+                  className="border border-border-soft bg-surface px-3 py-1.5 text-[0.72rem] text-ink-muted"
                 >
                   {kw.label}
-                  <span className="ml-1 text-pierre-12">
+                  <span className="ml-1 text-border-soft">
                     {kw.volume.toLocaleString("fr-FR")}
                   </span>
                 </span>
@@ -302,10 +304,10 @@ export default async function ThemePage({ params }: Props) {
 
   if (keyword) {
     const seo = getSEOForRessource(keyword, "keyword");
-    const linkGroups = getRessourceLinks(slug, "keyword");
-    const parentCluster = db.getClusterBySlug(keyword.cluster_slug);
-    const parentHub = parentCluster ? db.getHubBySlug(parentCluster.hub_slug) : undefined;
-    const parentSilo = parentHub ? db.getSiloBySlug(parentHub.silo_slug) : undefined;
+    const linkGroups = await getRessourceLinks(slug, "keyword");
+    const parentCluster = await db.getClusterBySlug(keyword.cluster_slug);
+    const parentHub = parentCluster ? await db.getHubBySlug(parentCluster.hub_slug) : undefined;
+    const parentSilo = parentHub ? await db.getSiloBySlug(parentHub.silo_slug) : undefined;
 
     const h1 = keyword.h1 || seo.h1;
     const intro = seo.intro;
@@ -341,17 +343,17 @@ export default async function ThemePage({ params }: Props) {
         linkGroups={linkGroups}
       >
         {parentCluster && (
-          <div className="mb-12 border border-pierre-12 bg-blanc px-7 py-6">
-            <p className="mb-3 text-[0.72rem] font-semibold uppercase tracking-[0.12em] text-or">
+          <div className="mb-12 border border-border-soft bg-surface px-7 py-6">
+            <p className="mb-3 text-[0.72rem] font-semibold uppercase tracking-[0.12em] text-accent-500">
               Article principal
             </p>
             <Link
               href={`/ressources/${parentCluster.slug}`}
-              className="block text-[1.05rem] font-medium text-encre transition-colors hover:text-or-fonce"
+              className="block text-[1.05rem] font-medium text-ink transition-colors hover:text-accent-700"
             >
               {parentCluster.label} →
             </Link>
-            <p className="mt-2 text-[0.78rem] text-ardoise">
+            <p className="mt-2 text-[0.78rem] text-ink-muted">
               Retrouvez le guide complet sur ce thème, dont {keyword.label.toLowerCase()} fait partie.
             </p>
           </div>

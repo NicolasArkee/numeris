@@ -15,8 +15,8 @@ export function HonorairesSimulator({ professionLabel }: { professionLabel?: str
   return (
     <SimulatorBox>
       {professionLabel && (
-        <p className="mb-5 text-[0.78rem] text-ardoise">
-          Estimation pré-paramétrée pour : <span className="font-medium text-encre">{professionLabel}</span>
+        <p className="mb-5 text-[0.78rem] text-ink-muted">
+          Estimation pré-paramétrée pour : <span className="font-medium text-ink">{professionLabel}</span>
         </p>
       )}
       <div className="grid gap-5 md:grid-cols-4">

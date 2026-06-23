@@ -44,10 +44,10 @@ export function parseTakeaways(raw: string | null): string[] | undefined {
   return undefined;
 }
 
-export function getDbPageBundle(route: string, slug: string): DbPageBundle {
-  const sections = db.getPageSections(route, slug);
-  const seo = db.getSeoOverride(route, slug);
-  const meta = db.getPageMeta(route, slug);
+export async function getDbPageBundle(route: string, slug: string): Promise<DbPageBundle> {
+  const sections = await db.getPageSections(route, slug);
+  const seo = await db.getSeoOverride(route, slug);
+  const meta = await db.getPageMeta(route, slug);
 
   // Takeaways : seo_overrides prioritaire, sinon items de la première
   // section KeyTakeaways (string[] JSON-encodé).

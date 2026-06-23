@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 230 60" role="img" aria-label="Skoria">
+  <!-- Wordmark in Inter Tight 800 — fallback chain for offline rendering. -->
+  <text x="0" y="46"
+        font-family="Inter Tight, Inter, system-ui, -apple-system, sans-serif"
+        font-size="52" font-weight="800" letter-spacing="-2"
+        fill="#0B3D91">Skoria</text>
+  <!-- Brand accent dot — score signature, independent of glyph metrics. -->
+  <circle cx="218" cy="14" r="6" fill="#FF6B35"/>
+</svg>

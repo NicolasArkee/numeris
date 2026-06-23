@@ -197,7 +197,7 @@ export function compareLmnp(
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 5. Honoraires d'expertise comptable (grille interne Numeris)
+// 5. Honoraires d'expertise comptable (grille interne Skoria)
 // ═══════════════════════════════════════════════════════════════
 
 export type FormeJuridique = "micro" | "ei" | "societe";

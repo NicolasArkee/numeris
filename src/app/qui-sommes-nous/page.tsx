@@ -7,7 +7,7 @@ import { legalEntity } from "@/data/legal-entity";
 
 export const metadata: Metadata = {
   title: `Qui sommes-nous | ${AppConfig.name} ${AppConfig.tagline}`,
-  description: `Découvrez ${legalEntity.companyName}, cabinet d'expertise comptable parisien fondé en ${legalEntity.creationYear}. Notre histoire, nos valeurs, notre équipe et notre code de déontologie.`,
+  description: `Découvrez ${legalEntity.companyName}, éditeur du comparateur indépendant Skoria : méthode, sources, limites éditoriales et demandes de correction.`,
   alternates: { canonical: `${AppConfig.url}/qui-sommes-nous` },
   robots: { index: true, follow: true },
 };
@@ -25,83 +25,70 @@ export default function QuiSommesNousPage() {
       />
 
       <PageHero
-        eyebrow={`Cabinet fondé en ${legalEntity.creationYear}`}
+        eyebrow="Comparateur indépendant"
         title="Qui"
         titleAccent="sommes-nous"
-        subtitle={`${annéesExperience} ans d'expérience au service des entrepreneurs, professions libérales et dirigeants de PME — depuis notre siège parisien et auprès de toutes les entreprises françaises.`}
+        subtitle={`${AppConfig.name} aide les entrepreneurs à comprendre leurs besoins, comparer les critères utiles et préparer leurs échanges avec des professionnels comptables.`}
         breadcrumbs={[
           { name: "Accueil", url: "/" },
           { name: "Qui sommes-nous", url: "/qui-sommes-nous" },
         ]}
-        cta={{ label: "Prendre rendez-vous", href: "/contact" }}
+        cta={{ label: "Demander une orientation", href: "/contact" }}
       />
 
-      <section className="bg-creme px-6 py-20 lg:px-[4.5rem]">
+      <section className="bg-bg px-6 py-20 lg:px-[4.5rem]">
         <div className="mx-auto max-w-[60rem]">
           <ContentSection
-            id="histoire"
-            title={`Notre histoire — depuis ${legalEntity.creationYear}`}
+            id="mission"
+            title="Notre mission"
             variant="highlighted"
             paragraphs={[
-              `Fondé en ${legalEntity.creationYear} à Paris, ${legalEntity.companyName} accompagne depuis près de trente ans les entrepreneurs, dirigeants de PME et professions libérales dans la gestion comptable, fiscale et sociale de leur activité.`,
-              `Né d'une volonté simple — rendre l'expertise comptable accessible, transparente et orientée conseil plutôt que tenue de livres — le cabinet a progressivement élargi son périmètre d'intervention à l'ensemble du territoire français tout en conservant son ancrage parisien.`,
-              `Aujourd'hui, ${legalEntity.companyName} intervient auprès de plusieurs centaines de clients sur l'ensemble des expertises du métier : comptabilité, fiscalité, gestion sociale, conseil en gestion, création d'entreprise et audit.`,
+              `${legalEntity.companyName} édite Skoria, une plateforme indépendante de comparaison et d'information. Nous ne réalisons pas de mission comptable, fiscale, sociale ou juridique individualisée.`,
+              `Notre rôle consiste à rendre les critères de choix plus lisibles : besoins métier, localisation, périmètre de mission, documents à préparer, points de vigilance et données administratives publiques lorsqu'elles sont disponibles.`,
+              `Les contenus Skoria sont conçus pour préparer une comparaison et un premier échange. Ils ne remplacent pas l'analyse d'un professionnel habilité sur une situation particulière.`,
             ]}
           />
 
           <ContentSection
-            id="valeurs"
-            title="Nos valeurs"
+            id="independance"
+            title="Indépendance et limites"
             paragraphs={[
-              `Indépendance — Conformément à l'article 145 du Code de déontologie des professionnels de l'expertise comptable, nous exerçons notre mission en toute indépendance, à l'abri de toute pression susceptible d'altérer notre jugement professionnel.`,
-              `Compétence — Nos collaborateurs sont engagés dans une démarche continue de formation et de mise à jour de leurs connaissances, en particulier sur les évolutions législatives, fiscales et sociales qui impactent nos clients.`,
-              `Confidentialité — Le secret professionnel défini à l'article 21 de l'ordonnance du 19 septembre 1945 s'impose à l'ensemble de nos collaborateurs. Toute information confiée par un client est protégée et n'est partagée qu'avec son accord explicite.`,
-              `Transparence tarifaire — Nos honoraires sont fixés avant le démarrage de toute mission, par lettre de mission écrite, conformément à l'article 151 du Code de déontologie.`,
+              `Skoria n'est pas une institution professionnelle, une administration, ni un cabinet comptable. La plateforme ne revendique aucune affiliation officielle avec les professionnels éventuellement listés dans l'annuaire.`,
+              `Aucune note, aucun avis client, aucun horaire et aucun service attribué à un professionnel n'est inventé. Lorsqu'une information n'est pas disponible dans une source publique ou documentée, elle n'est pas présentée comme certaine.`,
+              `Les classements, maillages et contenus éditoriaux servent à faciliter la navigation et la comparaison. Ils ne constituent pas une recommandation personnalisée ni une garantie de qualité.`,
             ]}
           />
 
           <ContentSection
-            id="equipe"
-            title="Notre équipe"
+            id="sources"
+            title="Sources et méthode"
             variant="bordered"
             paragraphs={[
-              `Le cabinet est dirigé par ${legalEntity.presidentName}, ${legalEntity.presidentTitle} de ${legalEntity.companyName}.`,
-              `L'équipe rassemble des experts-comptables inscrits au Tableau de l'Ordre, des collaborateurs comptables confirmés et des spécialistes en fiscalité, gestion sociale et conseil aux dirigeants. La présentation détaillée de l'équipe (parcours, spécialisations et certifications individuelles) est disponible sur demande lors d'un premier rendez-vous.`,
-              `Nous attachons une importance particulière à la stabilité du binôme client / collaborateur — chaque dossier est suivi par un interlocuteur dédié, sous la supervision d'un expert-comptable inscrit à l'Ordre.`,
+              `Les pages d'annuaire s'appuient sur des données administratives publiques, sur les informations disponibles dans nos bases internes et sur les demandes de correction reçues.`,
+              `Les guides par métier, secteur ou expertise sont structurés pour aider l'utilisateur à formuler les bonnes questions : obligations générales, documents à préparer, points de pilotage, risques à clarifier et critères de comparaison.`,
+              `Chaque page distingue autant que possible les faits administratifs, les contenus éditoriaux et les éléments qui doivent être confirmés directement auprès du professionnel concerné.`,
             ]}
           />
 
           <ContentSection
-            id="ordre"
-            title="Notre cadre déontologique"
+            id="corrections"
+            title="Correction des données"
             paragraphs={[
-              `${legalEntity.companyName} est inscrit au Tableau du ${legalEntity.oecRegion}.`,
-              `Numéro d'inscription au Tableau de l'Ordre : ${legalEntity.oecNumber}.`,
-              `Nous exerçons notre mission dans le strict respect du Code de déontologie des professionnels de l'expertise comptable, annexé au décret n° 2012-432 du 30 mars 2012. Ce code, dont l'intégralité est consultable sur le site du Conseil supérieur de l'Ordre (experts-comptables.fr), encadre notre indépendance, notre secret professionnel, notre devoir de conseil et nos relations avec nos clients et confrères.`,
-              `Toute mission est formalisée par une lettre de mission écrite, conformément à l'article 151 du Code de déontologie.`,
+              `Une entreprise, un professionnel ou un utilisateur peut demander la correction, la mise à jour ou le retrait d'une information inexacte via la page contact.`,
+              `Les demandes sont examinées à partir d'éléments vérifiables : SIRET, adresse, source administrative, justificatif public ou indication documentée de l'erreur signalée.`,
+              `Contact : ${legalEntity.emailContact}.`,
             ]}
           />
 
           <ContentSection
-            id="engagements"
-            title="Nos engagements qualité"
+            id="editeur"
+            title="Éditeur"
             paragraphs={[
-              `Premier rendez-vous gratuit et sans engagement, sur place ou en visioconférence.`,
-              `Devis chiffré sous 24 à 48 heures ouvrées après le rendez-vous de cadrage.`,
-              `Lettre de mission systématique avant tout démarrage d'intervention.`,
-              `Réponse à toute sollicitation client sous 48 heures ouvrées maximum.`,
-              `Restitution annuelle des comptes accompagnée d'un entretien de conseil avec un expert-comptable.`,
-            ]}
-          />
-
-          <ContentSection
-            id="contact"
-            title="Nous rencontrer"
-            paragraphs={[
+              `Le site ${legalEntity.websiteDomain} est édité par ${legalEntity.companyName}, ${legalEntity.legalForm} au capital de ${legalEntity.capital}.`,
               `Siège social : ${legalEntity.addressSiege}.`,
-              `Téléphone : ${legalEntity.phoneSiege}.`,
-              `Courriel : ${legalEntity.emailContact}.`,
-              `Vous pouvez également prendre rendez-vous directement via notre formulaire de contact.`,
+              `Immatriculation : ${legalEntity.rcs}.`,
+              `Activité déclarée : ${legalEntity.naf} (${legalEntity.nafLabel}).`,
+              `La plateforme est active depuis ${annéesExperience} ans sous la marque Skoria.`,
             ]}
           />
         </div>

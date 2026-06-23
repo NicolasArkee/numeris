@@ -25,16 +25,16 @@ export function PressLogos({
   const isDark = variant === "dark";
 
   return (
-    <section className={`px-6 py-14 lg:px-[4.5rem] ${isDark ? "bg-nuit-alt" : "border-y border-pierre-12 bg-blanc"}`}>
+    <section className={`px-6 py-14 lg:px-[4.5rem] ${isDark ? "bg-brand-900" : "border-y border-border-soft bg-surface"}`}>
       <div className="mx-auto max-w-[82rem]">
-        <p className={`mb-8 text-center text-[0.68rem] font-semibold uppercase tracking-[0.14em] ${isDark ? "text-white/20" : "text-ardoise"}`}>
+        <p className={`mb-8 text-center text-[0.68rem] font-semibold uppercase tracking-[0.14em] ${isDark ? "text-white/20" : "text-ink-muted"}`}>
           {title}
         </p>
         <div className="flex flex-wrap items-center justify-center gap-10 lg:gap-16">
           {logos.map((logo) => (
             <span
               key={logo.name}
-              className={`text-[0.85rem] font-bold tracking-[0.08em] ${isDark ? "text-white/15" : "text-pierre-25"}`}
+              className={`text-[0.85rem] font-bold tracking-[0.08em] ${isDark ? "text-white/15" : "text-border"}`}
             >
               {logo.label || logo.name}
             </span>

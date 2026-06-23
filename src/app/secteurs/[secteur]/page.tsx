@@ -21,16 +21,18 @@ interface Props {
 
 const ROUTE = "secteurs";
 
+export const revalidate = 86400;
+
 export async function generateStaticParams() {
-  return db.getSecteurs().map((s) => ({ secteur: s.slug }));
+  return (await db.getSecteurs()).map((s) => ({ secteur: s.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { secteur: slug } = await params;
-  const secteur = db.getSecteurBySlug(slug);
+  const secteur = await db.getSecteurBySlug(slug);
   if (!secteur) return {};
 
-  const dbSeo = db.getSeoOverride(ROUTE, slug);
+  const dbSeo = await db.getSeoOverride(ROUTE, slug);
   const fallback = getSEOForSecteur(secteur);
 
   return {
@@ -42,27 +44,29 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function SecteurPage({ params }: Props) {
   const { secteur: slug } = await params;
-  const secteur = db.getSecteurBySlug(slug);
+  const secteur = await db.getSecteurBySlug(slug);
   if (!secteur) notFound();
 
-  const linkGroups = getSecteurLinks(slug);
+  const linkGroups = await getSecteurLinks(slug);
 
   // ─── DB-first path ───
-  const bundle = getDbPageBundle(ROUTE, slug);
+  const bundle = await getDbPageBundle(ROUTE, slug);
   const { sections: dbSections, seo: dbSeo, lastUpdatedDate, hasDbContent } = bundle;
   const canonicalUrl = `${AppConfig.url}/secteurs/${slug}`;
 
   // ─── Maillage interne — rendu dans les DEUX chemins (DB et fallback) ───
+  const meshServices = await db.getServices();
+  const meshVilles = (await db.getVilles()).slice(0, 12);
   const internalMesh = (
     <>
       <ServicesGrid
-        title={`Nos services pour le secteur ${secteur.name}`}
-        services={db.getServices()}
+        title={`Expertises à comparer pour le secteur ${secteur.name}`}
+        services={meshServices}
         hrefBuilder={(svc) => `/expertises/${svc.slug}/${slug}`}
       />
       <VillesStrip
         title={`${secteur.name} par ville`}
-        villes={db.getVilles().slice(0, 12)}
+        villes={meshVilles}
       />
     </>
   );

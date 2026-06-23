@@ -3,6 +3,7 @@ import { AppConfig } from "@/utils/AppConfig";
 import { db } from "@/libs/db";
 import { expertisesSlugKey } from "@/libs/content/keys";
 import { SIMULATEURS } from "@/app/simulateurs/registry";
+import { getPublishedCommercialPages } from "@/libs/content/commercial";
 
 /**
  * Convert a SQLite `datetime('now')` string ("YYYY-MM-DD HH:MM:SS" or
@@ -22,14 +23,23 @@ function parsePageMetaDate(raw: string | null | undefined, fallback: Date): Date
   return Number.isNaN(d.getTime()) ? fallback : d;
 }
 
-export default function sitemap(): MetadataRoute.Sitemap {
+function directoryCabinetSlug(name: string, siret: string): string {
+  return `${name
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "")}-${siret}`;
+}
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = AppConfig.url;
   const buildDate = new Date();
 
   // ─── Pull every page_meta row up front; build a Map keyed by `${route}/${slug}` ───
   // Sitemap routes use this Map to surface real `reviewed_at` lastmod values
   // (P3c — replaces uniform `new Date()` for all 1668 URLs).
-  const allMeta = db.getAllPageMeta();
+  const allMeta = await db.getAllPageMeta();
   const metaByKey = new Map<string, Date>();
   for (const m of allMeta) {
     metaByKey.set(`${m.route}/${m.slug}`, parsePageMetaDate(m.reviewed_at, buildDate));
@@ -49,6 +59,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/professions`, lastModified: buildDate, changeFrequency: "monthly", priority: 0.9 },
     { url: `${baseUrl}/ressources`, lastModified: buildDate, changeFrequency: "weekly", priority: 0.8 },
     { url: `${baseUrl}/contact`, lastModified: buildDate, changeFrequency: "yearly", priority: 0.9 },
+    { url: `${baseUrl}/annuaire/experts-comptables`, lastModified: buildDate, changeFrequency: "weekly", priority: 0.8 },
     { url: `${baseUrl}/simulateurs`, lastModified: buildDate, changeFrequency: "monthly", priority: 0.8 },
     { url: `${baseUrl}/qui-sommes-nous`, lastModified: buildDate, changeFrequency: "yearly", priority: 0.6 },
     { url: `${baseUrl}/mentions-legales`, lastModified: buildDate, changeFrequency: "yearly", priority: 0.3 },
@@ -66,8 +77,31 @@ export default function sitemap(): MetadataRoute.Sitemap {
     });
   }
 
+  // ─── Public directory pages ───
+  // City and cabinet URLs are sourced only from public read methods. Those
+  // methods gate on publish_status, confidence_score, documented status, and
+  // active establishment status, so candidate-only records never enter the sitemap.
+  for (const city of await db.getDirectoryCities()) {
+    entries.push({
+      url: `${baseUrl}/expert-comptable/${city.slug}`,
+      lastModified: buildDate,
+      changeFrequency: "weekly",
+      priority: 0.6,
+    });
+
+    for (const card of await db.getDirectoryCabinetsByCity(city.code_insee, 500)) {
+      const name = card.cabinet.display_name ?? card.cabinet.legal_name;
+      entries.push({
+        url: `${baseUrl}/expert-comptable/${city.slug}/${directoryCabinetSlug(name, card.establishment.siret)}`,
+        lastModified: buildDate,
+        changeFrequency: "monthly",
+        priority: 0.5,
+      });
+    }
+  }
+
   // ─── Service pages ───
-  const services = db.getServices();
+  const services = await db.getServices();
   for (const s of services) {
     entries.push({
       url: `${baseUrl}/expertises/${s.slug}`,
@@ -77,7 +111,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     });
 
     // Service × Secteur — lastmod lue avec la clé pipeline `{svc}__{type}__{dim}`
-    const secteurs = db.getServiceSecteurs(s.slug);
+    const secteurs = await db.getServiceSecteurs(s.slug);
     for (const ss of secteurs) {
       entries.push({
         url: `${baseUrl}/expertises/${s.slug}/${ss.secteur_slug}`,
@@ -88,7 +122,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }
 
     // Service × Ville
-    const villes = db.getServiceVilles(s.slug);
+    const villes = await db.getServiceVilles(s.slug);
     for (const sv of villes) {
       entries.push({
         url: `${baseUrl}/expertises/${s.slug}/${sv.ville_slug}`,
@@ -99,7 +133,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }
 
     // Service × Profession
-    const professions = db.getServiceProfessions(s.slug);
+    const professions = await db.getServiceProfessions(s.slug);
     for (const sp of professions) {
       entries.push({
         url: `${baseUrl}/expertises/${s.slug}/${sp.profession_slug}`,
@@ -111,7 +145,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }
 
   // ─── Secteur pages ───
-  const secteurs = db.getSecteurs();
+  const secteurs = await db.getSecteurs();
   for (const s of secteurs) {
     entries.push({
       url: `${baseUrl}/secteurs/${s.slug}`,
@@ -122,7 +156,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }
 
   // ─── Ville pages ───
-  const villes = db.getVilles();
+  const villes = await db.getVilles();
   for (const v of villes) {
     entries.push({
       url: `${baseUrl}/villes/${v.slug}`,
@@ -133,7 +167,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }
 
   // ─── Departement pages ───
-  const departements = db.getDepartements();
+  const departements = await db.getDepartements();
   for (const d of departements) {
     entries.push({
       url: `${baseUrl}/departements/${d.slug}`,
@@ -144,7 +178,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }
 
   // ─── Profession pages ───
-  const allProfessions = db.getProfessions();
+  const allProfessions = await db.getProfessions();
   for (const p of allProfessions) {
     entries.push({
       url: `${baseUrl}/professions/${p.slug}`,
@@ -159,9 +193,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // hub/cluster (même règle que le Set `seen` de generateStaticParams dans
   // ressources/[theme]/page.tsx).
   const seenRessources = new Set<string>();
-  const silos = db.getSilos();
+  const silos = await db.getSilos();
   for (const silo of silos) {
-    const hubs = db.getHubsBySilo(silo.slug);
+    const hubs = await db.getHubsBySilo(silo.slug);
     for (const hub of hubs) {
       if (!seenRessources.has(hub.slug)) {
         seenRessources.add(hub.slug);
@@ -173,7 +207,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
         });
       }
 
-      const clusters = db.getClustersByHub(hub.slug);
+      const clusters = await db.getClustersByHub(hub.slug);
       for (const c of clusters) {
         if (seenRessources.has(c.slug)) continue;
         seenRessources.add(c.slug);
@@ -189,7 +223,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   // Keyword pages — construites par generateStaticParams (getAllKeywords)
   // mais historiquement absentes du sitemap (couverture max).
-  for (const kw of db.getAllKeywords()) {
+  for (const kw of await db.getAllKeywords()) {
     if (seenRessources.has(kw.slug)) continue;
     seenRessources.add(kw.slug);
     entries.push({
@@ -197,6 +231,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: lastmodFor("ressources", kw.slug),
       changeFrequency: "monthly",
       priority: 0.4,
+    });
+  }
+
+  // ─── Couche commerciale / affiliation (/comparatifs, /avis, /codes-parrainage) ───
+  // Gating SEO : seules les pages publish_status='published' entrent au sitemap.
+  // Tant que le contenu (Gemini) n'est pas généré + publié, ce bloc est vide.
+  for (const c of getPublishedCommercialPages()) {
+    entries.push({
+      url: `${baseUrl}${c.url}`,
+      lastModified: lastmodFor(c.route, c.slug),
+      changeFrequency: "weekly",
+      priority: 0.6,
     });
   }
 

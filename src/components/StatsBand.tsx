@@ -14,7 +14,7 @@ const defaultStats: Stat[] = [
 
 export function StatsBand({ stats = defaultStats }: { stats?: Stat[] }) {
   return (
-    <section className="border-b border-pierre-12 bg-blanc">
+    <section className="border-b border-border-soft bg-surface">
       <div className="mx-auto max-w-[82rem] px-6 py-12 lg:px-[4.5rem]">
         <StatHighlight stats={stats} variant="band" />
       </div>

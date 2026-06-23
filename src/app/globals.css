@@ -1,74 +1,78 @@
 @import "tailwindcss";
 
-/* ─── NUMERIS DESIGN TOKENS — V2 (navy · or · crème) ─── */
+/* ─── SKORIA DESIGN TOKENS — V1 (bleu confiance · accent orange · slate) ─── */
 @theme {
-  /* Marque */
-  --color-nuit: #0e2336;
-  --color-nuit-alt: #13293e;
-  --color-nuit-25: #16314a;
-  --color-or: #c2a15c;
-  --color-or-clair: #ebe0c8;
-  --color-or-fonce: #7c6130;
-  --color-or-pale: #f4eee1;
+  /* Brand — bleu confiance institutionnel */
+  --color-brand-50: #eff4fb;
+  --color-brand-100: #d6e2f3;
+  --color-brand-300: #6e92cc;
+  --color-brand-500: #2c5db8;
+  --color-brand-700: #0b3d91;
+  --color-brand-900: #062462;
+  --color-brand-ink: #04173f;
 
-  /* Neutres (calés sur la V2 — lisibilité AA+) */
-  --color-encre: #1a2a38;
-  --color-encre-75: #33414f;
-  --color-encre-50: #4a5663;
-  --color-ardoise: #566472;
-  --color-pierre-37: #606c7a;
-  --color-pierre-25: #c9c3b6;
-  --color-pierre-12: #e8e2d5;
-  --color-creme-06: #f4f1ea;
-  --color-creme: #faf7f1;
-  --color-blanc: #ffffff;
+  /* Accent — orange chaud (CTA, badges TOP) */
+  --color-accent-50: #fff4ec;
+  --color-accent-300: #ffb388;
+  --color-accent-500: #ff6b35;
+  --color-accent-700: #c44818;
 
-  /* États */
-  --color-succes-bg: #dff0e5;
-  --color-succes-text: #0d3d20;
-  --color-warning-bg: #fef5dc;
-  --color-warning-text: #5c4710;
-  --color-erreur-bg: #fce8e4;
-  --color-erreur-text: #4a0d09;
+  /* Sémantiques */
+  --color-success-50: #ecfdf5;
+  --color-success-500: #16a34a;
+  --color-success-700: #14532d;
+  --color-warning-50: #fffbeb;
+  --color-warning-500: #f59e0b;
+  --color-warning-700: #92400e;
+  --color-danger-50: #fef2f2;
+  --color-danger-500: #dc2626;
+  --color-danger-700: #991b1b;
 
-  /* Fonts — V2 (Space Grotesk display + Inter body) */
-  --font-serif: "Space Grotesk", "Inter", system-ui, sans-serif;
-  --font-sans: "Inter", system-ui, sans-serif;
+  /* Étoiles de notation (réservé — ne pas réutiliser pour CTA) */
+  --color-rating-star: #fbbf24;
+
+  /* Neutres froids slate */
+  --color-surface: #ffffff;
+  --color-bg: #f8fafc;
+  --color-bg-muted: #f1f5f9;
+  --color-border: #e2e8f0;
+  --color-border-soft: #edf2f7;
+  --color-ink: #0f172a;
+  --color-ink-muted: #475569;
+  --color-ink-soft: #94a3b8;
+
+  /* Fonts — Skoria v1 (Inter Tight display + Inter body + JetBrains Mono data) */
+  --font-display: "Inter Tight", "Inter", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
 /* ─── BASE ─── */
 body {
-  font-family: var(--font-sans);
-  background: var(--color-creme);
-  color: var(--color-encre);
+  font-family: var(--font-body);
+  background: var(--color-bg);
+  color: var(--color-ink);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
-/* Les titres utilisent l'utilitaire `font-serif` → mappé sur Space Grotesk. */
-
-/* ─── UTILITIES ─── */
-/* Aplaties pour un rendu net et premium : suppression des effets « glow » et
-   de la grille décorative (rendu jugé trop « IA »). Conservées en no-op pour
-   ne pas casser le markup existant qui référence encore ces classes. */
-.grid-bg {
-  background-image: none;
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
 }
 
-.radial-or {
-  background: none;
+/* Anneau de focus — réservé brand-700 à 25 % */
+:focus-visible {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 3px rgba(11, 61, 145, 0.25);
+  border-radius: 4px;
 }
 
 /* ─── ANIMATIONS ─── */
 @keyframes fadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .animate-fade-up {

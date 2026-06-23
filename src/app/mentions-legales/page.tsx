@@ -33,7 +33,7 @@ export default function MentionsLegalesPage() {
         ]}
       />
 
-      <section className="bg-creme px-6 py-20 lg:px-[4.5rem]">
+      <section className="bg-bg px-6 py-20 lg:px-[4.5rem]">
         <div className="mx-auto max-w-[60rem]">
           <ContentSection
             id="editeur"
@@ -53,21 +53,19 @@ export default function MentionsLegalesPage() {
           />
 
           <ContentSection
-            id="ordre"
-            title="2. Inscription à l'Ordre et déontologie"
+            id="independance"
+            title="2. Positionnement du service"
             paragraphs={[
-              `${legalEntity.companyName} exerce sa mission d'expertise comptable dans le respect des dispositions de l'ordonnance n° 45-2138 du 19 septembre 1945 modifiée et du décret n° 2012-432 du 30 mars 2012 relatif à l'exercice de l'activité d'expertise comptable.`,
-              `Cabinet inscrit au Tableau du ${legalEntity.oecRegion}. Numéro d'inscription au Tableau de l'Ordre : ${legalEntity.oecNumber}.`,
-              `Les professionnels du cabinet sont tenus au respect du Code de déontologie des professionnels de l'expertise comptable annexé au décret n° 2012-432, en particulier au secret professionnel défini à l'article 21 de l'ordonnance du 19 septembre 1945.`,
-              `Autorité de tutelle : Conseil supérieur de l'Ordre des Experts-Comptables — 19, rue Cognacq-Jay, 75341 Paris Cedex 07.`,
+              `${legalEntity.companyName} édite un comparateur indépendant et des contenus informatifs. La société ne réalise pas de mission comptable, fiscale, sociale ou juridique individualisée pour le compte des utilisateurs du site.`,
+              `Les informations publiées aident à préparer une comparaison, à identifier des critères de choix et à comprendre des obligations générales. Elles ne remplacent pas une consultation personnalisée auprès d'un professionnel habilité.`,
+              `Skoria n'est pas affilié à une institution professionnelle, à une administration, ni aux professionnels éventuellement référencés dans l'annuaire, sauf mention contractuelle explicite.`,
             ]}
           />
 
           <ContentSection
             id="rcp"
-            title="3. Assurance Responsabilité Civile Professionnelle"
+            title="3. Responsabilité civile"
             paragraphs={[
-              `Conformément à l'article 17 de l'ordonnance du 19 septembre 1945, ${legalEntity.companyName} a souscrit une assurance Responsabilité Civile Professionnelle.`,
               legalEntity.rcp,
             ]}
           />
@@ -105,7 +103,7 @@ export default function MentionsLegalesPage() {
             id="donnees-personnelles"
             title="7. Données personnelles et cookies"
             paragraphs={[
-              `Les données personnelles collectées sur le site ${legalEntity.websiteDomain} font l'objet d'un traitement décrit dans la Politique de confidentialité du cabinet.`,
+              `Les données personnelles collectées sur le site ${legalEntity.websiteDomain} font l'objet d'un traitement décrit dans la Politique de confidentialité de la plateforme.`,
               `Le responsable de traitement est ${legalEntity.companyName}. Conformément au Règlement (UE) 2016/679 (RGPD) et à la loi n° 78-17 du 6 janvier 1978 modifiée, vous disposez de droits d'accès, de rectification, d'effacement, de limitation, de portabilité et d'opposition sur vos données.`,
               `Pour exercer ces droits, contactez le Délégué à la Protection des Données : ${legalEntity.dpoEmail}.`,
               `Vous disposez également du droit d'introduire une réclamation auprès de la Commission nationale de l'informatique et des libertés (CNIL) — 3, place de Fontenoy — TSA 80715 — 75334 Paris Cedex 07.`,
@@ -117,7 +115,7 @@ export default function MentionsLegalesPage() {
             title="8. Responsabilité éditoriale"
             paragraphs={[
               `${legalEntity.companyName} s'efforce d'assurer l'exactitude et la mise à jour des informations diffusées sur le site, sans toutefois en garantir l'exhaustivité ni l'absence de modification par un tiers (piratage, virus).`,
-              `Les contenus à vocation informative publiés sur le site ${legalEntity.websiteDomain} ne sauraient se substituer à une consultation personnalisée avec un expert-comptable. Aucune information ne constitue un conseil juridique, fiscal ou comptable individualisé.`,
+              `Les contenus à vocation informative publiés sur le site ${legalEntity.websiteDomain} ne sauraient se substituer à une consultation personnalisée avec un professionnel habilité. Aucune information ne constitue un conseil juridique, fiscal, social ou comptable individualisé.`,
               `${legalEntity.companyName} ne pourra être tenue pour responsable des dommages directs ou indirects résultant de l'utilisation du site ou de l'impossibilité d'y accéder.`,
             ]}
           />
@@ -131,7 +129,7 @@ export default function MentionsLegalesPage() {
             ]}
           />
 
-          <p className="mt-12 text-[0.72rem] text-ardoise/70">
+          <p className="mt-12 text-[0.72rem] text-ink-muted/70">
             Dernière mise à jour des présentes mentions légales : juin 2026.
           </p>
         </div>

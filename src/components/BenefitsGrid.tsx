@@ -26,7 +26,7 @@ export function BenefitsGrid({
   return (
     <div className="mb-12">
       {title && (
-        <h2 className="mb-6 font-serif text-[1.25rem] font-light text-encre">
+        <h2 className="mb-6 font-display text-[1.25rem] font-bold text-ink">
           {title}
         </h2>
       )}
@@ -36,15 +36,15 @@ export function BenefitsGrid({
           return (
             <div
               key={b.title}
-              className="border border-pierre-12 bg-blanc p-6 transition-colors hover:border-or"
+              className="border border-border-soft bg-surface p-6 transition-colors hover:border-accent-500"
             >
-              <span className="mb-3 inline-flex h-9 w-9 items-center justify-center text-or-fonce">
+              <span className="mb-3 inline-flex h-9 w-9 items-center justify-center text-accent-700">
                 <IconSet name={iconName} size={32} />
               </span>
-              <h3 className="mb-1.5 text-[0.95rem] font-semibold text-encre">
+              <h3 className="mb-1.5 text-[0.95rem] font-semibold text-ink">
                 {b.title}
               </h3>
-              <p className="text-[0.9rem] leading-relaxed text-ardoise">
+              <p className="text-[0.9rem] leading-relaxed text-ink-muted">
                 {b.description}
               </p>
             </div>

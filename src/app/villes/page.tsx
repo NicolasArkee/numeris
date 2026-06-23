@@ -6,14 +6,14 @@ import { BreadcrumbJsonLd, WebPageJsonLd } from "@/components/JsonLd";
 import { PageHero } from "@/components/PageHero";
 
 export const metadata: Metadata = {
-  title: `Expert-Comptable par Ville | ${AppConfig.name}`,
-  description: `Trouvez votre expert-comptable dans les principales villes de France : Paris, Lyon, Marseille, Bordeaux, Toulouse et plus.`,
+  title: `Comparer par ville | ${AppConfig.name}`,
+  description: `Comparez les professionnels comptables dans les principales villes de France : Paris, Lyon, Marseille, Bordeaux, Toulouse et plus.`,
   alternates: { canonical: `${AppConfig.url}/villes` },
 };
 
-export default function VillesPage() {
-  const villes = db.getVilles();
-  const departements = db.getDepartements();
+export default async function VillesPage() {
+  const villes = await db.getVilles();
+  const departements = await db.getDepartements();
 
   return (
     <>
@@ -24,26 +24,26 @@ export default function VillesPage() {
         ]}
       />
       <WebPageJsonLd
-        name="Expert-comptable près de chez vous"
-        description={`${AppConfig.name} accompagne les entreprises partout en France. Trouvez nos services dans votre ville ou département.`}
+        name="Comparer près de chez vous"
+        description={`${AppConfig.name} aide à comparer les professionnels comptables partout en France à partir de critères lisibles.`}
         url="/villes"
       />
 
       <PageHero
         eyebrow="Géolocalisation"
-        title="Expert-comptable près de chez vous"
-        subtitle={`${AppConfig.name} accompagne les entreprises partout en France. Trouvez nos services dans votre ville ou département.`}
+        title="Comparer près de chez vous"
+        subtitle={`${AppConfig.name} aide à comparer les professionnels comptables partout en France à partir de critères lisibles.`}
         breadcrumbs={[
           { name: "Accueil", url: "/" },
           { name: "Villes", url: "/villes" },
         ]}
-        cta={{ label: "Prendre rendez-vous", href: "/contact" }}
+        cta={{ label: "Demander une orientation", href: "/contact" }}
       />
 
-      <section className="bg-creme px-6 py-20 lg:px-[4.5rem]">
+      <section className="bg-bg px-6 py-20 lg:px-[4.5rem]">
         <div className="mx-auto max-w-[82rem]">
           {/* Villes */}
-          <h2 className="mb-8 font-serif text-[1.75rem] font-light text-encre">
+          <h2 className="mb-8 font-display text-[1.75rem] font-bold text-ink">
             Principales villes
           </h2>
           <div className="mb-16 grid gap-4 md:grid-cols-3 lg:grid-cols-4">
@@ -51,10 +51,10 @@ export default function VillesPage() {
               <Link
                 key={v.slug}
                 href={`/villes/${v.slug}`}
-                className="border border-pierre-12 bg-blanc px-6 py-5 transition-colors hover:border-or"
+                className="border border-border-soft bg-surface px-6 py-5 transition-colors hover:border-accent-500"
               >
-                <h3 className="mb-1 text-[0.95rem] font-medium text-encre">{v.name}</h3>
-                <p className="text-[0.72rem] text-ardoise">
+                <h3 className="mb-1 text-[0.95rem] font-medium text-ink">{v.name}</h3>
+                <p className="text-[0.72rem] text-ink-muted">
                   {v.region}{v.departement ? ` (${v.departement})` : ""}
                 </p>
               </Link>
@@ -62,7 +62,7 @@ export default function VillesPage() {
           </div>
 
           {/* Departements */}
-          <h2 className="mb-8 font-serif text-[1.75rem] font-light text-encre">
+          <h2 className="mb-8 font-display text-[1.75rem] font-bold text-ink">
             Par département
           </h2>
           <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4">
@@ -70,12 +70,12 @@ export default function VillesPage() {
               <Link
                 key={d.slug}
                 href={`/departements/${d.slug}`}
-                className="border border-pierre-12 bg-blanc px-6 py-5 transition-colors hover:border-or"
+                className="border border-border-soft bg-surface px-6 py-5 transition-colors hover:border-accent-500"
               >
-                <h3 className="mb-1 text-[0.95rem] font-medium text-encre">
+                <h3 className="mb-1 text-[0.95rem] font-medium text-ink">
                   {d.name} ({d.code})
                 </h3>
-                <p className="text-[0.72rem] text-ardoise">{d.region}</p>
+                <p className="text-[0.72rem] text-ink-muted">{d.region}</p>
               </Link>
             ))}
           </div>

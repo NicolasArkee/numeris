@@ -33,7 +33,7 @@ export default function CguPage() {
         ]}
       />
 
-      <section className="bg-creme px-6 py-20 lg:px-[4.5rem]">
+      <section className="bg-bg px-6 py-20 lg:px-[4.5rem]">
         <div className="mx-auto max-w-[60rem]">
           <ContentSection
             id="objet"
@@ -42,7 +42,7 @@ export default function CguPage() {
             paragraphs={[
               `Les présentes Conditions Générales d'Utilisation (ci-après « CGU ») ont pour objet de définir les modalités d'accès et d'utilisation du site internet ${legalEntity.websiteDomain} (ci-après « le Site »), édité par ${legalEntity.companyName}.`,
               `Tout accès et toute utilisation du Site sont subordonnés à l'acceptation et au respect sans réserve des présentes CGU. En naviguant sur le Site, l'utilisateur reconnaît avoir pris connaissance des présentes CGU et les accepter sans restriction.`,
-              `Les présentes CGU ne régissent pas les missions d'expertise comptable réalisées par ${legalEntity.companyName} pour le compte de ses clients, lesquelles font l'objet d'une lettre de mission écrite et distincte conformément à l'article 151 du Code de déontologie de la profession.`,
+              `Le Site est un service d'information et de comparaison. ${legalEntity.companyName} ne réalise pas de prestation comptable, fiscale, sociale ou juridique individualisée pour le compte des utilisateurs.`,
             ]}
           />
 
@@ -72,7 +72,7 @@ export default function CguPage() {
             title="4. Contenu du Site"
             paragraphs={[
               `Les informations diffusées sur le Site sont fournies à titre informatif et indicatif. Elles ne constituent en aucun cas un conseil juridique, fiscal, social ou comptable personnalisé.`,
-              `${legalEntity.companyName} s'efforce d'assurer l'exactitude et la mise à jour des informations publiées, sans toutefois pouvoir en garantir l'exhaustivité, la pertinence ou l'adéquation à un usage particulier.`,
+              `${legalEntity.companyName} s'efforce d'assurer l'exactitude et la mise à jour des informations publiées, sans toutefois pouvoir en garantir l'exhaustivité, la pertinence ou l'adéquation à une situation particulière.`,
               `Toute décision prise sur la base d'une information publiée sur le Site relève de la responsabilité exclusive de l'utilisateur. ${legalEntity.companyName} recommande systématiquement la consultation d'un professionnel pour toute situation individuelle.`,
             ]}
           />
@@ -135,7 +135,7 @@ export default function CguPage() {
             ]}
           />
 
-          <p className="mt-12 text-[0.72rem] text-ardoise/70">
+          <p className="mt-12 text-[0.72rem] text-ink-muted/70">
             Dernière mise à jour des présentes CGU : juin 2026.
           </p>
         </div>

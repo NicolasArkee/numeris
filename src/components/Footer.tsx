@@ -1,78 +1,74 @@
 import Link from "next/link";
 import { AppConfig } from "@/utils/AppConfig";
 import { legalEntity } from "@/data/legal-entity";
+import { Logo } from "./Logo";
 
-const expertises = [
-  { href: "/expertises/comptabilite", label: "Comptabilité" },
-  { href: "/expertises/fiscalite", label: "Fiscalité" },
-  { href: "/expertises/social", label: "Gestion sociale" },
-  { href: "/expertises/creation-entreprise", label: "Création" },
-  { href: "/expertises/conseil-gestion", label: "Conseil en gestion" },
-  { href: "/expertises/audit", label: "Audit" },
+const compare = [
+  { href: "/annuaire/experts-comptables", label: "Annuaire complet" },
+  { href: "/expertises", label: "Par expertise" },
+  { href: "/secteurs", label: "Par secteur" },
+  { href: "/professions", label: "Par profession" },
+  { href: "/villes", label: "Par ville" },
+  { href: "/departements", label: "Par département" },
 ];
 
-const cabinet = [
+const platform = [
   { href: "/qui-sommes-nous", label: "Qui sommes-nous" },
-  { href: "/professions", label: "Professions" },
-  { href: "/secteurs", label: "Secteurs" },
-  { href: "/villes", label: "Villes" },
-  { href: "/ressources", label: "Ressources" },
+  { href: "/ressources", label: "Guides & ressources" },
   { href: "/simulateurs", label: "Simulateurs" },
   { href: "/contact", label: "Contact" },
 ];
 
 const legal = [
   { href: "/mentions-legales", label: "Mentions légales" },
-  { href: "/confidentialite", label: "Politique de confidentialité" },
-  { href: "/cgu", label: "Conditions générales d'utilisation" },
-  { href: "/qui-sommes-nous", label: "Qui sommes-nous" },
+  { href: "/confidentialite", label: "Confidentialité" },
+  { href: "/cgu", label: "CGU" },
+];
+
+const trustBadges = [
+  "Comparateur indépendant",
+  "Données publiques sourcées",
+  "Avis vérifiés post-mission",
+  "100 % gratuit, sans engagement",
 ];
 
 export function Footer() {
   return (
-    <footer className="bg-encre px-6 pb-10 pt-20 lg:px-[4.5rem]">
-      <div className="mx-auto max-w-[82rem]">
-        {/* Top */}
-        <div className="mb-10 grid gap-10 border-b border-white/[0.07] pb-16 md:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr_1fr] lg:gap-16">
-          {/* Brand */}
+    <footer className="bg-brand-ink text-surface">
+      <div className="mx-auto max-w-328 px-6 pb-12 pt-20 lg:px-12">
+        <div className="mb-12 grid gap-12 border-b border-white/10 pb-16 md:grid-cols-2 lg:grid-cols-[1.6fr_1fr_1fr_1fr]">
           <div>
-            <div className="mb-1 flex items-baseline gap-2 font-serif text-[1.5rem] font-normal text-blanc">
-              {AppConfig.name}
-              <span className="font-sans text-[0.65rem] font-light uppercase tracking-widest text-white/30">
-                {AppConfig.tagline}
-              </span>
-            </div>
-            <div className="my-4 h-px w-8 bg-or" />
-            <p className="mb-6 max-w-[260px] text-[0.78rem] leading-relaxed text-white/[0.28]">
+            <Logo variant="onDark" size="md" />
+            <p className="mt-3 font-display text-[0.6875rem] font-semibold uppercase tracking-[0.12em] text-accent-300">
+              {AppConfig.tagline}
+            </p>
+            <p className="mt-5 max-w-sm text-[0.8125rem] leading-relaxed text-white/65">
               {AppConfig.description}
             </p>
-            <div className="space-y-2">
-              <p className="flex items-center gap-2 text-[0.8rem] text-white/35">
-                <span className="min-w-[48px] text-[0.6rem] font-bold uppercase tracking-[0.07em] text-or">
-                  Tél
+
+            <div className="mt-7 grid grid-cols-1 gap-2.5">
+              {trustBadges.map((badge) => (
+                <span
+                  key={badge}
+                  className="inline-flex items-center gap-2 px-1 py-1 text-[0.75rem] font-medium text-white/80"
+                >
+                  <span aria-hidden className="text-accent-500">✓</span>
+                  {badge}
                 </span>
-                {AppConfig.phone}
-              </p>
-              <p className="flex items-center gap-2 text-[0.8rem] text-white/35">
-                <span className="min-w-[48px] text-[0.6rem] font-bold uppercase tracking-[0.07em] text-or">
-                  Email
-                </span>
-                {AppConfig.email}
-              </p>
+              ))}
             </div>
           </div>
 
-          {/* Expertises */}
           <div>
-            <h4 className="mb-5 text-[0.62rem] font-bold uppercase tracking-[0.12em] text-white/25">
-              Expertises
+            <h4 className="mb-5 font-display text-[0.6875rem] font-semibold uppercase tracking-[0.12em] text-white/50">
+              Comparer
             </h4>
             <ul className="flex flex-col gap-2.5">
-              {expertises.map((link) => (
+              {compare.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-[0.8rem] text-white/[0.38] transition-colors hover:text-white/80"
+                    className="text-[0.875rem] text-white/70 transition-colors hover:text-surface"
                   >
                     {link.label}
                   </Link>
@@ -81,17 +77,16 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Cabinet */}
           <div>
-            <h4 className="mb-5 text-[0.62rem] font-bold uppercase tracking-[0.12em] text-white/25">
-              Le cabinet
+            <h4 className="mb-5 font-display text-[0.6875rem] font-semibold uppercase tracking-[0.12em] text-white/50">
+              Plateforme
             </h4>
             <ul className="flex flex-col gap-2.5">
-              {cabinet.map((link) => (
+              {platform.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-[0.8rem] text-white/[0.38] transition-colors hover:text-white/80"
+                    className="text-[0.875rem] text-white/70 transition-colors hover:text-surface"
                   >
                     {link.label}
                   </Link>
@@ -100,57 +95,38 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Mentions légales */}
           <div>
-            <h4 className="mb-5 text-[0.62rem] font-bold uppercase tracking-[0.12em] text-white/25">
-              Mentions légales
+            <h4 className="mb-5 font-display text-[0.6875rem] font-semibold uppercase tracking-[0.12em] text-white/50">
+              Légal
             </h4>
             <ul className="flex flex-col gap-2.5">
               {legal.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-[0.8rem] text-white/[0.38] transition-colors hover:text-white/80"
+                    className="text-[0.875rem] text-white/70 transition-colors hover:text-surface"
                   >
                     {link.label}
                   </Link>
                 </li>
               ))}
             </ul>
-          </div>
 
-          {/* Certifications */}
-          <div>
-            <h4 className="mb-5 text-[0.62rem] font-bold uppercase tracking-[0.12em] text-white/25">
-              Certifications
-            </h4>
-            <div className="flex flex-col gap-2.5">
-              <span className="flex items-center gap-2 border border-or/20 bg-or/10 px-3 py-1.5 text-[0.65rem] font-semibold text-or-clair">
-                ✓ Ordre des Experts-Comptables
-              </span>
-              <span className="flex items-center gap-2 border border-or/20 bg-or/10 px-3 py-1.5 text-[0.65rem] font-semibold text-or-clair">
-                ✓ CNCC — Commissariat aux comptes
-              </span>
-              <span className="flex items-center gap-2 border border-or/20 bg-or/10 px-3 py-1.5 text-[0.65rem] font-semibold text-or-clair">
-                ✓ Certification ISO 9001
-              </span>
+            <div className="mt-7">
+              <p className="font-display text-[0.6875rem] font-semibold uppercase tracking-[0.12em] text-white/50">
+                Contact
+              </p>
+              <a href={`mailto:${AppConfig.email}`} className="mt-2 block font-mono text-[0.8125rem] text-white/70 transition-colors hover:text-surface">
+                {AppConfig.email}
+              </a>
             </div>
           </div>
         </div>
 
-        {/* Bottom */}
-        <div className="flex flex-wrap items-center justify-between gap-4 text-[0.68rem] text-white/[0.22]">
+        <div className="flex flex-wrap items-center justify-between gap-4 text-[0.75rem] text-white/45">
           <span>
             © {new Date().getFullYear()} {legalEntity.companyName} — Tous droits réservés.
           </span>
-          <span className="text-white/[0.32]">
-            {legalEntity.legalForm} au capital de {legalEntity.capital} · SIRET {legalEntity.siretFormatted} · {legalEntity.rcs} · TVA {legalEntity.tvaIntra}
-          </span>
-          <div className="flex items-center gap-2.5">
-            <span className="border border-white/15 px-2.5 py-0.5 text-[0.6rem] font-bold uppercase tracking-[0.06em] text-white/25">
-              OEC
-            </span>
-          </div>
         </div>
       </div>
     </footer>

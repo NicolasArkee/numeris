@@ -13,7 +13,7 @@ export function VillesStrip({ title, villes }: VillesStripProps) {
   if (villes.length === 0) return null;
   return (
     <div className="mb-12">
-      <h2 className="mb-6 font-serif text-[1.25rem] font-light text-encre">
+      <h2 className="mb-6 font-display text-[1.25rem] font-bold text-ink">
         {title}
       </h2>
       <div className="flex flex-wrap gap-2">
@@ -21,7 +21,7 @@ export function VillesStrip({ title, villes }: VillesStripProps) {
           <a
             key={v.slug}
             href={`/villes/${v.slug}`}
-            className="border border-pierre-12 bg-blanc px-4 py-2 text-[0.78rem] text-encre-75 transition-colors hover:border-or hover:text-or-fonce"
+            className="border border-border-soft bg-surface px-4 py-2 text-[0.78rem] text-ink-muted transition-colors hover:border-accent-500 hover:text-accent-700"
           >
             {v.name}
           </a>

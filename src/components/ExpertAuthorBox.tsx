@@ -13,11 +13,11 @@ interface ExpertAuthorBoxProps {
 
 export function ExpertAuthorBox({
   name = legalEntity.presidentName,
-  role = `${legalEntity.presidentTitle} — Expert-comptable diplômée, inscrite à l'Ordre ${legalEntity.oecNumberFormatted}`,
+  role = `${legalEntity.presidentTitle} — comparateur indépendant`,
   credentials = [
-    `Inscrite au Tableau de l'Ordre depuis ${legalEntity.oecInscriptionYear}`,
-    `${new Date().getFullYear() - legalEntity.oecInscriptionYear} ans d'exercice`,
-    `${legalEntity.companyName} — fondé en ${legalEntity.creationYear}`,
+    "Contenus informatifs, non individualisés",
+    "Sources publiques et méthodologie éditoriale",
+    `${legalEntity.companyName} — comparateur fondé en ${legalEntity.creationYear}`,
   ],
   date,
   initials = legalEntity.presidentInitials,
@@ -26,7 +26,7 @@ export function ExpertAuthorBox({
   const displayDate = formatDateFr(date);
 
   return (
-    <aside className="border border-pierre-12 bg-blanc p-6" aria-label="Auteur">
+    <aside className="border border-border-soft bg-surface p-6" aria-label="Auteur">
       <div className="flex items-start gap-4">
         {photoUrl ? (
           <div className="flex h-12 w-12 flex-shrink-0 overflow-hidden">
@@ -41,29 +41,29 @@ export function ExpertAuthorBox({
             />
           </div>
         ) : (
-          <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center bg-nuit text-[0.75rem] font-semibold text-or">
+          <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center bg-brand-ink text-[0.75rem] font-semibold text-accent-500">
             {initials}
           </div>
         )}
         <div className="flex-1">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-            <span className="text-[0.88rem] font-semibold text-encre">{name}</span>
-            <span className="bg-or-clair px-2 py-0.5 text-[0.58rem] font-bold uppercase tracking-wide text-or-fonce">
-              Vérifié OEC
+            <span className="text-[0.88rem] font-semibold text-ink">{name}</span>
+            <span className="bg-accent-300 px-2 py-0.5 text-[0.58rem] font-bold uppercase tracking-wide text-accent-700">
+              Éditorial
             </span>
           </div>
-          <p className="mt-0.5 text-[0.75rem] text-ardoise">{role}</p>
+          <p className="mt-0.5 text-[0.75rem] text-ink-muted">{role}</p>
           <div className="mt-3 flex flex-wrap gap-2">
             {credentials.map((c) => (
               <span
                 key={c}
-                className="flex items-center gap-1 text-[0.7rem] text-ardoise"
+                className="flex items-center gap-1 text-[0.7rem] text-ink-muted"
               >
-                <span className="text-or">✓</span> {c}
+                <span className="text-accent-500">✓</span> {c}
               </span>
             ))}
           </div>
-          <p className="mt-3 text-[0.68rem] text-pierre-37">
+          <p className="mt-3 text-[0.68rem] text-ink-soft">
             Mis à jour le {displayDate}
           </p>
         </div>
