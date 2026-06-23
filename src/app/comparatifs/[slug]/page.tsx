@@ -7,9 +7,9 @@ import {
 
 const ROUTE = "comparatifs" as const;
 
-export const dynamicParams = true;
+export const dynamicParams = false; // serverless-safe: sqlite lu au build only
 
-export const revalidate = 86400;
+export const revalidate = false;
 
 export function generateStaticParams() {
   return commercialGenerateStaticParams(ROUTE, "slug");
