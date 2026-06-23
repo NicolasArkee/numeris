@@ -1,0 +1,6 @@
+# Gros artefacts inutiles au build/runtime (numeris.db EST nécessaire au build → NON exclu)
+numeris.db.bak-pre-affiliate-2026-06-15
+*.bak-*
+affiliate_clustering/
+analysis/
+*.log
