@@ -778,14 +778,15 @@ export const sqliteAdapter: DbAdapter = {
   },
 
   async getMaillageLinks(sourceUrl: string, limit = 8): Promise<MaillageLink[]> {
-    // Match by PATH suffix: the crawl stored source_url on one domain (skoria.fr)
-    // while the runtime canonical (AppConfig.url) may differ per env → key on path.
-    const path = sourceUrl.replace(/^https?:\/\/[^/]+/, "");
-    if (!path || path === "/") return []; // never whole-site match (home)
+    // Exact match on the normalized path (host stripped, no trailing slash):
+    // domain-agnostic (crawl=skoria.fr, runtime canonical may differ) AND free of
+    // the suffix-collision risk of a LIKE match.
+    const path = sourceUrl.replace(/^https?:\/\/[^/]+/, "").replace(/\/+$/, "");
+    if (!path) return [];
     try {
       return getDb()
         .prepare(
-          "SELECT * FROM maillage_links WHERE source_url LIKE '%' || ? ORDER BY priority DESC LIMIT ?",
+          "SELECT * FROM maillage_links WHERE source_path = ? ORDER BY priority DESC LIMIT ?",
         )
         .all(path, limit) as MaillageLink[];
     } catch {

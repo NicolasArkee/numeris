@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ContactButton } from "./ContactButton";
 import { AppConfig } from "@/utils/AppConfig";
 import { legalEntity } from "@/data/legal-entity";
 import { Logo } from "./Logo";
@@ -82,16 +83,28 @@ export function Footer() {
               Plateforme
             </h4>
             <ul className="flex flex-col gap-2.5">
-              {platform.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-[0.875rem] text-white/70 transition-colors hover:text-surface"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
+              {platform.map((link) =>
+                link.href === "/contact" ? (
+                  // TECH-03 : /contact en bouton non-crawlable (découverte via sitemap)
+                  <li key={link.href}>
+                    <ContactButton
+                      ariaLabel="Contact — formulaire"
+                      className="text-left text-[0.875rem] text-white/70 transition-colors hover:text-surface"
+                    >
+                      {link.label}
+                    </ContactButton>
+                  </li>
+                ) : (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className="text-[0.875rem] text-white/70 transition-colors hover:text-surface"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ),
+              )}
             </ul>
           </div>
 

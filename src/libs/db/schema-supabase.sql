@@ -220,6 +220,7 @@ CREATE TABLE IF NOT EXISTS maillage_links (
   source_route TEXT,
   source_slug TEXT,
   source_url TEXT NOT NULL,
+  source_path TEXT,
   target_url TEXT NOT NULL,
   anchor TEXT NOT NULL,
   family TEXT,
@@ -229,6 +230,9 @@ CREATE TABLE IF NOT EXISTS maillage_links (
   UNIQUE(source_url, target_url)
 );
 CREATE INDEX IF NOT EXISTS idx_maillage_links_source ON maillage_links(source_url);
+CREATE INDEX IF NOT EXISTS idx_maillage_links_source_path ON maillage_links(source_path);
+-- Migration pour table préexistante (CREATE IF NOT EXISTS n'ajoute pas la colonne) :
+ALTER TABLE maillage_links ADD COLUMN IF NOT EXISTS source_path TEXT;
 
 CREATE TABLE IF NOT EXISTS seo_overrides (
   id BIGSERIAL PRIMARY KEY,

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { ContactButton } from "./ContactButton";
 
 interface StickyMobileCTAProps {
   label?: string;
@@ -36,12 +37,12 @@ export function StickyMobileCTA({
         >
           📞
         </Link>
-        <Link
+        <ContactButton
           href={href}
           className="flex h-11 flex-1 items-center justify-center bg-accent-500 text-[0.82rem] font-semibold text-brand-ink transition-colors hover:bg-accent-700"
         >
           {label} →
-        </Link>
+        </ContactButton>
       </div>
     </div>
   );

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ContactButton } from "./ContactButton";
 
 export function CtaContact() {
   return (
@@ -29,12 +30,11 @@ export function CtaContact() {
             comparaison avant de contacter un professionnel.
           </p>
           <div className="flex flex-wrap items-center gap-5">
-            <Link
-              href="/contact"
+            <ContactButton
               className="inline-flex items-center gap-2 bg-accent-500 px-9 py-4 font-body text-[0.875rem] font-semibold text-brand-ink transition-colors hover:bg-accent-700"
             >
               Demander une orientation →
-            </Link>
+            </ContactButton>
             <Link
               href="tel:+33142360000"
               className="border border-white/15 px-7 py-4 font-body text-[0.875rem] text-white/40 transition-colors hover:border-white/30 hover:text-white/85"

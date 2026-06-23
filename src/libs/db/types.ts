@@ -256,6 +256,8 @@ export interface MaillageLink {
   source_route: string | null;
   source_slug: string | null;
   source_url: string;
+  /** Normalized path (no host, no trailing slash) — runtime exact-match key. */
+  source_path: string | null;
   target_url: string;
   anchor: string;
   family: string | null;

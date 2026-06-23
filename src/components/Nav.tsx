@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { unstable_cache } from "next/cache";
+import { ContactButton } from "./ContactButton";
 import { db } from "@/libs/db";
 import { Logo } from "./Logo";
 import { MobileMenu } from "./MobileMenu";
@@ -124,13 +124,13 @@ export async function Nav() {
             <span aria-hidden className="mr-1.5 text-brand-700">·</span>
             100 % gratuit
           </span>
-          <Link
-            href="/contact"
+          <ContactButton
             className="hidden items-center gap-1.5 rounded-md bg-accent-500 px-5 py-2.5 font-display text-[0.875rem] font-semibold text-surface shadow-sm transition-colors hover:bg-accent-700 sm:inline-flex"
+            ariaLabel="Comparer — accéder au formulaire"
           >
             Comparer
             <span aria-hidden>→</span>
-          </Link>
+          </ContactButton>
           <MobileMenu links={flatLinks} />
         </div>
       </div>

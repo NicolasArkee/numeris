@@ -14,6 +14,7 @@ import { KeyTakeaways } from "./KeyTakeaways";
 import { CtaContact } from "./CtaContact";
 import { StickyMobileCTA } from "./StickyMobileCTA";
 import { MaillageLinks } from "./MaillageLinks";
+import { ContactButton } from "./ContactButton";
 import type { LinkGroup } from "@/libs/db";
 
 interface ClusterPageProps {
@@ -186,12 +187,11 @@ export function ClusterPage({
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-3">
-              <Link
-                href="/contact"
+              <ContactButton
                 className="inline-flex items-center gap-2 bg-accent-500 px-6 py-3 font-body text-[0.82rem] font-semibold text-brand-ink transition-colors hover:bg-accent-700"
               >
                 Demander une orientation →
-              </Link>
+              </ContactButton>
               <Link
                 href={`tel:${AppConfig.phone.replace(/\s/g, "")}`}
                 className="border border-border-soft px-5 py-3 font-body text-[0.82rem] text-ink-muted transition-colors hover:border-accent-500 hover:text-accent-700"

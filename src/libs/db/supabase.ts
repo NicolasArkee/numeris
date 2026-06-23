@@ -1192,14 +1192,14 @@ const adapter: DbAdapter = {
   },
 
   async getMaillageLinks(sourceUrl: string, limit = 8): Promise<MaillageLink[]> {
-    // Match by PATH suffix (domain-agnostic): crawl stored skoria.fr, runtime
-    // canonical (AppConfig.url) may differ per env.
-    const path = sourceUrl.replace(/^https?:\/\/[^/]+/, "");
-    if (!path || path === "/") return [];
+    // Exact match on the normalized path (host stripped, no trailing slash):
+    // domain-agnostic + no suffix-collision risk.
+    const path = sourceUrl.replace(/^https?:\/\/[^/]+/, "").replace(/\/+$/, "");
+    if (!path) return [];
     const { data, error } = await getSupabaseClient()
       .from("maillage_links")
       .select("*")
-      .like("source_url", `%${path}`)
+      .eq("source_path", path)
       .order("priority", { ascending: false })
       .limit(limit);
     // Table may not exist yet (pre-migration) — degrade gracefully instead of 500.

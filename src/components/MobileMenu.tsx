@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
+import { ContactButton } from "./ContactButton";
 
 interface NavLink {
   href: string;
@@ -113,13 +114,14 @@ export function MobileMenu({
               <span aria-hidden className="text-ink-soft">→</span>
             </Link>
           ))}
-          <Link
+          <ContactButton
             href={ctaHref}
+            onClick={() => setOpen(false)}
             className="mt-3 inline-flex items-center justify-center gap-1.5 rounded-md bg-accent-500 px-5 py-3 font-display text-[0.9375rem] font-semibold text-surface shadow-sm transition-colors hover:bg-accent-700"
           >
             {ctaLabel}
             <span aria-hidden>→</span>
-          </Link>
+          </ContactButton>
           <p className="mt-2 px-3 py-2 text-center font-body text-[0.75rem] text-ink-soft">
             100 % gratuit · Sans engagement · Sources publiques
           </p>
