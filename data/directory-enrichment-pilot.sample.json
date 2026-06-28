@@ -1,0 +1,51 @@
+[
+  {
+    "siret": "44110142500037",
+    "source": {
+      "source_key": "manual-pilot-example",
+      "source_type": "manual",
+      "source_url": "https://example-cabinet.test",
+      "retrieved_at": "2026-06-28T08:00:00.000Z",
+      "legal_basis": "Manual pilot enrichment from public official website.",
+      "raw_excerpt": "Official website and services verified for pilot import."
+    },
+    "matches": {
+      "professional_status": "manual_verified",
+      "matched_registry": true,
+      "matched_website": true,
+      "matched_address": true,
+      "matched_siren_or_siret": true,
+      "has_website_contact_page": true
+    },
+    "facts": [
+      {
+        "fact_type": "website",
+        "label": "Site officiel",
+        "value": "https://example-cabinet.test",
+        "confidence": 95,
+        "is_displayable": true
+      },
+      {
+        "fact_type": "contact_url",
+        "label": "Page contact",
+        "value": "https://example-cabinet.test/contact",
+        "confidence": 90,
+        "is_displayable": true
+      },
+      {
+        "fact_type": "service",
+        "label": "Service detecte",
+        "value": "Paie",
+        "confidence": 90,
+        "is_displayable": true
+      },
+      {
+        "fact_type": "service",
+        "label": "Service detecte",
+        "value": "Fiscalite",
+        "confidence": 90,
+        "is_displayable": true
+      }
+    ]
+  }
+]

@@ -52,6 +52,12 @@ async function main(): Promise<void> {
          (cabinet_id, establishment_id, fact_type, label, value, source_id, confidence, is_displayable)
        VALUES
          (?, ?, 'website', 'Site officiel', 'https://example-cabinet.test', ?, 95, 1)
+       ON CONFLICT DO UPDATE SET
+         label = excluded.label,
+         source_id = excluded.source_id,
+         confidence = excluded.confidence,
+         is_displayable = excluded.is_displayable,
+         updated_at = datetime('now')
        RETURNING id`,
     ).get(card.cabinet.id, card.establishment.id, source.id) as { id: number };
     factId = fact.id;
@@ -66,13 +72,20 @@ async function main(): Promise<void> {
     snapshotId = insertedSnapshot.id;
 
     const facts = await sqliteAdapter.getDirectoryProfileFactsByEstablishment(card.establishment.id);
-    assert.equal(facts.length, 1);
-    assert.equal(facts[0]!.fact_type, "website");
-    assert.equal(facts[0]!.value, "https://example-cabinet.test");
+    assert.ok(
+      facts.some(
+        (profileFact) =>
+          profileFact.fact_type === "website" &&
+          profileFact.value === "https://example-cabinet.test",
+      ),
+      "Expected enrichment facts to include the sample website",
+    );
 
     const sources = await sqliteAdapter.getDirectoryEnrichmentSourcesByEstablishment(card.establishment.id);
-    assert.equal(sources.length, 1);
-    assert.equal(sources[0]!.source_key, "check-directory-enrichment");
+    assert.ok(
+      sources.some((enrichmentSource) => enrichmentSource.source_key === "check-directory-enrichment"),
+      "Expected enrichment sources to include the read-check source",
+    );
 
     const snapshot = await sqliteAdapter.getLatestDirectoryQualificationSnapshot(
       card.cabinet.id,
