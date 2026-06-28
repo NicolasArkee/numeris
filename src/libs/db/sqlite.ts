@@ -32,13 +32,19 @@ import type {
   Ville,
 } from "./types";
 
-const DB_PATH = path.join(process.cwd(), "numeris.db");
-
 let _db: Database.Database | null = null;
+let _dbPath: string | null = null;
+
+function getDbPath(): string {
+  return process.env.NUMERIS_DB ?? path.join(process.cwd(), "numeris.db");
+}
 
 function getDb(): Database.Database {
-  if (!_db) {
-    _db = new Database(DB_PATH);
+  const dbPath = getDbPath();
+  if (!_db || _dbPath !== dbPath) {
+    _db?.close();
+    _db = new Database(dbPath);
+    _dbPath = dbPath;
     _db.pragma("journal_mode = WAL");
     _db.exec(SCHEMA);
   }

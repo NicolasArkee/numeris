@@ -475,6 +475,7 @@ CREATE TABLE IF NOT EXISTS directory_qualification_snapshots (
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 CREATE INDEX IF NOT EXISTS idx_directory_qualification_establishment ON directory_qualification_snapshots(establishment_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_directory_qualification_latest ON directory_qualification_snapshots(cabinet_id, establishment_id, created_at DESC, id DESC);
 CREATE INDEX IF NOT EXISTS idx_directory_qualification_score ON directory_qualification_snapshots(score, professional_status);
 
 -- ─── TESTIMONIALS extension (P4a) ───

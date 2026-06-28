@@ -152,6 +152,9 @@ const DIRECTORY_LISTING_OR_FILTER =
   "and(publish_status.eq.published,confidence_score.gte.85,oec_status.in.(verified,manual_verified))," +
   "and(publish_status.eq.review,confidence_score.gte.50,oec_status.in.(unverified,not_found,ambiguous))";
 
+const SUPABASE_PAGE_SIZE = 1000;
+const SUPABASE_IN_CHUNK_SIZE = 200;
+
 const DIRECTORY_PROFILE_SERVICE_ORDER = [
   "comptabilite",
   "fiscalite",
@@ -202,6 +205,10 @@ type CabinetWithRelations = {
       city: DirectoryCity | null;
     }
   >;
+};
+
+type DirectoryListingEstablishmentRef = {
+  establishmentId: number;
 };
 
 function mapCabinetRow(
@@ -314,6 +321,129 @@ async function filterActiveCabinets(
       ),
     }))
     .filter((r) => r.establishments.length > 0);
+}
+
+function chunkArray<T>(items: T[], size: number): T[][] {
+  const chunks: T[][] = [];
+  for (let i = 0; i < items.length; i += size) {
+    chunks.push(items.slice(i, i + size));
+  }
+  return chunks;
+}
+
+async function fetchDirectoryListingEstablishmentRefsByCity(
+  codeInsee: string,
+): Promise<DirectoryListingEstablishmentRef[]> {
+  const byEstablishmentId = new Map<number, DirectoryListingEstablishmentRef>();
+
+  for (let from = 0; ; from += SUPABASE_PAGE_SIZE) {
+    const { data, error } = await getSupabaseClient()
+      .from("directory_cabinets")
+      .select(
+        "id, siren, is_active, establishments:directory_establishments(id, cabinet_id, siret, is_active, city_code_insee)",
+      )
+      .or(DIRECTORY_LISTING_OR_FILTER)
+      .eq("establishments.city_code_insee", codeInsee)
+      .order("id", { ascending: true })
+      .range(from, from + SUPABASE_PAGE_SIZE - 1);
+    if (error) throw error;
+
+    const page = (data ?? []) as unknown as CabinetWithRelations[];
+    const active = await filterActiveCabinets(page);
+    for (const cabinet of active) {
+      for (const establishment of cabinet.establishments ?? []) {
+        if (establishment.city_code_insee !== codeInsee) continue;
+        byEstablishmentId.set(establishment.id, {
+          establishmentId: establishment.id,
+        });
+      }
+    }
+
+    if ((data ?? []).length < SUPABASE_PAGE_SIZE) break;
+  }
+
+  return Array.from(byEstablishmentId.values());
+}
+
+async function fetchDisplayableFactEstablishmentIds(
+  establishmentIds: number[],
+): Promise<Set<number>> {
+  const enriched = new Set<number>();
+
+  for (const idChunk of chunkArray(establishmentIds, SUPABASE_IN_CHUNK_SIZE)) {
+    for (let from = 0; ; from += SUPABASE_PAGE_SIZE) {
+      const { data, error } = await getSupabaseClient()
+        .from("directory_profile_facts")
+        .select("id, establishment_id")
+        .in("establishment_id", idChunk)
+        .eq("is_displayable", true)
+        .order("id", { ascending: true })
+        .range(from, from + SUPABASE_PAGE_SIZE - 1);
+      if (error) throw error;
+
+      for (const row of (data ?? []) as Array<{ establishment_id: number | null }>) {
+        if (row.establishment_id != null) {
+          enriched.add(row.establishment_id);
+        }
+      }
+
+      if ((data ?? []).length < SUPABASE_PAGE_SIZE) break;
+    }
+  }
+
+  return enriched;
+}
+
+function isNewerDirectoryQualificationSnapshot(
+  candidate: DirectoryQualificationSnapshot,
+  current: DirectoryQualificationSnapshot,
+): boolean {
+  const candidateTime = Date.parse(candidate.created_at);
+  const currentTime = Date.parse(current.created_at);
+  if (candidateTime !== currentTime) {
+    return candidateTime > currentTime;
+  }
+  return candidate.id > current.id;
+}
+
+async function fetchLatestDirectoryQualificationSnapshotsByEstablishmentIds(
+  establishmentIds: number[],
+): Promise<Map<number, DirectoryQualificationSnapshot>> {
+  const latestByEstablishment = new Map<number, DirectoryQualificationSnapshot>();
+
+  for (const idChunk of chunkArray(establishmentIds, SUPABASE_IN_CHUNK_SIZE)) {
+    for (let from = 0; ; from += SUPABASE_PAGE_SIZE) {
+      const { data, error } = await getSupabaseClient()
+        .from("directory_qualification_snapshots")
+        .select("*")
+        .in("establishment_id", idChunk)
+        .order("created_at", { ascending: false })
+        .order("id", { ascending: false })
+        .range(from, from + SUPABASE_PAGE_SIZE - 1);
+      if (error) throw error;
+
+      for (const snapshot of (data ?? []) as DirectoryQualificationSnapshot[]) {
+        if (snapshot.establishment_id == null) continue;
+        const current = latestByEstablishment.get(snapshot.establishment_id);
+        if (!current || isNewerDirectoryQualificationSnapshot(snapshot, current)) {
+          latestByEstablishment.set(snapshot.establishment_id, snapshot);
+        }
+      }
+
+      if ((data ?? []).length < SUPABASE_PAGE_SIZE) break;
+    }
+  }
+
+  return latestByEstablishment;
+}
+
+function isDocumentedDirectoryQualificationSnapshot(
+  snapshot: DirectoryQualificationSnapshot,
+): boolean {
+  return (
+    snapshot.score >= 85
+    && ["verified", "manual_verified"].includes(snapshot.professional_status)
+  );
 }
 
 // ─── Adapter implementation ───────────────────────────────────────────────────
@@ -1232,46 +1362,29 @@ const adapter: DbAdapter = {
   async getDirectoryCityEnrichmentStats(
     codeInsee: string,
   ): Promise<DirectoryCityEnrichmentStats> {
-    const cards = await this.getDirectoryListingCabinetsByCity(codeInsee, 500);
-    if (cards.length === 0) {
+    const listingEstablishments =
+      await fetchDirectoryListingEstablishmentRefsByCity(codeInsee);
+    if (listingEstablishments.length === 0) {
       return { enrichedCount: 0, documentedCount: 0, candidateCount: 0 };
     }
 
-    const establishmentIds = cards.map((card) => card.establishment.id);
-    const { data: facts, error: factsError } = await getSupabaseClient()
-      .from("directory_profile_facts")
-      .select("establishment_id")
-      .in("establishment_id", establishmentIds)
-      .eq("is_displayable", true);
-    if (factsError) throw factsError;
+    const establishmentIds = listingEstablishments.map(
+      (establishment) => establishment.establishmentId,
+    );
+    const [enriched, latestByEstablishment] = await Promise.all([
+      fetchDisplayableFactEstablishmentIds(establishmentIds),
+      fetchLatestDirectoryQualificationSnapshotsByEstablishmentIds(establishmentIds),
+    ]);
 
-    const { data: snapshots, error: snapshotsError } = await getSupabaseClient()
-      .from("directory_qualification_snapshots")
-      .select("*")
-      .in("establishment_id", establishmentIds)
-      .order("created_at", { ascending: false })
-      .order("id", { ascending: false });
-    if (snapshotsError) throw snapshotsError;
-
-    const enriched = new Set((facts ?? []).map((row: any) => row.establishment_id));
-    const latestByEstablishment = new Map<number, DirectoryQualificationSnapshot>();
-    for (const snapshot of (snapshots ?? []) as DirectoryQualificationSnapshot[]) {
-      if (snapshot.establishment_id == null) continue;
-      if (!latestByEstablishment.has(snapshot.establishment_id)) {
-        latestByEstablishment.set(snapshot.establishment_id, snapshot);
-      }
-    }
-
-    const documentedCount = Array.from(latestByEstablishment.values()).filter(
-      (snapshot) =>
-        snapshot.score >= 85
-        && ["verified", "manual_verified"].includes(snapshot.professional_status),
-    ).length;
+    const documentedCount = listingEstablishments.filter((establishment) => {
+      const snapshot = latestByEstablishment.get(establishment.establishmentId);
+      return snapshot ? isDocumentedDirectoryQualificationSnapshot(snapshot) : false;
+    }).length;
 
     return {
       enrichedCount: enriched.size,
       documentedCount,
-      candidateCount: Math.max(cards.length - documentedCount, 0),
+      candidateCount: Math.max(listingEstablishments.length - documentedCount, 0),
     };
   },
 
