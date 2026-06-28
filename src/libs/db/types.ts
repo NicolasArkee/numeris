@@ -501,14 +501,14 @@ export interface DbAdapter {
   /** Top published cabinets nationally, ordered by confidence_score DESC. Powers the homepage Hero TOP X. */
   getTopDirectoryListingCabinets(limit?: number): Promise<DirectoryCabinetCard[]>;
   getDirectoryRelatedListingCabinetsByCity(codeInsee: string, excludeSiret: string, limit?: number): Promise<DirectoryCabinetCard[]>;
-  getDirectoryProfileFactsByEstablishment?(establishmentId: number): Promise<DirectoryProfileFact[]>;
-  getDirectoryEnrichmentSourcesByEstablishment?(establishmentId: number): Promise<DirectoryEnrichmentSource[]>;
-  getLatestDirectoryQualificationSnapshot?(
+  getDirectoryProfileFactsByEstablishment(establishmentId: number): Promise<DirectoryProfileFact[]>;
+  getDirectoryEnrichmentSourcesByEstablishment(establishmentId: number): Promise<DirectoryEnrichmentSource[]>;
+  getLatestDirectoryQualificationSnapshot(
     cabinetId: number,
     establishmentId: number,
   ): Promise<DirectoryQualificationSnapshot | null>;
-  getDirectoryCityEnrichmentStats?(codeInsee: string): Promise<DirectoryCityEnrichmentStats>;
-  getDirectoryLatestEnrichmentDateByEstablishment?(establishmentId: number): Promise<string | null>;
+  getDirectoryCityEnrichmentStats(codeInsee: string): Promise<DirectoryCityEnrichmentStats>;
+  getDirectoryLatestEnrichmentDateByEstablishment(establishmentId: number): Promise<string | null>;
   getDirectoryProfileServices(): Promise<Service[]>;
   getDirectoryProfileProfessions(limit?: number): Promise<Profession[]>;
 }

@@ -6,6 +6,10 @@ import type {
   DbAdapter,
   DirectoryCabinetCard,
   DirectoryCity,
+  DirectoryCityEnrichmentStats,
+  DirectoryEnrichmentSource,
+  DirectoryProfileFact,
+  DirectoryQualificationSnapshot,
   Departement,
   FaqItem,
   Hub,
@@ -752,6 +756,117 @@ export const sqliteAdapter: DbAdapter = {
       )
       .all(codeInsee, excludeSiret, limit)
       .map((row) => mapDirectoryRow(row as DirectoryJoinRow));
+  },
+
+  async getDirectoryProfileFactsByEstablishment(
+    establishmentId: number,
+  ): Promise<DirectoryProfileFact[]> {
+    return getDb()
+      .prepare(
+        `SELECT *
+         FROM directory_profile_facts
+         WHERE establishment_id = ?
+           AND is_displayable = 1
+         ORDER BY
+           CASE fact_type
+             WHEN 'website' THEN 0
+             WHEN 'contact_url' THEN 1
+             WHEN 'phone' THEN 2
+             WHEN 'opening_hours' THEN 3
+             WHEN 'service' THEN 4
+             WHEN 'sector' THEN 5
+             WHEN 'software' THEN 6
+             WHEN 'registry_status' THEN 7
+             ELSE 8
+           END,
+           confidence DESC,
+           label ASC`,
+      )
+      .all(establishmentId) as DirectoryProfileFact[];
+  },
+
+  async getDirectoryEnrichmentSourcesByEstablishment(
+    establishmentId: number,
+  ): Promise<DirectoryEnrichmentSource[]> {
+    return getDb()
+      .prepare(
+        `SELECT *
+         FROM directory_enrichment_sources
+         WHERE establishment_id = ?
+           AND parsed_ok = 1
+         ORDER BY retrieved_at DESC, id DESC`,
+      )
+      .all(establishmentId) as DirectoryEnrichmentSource[];
+  },
+
+  async getLatestDirectoryQualificationSnapshot(
+    cabinetId: number,
+    establishmentId: number,
+  ): Promise<DirectoryQualificationSnapshot | null> {
+    const row = getDb()
+      .prepare(
+        `SELECT *
+         FROM directory_qualification_snapshots
+         WHERE cabinet_id = ?
+           AND establishment_id = ?
+         ORDER BY created_at DESC, id DESC
+         LIMIT 1`,
+      )
+      .get(cabinetId, establishmentId) as DirectoryQualificationSnapshot | undefined;
+    return row ?? null;
+  },
+
+  async getDirectoryCityEnrichmentStats(
+    codeInsee: string,
+  ): Promise<DirectoryCityEnrichmentStats> {
+    const row = getDb()
+      .prepare(
+        `SELECT
+           COUNT(DISTINCT CASE WHEN f.id IS NOT NULL THEN e.id END) AS enrichedCount,
+           COUNT(DISTINCT CASE WHEN q.score >= 85 AND q.professional_status IN ('verified','manual_verified') THEN e.id END) AS documentedCount,
+           COUNT(DISTINCT e.id) AS totalCount
+         FROM directory_establishments e
+         JOIN directory_cabinets d ON d.id = e.cabinet_id
+         LEFT JOIN directory_profile_facts f
+           ON f.establishment_id = e.id
+          AND f.is_displayable = 1
+         LEFT JOIN directory_qualification_snapshots q
+           ON q.id = (
+             SELECT q2.id
+             FROM directory_qualification_snapshots q2
+             WHERE q2.cabinet_id = d.id
+               AND q2.establishment_id = e.id
+             ORDER BY q2.created_at DESC, q2.id DESC
+             LIMIT 1
+           )
+         WHERE e.city_code_insee = ?
+           AND ${DIRECTORY_LISTING_WHERE}`,
+      )
+      .get(codeInsee) as {
+      enrichedCount: number;
+      documentedCount: number;
+      totalCount: number;
+    };
+
+    return {
+      enrichedCount: row.enrichedCount,
+      documentedCount: row.documentedCount,
+      candidateCount: Math.max(row.totalCount - row.documentedCount, 0),
+    };
+  },
+
+  async getDirectoryLatestEnrichmentDateByEstablishment(
+    establishmentId: number,
+  ): Promise<string | null> {
+    const row = getDb()
+      .prepare(
+        `SELECT MAX(retrieved_at) AS latest
+         FROM directory_enrichment_sources
+         WHERE establishment_id = ?
+           AND parsed_ok = 1`,
+      )
+      .get(establishmentId) as { latest: string | null };
+    return row.latest;
   },
 
   async getDirectoryProfileServices(): Promise<Service[]> {

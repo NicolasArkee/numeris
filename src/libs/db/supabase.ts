@@ -17,6 +17,10 @@ import type {
   DbAdapter,
   DirectoryCabinetCard,
   DirectoryCity,
+  DirectoryCityEnrichmentStats,
+  DirectoryEnrichmentSource,
+  DirectoryProfileFact,
+  DirectoryQualificationSnapshot,
   Departement,
   FaqItem,
   Hub,
@@ -1163,6 +1167,127 @@ const adapter: DbAdapter = {
         return an.localeCompare(bn);
       })
       .slice(0, limit);
+  },
+
+  async getDirectoryProfileFactsByEstablishment(
+    establishmentId: number,
+  ): Promise<DirectoryProfileFact[]> {
+    const { data, error } = await getSupabaseClient()
+      .from("directory_profile_facts")
+      .select("*")
+      .eq("establishment_id", establishmentId)
+      .eq("is_displayable", true)
+      .order("confidence", { ascending: false })
+      .order("label", { ascending: true });
+    if (error) throw error;
+    const order = new Map<DirectoryProfileFact["fact_type"], number>([
+      ["website", 0],
+      ["contact_url", 1],
+      ["phone", 2],
+      ["opening_hours", 3],
+      ["service", 4],
+      ["sector", 5],
+      ["software", 6],
+      ["registry_status", 7],
+    ]);
+    return ((data ?? []) as DirectoryProfileFact[]).sort(
+      (a, b) =>
+        (order.get(a.fact_type) ?? 8) - (order.get(b.fact_type) ?? 8)
+        || b.confidence - a.confidence
+        || a.label.localeCompare(b.label, "fr"),
+    );
+  },
+
+  async getDirectoryEnrichmentSourcesByEstablishment(
+    establishmentId: number,
+  ): Promise<DirectoryEnrichmentSource[]> {
+    const { data, error } = await getSupabaseClient()
+      .from("directory_enrichment_sources")
+      .select("*")
+      .eq("establishment_id", establishmentId)
+      .eq("parsed_ok", true)
+      .order("retrieved_at", { ascending: false })
+      .order("id", { ascending: false });
+    if (error) throw error;
+    return (data ?? []) as DirectoryEnrichmentSource[];
+  },
+
+  async getLatestDirectoryQualificationSnapshot(
+    cabinetId: number,
+    establishmentId: number,
+  ): Promise<DirectoryQualificationSnapshot | null> {
+    const { data, error } = await getSupabaseClient()
+      .from("directory_qualification_snapshots")
+      .select("*")
+      .eq("cabinet_id", cabinetId)
+      .eq("establishment_id", establishmentId)
+      .order("created_at", { ascending: false })
+      .order("id", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (error) throw error;
+    return (data ?? null) as DirectoryQualificationSnapshot | null;
+  },
+
+  async getDirectoryCityEnrichmentStats(
+    codeInsee: string,
+  ): Promise<DirectoryCityEnrichmentStats> {
+    const cards = await this.getDirectoryListingCabinetsByCity(codeInsee, 500);
+    if (cards.length === 0) {
+      return { enrichedCount: 0, documentedCount: 0, candidateCount: 0 };
+    }
+
+    const establishmentIds = cards.map((card) => card.establishment.id);
+    const { data: facts, error: factsError } = await getSupabaseClient()
+      .from("directory_profile_facts")
+      .select("establishment_id")
+      .in("establishment_id", establishmentIds)
+      .eq("is_displayable", true);
+    if (factsError) throw factsError;
+
+    const { data: snapshots, error: snapshotsError } = await getSupabaseClient()
+      .from("directory_qualification_snapshots")
+      .select("*")
+      .in("establishment_id", establishmentIds)
+      .order("created_at", { ascending: false })
+      .order("id", { ascending: false });
+    if (snapshotsError) throw snapshotsError;
+
+    const enriched = new Set((facts ?? []).map((row: any) => row.establishment_id));
+    const latestByEstablishment = new Map<number, DirectoryQualificationSnapshot>();
+    for (const snapshot of (snapshots ?? []) as DirectoryQualificationSnapshot[]) {
+      if (snapshot.establishment_id == null) continue;
+      if (!latestByEstablishment.has(snapshot.establishment_id)) {
+        latestByEstablishment.set(snapshot.establishment_id, snapshot);
+      }
+    }
+
+    const documentedCount = Array.from(latestByEstablishment.values()).filter(
+      (snapshot) =>
+        snapshot.score >= 85
+        && ["verified", "manual_verified"].includes(snapshot.professional_status),
+    ).length;
+
+    return {
+      enrichedCount: enriched.size,
+      documentedCount,
+      candidateCount: Math.max(cards.length - documentedCount, 0),
+    };
+  },
+
+  async getDirectoryLatestEnrichmentDateByEstablishment(
+    establishmentId: number,
+  ): Promise<string | null> {
+    const { data, error } = await getSupabaseClient()
+      .from("directory_enrichment_sources")
+      .select("retrieved_at")
+      .eq("establishment_id", establishmentId)
+      .eq("parsed_ok", true)
+      .order("retrieved_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (error) throw error;
+    return data?.retrieved_at ?? null;
   },
 
   async getDirectoryProfileServices(): Promise<Service[]> {
