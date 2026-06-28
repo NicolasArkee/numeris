@@ -37,4 +37,10 @@ export type {
   DirectoryEstablishment,
   DirectoryCity,
   DirectoryCabinetCard,
+  DirectoryEnrichmentSourceType,
+  DirectoryProfileFactType,
+  DirectoryEnrichmentSource,
+  DirectoryProfileFact,
+  DirectoryQualificationSnapshot,
+  DirectoryCityEnrichmentStats,
 } from "./types";

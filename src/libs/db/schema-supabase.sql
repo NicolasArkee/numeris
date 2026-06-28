@@ -408,6 +408,72 @@ CREATE TABLE IF NOT EXISTS directory_source_events (
 );
 CREATE INDEX IF NOT EXISTS idx_directory_source_events_entity ON directory_source_events(entity_type, entity_key);
 
+CREATE TABLE IF NOT EXISTS directory_enrichment_runs (
+  id BIGSERIAL PRIMARY KEY,
+  run_key TEXT UNIQUE NOT NULL,
+  status TEXT NOT NULL CHECK(status IN ('running','completed','failed')),
+  scope TEXT NOT NULL DEFAULT '{}',
+  started_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  finished_at TIMESTAMPTZ,
+  stats_json TEXT NOT NULL DEFAULT '{}',
+  error_message TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_directory_enrichment_runs_status ON directory_enrichment_runs(status, started_at);
+
+CREATE TABLE IF NOT EXISTS directory_enrichment_sources (
+  id BIGSERIAL PRIMARY KEY,
+  cabinet_id BIGINT NOT NULL REFERENCES directory_cabinets(id) ON DELETE CASCADE,
+  establishment_id BIGINT REFERENCES directory_establishments(id) ON DELETE CASCADE,
+  source_key TEXT NOT NULL,
+  source_type TEXT NOT NULL CHECK(source_type IN ('api','official_website','registry','manual')),
+  source_url TEXT,
+  retrieved_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  source_hash TEXT,
+  parsed_ok BOOLEAN NOT NULL DEFAULT TRUE,
+  robots_allowed BOOLEAN,
+  legal_basis TEXT NOT NULL,
+  raw_excerpt TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE(cabinet_id, establishment_id, source_key, source_url)
+);
+CREATE INDEX IF NOT EXISTS idx_directory_enrichment_sources_establishment ON directory_enrichment_sources(establishment_id, source_type);
+CREATE INDEX IF NOT EXISTS idx_directory_enrichment_sources_cabinet ON directory_enrichment_sources(cabinet_id, source_type);
+
+CREATE TABLE IF NOT EXISTS directory_profile_facts (
+  id BIGSERIAL PRIMARY KEY,
+  cabinet_id BIGINT NOT NULL REFERENCES directory_cabinets(id) ON DELETE CASCADE,
+  establishment_id BIGINT REFERENCES directory_establishments(id) ON DELETE CASCADE,
+  fact_type TEXT NOT NULL CHECK(fact_type IN ('website','phone','email','contact_url','opening_hours','service','sector','software','team_signal','registry_status')),
+  label TEXT NOT NULL,
+  value TEXT NOT NULL,
+  source_id BIGINT REFERENCES directory_enrichment_sources(id) ON DELETE SET NULL,
+  confidence INTEGER NOT NULL DEFAULT 0,
+  is_displayable BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE(cabinet_id, establishment_id, fact_type, value)
+);
+CREATE INDEX IF NOT EXISTS idx_directory_profile_facts_establishment ON directory_profile_facts(establishment_id, is_displayable, fact_type);
+CREATE INDEX IF NOT EXISTS idx_directory_profile_facts_cabinet ON directory_profile_facts(cabinet_id, is_displayable, fact_type);
+
+CREATE TABLE IF NOT EXISTS directory_qualification_snapshots (
+  id BIGSERIAL PRIMARY KEY,
+  cabinet_id BIGINT NOT NULL REFERENCES directory_cabinets(id) ON DELETE CASCADE,
+  establishment_id BIGINT REFERENCES directory_establishments(id) ON DELETE CASCADE,
+  score INTEGER NOT NULL DEFAULT 0,
+  professional_status TEXT NOT NULL CHECK(professional_status IN ('unverified','verified','manual_verified','not_found','ambiguous','stale')),
+  matched_website BOOLEAN NOT NULL DEFAULT FALSE,
+  matched_registry BOOLEAN NOT NULL DEFAULT FALSE,
+  matched_address BOOLEAN NOT NULL DEFAULT FALSE,
+  matched_siren_or_siret BOOLEAN NOT NULL DEFAULT FALSE,
+  has_useful_profile_facts BOOLEAN NOT NULL DEFAULT FALSE,
+  blocking_reason TEXT,
+  snapshot_json TEXT NOT NULL DEFAULT '{}',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_directory_qualification_establishment ON directory_qualification_snapshots(establishment_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_directory_qualification_score ON directory_qualification_snapshots(score, professional_status);
+
 -- ─── AFFILIATION / COMMERCIAL LAYER ───
 
 CREATE TABLE IF NOT EXISTS affiliate_programs (
@@ -580,6 +646,17 @@ CREATE POLICY "public_read_privacy_suppression_requests" ON privacy_suppression_
 
 ALTER TABLE directory_source_events ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "public_read_directory_source_events" ON directory_source_events FOR SELECT TO anon, authenticated USING (true);
+
+ALTER TABLE directory_enrichment_runs ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE directory_enrichment_sources ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "public_read_directory_enrichment_sources" ON directory_enrichment_sources FOR SELECT TO anon, authenticated USING (true);
+
+ALTER TABLE directory_profile_facts ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "public_read_directory_profile_facts" ON directory_profile_facts FOR SELECT TO anon, authenticated USING (true);
+
+ALTER TABLE directory_qualification_snapshots ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "public_read_directory_qualification_snapshots" ON directory_qualification_snapshots FOR SELECT TO anon, authenticated USING (true);
 
 ALTER TABLE affiliate_programs ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "public_read_affiliate_programs" ON affiliate_programs FOR SELECT TO anon, authenticated USING (true);

@@ -409,6 +409,74 @@ CREATE TABLE IF NOT EXISTS directory_source_events (
 );
 CREATE INDEX IF NOT EXISTS idx_directory_source_events_entity ON directory_source_events(entity_type, entity_key);
 
+-- ─── DIRECTORY ENRICHMENT ───
+
+CREATE TABLE IF NOT EXISTS directory_enrichment_runs (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  run_key TEXT UNIQUE NOT NULL,
+  status TEXT NOT NULL CHECK(status IN ('running','completed','failed')),
+  scope TEXT NOT NULL DEFAULT '{}',
+  started_at TEXT NOT NULL DEFAULT (datetime('now')),
+  finished_at TEXT,
+  stats_json TEXT NOT NULL DEFAULT '{}',
+  error_message TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_directory_enrichment_runs_status ON directory_enrichment_runs(status, started_at);
+
+CREATE TABLE IF NOT EXISTS directory_enrichment_sources (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  cabinet_id INTEGER NOT NULL REFERENCES directory_cabinets(id) ON DELETE CASCADE,
+  establishment_id INTEGER REFERENCES directory_establishments(id) ON DELETE CASCADE,
+  source_key TEXT NOT NULL,
+  source_type TEXT NOT NULL CHECK(source_type IN ('api','official_website','registry','manual')),
+  source_url TEXT,
+  retrieved_at TEXT NOT NULL DEFAULT (datetime('now')),
+  source_hash TEXT,
+  parsed_ok INTEGER NOT NULL DEFAULT 1,
+  robots_allowed INTEGER,
+  legal_basis TEXT NOT NULL,
+  raw_excerpt TEXT,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  UNIQUE(cabinet_id, establishment_id, source_key, source_url)
+);
+CREATE INDEX IF NOT EXISTS idx_directory_enrichment_sources_establishment ON directory_enrichment_sources(establishment_id, source_type);
+CREATE INDEX IF NOT EXISTS idx_directory_enrichment_sources_cabinet ON directory_enrichment_sources(cabinet_id, source_type);
+
+CREATE TABLE IF NOT EXISTS directory_profile_facts (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  cabinet_id INTEGER NOT NULL REFERENCES directory_cabinets(id) ON DELETE CASCADE,
+  establishment_id INTEGER REFERENCES directory_establishments(id) ON DELETE CASCADE,
+  fact_type TEXT NOT NULL CHECK(fact_type IN ('website','phone','email','contact_url','opening_hours','service','sector','software','team_signal','registry_status')),
+  label TEXT NOT NULL,
+  value TEXT NOT NULL,
+  source_id INTEGER REFERENCES directory_enrichment_sources(id) ON DELETE SET NULL,
+  confidence INTEGER NOT NULL DEFAULT 0,
+  is_displayable INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+  UNIQUE(cabinet_id, establishment_id, fact_type, value)
+);
+CREATE INDEX IF NOT EXISTS idx_directory_profile_facts_establishment ON directory_profile_facts(establishment_id, is_displayable, fact_type);
+CREATE INDEX IF NOT EXISTS idx_directory_profile_facts_cabinet ON directory_profile_facts(cabinet_id, is_displayable, fact_type);
+
+CREATE TABLE IF NOT EXISTS directory_qualification_snapshots (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  cabinet_id INTEGER NOT NULL REFERENCES directory_cabinets(id) ON DELETE CASCADE,
+  establishment_id INTEGER REFERENCES directory_establishments(id) ON DELETE CASCADE,
+  score INTEGER NOT NULL DEFAULT 0,
+  professional_status TEXT NOT NULL CHECK(professional_status IN ('unverified','verified','manual_verified','not_found','ambiguous','stale')),
+  matched_website INTEGER NOT NULL DEFAULT 0,
+  matched_registry INTEGER NOT NULL DEFAULT 0,
+  matched_address INTEGER NOT NULL DEFAULT 0,
+  matched_siren_or_siret INTEGER NOT NULL DEFAULT 0,
+  has_useful_profile_facts INTEGER NOT NULL DEFAULT 0,
+  blocking_reason TEXT,
+  snapshot_json TEXT NOT NULL DEFAULT '{}',
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_directory_qualification_establishment ON directory_qualification_snapshots(establishment_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_directory_qualification_score ON directory_qualification_snapshots(score, professional_status);
+
 -- ─── TESTIMONIALS extension (P4a) ───
 -- ALTERs are applied imperatively by scripts/migrate-pricing-testimonials.ts
 -- (via PRAGMA table_info check) because CREATE TABLE IF NOT EXISTS does NOT

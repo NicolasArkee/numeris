@@ -268,6 +268,24 @@ export interface MaillageLink {
 
 // ─── Directory data integration types ───
 
+export type DirectoryEnrichmentSourceType =
+  | "api"
+  | "official_website"
+  | "registry"
+  | "manual";
+
+export type DirectoryProfileFactType =
+  | "website"
+  | "phone"
+  | "email"
+  | "contact_url"
+  | "opening_hours"
+  | "service"
+  | "sector"
+  | "software"
+  | "team_signal"
+  | "registry_status";
+
 export interface DirectoryCabinet {
   id: number;
   siren: string | null;
@@ -333,6 +351,64 @@ export interface DirectoryCabinetCard {
   cabinet: DirectoryCabinet;
   establishment: DirectoryEstablishment;
   city: DirectoryCity | null;
+}
+
+export interface DirectoryEnrichmentSource {
+  id: number;
+  cabinet_id: number;
+  establishment_id: number | null;
+  source_key: string;
+  source_type: DirectoryEnrichmentSourceType;
+  source_url: string | null;
+  retrieved_at: string;
+  source_hash: string | null;
+  parsed_ok: number | boolean;
+  robots_allowed: number | boolean | null;
+  legal_basis: string;
+  raw_excerpt: string | null;
+  created_at: string;
+}
+
+export interface DirectoryProfileFact {
+  id: number;
+  cabinet_id: number;
+  establishment_id: number | null;
+  fact_type: DirectoryProfileFactType;
+  label: string;
+  value: string;
+  source_id: number | null;
+  confidence: number;
+  is_displayable: number | boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DirectoryQualificationSnapshot {
+  id: number;
+  cabinet_id: number;
+  establishment_id: number | null;
+  score: number;
+  professional_status:
+    | "unverified"
+    | "verified"
+    | "manual_verified"
+    | "not_found"
+    | "ambiguous"
+    | "stale";
+  matched_website: number | boolean;
+  matched_registry: number | boolean;
+  matched_address: number | boolean;
+  matched_siren_or_siret: number | boolean;
+  has_useful_profile_facts: number | boolean;
+  blocking_reason: string | null;
+  snapshot_json: string;
+  created_at: string;
+}
+
+export interface DirectoryCityEnrichmentStats {
+  enrichedCount: number;
+  documentedCount: number;
+  candidateCount: number;
 }
 
 // ─── Database adapter interface ───
@@ -425,6 +501,14 @@ export interface DbAdapter {
   /** Top published cabinets nationally, ordered by confidence_score DESC. Powers the homepage Hero TOP X. */
   getTopDirectoryListingCabinets(limit?: number): Promise<DirectoryCabinetCard[]>;
   getDirectoryRelatedListingCabinetsByCity(codeInsee: string, excludeSiret: string, limit?: number): Promise<DirectoryCabinetCard[]>;
+  getDirectoryProfileFactsByEstablishment?(establishmentId: number): Promise<DirectoryProfileFact[]>;
+  getDirectoryEnrichmentSourcesByEstablishment?(establishmentId: number): Promise<DirectoryEnrichmentSource[]>;
+  getLatestDirectoryQualificationSnapshot?(
+    cabinetId: number,
+    establishmentId: number,
+  ): Promise<DirectoryQualificationSnapshot | null>;
+  getDirectoryCityEnrichmentStats?(codeInsee: string): Promise<DirectoryCityEnrichmentStats>;
+  getDirectoryLatestEnrichmentDateByEstablishment?(establishmentId: number): Promise<string | null>;
   getDirectoryProfileServices(): Promise<Service[]>;
   getDirectoryProfileProfessions(limit?: number): Promise<Profession[]>;
 }
