@@ -2,10 +2,14 @@ import React from "react";
 import Link from "next/link";
 import type {
   DirectoryCabinetCard,
+  DirectoryEnrichmentSource,
+  DirectoryProfileFact,
+  DirectoryQualificationSnapshot,
   Profession,
   Service,
 } from "@/libs/db";
 import { AppConfig } from "@/utils/AppConfig";
+import { DirectoryEnrichmentPanel } from "./DirectoryEnrichmentPanel";
 import { DirectoryFactTable } from "./DirectoryFactTable";
 import { DirectoryFaq } from "./DirectoryFaq";
 import { DirectoryInternalMesh } from "./DirectoryInternalMesh";
@@ -24,14 +28,23 @@ import {
 export function DirectoryVerifiedAccountingServiceJsonLd({
   card,
   path,
+  enrichmentFacts = [],
 }: {
   card: DirectoryCabinetCard;
   path: string;
+  enrichmentFacts?: DirectoryProfileFact[];
 }) {
   if (!isDirectoryCabinetVerified(card)) return null;
 
   const point = buildDirectoryMapPoint(card);
   const name = directoryDisplayName(card);
+  const displayableFacts = enrichmentFacts.filter(
+    (fact) => fact.is_displayable === true || fact.is_displayable === 1,
+  );
+  const website = displayableFacts.find(
+    (fact) => fact.fact_type === "website",
+  )?.value;
+  const phone = displayableFacts.find((fact) => fact.fact_type === "phone")?.value;
   const schema: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "AccountingService",
@@ -85,6 +98,14 @@ export function DirectoryVerifiedAccountingServiceJsonLd({
       latitude: point.latitude,
       longitude: point.longitude,
     };
+  }
+
+  if (website) {
+    schema.sameAs = [website];
+  }
+
+  if (phone) {
+    schema.telephone = phone;
   }
 
   return (
@@ -194,11 +215,17 @@ export function DirectoryProfileV2({
   relatedCabinets,
   services,
   professions,
+  enrichmentFacts = [],
+  enrichmentSources = [],
+  qualificationSnapshot = null,
 }: {
   card: DirectoryCabinetCard;
   relatedCabinets: DirectoryCabinetCard[];
   services: Service[];
   professions: Profession[];
+  enrichmentFacts?: DirectoryProfileFact[];
+  enrichmentSources?: DirectoryEnrichmentSource[];
+  qualificationSnapshot?: DirectoryQualificationSnapshot | null;
 }) {
   const name = directoryDisplayName(card);
   const verified = isDirectoryCabinetVerified(card);
@@ -317,6 +344,12 @@ export function DirectoryProfileV2({
                   <DirectoryFactTable rows={facts} />
                 </div>
               </section>
+
+              <DirectoryEnrichmentPanel
+                facts={enrichmentFacts}
+                sources={enrichmentSources}
+                snapshot={qualificationSnapshot}
+              />
 
               <section>
                 <h2 className="font-display text-[1.375rem] font-bold text-ink">

@@ -81,6 +81,16 @@ export default async function DirectoryCabinetPage({ params }: Props) {
   const cityName = card.city?.name ?? card.establishment.city_name ?? "Ville";
   const cityCode = card.city?.code_insee ?? card.establishment.city_code_insee;
   const pagePath = `/expert-comptable/${ville}/${cabinet}`;
+  const enrichmentFacts = await db.getDirectoryProfileFactsByEstablishment(
+    card.establishment.id,
+  );
+  const enrichmentSources = await db.getDirectoryEnrichmentSourcesByEstablishment(
+    card.establishment.id,
+  );
+  const qualificationSnapshot = await db.getLatestDirectoryQualificationSnapshot(
+    card.cabinet.id,
+    card.establishment.id,
+  );
   const breadcrumbs = [
     { name: "Accueil", url: "/" },
     { name: "Annuaire", url: "/annuaire/experts-comptables" },
@@ -101,7 +111,11 @@ export default async function DirectoryCabinetPage({ params }: Props) {
         url={pagePath}
         dateModified={card.cabinet.updated_at}
       />
-      <DirectoryVerifiedAccountingServiceJsonLd card={card} path={pagePath} />
+      <DirectoryVerifiedAccountingServiceJsonLd
+        card={card}
+        path={pagePath}
+        enrichmentFacts={enrichmentFacts}
+      />
       <DirectoryProfileV2
         card={card}
         relatedCabinets={
@@ -115,6 +129,9 @@ export default async function DirectoryCabinetPage({ params }: Props) {
         }
         services={await db.getDirectoryProfileServices()}
         professions={await db.getDirectoryProfileProfessions(8)}
+        enrichmentFacts={enrichmentFacts}
+        enrichmentSources={enrichmentSources}
+        qualificationSnapshot={qualificationSnapshot}
       />
     </>
   );
