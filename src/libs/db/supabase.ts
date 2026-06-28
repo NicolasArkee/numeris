@@ -83,6 +83,30 @@ function normalizeResourceText(value: string | null | undefined): string {
     .toLowerCase();
 }
 
+function isMissingSupabaseRelationError(error: unknown): boolean {
+  if (!error || typeof error !== "object") return false;
+
+  const candidate = error as {
+    code?: unknown;
+    message?: unknown;
+    details?: unknown;
+  };
+  const code = typeof candidate.code === "string" ? candidate.code : "";
+  const message = typeof candidate.message === "string" ? candidate.message : "";
+  const details = typeof candidate.details === "string" ? candidate.details : "";
+  const text = `${message} ${details}`.toLowerCase();
+
+  return (
+    code === "PGRST205"
+    || code === "42P01"
+    || (
+      text.includes("could not find the table")
+      && text.includes("schema cache")
+    )
+    || text.includes("relation does not exist")
+  );
+}
+
 function isInstitutionalResource(
   ...values: Array<string | null | undefined>
 ): boolean {
@@ -1309,7 +1333,10 @@ const adapter: DbAdapter = {
       .eq("is_displayable", true)
       .order("confidence", { ascending: false })
       .order("label", { ascending: true });
-    if (error) throw error;
+    if (error) {
+      if (isMissingSupabaseRelationError(error)) return [];
+      throw error;
+    }
     const order = new Map<DirectoryProfileFact["fact_type"], number>([
       ["website", 0],
       ["contact_url", 1],
@@ -1338,7 +1365,10 @@ const adapter: DbAdapter = {
       .eq("parsed_ok", true)
       .order("retrieved_at", { ascending: false })
       .order("id", { ascending: false });
-    if (error) throw error;
+    if (error) {
+      if (isMissingSupabaseRelationError(error)) return [];
+      throw error;
+    }
     return (data ?? []) as DirectoryEnrichmentSource[];
   },
 
@@ -1355,7 +1385,10 @@ const adapter: DbAdapter = {
       .order("id", { ascending: false })
       .limit(1)
       .maybeSingle();
-    if (error) throw error;
+    if (error) {
+      if (isMissingSupabaseRelationError(error)) return null;
+      throw error;
+    }
     return (data ?? null) as DirectoryQualificationSnapshot | null;
   },
 
@@ -1371,10 +1404,19 @@ const adapter: DbAdapter = {
     const establishmentIds = listingEstablishments.map(
       (establishment) => establishment.establishmentId,
     );
-    const [enriched, latestByEstablishment] = await Promise.all([
-      fetchDisplayableFactEstablishmentIds(establishmentIds),
-      fetchLatestDirectoryQualificationSnapshotsByEstablishmentIds(establishmentIds),
-    ]);
+    let enriched: Set<number>;
+    let latestByEstablishment: Map<number, DirectoryQualificationSnapshot>;
+    try {
+      [enriched, latestByEstablishment] = await Promise.all([
+        fetchDisplayableFactEstablishmentIds(establishmentIds),
+        fetchLatestDirectoryQualificationSnapshotsByEstablishmentIds(establishmentIds),
+      ]);
+    } catch (error) {
+      if (isMissingSupabaseRelationError(error)) {
+        return { enrichedCount: 0, documentedCount: 0, candidateCount: 0 };
+      }
+      throw error;
+    }
 
     const documentedCount = listingEstablishments.filter((establishment) => {
       const snapshot = latestByEstablishment.get(establishment.establishmentId);
@@ -1399,7 +1441,10 @@ const adapter: DbAdapter = {
       .order("retrieved_at", { ascending: false })
       .limit(1)
       .maybeSingle();
-    if (error) throw error;
+    if (error) {
+      if (isMissingSupabaseRelationError(error)) return null;
+      throw error;
+    }
     return data?.retrieved_at ?? null;
   },
 
