@@ -49,6 +49,7 @@ export default async function DirectoryCityPage({ params }: Props) {
   if (cards.length === 0) notFound();
   const totalCount = await db.getDirectoryListingCabinetCountByCity(city.code_insee);
   const verifiedCount = await db.getDirectoryCabinetCountByCity(city.code_insee);
+  const enrichmentStats = await db.getDirectoryCityEnrichmentStats(city.code_insee);
   const pagePath = `/expert-comptable/${city.slug}`;
   const breadcrumbs = [
     { name: "Accueil", url: "/" },
@@ -70,6 +71,7 @@ export default async function DirectoryCityPage({ params }: Props) {
         cabinets={cards}
         totalCount={totalCount}
         verifiedCount={verifiedCount}
+        enrichmentStats={enrichmentStats}
         services={await db.getDirectoryProfileServices()}
         professions={await db.getDirectoryProfileProfessions(8)}
         allListingCities={await db.getDirectoryListingCities()}

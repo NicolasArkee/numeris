@@ -3,6 +3,7 @@ import Link from "next/link";
 import type {
   DirectoryCabinetCard,
   DirectoryCity,
+  DirectoryCityEnrichmentStats,
   Profession,
   Service,
 } from "@/libs/db";
@@ -51,15 +52,19 @@ function CitySummaryPanel({
   totalCount,
   verifiedCount,
   candidateCount,
+  enrichmentStats,
 }: {
   city: DirectoryCity;
   totalCount: number;
   verifiedCount: number;
   candidateCount: number;
+  enrichmentStats: DirectoryCityEnrichmentStats;
 }) {
   const rows = [
     { label: "Cabinets listés", value: formatNumber(totalCount) },
     { label: "Fiches documentées", value: formatNumber(verifiedCount) },
+    { label: "Profils enrichis", value: formatNumber(enrichmentStats.enrichedCount) },
+    { label: "Qualifies", value: formatNumber(enrichmentStats.documentedCount) },
     { label: "Candidats", value: formatNumber(candidateCount) },
     { label: "Département", value: city.department_name ?? city.department_code ?? "Non renseigné" },
     { label: "Région", value: city.region_name ?? city.region_code ?? "Non renseignée" },
@@ -164,6 +169,7 @@ export function DirectoryCityPageV2({
   cabinets,
   totalCount,
   verifiedCount,
+  enrichmentStats,
   services,
   professions,
   allListingCities,
@@ -172,6 +178,7 @@ export function DirectoryCityPageV2({
   cabinets: DirectoryCabinetCard[];
   totalCount: number;
   verifiedCount: number;
+  enrichmentStats: DirectoryCityEnrichmentStats;
   services: Service[];
   professions: Profession[];
   allListingCities: DirectoryCity[];
@@ -261,6 +268,16 @@ export function DirectoryCityPageV2({
                 </span>{" "}
                 vérifié{stats.verifiedCount > 1 ? "s" : ""} documenté
                 {stats.verifiedCount > 1 ? "s" : ""}. {candidateCopy}
+                {enrichmentStats.enrichedCount > 0 && (
+                  <>
+                    {" "}
+                    <span className="font-mono font-semibold text-surface">
+                      {formatNumber(enrichmentStats.enrichedCount)}
+                    </span>{" "}
+                    profil{enrichmentStats.enrichedCount > 1 ? "s" : ""} dispose
+                    {enrichmentStats.enrichedCount > 1 ? "nt" : ""} deja de donnees enrichies sourcees.
+                  </>
+                )}
               </p>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row lg:justify-end">
@@ -340,6 +357,7 @@ export function DirectoryCityPageV2({
               totalCount={stats.totalCount}
               verifiedCount={stats.verifiedCount}
               candidateCount={stats.candidateCount}
+              enrichmentStats={enrichmentStats}
             />
           </div>
 
