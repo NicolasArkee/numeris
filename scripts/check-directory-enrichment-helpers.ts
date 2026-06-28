@@ -46,6 +46,19 @@ const facts: DirectoryProfileFact[] = [
     created_at: "2026-06-28T08:00:00.000Z",
     updated_at: "2026-06-28T08:00:00.000Z",
   },
+  {
+    id: 4,
+    cabinet_id: 1,
+    establishment_id: 10,
+    fact_type: "contact_url",
+    label: "Contact",
+    value: "https://cabinet.example/contact",
+    source_id: 1,
+    confidence: 90,
+    is_displayable: 1,
+    created_at: "2026-06-28T08:00:00.000Z",
+    updated_at: "2026-06-28T08:00:00.000Z",
+  },
 ];
 
 assert.equal(hasUsefulDirectoryProfileFacts(facts), true);
@@ -69,6 +82,8 @@ const qualified = computeDirectoryQualification({
   hasActiveSuppression: false,
 });
 assert.equal(qualified.score, 100);
+assert.equal(qualified.matchedSirenOrSiret, true);
+assert.equal(qualified.snapshot.matched_siren_or_siret, true);
 assert.equal(qualified.blockingReason, null);
 assert.equal(qualified.canPublish, true);
 
@@ -88,5 +103,22 @@ const suppressed = computeDirectoryQualification({
 });
 assert.equal(suppressed.canPublish, false);
 assert.equal(suppressed.blockingReason, "active_suppression_request");
+
+const ambiguousStatus = computeDirectoryQualification({
+  isActive: true,
+  nafCode: "69.20Z",
+  professionalStatus: "ambiguous",
+  matchedRegistry: false,
+  matchedWebsite: true,
+  matchedAddress: true,
+  matchedSirenOrSiret: true,
+  hasWebsiteContactPage: true,
+  retrievedAt: "2026-06-28T08:00:00.000Z",
+  now: new Date("2026-07-01T08:00:00.000Z"),
+  facts,
+  hasActiveSuppression: false,
+});
+assert.equal(ambiguousStatus.canPublish, false);
+assert.equal(ambiguousStatus.blockingReason, "professional_status_unverified");
 
 console.log("Directory enrichment helpers OK");

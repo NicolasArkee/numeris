@@ -88,6 +88,12 @@ function isRecent(value: string | null, now: Date): boolean {
   return ageMs >= 0 && ageMs <= 180 * 24 * 60 * 60 * 1000;
 }
 
+function isDocumentedProfessionalStatus(
+  status: DirectoryQualificationSnapshot["professional_status"],
+): boolean {
+  return status === "verified" || status === "manual_verified";
+}
+
 export function computeDirectoryQualification(
   input: DirectoryQualificationInput,
 ): DirectoryQualificationResult {
@@ -103,7 +109,6 @@ export function computeDirectoryQualification(
   if (input.hasWebsiteContactPage) score += 10;
   if (facts.some((fact) => ["phone", "contact_url"].includes(fact.fact_type))) score += 10;
   if (serviceCount >= 2) score += 10;
-  if (input.matchedSirenOrSiret) score += 10;
   if (input.matchedAddress) score += 5;
   if (isRecent(input.retrievedAt, now)) score += 5;
   score = Math.min(score, 100);
@@ -113,7 +118,7 @@ export function computeDirectoryQualification(
     blockingReason = "active_suppression_request";
   } else if (!input.isActive) {
     blockingReason = "inactive_establishment";
-  } else if (!input.matchedRegistry && input.professionalStatus === "unverified") {
+  } else if (!input.matchedRegistry && !isDocumentedProfessionalStatus(input.professionalStatus)) {
     blockingReason = "professional_status_unverified";
   } else if (!usefulFacts) {
     blockingReason = "missing_useful_profile_facts";
@@ -138,6 +143,7 @@ export function computeDirectoryQualification(
       service_count: serviceCount,
       useful_fact_count: facts.length,
       retrieved_at: input.retrievedAt,
+      matched_siren_or_siret: input.matchedSirenOrSiret,
     },
   };
 }
