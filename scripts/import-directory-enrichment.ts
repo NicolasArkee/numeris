@@ -67,24 +67,40 @@ const importRecord = db.transaction((record: PilotRecord) => {
   const row = db.prepare(
     `SELECT
        d.id AS cabinet_id,
+       d.siren,
        d.naf_code,
        d.is_active AS cabinet_is_active,
        e.id AS establishment_id,
+       e.siret,
        e.is_active AS establishment_is_active
      FROM directory_establishments e
      JOIN directory_cabinets d ON d.id = e.cabinet_id
      WHERE e.siret = ?`,
   ).get(record.siret) as {
     cabinet_id: number;
+    siren: string | null;
     naf_code: string | null;
     cabinet_is_active: number;
     establishment_id: number;
+    siret: string;
     establishment_is_active: number;
   } | undefined;
 
   if (!row) {
     throw new Error(`Unknown SIRET ${record.siret}`);
   }
+
+  const activeSuppression = db.prepare(
+    `SELECT 1 AS active
+     FROM privacy_suppression_requests psr
+     WHERE psr.status = 'active'
+       AND (
+         psr.siret = @siret
+         OR (@siren IS NOT NULL AND psr.siren = @siren)
+       )
+     LIMIT 1`,
+  ).get({ siret: row.siret, siren: row.siren }) as { active: number } | undefined;
+  const hasActiveSuppression = Boolean(activeSuppression);
 
   const source = db.prepare(
     `INSERT INTO directory_enrichment_sources
@@ -157,8 +173,13 @@ const importRecord = db.transaction((record: PilotRecord) => {
     hasWebsiteContactPage: record.matches.has_website_contact_page,
     retrievedAt: record.source.retrieved_at,
     facts: storedFacts,
-    hasActiveSuppression: false,
+    hasActiveSuppression,
   });
+
+  const snapshot = {
+    ...qualification.snapshot,
+    has_active_suppression: hasActiveSuppression,
+  };
 
   db.prepare(
     `INSERT INTO directory_qualification_snapshots
@@ -176,7 +197,7 @@ const importRecord = db.transaction((record: PilotRecord) => {
     matched_siren_or_siret: boolToInt(qualification.matchedSirenOrSiret),
     has_useful_profile_facts: boolToInt(qualification.hasUsefulProfileFacts),
     blocking_reason: qualification.blockingReason,
-    snapshot_json: JSON.stringify(qualification.snapshot),
+    snapshot_json: JSON.stringify(snapshot),
   });
 
   if (options.applyPublication && qualification.canPublish) {
