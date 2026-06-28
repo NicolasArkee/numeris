@@ -13,6 +13,16 @@ function sourceById(
   return new Map(sources.map((source) => [source.id, source]));
 }
 
+export function filterDirectoryFactsWithLoadedSources(
+  facts: DirectoryProfileFact[],
+  sources: DirectoryEnrichmentSource[],
+): DirectoryProfileFact[] {
+  const sourceIds = new Set(sources.map((source) => source.id));
+  return facts.filter(
+    (fact) => fact.source_id != null && sourceIds.has(fact.source_id),
+  );
+}
+
 function FactList({
   title,
   facts,
@@ -74,9 +84,10 @@ export function DirectoryEnrichmentPanel({
   sources: DirectoryEnrichmentSource[];
   snapshot: DirectoryQualificationSnapshot | null;
 }) {
-  if (facts.length === 0 && !snapshot) return null;
+  const sourcedFacts = filterDirectoryFactsWithLoadedSources(facts, sources);
+  if (sourcedFacts.length === 0 && !snapshot) return null;
 
-  const grouped = groupDirectoryProfileFacts(facts);
+  const grouped = groupDirectoryProfileFacts(sourcedFacts);
   const sourcesById = sourceById(sources);
 
   return (

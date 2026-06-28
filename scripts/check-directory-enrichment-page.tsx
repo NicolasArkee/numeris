@@ -7,7 +7,10 @@ import type {
   DirectoryQualificationSnapshot,
 } from "../src/libs/db";
 import { sqliteAdapter } from "../src/libs/db/sqlite";
-import { DirectoryProfileV2 } from "../src/components/directory/DirectoryProfileV2";
+import {
+  DirectoryProfileV2,
+  DirectoryVerifiedAccountingServiceJsonLd,
+} from "../src/components/directory/DirectoryProfileV2";
 
 async function main(): Promise<void> {
   const card = await sqliteAdapter.getDirectoryListingCabinetBySiret("44110142500037");
@@ -36,6 +39,32 @@ async function main(): Promise<void> {
       value: "Paie",
       source_id: 1,
       confidence: 90,
+      is_displayable: 1,
+      created_at: "2026-06-28T08:00:00.000Z",
+      updated_at: "2026-06-28T08:00:00.000Z",
+    },
+    {
+      id: 3,
+      cabinet_id: card.cabinet.id,
+      establishment_id: card.establishment.id,
+      fact_type: "phone",
+      label: "Telephone non source",
+      value: "01 23 45 67 89",
+      source_id: null,
+      confidence: 88,
+      is_displayable: 1,
+      created_at: "2026-06-28T08:00:00.000Z",
+      updated_at: "2026-06-28T08:00:00.000Z",
+    },
+    {
+      id: 4,
+      cabinet_id: card.cabinet.id,
+      establishment_id: card.establishment.id,
+      fact_type: "service",
+      label: "Service orphelin",
+      value: "Audit non source",
+      source_id: 999,
+      confidence: 88,
       is_displayable: 1,
       created_at: "2026-06-28T08:00:00.000Z",
       updated_at: "2026-06-28T08:00:00.000Z",
@@ -101,7 +130,30 @@ async function main(): Promise<void> {
   assert.match(html, /Service detecte/);
   assert.match(html, /Paie/);
   assert.match(html, /Score de qualification/);
+  assert.doesNotMatch(html, /Telephone non source/);
+  assert.doesNotMatch(html, /01 23 45 67 89/);
+  assert.doesNotMatch(html, /Service orphelin/);
+  assert.doesNotMatch(html, /Audit non source/);
   assert.doesNotMatch(html, /note moyenne|avis client|etoiles/i);
+
+  const verifiedCard = {
+    ...card,
+    cabinet: {
+      ...card.cabinet,
+      oec_status: "manual_verified" as const,
+    },
+  };
+  const jsonLd = renderToStaticMarkup(
+    <DirectoryVerifiedAccountingServiceJsonLd
+      card={verifiedCard}
+      path="/expert-comptable/paris/sample"
+      enrichmentFacts={facts}
+      enrichmentSources={sources}
+    />,
+  );
+
+  assert.match(jsonLd, /https:\/\/example-cabinet\.test/);
+  assert.doesNotMatch(jsonLd, /01 23 45 67 89/);
 
   console.log("Directory enrichment page OK");
 }

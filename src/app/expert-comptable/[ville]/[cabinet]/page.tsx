@@ -115,6 +115,7 @@ export default async function DirectoryCabinetPage({ params }: Props) {
         card={card}
         path={pagePath}
         enrichmentFacts={enrichmentFacts}
+        enrichmentSources={enrichmentSources}
       />
       <DirectoryProfileV2
         card={card}

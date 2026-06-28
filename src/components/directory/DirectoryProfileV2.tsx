@@ -9,7 +9,10 @@ import type {
   Service,
 } from "@/libs/db";
 import { AppConfig } from "@/utils/AppConfig";
-import { DirectoryEnrichmentPanel } from "./DirectoryEnrichmentPanel";
+import {
+  DirectoryEnrichmentPanel,
+  filterDirectoryFactsWithLoadedSources,
+} from "./DirectoryEnrichmentPanel";
 import { DirectoryFactTable } from "./DirectoryFactTable";
 import { DirectoryFaq } from "./DirectoryFaq";
 import { DirectoryInternalMesh } from "./DirectoryInternalMesh";
@@ -29,18 +32,21 @@ export function DirectoryVerifiedAccountingServiceJsonLd({
   card,
   path,
   enrichmentFacts = [],
+  enrichmentSources = [],
 }: {
   card: DirectoryCabinetCard;
   path: string;
   enrichmentFacts?: DirectoryProfileFact[];
+  enrichmentSources?: DirectoryEnrichmentSource[];
 }) {
   if (!isDirectoryCabinetVerified(card)) return null;
 
   const point = buildDirectoryMapPoint(card);
   const name = directoryDisplayName(card);
-  const displayableFacts = enrichmentFacts.filter(
-    (fact) => fact.is_displayable === true || fact.is_displayable === 1,
-  );
+  const displayableFacts = filterDirectoryFactsWithLoadedSources(
+    enrichmentFacts,
+    enrichmentSources,
+  ).filter((fact) => fact.is_displayable === true || fact.is_displayable === 1);
   const website = displayableFacts.find(
     (fact) => fact.fact_type === "website",
   )?.value;
