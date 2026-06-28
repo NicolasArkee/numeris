@@ -42,4 +42,48 @@ for (const column of [
   assert.ok(factsColumns.has(column), `Missing directory_profile_facts.${column}`);
 }
 
+db.exec("BEGIN");
+try {
+  const cabinet = db
+    .prepare("INSERT INTO directory_cabinets (legal_name) VALUES (?) RETURNING id")
+    .get("Directory enrichment schema check") as { id: number };
+
+  const insertSource = db.prepare(`
+    INSERT INTO directory_enrichment_sources (
+      cabinet_id,
+      establishment_id,
+      source_key,
+      source_type,
+      source_url,
+      legal_basis
+    ) VALUES (?, NULL, ?, 'manual', NULL, ?)
+  `);
+
+  insertSource.run(cabinet.id, "schema-check-source", "schema_check");
+  assert.throws(
+    () => insertSource.run(cabinet.id, "schema-check-source", "schema_check"),
+    /UNIQUE constraint failed/,
+    "Expected duplicate cabinet-level enrichment source to be rejected",
+  );
+
+  const insertFact = db.prepare(`
+    INSERT INTO directory_profile_facts (
+      cabinet_id,
+      establishment_id,
+      fact_type,
+      label,
+      value
+    ) VALUES (?, NULL, 'website', ?, ?)
+  `);
+
+  insertFact.run(cabinet.id, "Website", "https://example.test");
+  assert.throws(
+    () => insertFact.run(cabinet.id, "Website", "https://example.test"),
+    /UNIQUE constraint failed/,
+    "Expected duplicate cabinet-level profile fact to be rejected",
+  );
+} finally {
+  db.exec("ROLLBACK");
+}
+
 console.log("Directory enrichment schema OK");

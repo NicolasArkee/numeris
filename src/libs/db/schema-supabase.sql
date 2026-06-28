@@ -433,9 +433,9 @@ CREATE TABLE IF NOT EXISTS directory_enrichment_sources (
   robots_allowed BOOLEAN,
   legal_basis TEXT NOT NULL,
   raw_excerpt TEXT,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  UNIQUE(cabinet_id, establishment_id, source_key, source_url)
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+CREATE UNIQUE INDEX IF NOT EXISTS idx_directory_enrichment_sources_unique ON directory_enrichment_sources(cabinet_id, COALESCE(establishment_id, -1), source_key, COALESCE(source_url, ''));
 CREATE INDEX IF NOT EXISTS idx_directory_enrichment_sources_establishment ON directory_enrichment_sources(establishment_id, source_type);
 CREATE INDEX IF NOT EXISTS idx_directory_enrichment_sources_cabinet ON directory_enrichment_sources(cabinet_id, source_type);
 
@@ -450,9 +450,9 @@ CREATE TABLE IF NOT EXISTS directory_profile_facts (
   confidence INTEGER NOT NULL DEFAULT 0,
   is_displayable BOOLEAN NOT NULL DEFAULT FALSE,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  UNIQUE(cabinet_id, establishment_id, fact_type, value)
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+CREATE UNIQUE INDEX IF NOT EXISTS idx_directory_profile_facts_unique ON directory_profile_facts(cabinet_id, COALESCE(establishment_id, -1), fact_type, value);
 CREATE INDEX IF NOT EXISTS idx_directory_profile_facts_establishment ON directory_profile_facts(establishment_id, is_displayable, fact_type);
 CREATE INDEX IF NOT EXISTS idx_directory_profile_facts_cabinet ON directory_profile_facts(cabinet_id, is_displayable, fact_type);
 

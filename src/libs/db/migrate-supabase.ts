@@ -126,6 +126,28 @@ const TABLES: TableSpec[] = [
     onConflict: "id",
     booleanColumns: ["parsed_ok"],
   },
+  { name: "directory_enrichment_runs", onConflict: "id" },
+  {
+    name: "directory_enrichment_sources",
+    onConflict: "id",
+    booleanColumns: ["parsed_ok", "robots_allowed"],
+  },
+  {
+    name: "directory_profile_facts",
+    onConflict: "id",
+    booleanColumns: ["is_displayable"],
+  },
+  {
+    name: "directory_qualification_snapshots",
+    onConflict: "id",
+    booleanColumns: [
+      "matched_website",
+      "matched_registry",
+      "matched_address",
+      "matched_siren_or_siret",
+      "has_useful_profile_facts",
+    ],
+  },
   { name: "profile_claims", onConflict: "id" },
   { name: "privacy_suppression_requests", onConflict: "id" },
 
