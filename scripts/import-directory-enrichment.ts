@@ -128,8 +128,20 @@ const importRecord = db.transaction((record: PilotRecord) => {
     `DELETE FROM directory_profile_facts
      WHERE cabinet_id = ?
        AND establishment_id = ?
-       AND source_id = ?`,
-  ).run(row.cabinet_id, row.establishment_id, source.id);
+       AND source_id IN (
+         SELECT id
+         FROM directory_enrichment_sources
+         WHERE cabinet_id = ?
+           AND establishment_id = ?
+           AND source_key = ?
+       )`,
+  ).run(
+    row.cabinet_id,
+    row.establishment_id,
+    row.cabinet_id,
+    row.establishment_id,
+    record.source.source_key,
+  );
 
   for (const fact of record.facts) {
     db.prepare(
