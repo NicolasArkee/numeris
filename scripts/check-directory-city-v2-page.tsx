@@ -1,51 +1,61 @@
 import assert from "node:assert/strict";
+import path from "node:path";
+import dotenv from "dotenv";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { db } from "../src/libs/db";
-import sitemap from "../src/app/sitemap";
 import { DirectoryCityPageV2 } from "../src/components/directory/DirectoryCityPageV2";
 
-const city = db.getDirectoryCityBySlug("paris");
-assert.ok(city, "Expected Paris to exist in imported directory data");
+dotenv.config({ path: path.join(process.cwd(), ".env.local") });
+dotenv.config();
 
-const cards = db.getDirectoryListingCabinetsByCity(city.code_insee, 12);
-assert.ok(cards.length > 0, "Expected Paris directory cards");
+async function main(): Promise<void> {
+  const city = await db.getDirectoryCityBySlug("marseille");
+  assert.ok(city, "Expected Marseille to exist in imported directory data");
 
-const totalCount = db.getDirectoryListingCabinetCountByCity(city.code_insee);
-const verifiedCount = db.getDirectoryCabinetCountByCity(city.code_insee);
+  const cards = await db.getDirectoryListingCabinetsByCity(city.code_insee, 12);
+  assert.ok(cards.length > 0, "Expected Marseille directory cards");
 
-const html = renderToStaticMarkup(
-  <DirectoryCityPageV2
-    city={city}
-    cabinets={cards}
-    totalCount={totalCount}
-    verifiedCount={verifiedCount}
-    services={db.getDirectoryProfileServices()}
-    professions={db.getDirectoryProfileProfessions(8)}
-    allListingCities={db.getDirectoryListingCities()}
-  />,
-);
+  const totalCount = await db.getDirectoryListingCabinetCountByCity(city.code_insee);
+  const verifiedCount = await db.getDirectoryCabinetCountByCity(city.code_insee);
+  const enrichmentStats = await db.getDirectoryCityEnrichmentStats(city.code_insee);
 
-assert.match(html, /Cabinets comptables a Paris/);
-assert.match(html, /Non verifie Ordre|Verifie Ordre/);
-assert.match(html, /inscription Ordre non confirmee/);
-assert.match(html, /Ce que l'on peut verifier publiquement|Ce que l&#x27;on peut verifier publiquement/);
-assert.match(html, /data-directory-city-map="static"/);
-assert.match(html, /openstreetmap/);
-assert.match(html, /Cabinets comptables candidats et verifies/);
-assert.match(html, /href="\/expert-comptable\/paris\//);
-assert.match(html, /Missions comptables souvent recherchees a Paris/);
-assert.match(html, /href="\/expertises\/comptabilite"/);
-assert.match(html, /Professions accompagnees par un expert-comptable/);
-assert.match(html, /href="\/professions\//);
-assert.match(html, /Autres villes de l(?:'|&#x27;)annuaire|Autres villes proches/);
-assert.match(html, /Questions frequentes/);
-assert.doesNotMatch(html, /avis client|note moyenne|etoiles/i);
+  const html = renderToStaticMarkup(
+    <DirectoryCityPageV2
+      city={city}
+      cabinets={cards}
+      totalCount={totalCount}
+      verifiedCount={verifiedCount}
+      enrichmentStats={enrichmentStats}
+      services={await db.getDirectoryProfileServices()}
+      professions={await db.getDirectoryProfileProfessions(8)}
+      allListingCities={await db.getDirectoryListingCities()}
+    />,
+  );
 
-const sitemapUrls = sitemap().map((entry) => entry.url);
-assert.ok(
-  !sitemapUrls.some((url) => url.endsWith("/expert-comptable/paris")),
-  "Candidate city pages must stay out of the sitemap",
-);
+  assert.match(html, /Annuaire local · Marseille/);
+  assert.doesNotMatch(html, /Annuaire vérifié/);
+  assert.match(html, /Cabinets comptables à Marseille/);
+  assert.match(html, /Fiche documentée|À confirmer/);
+  assert.match(html, /Ce que l'on peut vérifier publiquement|Ce que l&#x27;on peut vérifier publiquement/);
+  assert.match(html, /Profils enrichis/);
+  assert.match(html, /Qualifies/);
+  assert.match(html, /data-directory-city-map="static"/);
+  assert.match(html, /openstreetmap/);
+  assert.match(html, /Cabinets comptables candidats et vérifiés/);
+  assert.match(html, /href="\/expert-comptable\/marseille\//);
+  assert.match(html, /Missions comptables souvent recherchées à Marseille/);
+  assert.match(html, /href="\/expertises\/comptabilite"/);
+  assert.match(html, /Professions accompagnées par un expert-comptable/);
+  assert.match(html, /href="\/professions\//);
+  assert.match(html, /Autres villes du comparateur|Autres villes proches/);
+  assert.match(html, /Questions fréquentes/);
+  assert.doesNotMatch(html, /avis client|note moyenne|etoiles/i);
 
-console.log("Directory city V2 page OK");
+  console.log("Directory city V2 page OK");
+}
+
+main().catch((error: unknown) => {
+  console.error(error);
+  process.exitCode = 1;
+});

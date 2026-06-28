@@ -239,7 +239,7 @@ export function DirectoryCityPageV2({
               <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-accent-500/30 bg-accent-500/10 px-3.5 py-1.5">
                 <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-accent-500" />
                 <span className="font-display text-[0.6875rem] font-semibold uppercase tracking-[0.12em] text-accent-300">
-                  Annuaire vérifié · {city.name}
+                  Annuaire local · {city.name}
                 </span>
               </div>
               <h1 className="max-w-4xl font-display text-[2.25rem] font-extrabold leading-[1.06] tracking-tight text-surface lg:text-[3.25rem]">

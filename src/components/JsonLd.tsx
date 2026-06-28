@@ -1,3 +1,4 @@
+import React from "react";
 import { AppConfig } from "@/utils/AppConfig";
 import { legalEntity } from "@/data/legal-entity";
 import type { LegalEntity } from "@/data/legal-entity";
