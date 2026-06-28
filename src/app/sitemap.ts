@@ -91,9 +91,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     for (const card of await db.getDirectoryCabinetsByCity(city.code_insee, 500)) {
       const name = card.cabinet.display_name ?? card.cabinet.legal_name;
+      const enrichmentDate = await db.getDirectoryLatestEnrichmentDateByEstablishment(
+        card.establishment.id,
+      );
       entries.push({
         url: `${baseUrl}/expert-comptable/${city.slug}/${directoryCabinetSlug(name, card.establishment.siret)}`,
-        lastModified: buildDate,
+        lastModified: enrichmentDate ? parsePageMetaDate(enrichmentDate, buildDate) : buildDate,
         changeFrequency: "monthly",
         priority: 0.5,
       });
