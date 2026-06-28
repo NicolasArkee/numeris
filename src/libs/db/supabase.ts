@@ -83,7 +83,7 @@ function normalizeResourceText(value: string | null | undefined): string {
     .toLowerCase();
 }
 
-function isMissingSupabaseRelationError(error: unknown): boolean {
+function isUnavailableSupabaseEnrichmentError(error: unknown): boolean {
   if (!error || typeof error !== "object") return false;
 
   const candidate = error as {
@@ -99,11 +99,13 @@ function isMissingSupabaseRelationError(error: unknown): boolean {
   return (
     code === "PGRST205"
     || code === "42P01"
+    || code === "42501"
     || (
       text.includes("could not find the table")
       && text.includes("schema cache")
     )
     || text.includes("relation does not exist")
+    || text.includes("permission denied")
   );
 }
 
@@ -393,25 +395,59 @@ async function fetchDisplayableFactEstablishmentIds(
   establishmentIds: number[],
 ): Promise<Set<number>> {
   const enriched = new Set<number>();
+  const factRows: Array<{
+    establishment_id: number | null;
+    source_id: number | null;
+  }> = [];
+  const sourceIds = new Set<number>();
 
   for (const idChunk of chunkArray(establishmentIds, SUPABASE_IN_CHUNK_SIZE)) {
     for (let from = 0; ; from += SUPABASE_PAGE_SIZE) {
       const { data, error } = await getSupabaseClient()
         .from("directory_profile_facts")
-        .select("id, establishment_id")
+        .select("establishment_id, source_id")
         .in("establishment_id", idChunk)
         .eq("is_displayable", true)
+        .not("source_id", "is", null)
         .order("id", { ascending: true })
         .range(from, from + SUPABASE_PAGE_SIZE - 1);
       if (error) throw error;
 
-      for (const row of (data ?? []) as Array<{ establishment_id: number | null }>) {
-        if (row.establishment_id != null) {
-          enriched.add(row.establishment_id);
+      for (const row of (data ?? []) as Array<{
+        establishment_id: number | null;
+        source_id: number | null;
+      }>) {
+        factRows.push(row);
+        if (row.source_id != null) {
+          sourceIds.add(row.source_id);
         }
       }
 
       if ((data ?? []).length < SUPABASE_PAGE_SIZE) break;
+    }
+  }
+
+  const parsedSourceIds = new Set<number>();
+  for (const idChunk of chunkArray(Array.from(sourceIds), SUPABASE_IN_CHUNK_SIZE)) {
+    const { data, error } = await getSupabaseClient()
+      .from("directory_enrichment_sources")
+      .select("id")
+      .in("id", idChunk)
+      .eq("parsed_ok", true);
+    if (error) throw error;
+
+    for (const row of (data ?? []) as Array<{ id: number }>) {
+      parsedSourceIds.add(row.id);
+    }
+  }
+
+  for (const row of factRows) {
+    if (
+      row.establishment_id != null
+      && row.source_id != null
+      && parsedSourceIds.has(row.source_id)
+    ) {
+      enriched.add(row.establishment_id);
     }
   }
 
@@ -1334,7 +1370,7 @@ const adapter: DbAdapter = {
       .order("confidence", { ascending: false })
       .order("label", { ascending: true });
     if (error) {
-      if (isMissingSupabaseRelationError(error)) return [];
+      if (isUnavailableSupabaseEnrichmentError(error)) return [];
       throw error;
     }
     const order = new Map<DirectoryProfileFact["fact_type"], number>([
@@ -1366,7 +1402,7 @@ const adapter: DbAdapter = {
       .order("retrieved_at", { ascending: false })
       .order("id", { ascending: false });
     if (error) {
-      if (isMissingSupabaseRelationError(error)) return [];
+      if (isUnavailableSupabaseEnrichmentError(error)) return [];
       throw error;
     }
     return (data ?? []) as DirectoryEnrichmentSource[];
@@ -1386,7 +1422,7 @@ const adapter: DbAdapter = {
       .limit(1)
       .maybeSingle();
     if (error) {
-      if (isMissingSupabaseRelationError(error)) return null;
+      if (isUnavailableSupabaseEnrichmentError(error)) return null;
       throw error;
     }
     return (data ?? null) as DirectoryQualificationSnapshot | null;
@@ -1412,7 +1448,7 @@ const adapter: DbAdapter = {
         fetchLatestDirectoryQualificationSnapshotsByEstablishmentIds(establishmentIds),
       ]);
     } catch (error) {
-      if (isMissingSupabaseRelationError(error)) {
+      if (isUnavailableSupabaseEnrichmentError(error)) {
         return { enrichedCount: 0, documentedCount: 0, candidateCount: 0 };
       }
       throw error;
@@ -1442,7 +1478,7 @@ const adapter: DbAdapter = {
       .limit(1)
       .maybeSingle();
     if (error) {
-      if (isMissingSupabaseRelationError(error)) return null;
+      if (isUnavailableSupabaseEnrichmentError(error)) return null;
       throw error;
     }
     return data?.retrieved_at ?? null;

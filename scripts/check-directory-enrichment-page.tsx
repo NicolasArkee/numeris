@@ -129,7 +129,10 @@ async function main(): Promise<void> {
   assert.match(html, /https:\/\/example-cabinet\.test/);
   assert.match(html, /Service detecte/);
   assert.match(html, /Paie/);
-  assert.match(html, /Score de qualification/);
+  assert.match(html, /Controle des donnees/);
+  assert.doesNotMatch(html, /Score de qualification/);
+  assert.doesNotMatch(html, /90\/100/);
+  assert.doesNotMatch(html, /blocking_reason|Blocage:/);
   assert.doesNotMatch(html, /Telephone non source/);
   assert.doesNotMatch(html, /01 23 45 67 89/);
   assert.doesNotMatch(html, /Service orphelin/);

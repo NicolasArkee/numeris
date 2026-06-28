@@ -828,7 +828,7 @@ export const sqliteAdapter: DbAdapter = {
     const row = getDb()
       .prepare(
         `SELECT
-           COUNT(DISTINCT CASE WHEN f.id IS NOT NULL THEN e.id END) AS enrichedCount,
+           COUNT(DISTINCT CASE WHEN src.id IS NOT NULL THEN e.id END) AS enrichedCount,
            COUNT(DISTINCT CASE WHEN q.score >= 85 AND q.professional_status IN ('verified','manual_verified') THEN e.id END) AS documentedCount,
            COUNT(DISTINCT e.id) AS totalCount
          FROM directory_establishments e
@@ -836,6 +836,9 @@ export const sqliteAdapter: DbAdapter = {
          LEFT JOIN directory_profile_facts f
            ON f.establishment_id = e.id
           AND f.is_displayable = 1
+         LEFT JOIN directory_enrichment_sources src
+           ON src.id = f.source_id
+          AND src.parsed_ok = 1
          LEFT JOIN directory_qualification_snapshots q
            ON q.id = (
              SELECT q2.id

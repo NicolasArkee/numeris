@@ -37,6 +37,42 @@ async function main(): Promise<void> {
 
     const card = await sqliteAdapter.getDirectoryListingCabinetBySiret("44110142500037");
     assert.ok(card, "Expected sample cabinet 44110142500037 to exist");
+    assert.ok(card.city, "Expected sample cabinet to have a city");
+
+    db.prepare(
+      `DELETE FROM directory_profile_facts
+       WHERE establishment_id IN (
+         SELECT id FROM directory_establishments WHERE city_code_insee = ?
+       )`,
+    ).run(card.city.code_insee);
+    db.prepare(
+      `DELETE FROM directory_enrichment_sources
+       WHERE establishment_id IN (
+         SELECT id FROM directory_establishments WHERE city_code_insee = ?
+       )`,
+    ).run(card.city.code_insee);
+    db.prepare(
+      `DELETE FROM directory_qualification_snapshots
+       WHERE establishment_id IN (
+         SELECT id FROM directory_establishments WHERE city_code_insee = ?
+       )`,
+    ).run(card.city.code_insee);
+
+    db.prepare(
+      `INSERT INTO directory_profile_facts
+         (cabinet_id, establishment_id, fact_type, label, value, source_id, confidence, is_displayable)
+       VALUES
+         (?, ?, 'service', 'Service orphelin', 'Audit non source', NULL, 90, 1)`,
+    ).run(card.cabinet.id, card.establishment.id);
+
+    const unsourcedStats = await sqliteAdapter.getDirectoryCityEnrichmentStats(
+      card.city.code_insee,
+    );
+    assert.equal(
+      unsourcedStats.enrichedCount,
+      0,
+      "Unsourced displayable facts must not count as sourced enrichment",
+    );
 
     const source = db.prepare(
       `INSERT INTO directory_enrichment_sources
@@ -94,7 +130,6 @@ async function main(): Promise<void> {
     assert.ok(snapshot);
     assert.equal(snapshot.score, 90);
 
-    assert.ok(card.city, "Expected sample cabinet to have a city");
     const stats = await sqliteAdapter.getDirectoryCityEnrichmentStats(card.city.code_insee);
     assert.ok(stats.enrichedCount >= 1);
     assert.ok(stats.documentedCount >= 0);

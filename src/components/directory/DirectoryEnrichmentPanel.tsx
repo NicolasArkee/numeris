@@ -23,6 +23,23 @@ export function filterDirectoryFactsWithLoadedSources(
   );
 }
 
+function qualificationMessage(
+  snapshot: DirectoryQualificationSnapshot,
+): string {
+  if (snapshot.blocking_reason) {
+    return "Cette fiche conserve un statut de controle avant toute qualification supplementaire.";
+  }
+
+  if (
+    snapshot.professional_status === "verified"
+    || snapshot.professional_status === "manual_verified"
+  ) {
+    return "Les informations enrichies affichees sont rattachees a une fiche documentee.";
+  }
+
+  return "Les informations enrichies affichees restent separees du statut professionnel de la fiche.";
+}
+
 function FactList({
   title,
   facts,
@@ -125,17 +142,10 @@ export function DirectoryEnrichmentPanel({
         {snapshot && (
           <section className="rounded-xl border border-border bg-bg-muted p-6 md:col-span-2">
             <h3 className="font-display text-[1.125rem] font-semibold text-ink">
-              Score de qualification
+              Controle des donnees
             </h3>
             <p className="mt-3 text-[0.9375rem] leading-7 text-ink-muted">
-              Score actuel:{" "}
-              <span className="font-mono font-semibold text-ink">
-                {snapshot.score}/100
-              </span>
-              .
-              {snapshot.blocking_reason
-                ? ` Blocage: ${snapshot.blocking_reason}.`
-                : " Aucun blocage de qualification enregistre."}
+              {qualificationMessage(snapshot)}
             </p>
           </section>
         )}

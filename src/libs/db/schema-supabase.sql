@@ -651,13 +651,13 @@ CREATE POLICY "public_read_directory_source_events" ON directory_source_events F
 ALTER TABLE directory_enrichment_runs ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE directory_enrichment_sources ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "public_read_directory_enrichment_sources" ON directory_enrichment_sources FOR SELECT TO anon, authenticated USING (true);
+DROP POLICY IF EXISTS "public_read_directory_enrichment_sources" ON directory_enrichment_sources;
 
 ALTER TABLE directory_profile_facts ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "public_read_directory_profile_facts" ON directory_profile_facts FOR SELECT TO anon, authenticated USING (true);
+DROP POLICY IF EXISTS "public_read_directory_profile_facts" ON directory_profile_facts;
 
 ALTER TABLE directory_qualification_snapshots ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "public_read_directory_qualification_snapshots" ON directory_qualification_snapshots FOR SELECT TO anon, authenticated USING (true);
+DROP POLICY IF EXISTS "public_read_directory_qualification_snapshots" ON directory_qualification_snapshots;
 
 ALTER TABLE affiliate_programs ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "public_read_affiliate_programs" ON affiliate_programs FOR SELECT TO anon, authenticated USING (true);
