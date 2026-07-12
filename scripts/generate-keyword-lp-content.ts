@@ -447,6 +447,20 @@ async function main(): Promise<void> {
       pipeline_run_id = excluded.pipeline_run_id, reviewed_at = excluded.reviewed_at
   `);
 
+  // Faits réglementaires par cluster (vérifiés sur les sources officielles au
+  // moment de l'ajout — re-vérifier avant toute régénération massive).
+  const CLUSTER_FACTS: Record<string, string[]> = {
+    "facturation-electronique": [
+      "Réforme de la facturation électronique (validé le 2026-07-12 sur service-public.gouv.fr) : obligation de RÉCEPTION pour TOUTES les entreprises assujetties à la TVA au 1er septembre 2026 ; obligation d'ÉMISSION au 1er septembre 2026 pour les grandes entreprises et les ETI, au 1er septembre 2027 pour les PME, TPE et micro-entreprises.",
+      "Chaque entreprise doit choisir une plateforme agréée (PDP — plateforme de dématérialisation partenaire) pour émettre/recevoir ses factures ; la liste officielle des PDP immatriculées est publiée et mise à jour sur impots.gouv.fr (immatriculation « sous réserve » avant les tests finaux).",
+      "Le PPF (portail public de facturation) a été recentré fin 2024 : il n'offre plus de service gratuit d'échange de factures et devient l'annuaire central des destinataires + le concentrateur des données pour l'administration. Chorus Pro reste la plateforme du B2G (facturation au secteur public).",
+      "Formats socle de la facture électronique : Factur-X (mixte PDF + XML), UBL et CII. Un PDF simple envoyé par e-mail n'est PAS une facture électronique au sens de la réforme.",
+      "Le e-reporting (transmission des données de transaction — B2C, international — et des données de paiement) suit le même calendrier que la facturation électronique et concerne les assujettis à la TVA établis en France.",
+      "Sanctions prévues : 15 € par facture non émise au format électronique (plafond 15 000 € par an) et 250 € par transmission e-reporting manquante (plafond 15 000 € par an) — formuler comme « prévues par la loi de finances », sans conseil individualisé.",
+      "L'expert-comptable joue un rôle central : choix de la plateforme, mise en conformité des mentions, raccordement des outils — c'est un critère de comparaison des cabinets en 2026.",
+    ],
+  };
+
   // Grounding facts par page.
   const buildFacts = (c: (typeof contexts)[number]): string[] => {
     const facts: string[] = [
@@ -476,6 +490,8 @@ async function main(): Promise<void> {
         "Les salaires de la profession varient fortement selon l'expérience, la région et la taille du cabinet — toujours les présenter en fourchettes indicatives, jamais en montant précis.",
       );
     }
+    const clusterFacts = CLUSTER_FACTS[c.kw.cluster_slug];
+    if (clusterFacts) facts.push(...clusterFacts);
     return facts;
   };
 

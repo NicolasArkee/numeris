@@ -78,8 +78,8 @@ export async function HomeHero() {
                 Souvent comparé :
               </span>
               {[
+                { label: "Facture électronique 2026", href: "/ressources/facture-electronique" },
                 { label: "Cabinets à Paris", href: "/expert-comptable/paris" },
-                { label: "Cabinets à Lyon", href: "/expert-comptable/lyon" },
                 { label: "Tarifs 2026", href: "/ressources/prix-expert-comptable" },
                 { label: "En ligne vs local", href: "/ressources/expert-comptable-en-ligne" },
               ].map((c) => (
