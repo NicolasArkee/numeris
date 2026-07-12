@@ -19,7 +19,7 @@ export async function HomeTarifs() {
         <SectionHead
           index="03"
           eyebrow="Tarifs"
-          title="Des ordres de prix, pas des surprises"
+          title="Comparez les prix avant le premier rendez-vous"
           sub="La grille de référence des offres comparées, et des simulateurs pour passer du barème à VOTRE situation."
         />
 

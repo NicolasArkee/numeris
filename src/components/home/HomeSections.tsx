@@ -46,7 +46,7 @@ export function SectionHead({
 export function HomeMethodStrip() {
   const items = [
     {
-      k: "Indépendance",
+      k: "Comparaison neutre",
       v: "Aucun cabinet ne nous appartient, aucun classement n'est vendu.",
     },
     {
@@ -58,8 +58,8 @@ export function HomeMethodStrip() {
       v: "Documenté ou à confirmer : le niveau de vérification est toujours visible.",
     },
     {
-      k: "Gratuit",
-      v: "La consultation est gratuite, sans compte et sans engagement.",
+      k: "Gratuit pour vous",
+      v: "Comparer est gratuit, sans compte et sans engagement.",
     },
   ];
   return (
@@ -112,9 +112,9 @@ export async function HomeVilles() {
       <div className="mx-auto max-w-328">
         <SectionHead
           index="01"
-          eyebrow="Annuaire"
-          title="La France comptable, ville par ville"
-          sub="Chaque ville liste ses cabinets avec adresse, SIRET et provenance administrative. Les fiches enrichies présentent les services identifiés sur le site officiel du cabinet."
+          eyebrow="Par ville"
+          title="Comparez les cabinets de votre ville"
+          sub="Chaque ville met ses cabinets côte à côte : adresse, SIRET, provenance administrative, et — sur les fiches enrichies — les services identifiés sur le site officiel du cabinet."
         />
         <div className="grid grid-cols-2 border-t border-l border-border lg:grid-cols-4">
           {tiles.map(({ city, count }) => (
@@ -140,13 +140,13 @@ export async function HomeVilles() {
         </div>
         <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
           <p className="text-[0.85rem] text-ink-muted">
-            {cityTotal > 0 ? `${cityTotal.toLocaleString("fr-FR")} villes couvertes — et l'annuaire grandit chaque semaine.` : "L'annuaire grandit chaque semaine."}
+            {cityTotal > 0 ? `${cityTotal.toLocaleString("fr-FR")} villes comparables — et le comparateur grandit chaque semaine.` : "Le comparateur grandit chaque semaine."}
           </p>
           <Link
             href="/annuaire/experts-comptables"
             className="inline-flex items-center gap-2 bg-brand-ink px-6 py-3 font-display text-[0.82rem] font-semibold text-surface transition-colors hover:bg-brand-900"
           >
-            Toutes les villes →
+            Comparer dans ma ville →
           </Link>
         </div>
       </div>
@@ -171,9 +171,9 @@ export function HomeExpertises({ services }: { services: Service[] }) {
         <SectionHead
           dark
           index="02"
-          eyebrow="Missions"
-          title="Comprendre les missions avant de comparer"
-          sub="Périmètre, livrables, responsabilités : chaque mission comptable a ses propres critères de comparaison."
+          eyebrow="Critères"
+          title="Ce que vous comparez vraiment"
+          sub="Derrière « expert-comptable », six missions aux périmètres très différents. Connaître leurs livrables, c'est comparer les offres sur les bons critères."
         />
         <ol className="border-t border-white/12">
           {services.map((service, i) => (
@@ -219,9 +219,9 @@ export function HomeGuides() {
       <div className="mx-auto max-w-328">
         <SectionHead
           index="04"
-          eyebrow="Guides"
-          title="Décider avec les bons repères"
-          sub="Des guides rédigés pour comparer, chiffrer et préparer votre premier échange — pas pour vendre."
+          eyebrow="Comparatifs & guides"
+          title="Comparez avec les bons repères"
+          sub="Des comparatifs et des guides rédigés pour chiffrer, trancher et préparer votre premier échange — pas pour vendre."
         />
         <div className="grid gap-px border border-border bg-border md:grid-cols-2 lg:grid-cols-3">
           {GUIDES.map((g) => (
@@ -267,7 +267,7 @@ export function HomeDualCta() {
             href="/annuaire/experts-comptables"
             className="mt-5 inline-flex items-center gap-2 bg-brand-ink px-6 py-3 font-display text-[0.82rem] font-semibold text-surface transition-colors hover:bg-brand-900"
           >
-            Ouvrir l&apos;annuaire →
+            Lancer la comparaison →
           </Link>
         </div>
         <div className="bg-surface p-8 lg:p-10">
@@ -309,7 +309,8 @@ export async function HomeProfessions() {
         <SectionHead
           index="05"
           eyebrow="Par métier"
-          title="Un expert-comptable qui connaît votre activité"
+          title="Comparez à activité comparable"
+          sub="Un cabinet qui connaît votre métier se compare sur d'autres critères : obligations propres, outils, conventions."
         />
         <div className="flex flex-wrap gap-2">
           {professions.map((p) => (

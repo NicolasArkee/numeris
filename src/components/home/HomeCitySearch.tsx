@@ -62,14 +62,14 @@ export function HomeCitySearch({ cities }: { cities: DirectoryCity[] }) {
             if (e.key === "ArrowUp") { e.preventDefault(); setHighlighted((h) => Math.max(h - 1, 0)); }
           }}
           placeholder="Votre ville — Paris, Lyon, Obernai…"
-          aria-label="Rechercher les experts-comptables de votre ville"
+          aria-label="Comparer les experts-comptables de votre ville"
           className="w-full bg-transparent px-4 py-4 text-[0.95rem] text-white outline-none placeholder:text-white/45"
         />
         <button
           type="submit"
           className="shrink-0 bg-accent-500 px-6 font-display text-[0.82rem] font-bold text-brand-ink transition-colors hover:bg-accent-300"
         >
-          Consulter →
+          Comparer →
         </button>
       </form>
 

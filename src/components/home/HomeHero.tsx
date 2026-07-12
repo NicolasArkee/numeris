@@ -1,34 +1,26 @@
 import Link from "next/link";
 import { db } from "@/libs/db";
-import { cabinetDirectoryPath } from "@/components/directory/CabinetCard";
-import {
-  buildDirectoryAddress,
-  directoryDisplayName,
-  isDirectoryCabinetVerified,
-} from "@/components/directory/profile-v2-helpers";
 import { HomeCitySearch } from "./HomeCitySearch";
 import { getListingCabinetTotal } from "./home-data";
 
-/** Hero « registre » : promesse données publiques, recherche ville instantanée,
- *  compteurs réels (annuaire vivant), extrait de fiche réelle — aucun score
- *  fabriqué, aucun logo presse. */
+/** Hero V2 « comparateur » : le verbe comparer partout, compteur réel dans le
+ *  H1 (claim impossible pour les concurrents vendeurs), recherche ville, et un
+ *  duel comparatif honnête en visuel signature — aucun score fabriqué. */
 export async function HomeHero() {
-  const [cities, cabinetCount, topCards] = await Promise.all([
+  const [cities, cabinetCount] = await Promise.all([
     db.getDirectoryListingCities().catch(() => []),
     getListingCabinetTotal(),
-    db.getTopDirectoryListingCabinets(1).catch(() => []),
   ]);
-  const sample = topCards[0];
 
   const stats: { value: string; label: string }[] = [
-    { value: cabinetCount.toLocaleString("fr-FR"), label: "cabinets recensés" },
+    { value: cabinetCount.toLocaleString("fr-FR"), label: "cabinets comparés" },
     { value: cities.length.toLocaleString("fr-FR"), label: "villes couvertes" },
     { value: "6", label: "simulateurs gratuits" },
     { value: "0 €", label: "pour vous, toujours" },
   ];
 
   return (
-    <section className="relative overflow-hidden bg-brand-ink px-6 pt-20 pb-14 lg:px-12 lg:pt-28 lg:pb-16">
+    <section className="relative overflow-hidden bg-brand-ink px-6 pt-20 pb-14 lg:px-12 lg:pt-24 lg:pb-16">
       {/* Texture registre : colonnes hairline + halo orange discret */}
       <div
         aria-hidden
@@ -49,44 +41,47 @@ export async function HomeHero() {
       />
 
       <div className="relative z-10 mx-auto max-w-328">
-        <div className="grid items-start gap-14 lg:grid-cols-[1.35fr_1fr] lg:gap-20">
+        <div className="grid items-center gap-14 lg:grid-cols-[1.3fr_1fr] lg:gap-20">
           <div>
             <p className="animate-fade-up mb-7 font-mono text-[0.7rem] uppercase tracking-[0.22em] text-accent-300">
               Comparateur indépendant · sources publiques RNE &amp; OEC
             </p>
 
-            <h1 className="animate-fade-up mb-7 font-display text-[2.6rem] font-extrabold leading-[1.04] tracking-tight text-surface lg:text-[4.4rem]">
-              Choisissez votre expert-comptable{" "}
+            <h1 className="animate-fade-up mb-7 font-display text-[2.5rem] font-extrabold leading-[1.05] tracking-tight text-surface lg:text-[4rem]">
               <span className="relative whitespace-nowrap">
-                sur des faits
+                Comparez
                 <span
                   aria-hidden
                   className="absolute inset-x-0 bottom-[0.06em] -z-10 h-[0.28em] bg-accent-500"
                 />
-              </span>
-              .
+              </span>{" "}
+              les{" "}
+              <span className="font-mono font-semibold tabular-nums text-accent-300">
+                {cabinetCount > 0 ? cabinetCount.toLocaleString("fr-FR") : ""}
+              </span>{" "}
+              cabinets comptables de France.
             </h1>
 
             <p className="animate-fade-up mb-9 max-w-xl text-[1.05rem] leading-relaxed text-white/80">
-              Skoria recense les cabinets de toute la France à partir de données
-              administratives publiques, compare les offres et affiche sa méthode.
-              Pas de classement acheté, pas de commission cachée.
+              Statut vérifié, services réels, ordres de prix : Skoria compare les
+              experts-comptables sur des données publiques — jamais sur des
+              classements achetés ni des commissions cachées.
             </p>
 
             <div className="animate-fade-up">
               <HomeCitySearch cities={cities} />
             </div>
 
-            {/* Recherches fréquentes — pattern annuaire (éducation par l'exemple) */}
+            {/* Comparaisons fréquentes — éducation par l'exemple */}
             <div className="animate-fade-up mt-5 flex flex-wrap items-center gap-2">
               <span className="font-mono text-[0.62rem] uppercase tracking-[0.16em] text-white/40">
-                Fréquent :
+                Souvent comparé :
               </span>
               {[
-                { label: "Expert-comptable Paris", href: "/expert-comptable/paris" },
-                { label: "Expert-comptable Lyon", href: "/expert-comptable/lyon" },
+                { label: "Cabinets à Paris", href: "/expert-comptable/paris" },
+                { label: "Cabinets à Lyon", href: "/expert-comptable/lyon" },
                 { label: "Tarifs 2026", href: "/ressources/prix-expert-comptable" },
-                { label: "LMNP", href: "/guides/lmnp" },
+                { label: "En ligne vs local", href: "/ressources/expert-comptable-en-ligne" },
               ].map((c) => (
                 <Link
                   key={c.href}
@@ -113,65 +108,83 @@ export async function HomeHero() {
             </dl>
           </div>
 
-          {/* Extrait du registre — une fiche RÉELLE, pas un score inventé */}
-          <aside className="animate-fade-up border border-white/15 bg-white/[0.04]">
-            <p className="border-b border-white/12 px-6 py-3.5 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-white/50">
-              Extrait du registre
+          {/* Duel comparatif — l'artefact signature d'un comparateur */}
+          <aside className="animate-fade-up relative">
+            <p className="border border-b-0 border-white/15 bg-white/[0.04] px-6 py-3.5 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-white/50">
+              Votre premier arbitrage
             </p>
-            {sample ? (
-              <div className="px-6 py-6">
-                <p className="font-display text-[1.15rem] font-bold leading-snug text-surface">
-                  {directoryDisplayName(sample)}
+            <div className="relative grid grid-cols-2 border border-white/15">
+              {/* Badge VS central */}
+              <span
+                aria-hidden
+                className="absolute top-1/2 left-1/2 z-10 -translate-x-1/2 -translate-y-1/2 border border-accent-500 bg-brand-ink px-2.5 py-1 font-mono text-[0.7rem] font-bold tracking-widest text-accent-500"
+              >
+                VS
+              </span>
+
+              <div className="border-r border-white/12 bg-white/[0.05] px-5 py-6">
+                <p className="font-display text-[0.95rem] font-bold text-surface">
+                  Expert-comptable en ligne
                 </p>
-                <p className="mt-1.5 text-[0.82rem] text-white/65">
-                  {buildDirectoryAddress(sample)}
-                </p>
-                <div className="mt-4 flex flex-wrap items-center gap-2">
-                  <span
-                    className={`border px-2.5 py-1 font-mono text-[0.62rem] uppercase tracking-[0.1em] ${
-                      isDirectoryCabinetVerified(sample)
-                        ? "border-success-500/50 text-success-500"
-                        : "border-warning-500/50 text-warning-500"
-                    }`}
-                  >
-                    {isDirectoryCabinetVerified(sample) ? "✓ Fiche documentée" : "? À confirmer"}
-                  </span>
-                  <span className="border border-white/15 px-2.5 py-1 font-mono text-[0.62rem] uppercase tracking-[0.1em] text-white/55">
-                    SIRET {sample.establishment.siret}
-                  </span>
-                </div>
-                <dl className="mt-5 space-y-2 border-t border-white/10 pt-4 text-[0.8rem]">
-                  <div className="flex justify-between gap-4">
-                    <dt className="text-white/50">Provenance</dt>
-                    <dd className="text-right text-white/80">Registre administratif public</dd>
+                <dl className="mt-4 space-y-3.5 text-[0.78rem]">
+                  <div>
+                    <dt className="text-white/45">À partir de</dt>
+                    <dd className="mt-0.5 font-mono text-[1rem] font-semibold tabular-nums text-accent-300">
+                      59 € HT/mois
+                    </dd>
                   </div>
-                  <div className="flex justify-between gap-4">
-                    <dt className="text-white/50">Statut affiché</dt>
-                    <dd className="text-right text-white/80">Explicite sur chaque fiche</dd>
+                  <div>
+                    <dt className="text-white/45">Échanges</dt>
+                    <dd className="mt-0.5 text-white/85">100 % à distance, outils temps réel</dd>
                   </div>
-                  <div className="flex justify-between gap-4">
-                    <dt className="text-white/50">Avis fabriqués</dt>
-                    <dd className="text-right font-semibold text-accent-300">Aucun</dd>
+                  <div>
+                    <dt className="text-white/45">Idéal pour</dt>
+                    <dd className="mt-0.5 text-white/85">Indépendants, TPE digitalisées</dd>
                   </div>
                 </dl>
+              </div>
+
+              <div className="bg-white/[0.02] px-5 py-6">
+                <p className="font-display text-[0.95rem] font-bold text-surface">
+                  Cabinet de proximité
+                </p>
+                <dl className="mt-4 space-y-3.5 text-[0.78rem]">
+                  <div>
+                    <dt className="text-white/45">Honoraires</dt>
+                    <dd className="mt-0.5 font-mono text-[1rem] font-semibold tabular-nums text-surface">
+                      Sur devis
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-white/45">Échanges</dt>
+                    <dd className="mt-0.5 text-white/85">Rendez-vous, terrain, réseau local</dd>
+                  </div>
+                  <div>
+                    <dt className="text-white/45">Idéal pour</dt>
+                    <dd className="mt-0.5 text-white/85">Commerces, dossiers complexes</dd>
+                  </div>
+                </dl>
+              </div>
+            </div>
+            <div className="border border-t-0 border-white/15 bg-white/[0.04] px-6 py-4">
+              <p className="text-[0.75rem] leading-relaxed text-white/55">
+                Le bon choix dépend de votre dossier — comparez les deux dans votre ville.
+              </p>
+              <div className="mt-3 flex flex-wrap gap-2">
                 <Link
-                  href={cabinetDirectoryPath(sample)}
-                  className="mt-6 inline-flex items-center gap-2 font-display text-[0.82rem] font-semibold text-accent-300 transition-colors hover:text-accent-500"
+                  href="/annuaire/experts-comptables"
+                  className="inline-flex items-center gap-2 bg-accent-500 px-4 py-2 font-display text-[0.78rem] font-bold text-brand-ink transition-colors hover:bg-accent-300"
                 >
-                  Voir cette fiche →
+                  Comparer dans ma ville →
+                </Link>
+                <Link
+                  href="/simulateurs/honoraires"
+                  className="inline-flex items-center gap-2 border border-white/20 px-4 py-2 font-display text-[0.78rem] font-semibold text-white/85 transition-colors hover:border-accent-500 hover:text-accent-300"
+                >
+                  Estimer le budget
                 </Link>
               </div>
-            ) : (
-              <div className="px-6 py-6 text-[0.85rem] text-white/60">
-                Annuaire en cours de constitution.
-              </div>
-            )}
-            <Link
-              href="/annuaire/experts-comptables"
-              className="block border-t border-white/12 px-6 py-4 text-center font-display text-[0.82rem] font-semibold text-surface transition-colors hover:bg-white/[0.06]"
-            >
-              Parcourir tout l&apos;annuaire →
-            </Link>
+            </div>
           </aside>
         </div>
       </div>
