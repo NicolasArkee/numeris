@@ -278,8 +278,11 @@ Output JSON strict (aucun texte hors JSON) :
 }
 
 // ─── QC ──────────────────────────────────────────────────────────────────────
+// Vise les FAUX signaux d'avis (revendiquer des avis/notes que Skoria n'a pas),
+// pas la mention générique du concept d'avis (légitime sur les pages "avis ...").
 const BLACKLIST = [
-  /avis client/iu, /not[ée] \d/iu, /étoile/iu, /témoignage/iu,
+  /nos avis/iu, /avis (vérifiés|certifiés|clients de skoria)/iu,
+  /not[ée] \d/iu, /étoile/iu, /témoignage/iu,
   /notre cabinet/iu, /nos experts?-comptables/iu, /\bhttps?:/iu, /\]\(/u,
 ];
 
