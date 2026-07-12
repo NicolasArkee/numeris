@@ -102,7 +102,7 @@ export function buildDirectoryCityFaqItems(
     },
     {
       question: `Combien de cabinets comptables sont listes a ${city.name} ?`,
-      answer: `Skoria liste actuellement ${countLabel} candidat${stats.totalCount > 1 ? "s" : ""} ou documente${stats.totalCount > 1 ? "s" : ""} a ${city.name}. Les fiches candidates restent en noindex tant que leur statut professionnel n'est pas suffisamment documente.`,
+      answer: `Skoria liste actuellement ${countLabel} candidat${stats.totalCount > 1 ? "s" : ""} ou documente${stats.totalCount > 1 ? "s" : ""} a ${city.name}. Chaque fiche precise explicitement son statut de verification (documentee ou a confirmer aupres du professionnel).`,
     },
   ];
 }

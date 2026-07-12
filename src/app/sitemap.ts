@@ -23,15 +23,6 @@ function parsePageMetaDate(raw: string | null | undefined, fallback: Date): Date
   return Number.isNaN(d.getTime()) ? fallback : d;
 }
 
-function directoryCabinetSlug(name: string, siret: string): string {
-  return `${name
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "")}-${siret}`;
-}
-
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = AppConfig.url;
   const buildDate = new Date();
@@ -78,34 +69,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   // ─── Public directory pages ───
-  // City pages : alignées sur le gate robots (buildDirectoryCityRobots) —
-  // indexables dès qu'il existe des établissements listables, donc toutes les
-  // villes listing entrent au sitemap.
-  for (const city of await db.getDirectoryListingCities()) {
-    entries.push({
-      url: `${baseUrl}/expert-comptable/${city.slug}`,
-      lastModified: buildDate,
-      changeFrequency: "weekly",
-      priority: 0.6,
-    });
-  }
-
-  // Cabinet URLs : uniquement les fiches publiées/documentées (méthodes
-  // publiques gated sur publish_status + confidence_score + statut documenté).
-  for (const city of await db.getDirectoryCities()) {
-    for (const card of await db.getDirectoryCabinetsByCity(city.code_insee, 500)) {
-      const name = card.cabinet.display_name ?? card.cabinet.legal_name;
-      const enrichmentDate = await db.getDirectoryLatestEnrichmentDateByEstablishment(
-        card.establishment.id,
-      );
-      entries.push({
-        url: `${baseUrl}/expert-comptable/${city.slug}/${directoryCabinetSlug(name, card.establishment.siret)}`,
-        lastModified: enrichmentDate ? parsePageMetaDate(enrichmentDate, buildDate) : buildDate,
-        changeFrequency: "monthly",
-        priority: 0.5,
-      });
-    }
-  }
+  // Externalisées dans des sitemaps dédiés (déclarés par robots.ts) :
+  //   /sitemap-villes.xml — pages annuaire villes (listing cities)
+  //   /sitemap-fiches.xml — fiches cabinet ENRICHIES uniquement
+  // Ce sitemap ne porte plus que le contenu (éditorial, pSEO, commercial).
 
   // ─── Service pages ───
   const services = await db.getServices();

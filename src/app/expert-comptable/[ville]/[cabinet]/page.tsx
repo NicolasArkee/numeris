@@ -33,6 +33,45 @@ function siretFromCabinetParam(value: string): string | null {
   return match ? match[1] : null;
 }
 
+/** Les raisons sociales sont en MAJUSCULES en base — Title Case lisible pour
+ *  les metatags, en conservant les sigles courts (TGS, CSW, SAS…). */
+function titleCaseCabinetName(raw: string): string {
+  return raw
+    .split(/\s+/u)
+    .map((word) =>
+      word
+        .split("-")
+        .map((part) => {
+          const letters = part.replace(/[^\p{L}]/gu, "");
+          if (letters.length <= 3) return part; // sigles et particules
+          return part.replace(/\p{L}[\p{L}']*/gu, (w) => w.charAt(0) + w.slice(1).toLowerCase());
+        })
+        .join("-"),
+    )
+    .join(" ");
+}
+
+/** Extrait de résumé pour la meta description (~155c, coupe sur un mot). */
+function summaryExcerpt(summary: string): string {
+  const flat = summary.replace(/\s+/gu, " ").trim();
+  if (flat.length <= 158) return flat;
+  const cut = flat.slice(0, 155);
+  return `${cut.slice(0, cut.lastIndexOf(" "))}…`;
+}
+
+/** Résumé éditorial displayable de plus haute confiance (fiche enrichie). */
+async function findEnrichedSummary(establishmentId: number): Promise<string | null> {
+  try {
+    const facts = await db.getDirectoryProfileFactsByEstablishment(establishmentId);
+    const summaries = facts
+      .filter((f) => f.fact_type === "profile_summary" && f.is_displayable)
+      .sort((a, b) => b.confidence - a.confidence);
+    return summaries[0]?.value ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export async function generateStaticParams() {
   return (await db.getTopDirectoryListingCabinets(10_000)).flatMap((card) => {
     const citySlug = card.city?.slug;
@@ -54,18 +93,27 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const card = await db.getDirectoryListingCabinetBySiret(siret);
   if (!card) return {};
 
-  const name = directoryDisplayName(card);
+  const name = titleCaseCabinetName(directoryDisplayName(card));
   const city = card.city?.name ?? card.establishment.city_name ?? "";
   const verified = isDirectoryCabinetVerified(card);
+  const summary = await findEnrichedSummary(card.establishment.id);
+
+  // Politique d'indexation (2026-07-12, alignée sur les pages villes) :
+  // fiche INDEXABLE dès qu'elle porte un contenu éditorial enrichi
+  // (profile_summary displayable) — le title/description deviennent uniques ;
+  // fiche nue → gate historique (noindex tant que non vérifiée).
   return {
-    title: `${name}${city ? ` a ${city}` : ""} | Annuaire Skoria`,
-    description: verified
-      ? "Fiche cabinet avec provenance administrative et verification professionnelle documentee."
-      : "Fiche candidate issue d'une source administrative publique; statut professionnel a confirmer.",
+    // NB : le layout applique déjà le template `%s | Skoria`.
+    title: `${name} — expert-comptable à ${city || "consulter"}`,
+    description: summary
+      ? summaryExcerpt(summary)
+      : verified
+        ? "Fiche cabinet avec provenance administrative et verification professionnelle documentee."
+        : "Fiche candidate issue d'une source administrative publique; statut professionnel a confirmer.",
     alternates: {
       canonical: `${AppConfig.url}${cabinetDirectoryPath(card)}`,
     },
-    robots: buildDirectoryRobots(card),
+    ...(summary ? {} : { robots: buildDirectoryRobots(card) }),
   };
 }
 
