@@ -103,7 +103,9 @@ CREATE TABLE IF NOT EXISTS keyword_pages (
   serp_features TEXT,
   meta_title TEXT,
   meta_description TEXT,
-  h1 TEXT
+  h1 TEXT,
+  disposition TEXT,
+  redirect_to TEXT
 );
 
 CREATE TABLE IF NOT EXISTS villes (

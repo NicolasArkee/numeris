@@ -111,8 +111,15 @@ CREATE TABLE IF NOT EXISTS keyword_pages (
   serp_features TEXT,
   meta_title TEXT,
   meta_description TEXT,
-  h1 TEXT
+  h1 TEXT,
+  disposition TEXT,
+  redirect_to TEXT
 );
+
+-- Colonnes de triage LP (remédiation /ressources) — la table existe déjà en
+-- prod, le CREATE IF NOT EXISTS ci-dessus ne les ajoute pas : ALTER idempotent.
+ALTER TABLE keyword_pages ADD COLUMN IF NOT EXISTS disposition TEXT;
+ALTER TABLE keyword_pages ADD COLUMN IF NOT EXISTS redirect_to TEXT;
 
 CREATE TABLE IF NOT EXISTS villes (
   id BIGSERIAL PRIMARY KEY,

@@ -129,6 +129,11 @@ export interface KeywordPage {
   meta_title: string | null;
   meta_description: string | null;
   h1: string | null;
+  /** Triage remédiation LP (scripts/triage-keyword-pages.ts) :
+   *  enrich | redirect | noindex | hidden. Null = non triée (traiter comme enrich). */
+  disposition?: string | null;
+  /** Cible du 301 quand disposition='redirect' (chemin relatif). */
+  redirect_to?: string | null;
 }
 
 export interface Ville {
