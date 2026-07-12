@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Inter_Tight, Inter, JetBrains_Mono } from "next/font/google";
+import "leaflet/dist/leaflet.css";
 import "./globals.css";
 import { AppConfig } from "@/utils/AppConfig";
-import { Nav } from "@/components/Nav";
+import { SiteHeader } from "@/components/header/SiteHeader";
 import { Footer } from "@/components/Footer";
 
 const interTight = Inter_Tight({
@@ -78,7 +79,7 @@ export default function RootLayout({
       className={`${interTight.variable} ${inter.variable} ${jetbrainsMono.variable}`}
     >
       <body className="antialiased">
-        <Nav />
+        <SiteHeader />
         <main>{children}</main>
         <Footer />
       </body>
