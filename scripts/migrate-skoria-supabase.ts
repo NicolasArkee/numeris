@@ -50,6 +50,7 @@ interface Job {
   replace?: boolean;
 }
 const JOBS: Job[] = [
+  { table: "clusters", onConflict: "slug", where: "1=1", stripId: false },
   { table: "keyword_pages", onConflict: "slug", where: "1=1", stripId: false },
   {
     table: "maillage_links",

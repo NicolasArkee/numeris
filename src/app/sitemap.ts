@@ -1,4 +1,6 @@
 import type { MetadataRoute } from "next";
+import fs from "node:fs";
+import path from "node:path";
 import { AppConfig } from "@/utils/AppConfig";
 import { db } from "@/libs/db";
 import { expertisesSlugKey } from "@/libs/content/keys";
@@ -166,7 +168,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // `seenRessources` déduplique : un slug keyword peut coïncider avec un slug
   // hub/cluster (même règle que le Set `seen` de generateStaticParams dans
   // ressources/[theme]/page.tsx).
-  const seenRessources = new Set<string>();
+  // Slugs /ressources redirigés (301 next.config, y compris clusters orphelins)
+  // — jamais émis au sitemap. Même source de vérité que redirects().
+  const redirectedRessources = new Set<string>();
+  try {
+    const raw = JSON.parse(
+      fs.readFileSync(path.join(process.cwd(), "data", "redirects-ressources.json"), "utf-8"),
+    ) as { source: string }[];
+    for (const r of raw) {
+      const m = r.source.match(/^\/ressources\/(.+)$/u);
+      if (m) redirectedRessources.add(m[1]);
+    }
+  } catch {
+    // fichier absent → aucun filtre
+  }
+
+  const seenRessources = new Set<string>(redirectedRessources);
   const silos = await db.getSilos();
   for (const silo of silos) {
     const hubs = await db.getHubsBySilo(silo.slug);

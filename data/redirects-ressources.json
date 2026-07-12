@@ -1018,5 +1018,230 @@
     "source": "/ressources/ciel-devis-facture-export-relation-expert-comptable",
     "destination": "/ressources/ciel-expert-comptable",
     "permanent": true
+  },
+  {
+    "source": "/ressources/experts-comptables-paris",
+    "destination": "/ressources/expert-comptable-general",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/experts-comptables-regionaux",
+    "destination": "/ressources/expert-comptable-general",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/offres-associees",
+    "destination": "/ressources/offres-d-emploi-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/annuaire-professionnels",
+    "destination": "/ressources/ordre-annuaire",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/conseil-national-superieur",
+    "destination": "/ressources/ordre-annuaire",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/listes-internationales",
+    "destination": "/ressources/ordre-annuaire",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/principes-deontologiques",
+    "destination": "/ressources/deontologie-experts-comptables",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/courriers-deontologiques",
+    "destination": "/ressources/deontologie-experts-comptables",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/articles-code-deontologie",
+    "destination": "/ressources/deontologie-experts-comptables",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/code-deontologie-officiel",
+    "destination": "/ressources/deontologie-experts-comptables",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/devoirs-professionnels",
+    "destination": "/ressources/deontologie-experts-comptables",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/congres-regionaux-paca",
+    "destination": "/ressources/ordre-experts-comptables-paca",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/congres-experts-comptables",
+    "destination": "/ressources/ordonnance-1945-congres",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/grille-salaires-convention",
+    "destination": "/ressources/convention-collective",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/salaires-et-coefficients",
+    "destination": "/ressources/convention-collective",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/preavis-demission",
+    "destination": "/ressources/convention-collective",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/maladie-et-indemnites",
+    "destination": "/ressources/convention-collective",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/conges-speciaux",
+    "destination": "/ressources/convention-collective",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/convention-dates-precises",
+    "destination": "/ressources/convention-collective",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/heures-supplementaires",
+    "destination": "/ressources/convention-collective",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/experts-comptables-ouest",
+    "destination": "/ressources/experts-comptables-grandes-villes",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/experts-comptables-lille",
+    "destination": "/ressources/experts-comptables-grandes-villes",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/bons-experts-strasbourg",
+    "destination": "/ressources/experts-comptables-grandes-villes",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/experts-marseille-localites",
+    "destination": "/ressources/experts-marseille",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/alliance-cabinets-experts",
+    "destination": "/ressources/experts-marseille",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/experts-comptables-rouen-reims-roanne",
+    "destination": "/ressources/experts-comptables-par-ville",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/experts-comptables-sud-ouest",
+    "destination": "/ressources/experts-comptables-par-ville",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/experts-comptables-la-rochelle-et-environs",
+    "destination": "/ressources/experts-comptables-par-ville",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/experts-villes-specifiques",
+    "destination": "/ressources/experts-comptables-par-ville",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/experts-arrondissements-paris",
+    "destination": "/ressources/experts-comptables-par-ville",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/experts-comptables-royan-roanne-rodez",
+    "destination": "/ressources/experts-comptables-par-ville",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/experts-comptables-checy-et-cabinets-specifiques",
+    "destination": "/ressources/experts-comptables-par-ville",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/experts-comptables-chartres-doisneau",
+    "destination": "/ressources/experts-comptables-par-ville",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/cabinets-perpignan",
+    "destination": "/ressources/expert-comptable-perpignan",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-transport-perpignan",
+    "destination": "/ressources/expert-comptable-perpignan",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/experts-comptables-espagne",
+    "destination": "/ressources/experts-internationaux",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/avis-experts-en-ligne",
+    "destination": "/ressources/experts-internationaux",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/emploi-grandes-villes",
+    "destination": "/ressources/emploi-evenements-dom-tom",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/experts-contacts-locaux",
+    "destination": "/ressources/experts-comptables-par-departement",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/experts-villes-moyennes",
+    "destination": "/ressources/experts-villes",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/experts-afrique-francophone",
+    "destination": "/ressources/experts-comptables-internationaux",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/experts-comptables-tunisie",
+    "destination": "/ressources/expert-comptable-tunisie",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/experts-comptables-agricoles",
+    "destination": "/ressources/experts-comptables-specialises",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/ebp-business-plan",
+    "destination": "/ressources/business-plan",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/logiciel-ciel-integration",
+    "destination": "/ressources/paie-previsionnel",
+    "permanent": true
   }
 ]
