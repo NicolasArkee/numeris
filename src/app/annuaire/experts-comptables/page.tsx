@@ -5,6 +5,7 @@ import { ClusterPage } from "@/components/ClusterPage";
 import { DirectoryComplianceNotice } from "@/components/directory/DirectoryComplianceNotice";
 import { DirectorySearch } from "@/components/directory/DirectorySearch";
 import { ItemListJsonLd } from "@/components/JsonLd";
+import { getListingCabinetTotal } from "@/components/home/home-data";
 
 // ISR: regenerated at most every hour. Keeps this page out of the synchronous
 // SSG batch that saturates Supabase when 30k pages build concurrently.
@@ -19,7 +20,10 @@ export const metadata: Metadata = {
 
 export default async function ExpertsComptablesDirectoryPage() {
   const cities = await db.getDirectoryListingCities();
-  const count = await db.getDirectoryListingCabinetCount();
+  // Head-count exact — l'ancien getDirectoryListingCabinetCount post-filtrait
+  // une fenêtre PostgREST tronquée à 1 000 rows : chiffre faux ET requête
+  // lourde qui timeoutait le prerender (57014) sous charge.
+  const count = await getListingCabinetTotal();
   const verifiedCount = await db.getPublishedDirectoryCabinetCount();
 
   return (
