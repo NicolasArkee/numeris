@@ -13,7 +13,7 @@ interface SEOData {
 // ─── Service pages ───
 export function getSEOForService(service: { slug: string; title: string; description: string }): SEOData {
   return {
-    metaTitle: `${service.title} : comparer les options | ${AppConfig.name}`,
+    metaTitle: `${service.title} : comparer les options`,
     metaDescription: `${service.description} ${AppConfig.name} aide à préparer vos critères de comparaison et vos questions avant de choisir un professionnel.`,
     h1: `${service.title} : comparer les professionnels`,
     intro: `${AppConfig.name} est un comparateur indépendant. Cette page aide à comprendre les enjeux de ${service.title.toLowerCase()}, les documents à préparer et les critères à vérifier avant tout engagement.`,
@@ -38,7 +38,7 @@ export function getSEOForService(service: { slug: string; title: string; descrip
 export function getSEOForSecteur(secteur: { slug: string; name: string; description: string | null }): SEOData {
   const desc = secteur.description || secteur.name;
   return {
-    metaTitle: `Comparer un expert-comptable ${secteur.name} | ${AppConfig.name}`,
+    metaTitle: `Comparer un expert-comptable ${secteur.name}`,
     metaDescription: `Critères pour comparer un expert-comptable spécialisé ${secteur.name.toLowerCase()} : ${desc}. Points comptables, fiscaux et sociaux à vérifier.`,
     h1: `Comparer un expert-comptable spécialisé ${secteur.name}`,
     intro: `Le secteur ${secteur.name.toLowerCase()} a des besoins comptables spécifiques. ${AppConfig.name} aide à comparer les critères utiles : ${desc.toLowerCase()}.`,
@@ -59,7 +59,7 @@ export function getSEOForSecteur(secteur: { slug: string; name: string; descript
 export function getSEOForVille(ville: { slug: string; name: string; departement: string | null; region: string | null }): SEOData {
   const loc = ville.region ? `${ville.name} (${ville.region})` : ville.name;
   return {
-    metaTitle: `Comparer un expert-comptable à ${ville.name} | ${AppConfig.name}`,
+    metaTitle: `Comparer un expert-comptable à ${ville.name}`,
     metaDescription: `Comparez les professionnels comptables à ${ville.name}. Critères de choix, annuaire, données publiques et questions à préparer à ${loc}.`,
     h1: `Comparer un expert-comptable à ${ville.name}`,
     intro: `Vous recherchez un expert-comptable à ${ville.name} ? ${AppConfig.name} aide à comparer les professionnels de ${loc} à partir de critères lisibles et de données publiques disponibles.`,
@@ -79,7 +79,7 @@ export function getSEOForVille(ville: { slug: string; name: string; departement:
 // ─── Departement pages ───
 export function getSEOForDepartement(dept: { slug: string; code: string; name: string; region: string | null }): SEOData {
   return {
-    metaTitle: `Comparer un expert-comptable ${dept.name} (${dept.code}) | ${AppConfig.name}`,
+    metaTitle: `Comparer un expert-comptable ${dept.name} (${dept.code})`,
     metaDescription: `Critères pour comparer un expert-comptable dans le ${dept.name} (${dept.code}) : localisation, métier, périmètre et données disponibles.`,
     h1: `Comparer un expert-comptable dans le ${dept.name} (${dept.code})`,
     intro: `${AppConfig.name} aide à comparer les professionnels comptables du département ${dept.name} (${dept.code})${dept.region ? `, en ${dept.region},` : ""} avec des critères lisibles.`,
@@ -98,7 +98,7 @@ export function getSEOForServiceSecteur(
   secteur: { slug: string; name: string },
 ): SEOData {
   return {
-    metaTitle: `${service.title} ${secteur.name} : comparer | ${AppConfig.name}`,
+    metaTitle: `${service.title} ${secteur.name} : comparer`,
     metaDescription: `${service.title} pour le secteur ${secteur.name.toLowerCase()} : critères de comparaison, obligations à vérifier et questions à préparer.`,
     h1: `${service.title} pour le secteur ${secteur.name}`,
     intro: `Les professionnels du ${secteur.name.toLowerCase()} ont des besoins spécifiques en ${service.title.toLowerCase()}. ${AppConfig.name} aide à préparer les critères de comparaison adaptés à cette réalité métier.`,
@@ -117,7 +117,7 @@ export function getSEOForServiceVille(
   ville: { slug: string; name: string },
 ): SEOData {
   return {
-    metaTitle: `${service.title} ${ville.name} : comparer | ${AppConfig.name}`,
+    metaTitle: `${service.title} ${ville.name} : comparer`,
     metaDescription: `${service.title} à ${ville.name}. Critères pour comparer les professionnels et préparer votre demande de ${service.title.toLowerCase()}.`,
     h1: `${service.title} à ${ville.name}`,
     intro: `Besoin d'un expert en ${service.title.toLowerCase()} à ${ville.name} ? ${AppConfig.name} aide à clarifier les critères et questions à comparer avant rendez-vous.`,
@@ -134,7 +134,7 @@ export function getSEOForServiceVille(
 export function getSEOForProfession(profession: { slug: string; name: string; description: string | null; obligations: string | null }): SEOData {
   const desc = profession.description || profession.name;
   return {
-    metaTitle: `Comparer un expert-comptable pour ${profession.name} | ${AppConfig.name}`,
+    metaTitle: `Comparer un expert-comptable pour ${profession.name}`,
     metaDescription: `Critères pour comparer un expert-comptable spécialisé pour les ${profession.name.toLowerCase()}. ${desc}. Points comptables, fiscaux et sociaux à préparer.`,
     h1: `Comparer un expert-comptable pour ${profession.name}`,
     intro: `Les ${profession.name.toLowerCase()} ont des obligations comptables et fiscales spécifiques. ${AppConfig.name} aide à préparer les critères de comparaison adaptés à votre métier.`,
@@ -163,7 +163,7 @@ export function getSEOForServiceProfession(
   profession: { slug: string; name: string },
 ): SEOData {
   return {
-    metaTitle: `${service.title} pour ${profession.name} | ${AppConfig.name}`,
+    metaTitle: `${service.title} pour ${profession.name}`,
     metaDescription: `${service.title} adaptée aux ${profession.name.toLowerCase()}. Critères pour comparer un professionnel comptable spécialisé.`,
     h1: `${service.title} pour ${profession.name}`,
     intro: `Les ${profession.name.toLowerCase()} ont des besoins spécifiques en ${service.title.toLowerCase()}. ${AppConfig.name} aide à comparer les critères liés aux réalités de votre métier.`,
@@ -186,7 +186,7 @@ export function getSEOForRessource(
       ? ` Plus de ${node.volume.toLocaleString("fr-FR")} recherches mensuelles sur ce sujet.`
       : "";
     return {
-      metaTitle: `${node.label} : guide & conseils | ${AppConfig.name}`,
+      metaTitle: `${node.label} : guide & conseils`,
       metaDescription: `${node.label} — l'essentiel par ${AppConfig.name}, comparateur indépendant. Définitions, démarches et repères pratiques pour les professionnels et entreprises.`,
       h1: node.label,
       intro: `Comprendre ${node.label.toLowerCase()} : définition, enjeux et démarches expliqués par l'équipe ${AppConfig.name}.${volumeStr} Retrouvez ci-dessous nos conseils et les ressources liées.`,
@@ -197,7 +197,7 @@ export function getSEOForRessource(
   const typeLabel = type === "silo" ? "Guide complet" : type === "hub" ? "Tout savoir sur" : "";
   const prefix = typeLabel ? `${typeLabel} : ` : "";
   return {
-    metaTitle: `${prefix}${node.label} | ${AppConfig.name}`,
+    metaTitle: `${prefix}${node.label}`,
     metaDescription: `${node.label} : guide complet par ${AppConfig.name}. Informations pratiques, repères de comparaison et ressources pour les professionnels et entreprises.`,
     h1: node.label,
     intro: `Découvrez le guide Skoria sur ${node.label.toLowerCase()}. Informations à jour, repères pratiques et ressources pour préparer vos décisions.`,
