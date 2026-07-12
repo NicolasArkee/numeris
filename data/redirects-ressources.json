@@ -1,0 +1,1022 @@
+[
+  {
+    "source": "/ressources/expert-comptable",
+    "destination": "/",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-nantes",
+    "destination": "/expert-comptable/nantes",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-strasbourg",
+    "destination": "/expert-comptable/strasbourg",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-a-proximite",
+    "destination": "/annuaire/experts-comptables",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-salaire",
+    "destination": "/ressources/salaire-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-nice",
+    "destination": "/expert-comptable/nice",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-paris",
+    "destination": "/expert-comptable/paris",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-villeurbanne",
+    "destination": "/expert-comptable/villeurbanne",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/l-expert-comptable-com",
+    "destination": "/ressources/l-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-montpellier",
+    "destination": "/expert-comptable/montpellier",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-saint-herblain",
+    "destination": "/expert-comptable/saint-herblain",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-aix-en-provence",
+    "destination": "/expert-comptable/aix-en-provence",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/experts-comptables",
+    "destination": "/",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-toulouse",
+    "destination": "/expert-comptable/toulouse",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/etude-expert-comptable",
+    "destination": "/ressources/expert-comptable-etude",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-start-up",
+    "destination": "/secteurs/start-up",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-restauration",
+    "destination": "/secteurs/restauration",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/congres-expert-comptable-2025",
+    "destination": "/ressources/congres-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-immobilier",
+    "destination": "/secteurs/immobilier",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-lyon",
+    "destination": "/expert-comptable/lyon",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-medecin",
+    "destination": "/professions/medecins",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-grenoble",
+    "destination": "/expert-comptable/grenoble",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-rouen",
+    "destination": "/expert-comptable/rouen",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-profession-liberale",
+    "destination": "/secteurs/profession-liberale",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/convention-collective-des-experts-comptables",
+    "destination": "/ressources/convention-collective-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/paris-expert-comptable",
+    "destination": "/expert-comptable/paris",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/annuaire-des-experts-comptables",
+    "destination": "/annuaire/experts-comptables",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-lmnp",
+    "destination": "/professions/loueurs-en-meuble-lmnp-lmp",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/annuaire-expert-comptable",
+    "destination": "/annuaire/experts-comptables",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-marseille",
+    "destination": "/expert-comptable/marseille",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-bordeaux",
+    "destination": "/expert-comptable/bordeaux",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/grille-salaire-expert-comptable-2025",
+    "destination": "/ressources/grille-salaire-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/prix-d-un-expert-comptable",
+    "destination": "/ressources/prix-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/ccn-expert-comptable",
+    "destination": "/ressources/convention-collective-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/comment-devenir-expert-comptable",
+    "destination": "/ressources/devenir-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-perpignan",
+    "destination": "/expert-comptable/perpignan",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-formation",
+    "destination": "/ressources/formation-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-orleans",
+    "destination": "/expert-comptable/orleans",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-diplome",
+    "destination": "/ressources/diplome-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-association",
+    "destination": "/secteurs/association",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-lille",
+    "destination": "/expert-comptable/lille",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-e-commerce",
+    "destination": "/professions/e-commercants",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/experte-comptable-salaire",
+    "destination": "/ressources/salaire-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/formation-pour-expert-comptable",
+    "destination": "/ressources/formation-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-balma",
+    "destination": "/expert-comptable/balma",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-77",
+    "destination": "/departements/77-seine-et-marne",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-annecy",
+    "destination": "/expert-comptable/annecy",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-la-roche-sur-yon",
+    "destination": "/expert-comptable/la-roche-sur-yon",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-versailles",
+    "destination": "/expert-comptable/versailles",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-rennes",
+    "destination": "/expert-comptable/rennes",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-agricole",
+    "destination": "/professions/agriculteurs",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-joinville-le-pont",
+    "destination": "/expert-comptable/joinville-le-pont",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-reims",
+    "destination": "/expert-comptable/reims",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-carcassonne",
+    "destination": "/expert-comptable/carcassonne",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-offre-emploi",
+    "destination": "/ressources/postes-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-grandchamp-des-fontaines",
+    "destination": "/expert-comptable/grandchamp-des-fontaines",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-le-mans",
+    "destination": "/expert-comptable/le-mans",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/meilleur-expert-comptable-en-ligne",
+    "destination": "/ressources/expert-comptable-en-ligne",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-bethune",
+    "destination": "/expert-comptable/bethune",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/congres-des-experts-comptables",
+    "destination": "/ressources/congres-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-dunkerque",
+    "destination": "/expert-comptable/dunkerque",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/difference-entre-comptable-et-expert-comptable",
+    "destination": "/ressources/difference-comptable-et-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/congres-des-experts-comptables-2024",
+    "destination": "/ressources/congres-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-odoo",
+    "destination": "/ressources/odoo-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-44",
+    "destination": "/departements/44-loire-atlantique",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/liste-des-experts-comptables",
+    "destination": "/annuaire/experts-comptables",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-91",
+    "destination": "/departements/91-essonne",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-location-meublee",
+    "destination": "/professions/loueurs-en-meuble-lmnp-lmp",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/congres-des-experts-comptables-lyon",
+    "destination": "/ressources/congres-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-narbonne",
+    "destination": "/expert-comptable/narbonne",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/convention-collective-expert-comptable-grille-salaire",
+    "destination": "/ressources/grille-salaire-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/offre-emploi-expert-comptable",
+    "destination": "/ressources/postes-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/convention-expert-comptable",
+    "destination": "/ressources/convention-collective-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-pamiers",
+    "destination": "/expert-comptable/pamiers",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/universite-d-ete-expert-comptable-2025",
+    "destination": "/ressources/congres-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-marseille-13012",
+    "destination": "/expert-comptable/marseille",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-cannes",
+    "destination": "/expert-comptable/cannes",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-mission",
+    "destination": "/ressources/missions-d-un-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/cout-d-un-expert-comptable",
+    "destination": "/ressources/cout-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/congres-expert-comptable-lyon-2025",
+    "destination": "/ressources/congres-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/convention-collective-expert-comptable-commissaire-aux-comptes",
+    "destination": "/ressources/convention-collective-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-75017",
+    "destination": "/expert-comptable/paris",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/pennylane-expert-comptable",
+    "destination": "/ressources/expert-comptable-pennylane",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/experts-comptables-marseille",
+    "destination": "/expert-comptable/marseille",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-la-rochelle",
+    "destination": "/expert-comptable/la-rochelle",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-gratuit-pole-emploi",
+    "destination": "/ressources/postes-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/experts-comptables-lyon",
+    "destination": "/expert-comptable/lyon",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/resultat-expert-comptable-2025",
+    "destination": "/ressources/resultat-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-antibes",
+    "destination": "/expert-comptable/antibes",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-clermont-ferrand",
+    "destination": "/expert-comptable/clermont-ferrand",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-code-de-deontologie",
+    "destination": "/ressources/code-de-deontologie-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-romans-sur-isere",
+    "destination": "/expert-comptable/romans-sur-isere",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-pontarlier",
+    "destination": "/expert-comptable/pontarlier",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/emploi-expert-comptable",
+    "destination": "/ressources/postes-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/convention-collective-expert-comptable-salaire",
+    "destination": "/ressources/convention-collective-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-bas-rhin",
+    "destination": "/departements/67-bas-rhin",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-13008",
+    "destination": "/expert-comptable/marseille",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/recrutement-expert-comptable",
+    "destination": "/ressources/postes-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/congres-des-experts-comptables-2026",
+    "destination": "/ressources/congres-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/congres-des-experts-comptables-marseille",
+    "destination": "/ressources/congres-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/deontologie-expert-comptable",
+    "destination": "/ressources/code-de-deontologie-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/experts-comptables-royan",
+    "destination": "/expert-comptable/royan",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-salon-de-provence",
+    "destination": "/ressources/congres-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/honoraire-expert-comptable",
+    "destination": "/ressources/honoraires-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/convention-collective-expert-comptable-grille-salaire-2025",
+    "destination": "/ressources/grille-salaire-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/tarif-expert-comptable-lmnp",
+    "destination": "/professions/loueurs-en-meuble-lmnp-lmp",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-femme",
+    "destination": "/ressources/femmes-experts-comptables",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/elnet-expert-comptable-convention-collective",
+    "destination": "/ressources/convention-collective-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/difference-expert-comptable-et-commissaire-aux-comptes",
+    "destination": "/ressources/difference-entre-expert-comptable-et-commissaire-au-compte",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/modele-reponse-courrier-deontologique-expert-comptable",
+    "destination": "/ressources/code-de-deontologie-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-transport-de-marchandises",
+    "destination": "/secteurs/transport",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/congres-expert-comptable-2026",
+    "destination": "/ressources/congres-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/convention-collective-expert-comptable-mutuelle",
+    "destination": "/ressources/convention-collective-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/code-de-deontologie-expert-comptable-pdf",
+    "destination": "/ressources/code-de-deontologie-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/convention-collective-expert-comptable-preavis-demission",
+    "destination": "/ressources/convention-collective-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/annuaire-expert-comptable-nouvelle-aquitaine",
+    "destination": "/annuaire/experts-comptables",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/code-deontologie-expert-comptable",
+    "destination": "/ressources/code-de-deontologie-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/convention-collective-expert-comptable-demenagement",
+    "destination": "/ressources/convention-collective-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/convention-expert-comptable-prime-anciennete",
+    "destination": "/ressources/convention-collective-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/deontologie-des-experts-comptables",
+    "destination": "/ressources/code-de-deontologie-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/courrier-deontologique-expert-comptable",
+    "destination": "/ressources/code-de-deontologie-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/convention-collective-expert-comptable-conges-speciaux",
+    "destination": "/ressources/convention-collective-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-transport",
+    "destination": "/secteurs/transport",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/annonce-expert-comptable",
+    "destination": "/ressources/postes-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/challenge-voile-experts-comptable-2025",
+    "destination": "/ressources/congres-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/ccn-expert-comptable-salaire",
+    "destination": "/ressources/convention-collective-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/numero-convention-collective-expert-comptable",
+    "destination": "/ressources/convention-collective-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/indemnite-de-depart-en-retraite-convention-collective-expert-comptable",
+    "destination": "/ressources/convention-collective-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/bon-expert-comptable-strasbourg",
+    "destination": "/expert-comptable/strasbourg",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/article-152-code-de-deontologie-expert-comptable",
+    "destination": "/ressources/code-de-deontologie-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/coefficient-convention-collective-expert-comptable",
+    "destination": "/ressources/convention-collective-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/emploi-cabinet-expert-comptable",
+    "destination": "/ressources/postes-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/annuaire-expert-comptable-montpellier",
+    "destination": "/expert-comptable/montpellier",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/article-23-du-code-de-deontologie-des-experts-comptables",
+    "destination": "/ressources/code-de-deontologie-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/80eme-congres-des-experts-comptables",
+    "destination": "/ressources/congres-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-perpignan-polygone-nord-les-mieux-notes",
+    "destination": "/expert-comptable/perpignan",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/annuaire-des-experts-comptables-paris",
+    "destination": "/expert-comptable/paris",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/article-168-du-code-de-deontologie-des-experts-comptables",
+    "destination": "/ressources/code-de-deontologie-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/code-de-deontologie-expert-comptable-2025",
+    "destination": "/ressources/code-de-deontologie-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/ccn-expert-comptable-maladie",
+    "destination": "/ressources/convention-collective-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-perpignan-boulevard-kennedy-ouvert-actuellement",
+    "destination": "/expert-comptable/perpignan",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/avis-expert-comptable-en-ligne",
+    "destination": "/ressources/expert-comptable-en-ligne",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/congres-expert-comptable-2021",
+    "destination": "/ressources/congres-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/salon-des-experts-comptables",
+    "destination": "/ressources/congres-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/convention-expert-comptable-salaire",
+    "destination": "/ressources/convention-collective-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/expert-comptable-checy",
+    "destination": "/expert-comptable/checy",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/congres-des-experts-comptables-2019",
+    "destination": "/ressources/congres-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/exercice-professionnel-et-deontologie-expert-comptable",
+    "destination": "/ressources/code-de-deontologie-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/80eme-congres-expert-comptable",
+    "destination": "/ressources/congres-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/79e-congres-des-experts-comptables",
+    "destination": "/ressources/congres-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/convention-collective-expert-comptable-maternite",
+    "destination": "/ressources/convention-collective-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/convention-collective-expert-comptable-jour-deces",
+    "destination": "/ressources/convention-collective-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/convention-collective-expert-comptable-jour-demenagement",
+    "destination": "/ressources/convention-collective-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/convention-collective-expert-comptable-2024",
+    "destination": "/ressources/convention-collective-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/avis-expert-comptable",
+    "destination": "/ressources/avis-sur-l-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/emploi-expert-comptable-bordeaux",
+    "destination": "/ressources/postes-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/annuaire-expert-comptable-alsace",
+    "destination": "/annuaire/experts-comptables",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/congres-regional-expert-comptable-rhone-alpes-2024",
+    "destination": "/ressources/congres-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/article-2-ordonnance-1945-expert-comptable",
+    "destination": "/ressources/ordonnance-1945-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/80-congres-des-experts-comptables",
+    "destination": "/ressources/congres-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/13eme-mois-convention-collective-expert-comptable",
+    "destination": "/ressources/convention-collective-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/maintien-de-salaire-ccn-expert-comptable",
+    "destination": "/ressources/convention-collective-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/quel-expert-comptable-en-ligne-choisir",
+    "destination": "/ressources/expert-comptable-en-ligne",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/avenir-expert-comptable",
+    "destination": "/ressources/quel-avenir-pour-les-experts-comptables",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/bibliotique-memoire-expert-comptable",
+    "destination": "/ressources/bibliotique-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/convention-collective-nationale-des-experts-comptables",
+    "destination": "/ressources/convention-collective-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/ecole-expert-comptable-lyon",
+    "destination": "/ressources/ecole-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/ecole-expert-comptable-bordeaux",
+    "destination": "/ressources/ecole-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/congres-expert-comptable-clermont-ferrand",
+    "destination": "/ressources/congres-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/code-des-devoirs-professionnels-expert-comptable",
+    "destination": "/ressources/code-de-deontologie-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/congres-regional-expert-comptable-paca",
+    "destination": "/ressources/congres-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/consultation-expert-comptable-gratuite",
+    "destination": "/ressources/expert-comptable-consultation-gratuite",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/convention-collective-cabinet-expert-comptable",
+    "destination": "/ressources/convention-collective-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/convention-expert-comptable-maladie",
+    "destination": "/ressources/convention-collective-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/valeur-du-point-de-base-convention-collective-expert-comptable",
+    "destination": "/ressources/convention-collective-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/calcul-indemnite-rupture-conventionnelle-convention-expert-comptable",
+    "destination": "/ressources/convention-collective-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/convention-collective-expert-comptable-heures-supplementaires",
+    "destination": "/ressources/convention-collective-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/emploi-expert-comptable-grenoble",
+    "destination": "/ressources/postes-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/emploi-expert-comptable-agricole",
+    "destination": "/ressources/postes-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/adopte-1-expert-comptable",
+    "destination": "/ressources/adopte-un-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/convention-collective-expert-comptable-periode-d-essai",
+    "destination": "/ressources/convention-collective-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/devis-expert-comptable-lyon",
+    "destination": "/ressources/devis-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/difference-expert-comptable-cac",
+    "destination": "/ressources/difference-entre-cac-et-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/annuaire-experts-comptables-com",
+    "destination": "/annuaire/experts-comptables",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/decret-conseil-d-etat-code-deontologie-expert-comptable-1945",
+    "destination": "/ressources/code-de-deontologie-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/decomposition-code-de-deontologie-expert-comptable",
+    "destination": "/ressources/code-de-deontologie-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/code-de-deontologie-comptable-changement-de-l-expert",
+    "destination": "/ressources/code-de-deontologie-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/dehontologie-expert-comptable-synthese",
+    "destination": "/ressources/code-de-deontologie-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/art-155-du-code-de-deontologie-de-l-expert-comptable",
+    "destination": "/ressources/code-de-deontologie-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/code-de-conduite-expert-comptable",
+    "destination": "/ressources/code-de-deontologie-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/congres-regional-expert-comptable-paca-2019",
+    "destination": "/ressources/congres-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/depuis-la-loi-macron-l-expert-comptable-doit-conclure-une-convention-d-honoraire",
+    "destination": "/ressources/convention-collective-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/convention-collective-des-cabinets-d-experts-comptables-repos-compensateur",
+    "destination": "/ressources/convention-collective-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/convention-collective-des-experts-comptable-et-des-cac-n-3020",
+    "destination": "/ressources/convention-collective-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/deces-grand-parent-convention-expert-comptable",
+    "destination": "/ressources/convention-collective-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/convention-collective-experts-comptables-et-commissaires-aux-comptes-conges",
+    "destination": "/ressources/convention-collective-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/convention-collective-expert-comptable-2018",
+    "destination": "/ressources/convention-collective-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/avis-expert-comptable-lmnp-saint-herblain",
+    "destination": "/expert-comptable/saint-herblain",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/bon-expert-comptable-frejus",
+    "destination": "/expert-comptable/frejus",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/avis-expert-comptable-lille",
+    "destination": "/expert-comptable/lille",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/emploi-expert-comptable-brest",
+    "destination": "/ressources/postes-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/emploi-collaborateur-expert-comptable-rennes",
+    "destination": "/ressources/postes-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/ales-30100-expert-comptabilite",
+    "destination": "/expert-comptable/ales",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/ciel-devis-facture-export-relation-expert-comptable",
+    "destination": "/ressources/ciel-expert-comptable",
+    "permanent": true
+  }
+]

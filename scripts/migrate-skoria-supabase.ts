@@ -1,17 +1,24 @@
 /**
- * Surgical SQLite → Supabase migration for the Skoria LMNP work ONLY.
+ * Surgical SQLite → Supabase migration for the Skoria LMNP + keyword-LP work ONLY.
  *
  * Unlike `migrate-supabase.ts` (full-table sync), this pushes only the rows that
  * belong to the Skoria cluster so it does NOT touch unrelated WIP rows that also
  * live in the shared content tables (avis / codes-parrainage / comparatifs …).
  *
- *   maillage_links : whole table (new, maillage-v3 only)
- *   page_sections  : route='guides'  OR generated_by_model IN ('maillage-v3','ressources-hub-v1')
- *   seo_overrides  : route='guides'  OR generated_by_model='ressources-hub-v1'
- *   page_meta      : route='guides'
+ *   keyword_pages  : whole table (disposition/redirect_to du triage LP + purge
+ *                    des meta legacy) — REPLACE-SYNC des colonnes via upsert(slug)
+ *   maillage_links : whole table (maillage-v3 + réparations triage) — REPLACE
+ *                    (delete-all + insert : le triage a PURGÉ des rows en SQLite,
+ *                    un simple upsert laisserait les liens morts côté Supabase)
+ *   page_sections  : route='guides'  OR generated_by_model IN ('maillage-v3','ressources-hub-v1','keyword-lp-v1')
+ *   seo_overrides  : route='guides'  OR generated_by_model IN ('ressources-hub-v1','keyword-lp-v1')
+ *   page_meta      : route='guides'  OR pipeline_run_id LIKE 'keyword-lp-%'
  *
  * `id` is stripped → Supabase assigns BIGSERIAL; upsert keys on the natural
  * onConflict tuple (update if present, insert otherwise) → no PK collision.
+ *
+ * Prérequis keyword-LP : colonnes disposition/redirect_to côté Supabase
+ * (npm run db:apply-supabase-schema — ALTER idempotents dans schema-supabase.sql).
  *
  * Usage:  npx tsx scripts/migrate-skoria-supabase.ts [--commit]   (dry-run by default)
  */
@@ -38,23 +45,38 @@ interface Job {
    *  tables we KEEP the SQLite id: skoria rows have ids > current Supabase max
    *  → collision-free, and it preserves SQLite↔Supabase id parity. */
   stripId: boolean;
+  /** DELETE ALL target rows before insert (tables dont SQLite est l'unique
+   *  source de vérité et où des rows ont pu être PURGÉES localement). */
+  replace?: boolean;
 }
 const JOBS: Job[] = [
-  { table: "maillage_links", onConflict: "source_url,target_url", where: "1=1", stripId: true },
+  { table: "keyword_pages", onConflict: "slug", where: "1=1", stripId: false },
+  {
+    table: "maillage_links",
+    onConflict: "source_url,target_url",
+    where: "1=1",
+    stripId: true,
+    replace: true,
+  },
   {
     table: "page_sections",
     onConflict: "route,slug,section_order",
     where:
-      "route='guides' OR generated_by_model IN ('maillage-v3','ressources-hub-v1')",
+      "route='guides' OR generated_by_model IN ('maillage-v3','ressources-hub-v1','keyword-lp-v1')",
     stripId: false,
   },
   {
     table: "seo_overrides",
     onConflict: "route,slug",
-    where: "route='guides' OR generated_by_model='ressources-hub-v1'",
+    where: "route='guides' OR generated_by_model IN ('ressources-hub-v1','keyword-lp-v1')",
     stripId: false,
   },
-  { table: "page_meta", onConflict: "route,slug", where: "route='guides'", stripId: false },
+  {
+    table: "page_meta",
+    onConflict: "route,slug",
+    where: "route='guides' OR pipeline_run_id LIKE 'keyword-lp-%'",
+    stripId: false,
+  },
 ];
 
 // Optional positional args (not starting with `--`) restrict which tables run.
@@ -114,8 +136,21 @@ async function main() {
     console.log(`  target currently holds: ${count ?? "?"} rows`);
 
     if (!COMMIT) {
-      console.log("  (dry-run — not written)\n");
+      console.log(`  (dry-run — not written${j.replace ? ", REPLACE: delete-all préalable" : ""})\n`);
       continue;
+    }
+
+    if (j.replace) {
+      const { error: delErr, count: delCount } = await supa
+        .from(j.table)
+        .delete({ count: "exact" })
+        .gte("id", 0);
+      if (delErr) {
+        console.error(`  ✗ replace delete error: ${delErr.message}`);
+        failed = true;
+        continue;
+      }
+      console.log(`  replace: ${delCount ?? "?"} rows supprimées avant insert`);
     }
 
     let written = 0;

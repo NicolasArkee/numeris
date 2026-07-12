@@ -6,9 +6,43 @@ import { AppConfig } from "@/utils/AppConfig";
 import { ClusterPage } from "@/components/ClusterPage";
 import { DynamicSection } from "@/components/DynamicSection";
 import { ExtraJsonLd } from "@/components/ExtraJsonLd";
+import { KeywordLandingPage } from "@/components/ressources/KeywordLandingPage";
 import { getDbPageBundle } from "@/libs/content/dbFirst";
 import { getSEOForRessource } from "@/data/seo";
 import { getRessourceLinks } from "@/utils/taxonomy";
+import {
+  buildGeoKeywordFaqItems,
+  buildKeywordMeta,
+  classifyKeyword,
+  resolveGeoKeyword,
+  resolveTheme,
+  type KeywordClass,
+} from "@/libs/ressources/keyword-lp-helpers";
+import type { KeywordPage } from "@/libs/db";
+
+/** Contexte LP d'un keyword : parse géo + classe + meta déterministes.
+ *  Partagé entre generateMetadata et le rendu. */
+async function getKeywordLpContext(keyword: KeywordPage) {
+  const geo = await resolveGeoKeyword(keyword.slug, (citySlug) =>
+    db.getDirectoryCityBySlug(citySlug),
+  );
+  const cls: KeywordClass = classifyKeyword(keyword, geo);
+  const theme = geo ? resolveTheme(geo.themeTokens) : null;
+  let cabinetCount = 0;
+  if (geo) {
+    try {
+      cabinetCount = await db.getDirectoryListingCabinetCountByCity(geo.city.code_insee);
+    } catch {
+      cabinetCount = 0;
+    }
+  }
+  const meta = buildKeywordMeta(keyword, cls, {
+    ...(geo && { cityName: geo.city.name, departmentName: geo.city.department_name }),
+    ...(cabinetCount > 0 && { cabinetCount }),
+    ...(theme && { themeLabel: theme.label }),
+  });
+  return { geo, cls, theme, cabinetCount, meta };
+}
 
 interface Props {
   params: Promise<{ theme: string }>;
@@ -48,9 +82,12 @@ export async function generateStaticParams() {
   }
 
   // All keyword_pages — required so cluster→keyword internal links don't 404
-  // (cluster pages render up to 10 links per cluster via getRessourceLinks)
+  // (cluster pages render up to 10 links per cluster via getRessourceLinks).
+  // Les slugs disposition='redirect' sont interceptés par next.config avant la
+  // route : inutile de les pré-rendre.
   const keywords = await db.getAllKeywords();
   for (const kw of keywords) {
+    if (kw.disposition === "redirect") continue;
     push(kw.slug);
   }
 
@@ -84,11 +121,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const keyword = await db.getKeywordBySlug(slug);
   if (keyword) {
-    const fallback = getSEOForRessource(keyword, "keyword");
+    const { meta } = await getKeywordLpContext(keyword);
+    // NB : keyword_pages.meta_title/h1 legacy (labels bruts d'import) sont
+    // volontairement ignorés — seo_overrides sinon meta déterministes.
     return {
-      title: dbSeo?.meta_title ?? keyword.meta_title ?? fallback.metaTitle,
-      description: dbSeo?.meta_description ?? keyword.meta_description ?? fallback.metaDescription,
+      title: dbSeo?.meta_title || meta.title,
+      description: dbSeo?.meta_description || meta.description,
       alternates: { canonical: `${AppConfig.url}/ressources/${slug}` },
+      ...(keyword.disposition === "noindex" && {
+        robots: { index: false, follow: true },
+      }),
     };
   }
 
@@ -111,6 +153,60 @@ export default async function ThemePage({ params }: Props) {
   // 404 only when the slug is neither a taxonomy entity NOR a DB-rendered page
   // (the latter covers maillage-v3 `dossier-*` hubs that have no hub/cluster/keyword).
   if (!hub && !cluster && !keyword && !hasDbContent) notFound();
+
+  // ─── Keyword → LANDING PAGE, que des sections gen-IA existent ou non ───
+  // (jamais le chrome article ClusterPage : pas d'ArticleJsonLd, pas de badges
+  // volume/intent, hero conversion + blocs data-driven.)
+  if (keyword) {
+    const { geo, cls, theme, cabinetCount, meta } = await getKeywordLpContext(keyword);
+
+    const parentCluster = await db.getClusterBySlug(keyword.cluster_slug);
+    const parentHub = parentCluster ? await db.getHubBySlug(parentCluster.hub_slug) : undefined;
+    const breadcrumbs = [
+      { name: "Accueil", url: "/" },
+      { name: "Ressources", url: "/ressources" },
+      ...(parentHub ? [{ name: parentHub.label, url: `/ressources/${parentHub.slug}` }] : []),
+      ...(parentCluster
+        ? [{ name: parentCluster.label, url: `/ressources/${parentCluster.slug}` }]
+        : []),
+      { name: dbSeo?.h1 || meta.h1, url: `/ressources/${slug}` },
+    ];
+    const linkGroups = await getRessourceLinks(slug, "keyword");
+
+    // FAQ data-driven uniquement en géo (données locales uniques par ville —
+    // pas de boilerplate dupliqué sur les pages non géo, qui reçoivent leur
+    // FAQ via la génération Gemini).
+    const faqs =
+      geo && !bundle.inlineFaq
+        ? buildGeoKeywordFaqItems(
+            geo.city.name,
+            cabinetCount,
+            geo.city.department_name,
+            theme?.label,
+          )
+        : [];
+
+    return (
+      <KeywordLandingPage
+        cls={cls}
+        h1={dbSeo?.h1 || meta.h1}
+        intro={meta.intro}
+        eyebrow={parentCluster?.label ?? parentHub?.label ?? "Ressources"}
+        breadcrumbs={breadcrumbs}
+        canonicalUrl={canonicalUrl}
+        linkGroups={linkGroups}
+        sections={bundle.renderableSections}
+        keyTakeaways={bundle.keyTakeaways}
+        faqs={faqs}
+        inlineFaq={bundle.inlineFaq}
+        city={geo?.city ?? null}
+        themeLabel={theme?.label}
+        themeHref={theme?.href}
+        lastUpdatedDate={lastUpdatedDate}
+        schema={<ExtraJsonLd raw={dbSeo?.json_ld_extra ?? null} />}
+      />
+    );
+  }
 
   if (hasDbContent) {
     // Build chrome (eyebrow + breadcrumbs + linkGroups) from the matched entity.
@@ -154,32 +250,6 @@ export default async function ThemePage({ params }: Props) {
       const fb = getSEOForRessource(cluster, "cluster");
       fallbackIntro = fb.intro;
       fallbackH1 = fb.h1;
-    } else if (keyword) {
-      label = keyword.label;
-      const parentCluster = await db.getClusterBySlug(keyword.cluster_slug);
-      const parentHub = parentCluster ? await db.getHubBySlug(parentCluster.hub_slug) : undefined;
-      const parentSilo = parentHub ? await db.getSiloBySlug(parentHub.silo_slug) : undefined;
-      eyebrow = parentCluster?.label || parentHub?.label || "Ressources";
-      if (parentSilo) {
-        breadcrumbs.push({ name: parentSilo.label, url: `/ressources/${parentSilo.slug}` });
-      }
-      if (parentHub) {
-        breadcrumbs.push({ name: parentHub.label, url: `/ressources/${parentHub.slug}` });
-      }
-      if (parentCluster) {
-        breadcrumbs.push({ name: parentCluster.label, url: `/ressources/${parentCluster.slug}` });
-      }
-      breadcrumbs.push({ name: keyword.label, url: `/ressources/${slug}` });
-      linkGroups = await getRessourceLinks(slug, "keyword");
-      if (keyword.volume > 0) {
-        badges.push(`${keyword.volume.toLocaleString("fr-FR")} recherches/mois`);
-      }
-      if (keyword.intent) {
-        badges.push(`Intent : ${keyword.intent}`);
-      }
-      const fb = getSEOForRessource(keyword, "keyword");
-      fallbackIntro = fb.intro;
-      fallbackH1 = keyword.h1 || fb.h1;
     } else {
       // DB-only page with no taxonomy entity (ex. maillage-v3 `dossier-*` hub).
       // Generic "Ressources" chrome; H1/intro come from the SEO override + hero section.
@@ -312,66 +382,6 @@ export default async function ThemePage({ params }: Props) {
                 </span>
               ))}
             </div>
-          </div>
-        )}
-      </ClusterPage>
-    );
-  }
-
-  if (keyword) {
-    const seo = getSEOForRessource(keyword, "keyword");
-    const linkGroups = await getRessourceLinks(slug, "keyword");
-    const parentCluster = await db.getClusterBySlug(keyword.cluster_slug);
-    const parentHub = parentCluster ? await db.getHubBySlug(parentCluster.hub_slug) : undefined;
-    const parentSilo = parentHub ? await db.getSiloBySlug(parentHub.silo_slug) : undefined;
-
-    const h1 = keyword.h1 || seo.h1;
-    const intro = seo.intro;
-    const badges: string[] = [];
-    if (keyword.volume > 0) {
-      badges.push(`${keyword.volume.toLocaleString("fr-FR")} recherches/mois`);
-    }
-    if (keyword.intent) {
-      badges.push(`Intent : ${keyword.intent}`);
-    }
-
-    return (
-      <ClusterPage
-        eyebrow={parentCluster?.label || parentHub?.label || "Ressources"}
-        h1={h1}
-        intro={intro}
-        breadcrumbs={[
-          { name: "Accueil", url: "/" },
-          { name: "Ressources", url: "/ressources" },
-          ...(parentSilo
-            ? [{ name: parentSilo.label, url: `/ressources/${parentSilo.slug}` }]
-            : []),
-          ...(parentHub
-            ? [{ name: parentHub.label, url: `/ressources/${parentHub.slug}` }]
-            : []),
-          ...(parentCluster
-            ? [{ name: parentCluster.label, url: `/ressources/${parentCluster.slug}` }]
-            : []),
-          { name: keyword.label, url: `/ressources/${slug}` },
-        ]}
-        badges={badges}
-        faqs={seo.faqs}
-        linkGroups={linkGroups}
-      >
-        {parentCluster && (
-          <div className="mb-12 border border-border-soft bg-surface px-7 py-6">
-            <p className="mb-3 text-[0.72rem] font-semibold uppercase tracking-[0.12em] text-accent-500">
-              Article principal
-            </p>
-            <Link
-              href={`/ressources/${parentCluster.slug}`}
-              className="block text-[1.05rem] font-medium text-ink transition-colors hover:text-accent-700"
-            >
-              {parentCluster.label} →
-            </Link>
-            <p className="mt-2 text-[0.78rem] text-ink-muted">
-              Retrouvez le guide complet sur ce thème, dont {keyword.label.toLowerCase()} fait partie.
-            </p>
           </div>
         )}
       </ClusterPage>

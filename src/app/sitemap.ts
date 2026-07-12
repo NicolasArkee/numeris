@@ -78,17 +78,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   // ─── Public directory pages ───
-  // City and cabinet URLs are sourced only from public read methods. Those
-  // methods gate on publish_status, confidence_score, documented status, and
-  // active establishment status, so candidate-only records never enter the sitemap.
-  for (const city of await db.getDirectoryCities()) {
+  // City pages : alignées sur le gate robots (buildDirectoryCityRobots) —
+  // indexables dès qu'il existe des établissements listables, donc toutes les
+  // villes listing entrent au sitemap.
+  for (const city of await db.getDirectoryListingCities()) {
     entries.push({
       url: `${baseUrl}/expert-comptable/${city.slug}`,
       lastModified: buildDate,
       changeFrequency: "weekly",
       priority: 0.6,
     });
+  }
 
+  // Cabinet URLs : uniquement les fiches publiées/documentées (méthodes
+  // publiques gated sur publish_status + confidence_score + statut documenté).
+  for (const city of await db.getDirectoryCities()) {
     for (const card of await db.getDirectoryCabinetsByCity(city.code_insee, 500)) {
       const name = card.cabinet.display_name ?? card.cabinet.legal_name;
       const enrichmentDate = await db.getDirectoryLatestEnrichmentDateByEstablishment(
@@ -224,10 +228,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
-  // Keyword pages — construites par generateStaticParams (getAllKeywords)
-  // mais historiquement absentes du sitemap (couverture max).
+  // Keyword pages — construites par generateStaticParams (getAllKeywords).
+  // Triage remédiation : les slugs redirect (301 next.config) et noindex
+  // sortent du sitemap ; seules les pages enrichissables restent émises.
   for (const kw of await db.getAllKeywords()) {
     if (seenRessources.has(kw.slug)) continue;
+    if (kw.disposition === "redirect" || kw.disposition === "noindex") continue;
     seenRessources.add(kw.slug);
     entries.push({
       url: `${baseUrl}/ressources/${kw.slug}`,

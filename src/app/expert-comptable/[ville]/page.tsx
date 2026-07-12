@@ -30,13 +30,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { ville } = await params;
   const city = await db.getDirectoryCityBySlug(ville);
   if (!city) return {};
-  const verifiedCount = await db.getDirectoryCabinetCountByCity(city.code_insee);
+  // Gate d'indexation : établissements listables (pas seulement vérifiés) —
+  // cf. buildDirectoryCityRobots. Une ville avec 0 établissement reste noindex.
+  const listedCount = await db.getDirectoryListingCabinetCountByCity(city.code_insee);
 
   return {
     title: `Comparer les cabinets comptables a ${city.name} | Skoria`,
     description: `Cabinets comptables a ${city.name}, avec provenance administrative et statut de verification explicite.`,
     alternates: { canonical: `${AppConfig.url}/expert-comptable/${city.slug}` },
-    robots: buildDirectoryCityRobots(verifiedCount),
+    robots: buildDirectoryCityRobots(listedCount),
   };
 }
 

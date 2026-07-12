@@ -17,10 +17,16 @@ export type DirectoryCityStats = {
   hasMoreResults: boolean;
 };
 
+/** Indexable dès qu'il existe des établissements LISTABLES dans la ville
+ *  (annuaire local réel : noms + adresses + provenance administrative).
+ *  Les villes sans aucun établissement restent noindex. Le caller passe le
+ *  count listing (getDirectoryListingCabinetCountByCity), plus le count
+ *  "vérifiés" seul — décision remédiation LP 2026-07 (les keyword pages géo
+ *  /ressources sont 301 vers ces pages, qui doivent donc être indexables). */
 export function buildDirectoryCityRobots(
-  verifiedCount: number,
+  listedCount: number,
 ): { index: false; follow: true } | undefined {
-  return verifiedCount > 0 ? undefined : { index: false, follow: true };
+  return listedCount > 0 ? undefined : { index: false, follow: true };
 }
 
 export function buildDirectoryCityStats(
