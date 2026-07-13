@@ -127,8 +127,8 @@ export async function CommercialRouteView({
     bundle.heroSection?.body ??
     `Comparatif indépendant : ${page.label.toLowerCase()}.`;
 
+  // NB : jamais d'intent/volume SEO affiché (données internes).
   const badges: string[] = [];
-  if (page.intent) badges.push(`Intent : ${page.intent}`);
   if (page.hub_label) badges.push(page.hub_label);
 
   return (
