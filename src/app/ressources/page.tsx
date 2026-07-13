@@ -54,12 +54,9 @@ export default async function RessourcesPage() {
                   key={silo.slug}
                   className="border border-border-soft border-t-2 border-t-accent-500 bg-surface p-9"
                 >
-                  <h2 className="mb-2 font-display text-[1.3rem] font-medium text-ink">
+                  <h2 className="mb-5 font-display text-[1.3rem] font-medium text-ink">
                     {silo.label}
                   </h2>
-                  <p className="mb-5 text-[0.75rem] text-ink-muted">
-                    {silo.n_keywords} mots-clés · {silo.volume.toLocaleString("fr-FR")} recherches/mois
-                  </p>
                   <ul className="flex flex-col gap-2">
                     {hubs.slice(0, 6).map((hub) => (
                       <li key={hub.slug}>

@@ -182,14 +182,12 @@ export function getSEOForRessource(
   type: "silo" | "hub" | "cluster" | "keyword",
 ): SEOData {
   if (type === "keyword") {
-    const volumeStr = node.volume > 0
-      ? ` Plus de ${node.volume.toLocaleString("fr-FR")} recherches mensuelles sur ce sujet.`
-      : "";
+    // NB : jamais de volume de recherche dans un texte rendu (donnée interne).
     return {
       metaTitle: `${node.label} : guide & conseils`,
       metaDescription: `${node.label} — l'essentiel par ${AppConfig.name}, comparateur indépendant. Définitions, démarches et repères pratiques pour les professionnels et entreprises.`,
       h1: node.label,
-      intro: `Comprendre ${node.label.toLowerCase()} : définition, enjeux et démarches expliqués par l'équipe ${AppConfig.name}.${volumeStr} Retrouvez ci-dessous nos conseils et les ressources liées.`,
+      intro: `Comprendre ${node.label.toLowerCase()} : définition, enjeux et démarches expliqués par l'équipe ${AppConfig.name}. Retrouvez ci-dessous nos conseils et les ressources liées.`,
       faqs: [],
     };
   }
