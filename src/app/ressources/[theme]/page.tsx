@@ -9,6 +9,7 @@ import { DynamicSection } from "@/components/DynamicSection";
 import { ExtraJsonLd } from "@/components/ExtraJsonLd";
 import { KeywordLandingPage } from "@/components/ressources/KeywordLandingPage";
 import { TaxonomyHubPage, type TaxonomyChild } from "@/components/ressources/TaxonomyHubPage";
+import { AllDossiersPage } from "@/components/ressources/AllDossiersPage";
 import { getDbPageBundle } from "@/libs/content/dbFirst";
 import { getSEOForRessource } from "@/data/seo";
 import { getRessourceLinks } from "@/utils/taxonomy";
@@ -161,6 +162,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ThemePage({ params }: Props) {
   const { theme: slug } = await params;
+
+  // ─── Vue exhaustive de la bibliothèque (V2 dédiée) ───
+  if (slug === "tous-les-dossiers") {
+    return <AllDossiersPage />;
+  }
 
   // ─── Resolve which entity this slug maps to (hub | cluster | keyword) ───
   const hub = await db.getHubBySlug(slug);
