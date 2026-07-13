@@ -64,6 +64,23 @@ export function FieldSelect<T extends string>({ label, value, onChange, options 
   );
 }
 
+export function FieldDate({ label, value, onChange, hint }: { label: string; value: string; onChange: (v: string) => void; hint?: string }) {
+  return (
+    <label className="block">
+      <span className="mb-1.5 block text-[0.68rem] font-bold uppercase tracking-[0.08em] text-ink-muted">
+        {label}
+      </span>
+      <input
+        type="date"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full border border-border-soft bg-surface px-4 py-3 text-[0.95rem] text-ink outline-none transition-colors focus:border-accent-500"
+      />
+      {hint && <span className="mt-1 block text-[0.7rem] text-ink-muted">{hint}</span>}
+    </label>
+  );
+}
+
 export function FieldToggle({ label, value, onChange }: { label: string; value: boolean; onChange: (v: boolean) => void }) {
   return (
     <label className="flex cursor-pointer items-center gap-3">

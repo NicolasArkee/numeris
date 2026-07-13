@@ -3,14 +3,29 @@ import Link from "next/link";
 import { AppConfig } from "@/utils/AppConfig";
 import { BreadcrumbJsonLd, WebPageJsonLd } from "@/components/JsonLd";
 import { PageHero } from "@/components/PageHero";
-import { Icon } from "@/components/Icon";
 import { SIMULATEURS } from "./registry";
 
 export const metadata: Metadata = {
-  title: `Simulateurs & Outils Gratuits pour Entrepreneurs | ${AppConfig.name}`,
-  description: `Charges sociales, choix de statut, TJM freelance, LMNP, honoraires comptables, salaires de la profession : ${SIMULATEURS.length} outils gratuits pour préparer votre comparaison.`,
+  title: "Simulateurs & Calculateurs Gratuits pour Entrepreneurs",
+  description: `TVA, coût d'un salarié, frais kilométriques, IS, jours ouvrés, charges sociales, statuts, TJM… ${SIMULATEURS.length} outils gratuits, barèmes 2026 vérifiés.`,
   alternates: { canonical: `${AppConfig.url}/simulateurs` },
 };
+
+/** Groupes éditoriaux du hub — pilotés par le registry (source unique). */
+const GROUPES: { titre: string; slugs: string[] }[] = [
+  {
+    titre: "Fiscal & TVA",
+    slugs: ["calcul-tva", "calcul-impot-societes", "frais-kilometriques", "immobilier"],
+  },
+  {
+    titre: "Employeur & social",
+    slugs: ["cout-salarie", "jours-ouvres", "rupture-conventionnelle", "prime-fin-cdd", "grille-salaire-expert-comptable"],
+  },
+  {
+    titre: "Créer & piloter son activité",
+    slugs: ["charges", "statuts", "tjm", "capital-social", "honoraires"],
+  },
+];
 
 export default function SimulateursPage() {
   return (
@@ -22,15 +37,15 @@ export default function SimulateursPage() {
         ]}
       />
       <WebPageJsonLd
-        name="Simulateurs & outils gratuits"
-        description="Outils de simulation gratuits pour entrepreneurs : charges sociales, statuts, TJM, LMNP, honoraires et salaires."
+        name="Simulateurs & calculateurs gratuits"
+        description={metadata.description as string}
         url="/simulateurs"
       />
 
       <PageHero
         eyebrow="Outils gratuits"
-        title="Simulateurs & outils"
-        subtitle="Faites vos premières estimations en quelques clics : charges, statut, TJM, immobilier meublé, honoraires. Outils indicatifs, sans inscription."
+        title="Simulateurs & calculateurs"
+        subtitle={`${SIMULATEURS.length} outils sans inscription : TVA, coût d'un salarié, frais kilométriques, impôt sur les sociétés, jours ouvrés, charges, statut, TJM… Barèmes 2026 vérifiés sur les sources officielles.`}
         breadcrumbs={[
           { name: "Accueil", url: "/" },
           { name: "Simulateurs", url: "/simulateurs" },
@@ -38,36 +53,51 @@ export default function SimulateursPage() {
         cta={{ label: "Demander une orientation", href: "/contact" }}
       />
 
-      <section className="bg-bg px-6 py-20 lg:px-[4.5rem]">
-        <div className="mx-auto max-w-[82rem]">
-          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-            {SIMULATEURS.map((sim) => (
-              <Link
-                key={sim.slug}
-                href={`/simulateurs/${sim.slug}`}
-                className="group border border-border-soft border-t-2 border-t-transparent bg-surface p-8 transition-all hover:-translate-y-0.5 hover:border-t-accent-500 hover:shadow-lg"
-              >
-                <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-md border border-brand-100 bg-brand-50 text-brand-700 transition-colors group-hover:border-accent-300 group-hover:bg-accent-50 group-hover:text-accent-700">
-                  <Icon name={sim.slug} size={22} />
-                </div>
-                <h2 className="mb-2 font-display text-[1.2rem] font-medium text-ink group-hover:text-accent-700">
-                  {sim.title}
-                </h2>
-                <p className="mb-5 text-[0.82rem] leading-relaxed text-ink-muted">
-                  {sim.metaDescription.split(".")[0]}.
+      <section className="bg-bg px-6 py-16 lg:px-[4.5rem]">
+        <div className="mx-auto max-w-[82rem] space-y-14">
+          {GROUPES.map((groupe, gi) => {
+            const outils = groupe.slugs
+              .map((slug) => SIMULATEURS.find((s) => s.slug === slug))
+              .filter((s): s is (typeof SIMULATEURS)[number] => Boolean(s));
+            return (
+              <div key={groupe.titre}>
+                <p className="mb-6 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-accent-700">
+                  {String(gi + 1).padStart(2, "0")} — {groupe.titre}
                 </p>
-                <span className="text-[0.78rem] font-medium text-accent-700">
-                  Lancer l&apos;outil →
-                </span>
-              </Link>
-            ))}
-          </div>
+                <div className="grid gap-px border border-border bg-border md:grid-cols-2 lg:grid-cols-3">
+                  {outils.map((sim) => (
+                    <Link
+                      key={sim.slug}
+                      href={`/simulateurs/${sim.slug}`}
+                      className="group flex min-h-44 flex-col justify-between bg-surface p-7 transition-colors hover:bg-brand-50"
+                    >
+                      <span className="flex items-start justify-between gap-3">
+                        <span aria-hidden className="text-[1.4rem]">{sim.icon}</span>
+                        <span className="font-mono text-[0.58rem] uppercase tracking-[0.14em] text-ink-soft">
+                          {sim.eyebrow}
+                        </span>
+                      </span>
+                      <span>
+                        <span className="block font-display text-[1.05rem] font-bold leading-snug text-ink group-hover:text-brand-700">
+                          {sim.title}
+                          <span aria-hidden className="ml-1.5 text-accent-500 opacity-0 transition-opacity group-hover:opacity-100">→</span>
+                        </span>
+                        <span className="mt-1.5 line-clamp-2 block text-[0.78rem] leading-snug text-ink-muted">
+                          {sim.metaDescription.split(".")[0]}.
+                        </span>
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
 
-          <p className="mt-12 max-w-3xl text-[0.82rem] leading-relaxed text-ink-muted">
-            Ces outils fournissent des estimations indicatives fondées sur les barèmes 2026
-            simplifiés. Pour un chiffrage engageant — statut, rémunération, fiscalité immobilière
-            ou honoraires — Skoria vous aide à préparer les critères à comparer
-            avant de contacter un professionnel.
+          <p className="max-w-3xl text-[0.82rem] leading-relaxed text-ink-muted">
+            Ces outils fournissent des estimations indicatives fondées sur les barèmes 2026 en vigueur
+            (sources officielles : impots.gouv.fr, urssaf.fr, service-public.gouv.fr). Pour un chiffrage
+            engageant — statut, embauche, fiscalité, honoraires — Skoria vous aide à préparer les
+            critères à comparer avant de contacter un professionnel.
           </p>
         </div>
       </section>
