@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { db } from "@/libs/db";
 import { BreadcrumbJsonLd, WebPageJsonLd } from "@/components/JsonLd";
 import { CtaContact } from "@/components/CtaContact";
 import { StickyMobileCTA } from "@/components/StickyMobileCTA";
@@ -8,6 +7,7 @@ import { AppConfig } from "@/utils/AppConfig";
 import {
   FLAGSHIP_DOSSIERS,
   getEditorialDossiers,
+  getPillarPages,
 } from "@/libs/ressources/bibliotheque-data";
 
 /** /ressources/tous-les-dossiers V2 — la vue EXHAUSTIVE de la bibliothèque :
@@ -16,21 +16,15 @@ import {
  *  sélection ; ici, tout. */
 export async function AllDossiersPage() {
   const canonicalUrl = `${AppConfig.url}/ressources/tous-les-dossiers`;
-  const [silos, editorialDossiers] = await Promise.all([
-    db.getSilos().catch(() => []),
+  const [editorialDossiers, pillars] = await Promise.all([
     getEditorialDossiers(),
+    getPillarPages(),
   ]);
-  const hubsBySilo = new Map(
-    await Promise.all(
-      silos.map(async (silo) => [silo.slug, await db.getHubsBySilo(silo.slug)] as const),
-    ),
-  );
   const breadcrumbs = [
     { name: "Accueil", url: "/" },
     { name: "Ressources", url: "/ressources" },
     { name: "Tous les dossiers", url: "/ressources/tous-les-dossiers" },
   ];
-  const totalThemes = [...hubsBySilo.values()].reduce((n, h) => n + h.length, 0);
 
   return (
     <>
@@ -75,9 +69,9 @@ export async function AllDossiersPage() {
             Tous les dossiers
           </h1>
           <p className="max-w-2xl text-[0.98rem] leading-relaxed text-white/80">
-            {FLAGSHIP_DOSSIERS.length} dossiers phares, {totalThemes} thèmes et{" "}
-            {editorialDossiers.length} dossiers éditoriaux — l'intégralité de la
-            bibliothèque du comparateur.
+            {FLAGSHIP_DOSSIERS.length} dossiers phares, {pillars.length} pages de
+            référence et {editorialDossiers.length} dossiers éditoriaux —
+            l&apos;intégralité de la bibliothèque du comparateur.
           </p>
         </div>
       </section>
@@ -113,37 +107,26 @@ export async function AllDossiersPage() {
             </div>
           </section>
 
-          {/* Tous les thèmes */}
-          <section>
-            <p className="mb-6 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-accent-700">
-              02 — Tous les thèmes
-            </p>
-            <div className="grid gap-x-10 gap-y-8 border border-border bg-surface p-8 sm:grid-cols-2 lg:grid-cols-3">
-              {silos.map((silo) => {
-                const hubs = hubsBySilo.get(silo.slug) ?? [];
-                if (hubs.length === 0) return null;
-                return (
-                  <div key={silo.slug}>
-                    <h2 className="mb-3 font-display text-[0.92rem] font-bold text-ink">
-                      {silo.label}
-                    </h2>
-                    <ul className="space-y-1.5">
-                      {hubs.map((hub) => (
-                        <li key={hub.slug}>
-                          <Link
-                            href={`/ressources/${hub.slug}`}
-                            className="text-[0.8rem] text-ink-muted transition-colors hover:text-accent-700"
-                          >
-                            {hub.label}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                );
-              })}
-            </div>
-          </section>
+          {/* Pages de référence — pillar pages, pas de taxonomie interne */}
+          {pillars.length > 0 && (
+            <section>
+              <p className="mb-6 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-accent-700">
+                02 — Les pages de référence
+              </p>
+              <div className="grid gap-x-10 gap-y-2.5 border border-border bg-surface p-8 sm:grid-cols-2 lg:grid-cols-3">
+                {pillars.map((p) => (
+                  <Link
+                    key={p.slug}
+                    href={`/ressources/${p.slug}`}
+                    className="group inline-flex items-start gap-2 text-[0.85rem] leading-snug text-ink-muted transition-colors hover:text-accent-700"
+                  >
+                    <span aria-hidden className="mt-1.5 h-1 w-1 flex-shrink-0 bg-border transition-colors group-hover:bg-accent-500" />
+                    {p.title}
+                  </Link>
+                ))}
+              </div>
+            </section>
+          )}
 
           {/* Dossiers éditoriaux */}
           {editorialDossiers.length > 0 && (

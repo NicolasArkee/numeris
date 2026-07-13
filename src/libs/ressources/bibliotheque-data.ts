@@ -170,6 +170,49 @@ export const getEditorialDossiers = unstable_cache(
   { revalidate: 3600 },
 );
 
+export interface PillarPage {
+  slug: string;
+  title: string;
+}
+
+/** Pages de référence de la bibliothèque : les LP têtes de requête (critère
+ *  interne volume ≥ 1000, jamais affiché) — titres propres via seo_overrides.
+ *  Remplace l'ancien dump de taxonomie interne (silos/hubs d'import). */
+export const getPillarPages = unstable_cache(
+  async (): Promise<PillarPage[]> => {
+    try {
+      const supa = getSupabaseClient();
+      const { data, error } = await supa
+        .from("keyword_pages")
+        .select("slug, label, volume")
+        .eq("disposition", "enrich")
+        .gte("volume", 1000)
+        .order("volume", { ascending: false })
+        .limit(60);
+      if (error) throw error;
+      const rows = (data ?? []) as { slug: string; label: string }[];
+      const { data: seoRows } = await supa
+        .from("seo_overrides")
+        .select("slug, h1")
+        .eq("route", "ressources")
+        .in("slug", rows.map((r) => r.slug));
+      const h1BySlug = new Map(
+        ((seoRows ?? []) as { slug: string; h1: string | null }[]).map((r) => [r.slug, r.h1]),
+      );
+      return rows.map((r) => ({
+        slug: r.slug,
+        title:
+          h1BySlug.get(r.slug) ||
+          r.label.charAt(0).toUpperCase() + r.label.slice(1),
+      }));
+    } catch {
+      return [];
+    }
+  },
+  ["bibliotheque-pillar-pages-v1"],
+  { revalidate: 86400 },
+);
+
 /** Compteur réel de guides publiés sur /ressources. */
 export const getPublishedGuidesCount = unstable_cache(
   async (): Promise<number> => {

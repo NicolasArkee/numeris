@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { db } from "@/libs/db";
 import { AppConfig } from "@/utils/AppConfig";
 import { BreadcrumbJsonLd, WebPageJsonLd } from "@/components/JsonLd";
 import { CtaContact } from "@/components/CtaContact";
@@ -8,6 +7,7 @@ import { StickyMobileCTA } from "@/components/StickyMobileCTA";
 import {
   FLAGSHIP_DOSSIERS,
   INTENTION_RAILS,
+  getPillarPages,
   getPublishedGuidesCount,
 } from "@/libs/ressources/bibliotheque-data";
 
@@ -25,15 +25,10 @@ export const metadata: Metadata = {
 };
 
 export default async function RessourcesPage() {
-  const [silos, guidesCount] = await Promise.all([
-    db.getSilos().catch(() => []),
+  const [guidesCount, pillars] = await Promise.all([
     getPublishedGuidesCount(),
+    getPillarPages(),
   ]);
-  const hubsBySilo = new Map(
-    await Promise.all(
-      silos.map(async (silo) => [silo.slug, await db.getHubsBySilo(silo.slug)] as const),
-    ),
-  );
   const [aLaUne, ...dossiers] = FLAGSHIP_DOSSIERS;
 
   return (
@@ -213,39 +208,36 @@ export default async function RessourcesPage() {
         </div>
       </section>
 
-      {/* Index des thèmes (sans données d'outillage) */}
-      <section className="border-t border-border bg-bg-muted px-6 py-14 lg:px-[4.5rem]">
-        <div className="mx-auto max-w-[82rem]">
-          <p className="mb-8 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-ink-soft">
-            04 — Tous les thèmes
-          </p>
-          <div className="grid gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
-            {silos.map((silo) => {
-              const hubs = hubsBySilo.get(silo.slug) ?? [];
-              if (hubs.length === 0) return null;
-              return (
-                <div key={silo.slug}>
-                  <h2 className="mb-3 font-display text-[0.92rem] font-bold text-ink">
-                    {silo.label}
-                  </h2>
-                  <ul className="space-y-1.5">
-                    {hubs.map((hub) => (
-                      <li key={hub.slug}>
-                        <Link
-                          href={`/ressources/${hub.slug}`}
-                          className="text-[0.8rem] text-ink-muted transition-colors hover:text-accent-700"
-                        >
-                          {hub.label}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              );
-            })}
+      {/* Pages de référence (pillar pages — pas de taxonomie interne) */}
+      {pillars.length > 0 && (
+        <section className="border-t border-border bg-bg-muted px-6 py-14 lg:px-[4.5rem]">
+          <div className="mx-auto max-w-[82rem]">
+            <div className="mb-8 flex flex-wrap items-end justify-between gap-3">
+              <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-ink-soft">
+                04 — Les pages de référence
+              </p>
+              <Link
+                href="/ressources/tous-les-dossiers"
+                className="font-display text-[0.82rem] font-semibold text-brand-700 transition-colors hover:text-accent-700"
+              >
+                Tout voir →
+              </Link>
+            </div>
+            <div className="grid gap-x-10 gap-y-2.5 sm:grid-cols-2 lg:grid-cols-3">
+              {pillars.slice(0, 24).map((p) => (
+                <Link
+                  key={p.slug}
+                  href={`/ressources/${p.slug}`}
+                  className="group inline-flex items-start gap-2 text-[0.85rem] leading-snug text-ink-muted transition-colors hover:text-accent-700"
+                >
+                  <span aria-hidden className="mt-1.5 h-1 w-1 flex-shrink-0 bg-border transition-colors group-hover:bg-accent-500" />
+                  {p.title}
+                </Link>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <CtaContact />
       <StickyMobileCTA />
