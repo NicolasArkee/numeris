@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Icon } from "./Icon";
+import { SIMULATEURS } from "@/app/simulateurs/registry";
 
 interface Simulator {
   slug: string;
@@ -7,35 +7,19 @@ interface Simulator {
   description: string;
   href: string;
   badge?: string;
+  icon?: string;
 }
 
-const defaultSimulators: Simulator[] = [
-  {
-    slug: "charges",
-    title: "Simulateur de charges",
-    description: "Estimez vos cotisations sociales selon votre statut et votre rémunération.",
-    href: "/simulateurs/charges",
-    badge: "Populaire",
-  },
-  {
-    slug: "statuts",
-    title: "Comparateur de statuts",
-    description: "SASU, EURL, auto-entrepreneur : quel statut est le plus avantageux pour vous ?",
-    href: "/simulateurs/statuts",
-  },
-  {
-    slug: "tjm",
-    title: "Calcul du TJM",
-    description: "Calculez votre taux journalier moyen idéal selon vos objectifs de revenus.",
-    href: "/simulateurs/tjm",
-  },
-  {
-    slug: "immobilier",
-    title: "Simulateur LMNP",
-    description: "Micro-BIC ou régime réel avec amortissement : comparez la fiscalité de votre meublé.",
-    href: "/simulateurs/immobilier",
-  },
-];
+// Dérivé du registry (source unique) : les 4 premiers outils = ordre
+// éditorial du registre, plus de liste hardcodée désynchronisée.
+const defaultSimulators: Simulator[] = SIMULATEURS.slice(0, 4).map((sim, i) => ({
+  slug: sim.slug,
+  title: sim.title,
+  description: `${sim.metaDescription.split(".")[0]}.`,
+  href: `/simulateurs/${sim.slug}`,
+  icon: sim.icon,
+  ...(i === 0 ? { badge: "Populaire" } : {}),
+}));
 
 interface SimulatorTeaserProps {
   title?: string;
@@ -76,8 +60,8 @@ export function SimulatorTeaser({
                   {sim.badge}
                 </span>
               )}
-              <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-md border border-brand-100 bg-brand-50 text-brand-700 transition-colors group-hover:border-accent-300 group-hover:bg-accent-50 group-hover:text-accent-700">
-                <Icon name={sim.slug} size={22} />
+              <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-md border border-brand-100 bg-brand-50 text-[1.3rem] transition-colors group-hover:border-accent-300 group-hover:bg-accent-50">
+                <span aria-hidden>{sim.icon ?? "🧮"}</span>
               </div>
               <h3 className="mb-2 text-[0.95rem] font-semibold text-ink transition-colors group-hover:text-accent-700">
                 {sim.title}

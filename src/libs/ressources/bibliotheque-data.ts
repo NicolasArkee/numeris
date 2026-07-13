@@ -79,8 +79,10 @@ export const INTENTION_RAILS: { title: string; links: { label: string; href: str
     links: [
       { label: "Prix d'un expert-comptable", href: "/ressources/prix-expert-comptable" },
       { label: "Tarifs : la grille 2026", href: "/ressources/tarif-expert-comptable" },
-      { label: "Honoraires : comprendre le devis", href: "/ressources/honoraires-expert-comptable" },
       { label: "Simulateur d'honoraires", href: "/simulateurs/honoraires" },
+      { label: "Calculatrice de TVA (HT ⇄ TTC)", href: "/simulateurs/calcul-tva" },
+      { label: "Coût d'un salarié pour l'employeur", href: "/simulateurs/cout-salarie" },
+      { label: "Frais kilométriques : le barème", href: "/simulateurs/frais-kilometriques" },
     ],
   },
   {

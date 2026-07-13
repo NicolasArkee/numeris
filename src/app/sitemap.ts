@@ -60,11 +60,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/cgu`, lastModified: buildDate, changeFrequency: "yearly", priority: 0.3 },
   );
 
-  // ─── Simulateurs (registre = source unique) ───
+  // ─── Simulateurs (registre = source unique, lastmod = édito page_meta) ───
   for (const sim of SIMULATEURS) {
     entries.push({
       url: `${baseUrl}/simulateurs/${sim.slug}`,
-      lastModified: buildDate,
+      lastModified: lastmodFor("simulateurs", sim.slug),
       changeFrequency: "monthly",
       priority: 0.7,
     });
