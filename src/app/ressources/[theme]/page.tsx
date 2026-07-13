@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import fs from "node:fs";
+import path from "node:path";
 import { notFound } from "next/navigation";
 import { db } from "@/libs/db";
 import { AppConfig } from "@/utils/AppConfig";
@@ -7,9 +8,30 @@ import { ClusterPage } from "@/components/ClusterPage";
 import { DynamicSection } from "@/components/DynamicSection";
 import { ExtraJsonLd } from "@/components/ExtraJsonLd";
 import { KeywordLandingPage } from "@/components/ressources/KeywordLandingPage";
+import { TaxonomyHubPage, type TaxonomyChild } from "@/components/ressources/TaxonomyHubPage";
 import { getDbPageBundle } from "@/libs/content/dbFirst";
 import { getSEOForRessource } from "@/data/seo";
 import { getRessourceLinks } from "@/utils/taxonomy";
+
+// Slugs /ressources redirigés (301 next.config — clusters orphelins inclus) :
+// exclus des sommaires de hubs pour ne pas mailler vers des 301.
+let redirectedCache: Set<string> | null = null;
+function redirectedRessourceSlugs(): Set<string> {
+  if (redirectedCache) return redirectedCache;
+  try {
+    const raw = JSON.parse(
+      fs.readFileSync(path.join(process.cwd(), "data", "redirects-ressources.json"), "utf-8"),
+    ) as { source: string }[];
+    redirectedCache = new Set(
+      raw
+        .map((r) => r.source.match(/^\/ressources\/(.+)$/u)?.[1])
+        .filter((s): s is string => !!s),
+    );
+  } catch {
+    redirectedCache = new Set();
+  }
+  return redirectedCache;
+}
 import {
   buildGeoKeywordFaqItems,
   buildKeywordMeta,
@@ -208,72 +230,95 @@ export default async function ThemePage({ params }: Props) {
     );
   }
 
-  if (hasDbContent) {
-    // Build chrome (eyebrow + breadcrumbs + linkGroups) from the matched entity.
-    let eyebrow = "Ressources";
-    let label = slug;
-    let breadcrumbs: { name: string; url: string }[] = [
+  // ─── Hub / cluster → PAGE HUB (sommaire de dossier), jamais le chrome
+  // article : pas de badges volume/mots-clés, pas de temps de lecture, le
+  // sommaire des sous-pages est l'élément central. L'EditoIntro généré sert
+  // d'intro de hero (pas de doublon dans le corps).
+  if (hub || cluster) {
+    const isHub = !!hub;
+    const node = (hub ?? cluster)!;
+    const fb = getSEOForRessource(node, isHub ? "hub" : "cluster");
+    const linkGroups = await getRessourceLinks(slug, isHub ? "hub" : "cluster");
+    const redirected = redirectedRessourceSlugs();
+
+    const breadcrumbs: { name: string; url: string }[] = [
       { name: "Accueil", url: "/" },
       { name: "Ressources", url: "/ressources" },
     ];
-    let linkGroups: Awaited<ReturnType<typeof getRessourceLinks>> = [];
-    let badges: string[] = [];
-    let fallbackIntro = "";
-    let fallbackH1 = "";
-
+    let eyebrow = "Ressources";
     if (hub) {
-      label = hub.label;
       const silo = await db.getSiloBySlug(hub.silo_slug);
       eyebrow = silo?.label || "Ressources";
-      breadcrumbs.push({ name: hub.label, url: `/ressources/${slug}` });
-      linkGroups = await getRessourceLinks(slug, "hub");
-      badges = [
-        `${hub.volume.toLocaleString("fr-FR")} recherches/mois`,
-        `${hub.n_keywords} mots-clés`,
-      ];
-      const fb = getSEOForRessource(hub, "hub");
-      fallbackIntro = fb.intro;
-      fallbackH1 = fb.h1;
     } else if (cluster) {
-      label = cluster.label;
       const parentHub = await db.getHubBySlug(cluster.hub_slug);
-      eyebrow = parentHub?.label || "Ressources";
       if (parentHub) {
+        eyebrow = parentHub.label;
         breadcrumbs.push({ name: parentHub.label, url: `/ressources/${parentHub.slug}` });
       }
-      breadcrumbs.push({ name: cluster.label, url: `/ressources/${slug}` });
-      linkGroups = await getRessourceLinks(slug, "cluster");
-      badges = [
-        `${cluster.volume.toLocaleString("fr-FR")} recherches/mois`,
-        `${cluster.n_keywords} mots-clés`,
-      ];
-      const fb = getSEOForRessource(cluster, "cluster");
-      fallbackIntro = fb.intro;
-      fallbackH1 = fb.h1;
+    }
+    breadcrumbs.push({ name: node.label, url: `/ressources/${slug}` });
+
+    // Sommaire : enfants vivants uniquement (hors 301/noindex).
+    let children_: TaxonomyChild[] = [];
+    if (hub) {
+      children_ = (await db.getClustersByHub(slug))
+        .filter((c) => !redirected.has(c.slug))
+        .map((c) => ({ slug: c.slug, label: c.label }));
     } else {
-      // DB-only page with no taxonomy entity (ex. maillage-v3 `dossier-*` hub).
-      // Generic "Ressources" chrome; H1/intro come from the SEO override + hero section.
-      label =
-        dbSeo?.h1 ??
-        slug.replace(/^dossier-/, "").replace(/-/g, " ").replace(/^\w/, (c) => c.toUpperCase());
-      breadcrumbs.push({ name: label, url: `/ressources/${slug}` });
-      fallbackH1 = label;
-      fallbackIntro = bundle.heroSection?.body ?? "";
+      const kws = (await db.getKeywordsByCluster(slug)).filter(
+        (k) => (k.disposition ?? "enrich") === "enrich",
+      );
+      children_ = await Promise.all(
+        kws.map(async (k) => {
+          const kwSeo = await db.getSeoOverride(ROUTE, k.slug).catch(() => null);
+          return {
+            slug: k.slug,
+            label: kwSeo?.h1 || k.label,
+            description: kwSeo?.meta_description ?? null,
+          };
+        }),
+      );
     }
 
-    const h1 = dbSeo?.h1 ?? fallbackH1 ?? label;
-    const intro = dbSeo?.meta_description ?? bundle.heroSection?.body ?? fallbackIntro;
-    const { inlineFaq, keyTakeaways } = bundle;
+    const editoIntro = bundle.sections.find((s) => s.section_type === "EditoIntro");
+    const sections = bundle.renderableSections.filter((s) => s.id !== editoIntro?.id);
+
+    return (
+      <TaxonomyHubPage
+        h1={dbSeo?.h1 || node.label}
+        intro={editoIntro?.body || dbSeo?.meta_description || fb.intro}
+        eyebrow={eyebrow}
+        breadcrumbs={breadcrumbs}
+        canonicalUrl={canonicalUrl}
+        children_={children_}
+        childrenTitle={isHub ? "Les dossiers de ce thème" : "Les guides de ce dossier"}
+        sections={sections}
+        linkGroups={linkGroups}
+      />
+    );
+  }
+
+  // ─── Pages DB-only (dossiers éditoriaux maillage-v3) — chrome article ───
+  if (hasDbContent) {
+    const label =
+      dbSeo?.h1 ??
+      slug.replace(/^dossier-/, "").replace(/-/g, " ").replace(/^\w/, (c) => c.toUpperCase());
+    const breadcrumbs = [
+      { name: "Accueil", url: "/" },
+      { name: "Ressources", url: "/ressources" },
+      { name: label, url: `/ressources/${slug}` },
+    ];
+    const h1 = dbSeo?.h1 ?? label;
+    const intro = dbSeo?.meta_description ?? bundle.heroSection?.body ?? "";
+    const { keyTakeaways } = bundle;
 
     return (
       <ClusterPage
-        eyebrow={eyebrow}
+        eyebrow="Ressources"
         h1={h1}
         intro={intro}
         breadcrumbs={breadcrumbs}
-        badges={badges}
-        faqs={inlineFaq ? undefined : undefined}
-        linkGroups={linkGroups}
+        linkGroups={[]}
         keyTakeaways={keyTakeaways}
         schema={<ExtraJsonLd raw={dbSeo?.json_ld_extra ?? null} />}
         lastUpdatedDate={lastUpdatedDate}
@@ -285,105 +330,6 @@ export default async function ThemePage({ params }: Props) {
         {bundle.renderableSections.map((s) => (
           <DynamicSection key={s.id} section={s} />
         ))}
-      </ClusterPage>
-    );
-  }
-
-  // ─── Fallback static path (unchanged from pre-wire) ───
-  if (hub) {
-    const seo = getSEOForRessource(hub, "hub");
-    const linkGroups = await getRessourceLinks(slug, "hub");
-    const clusters = await db.getClustersByHub(slug);
-    const silo = await db.getSiloBySlug(hub.silo_slug);
-
-    return (
-      <ClusterPage
-        eyebrow={silo?.label || "Ressources"}
-        h1={seo.h1}
-        intro={seo.intro}
-        breadcrumbs={[
-          { name: "Accueil", url: "/" },
-          { name: "Ressources", url: "/ressources" },
-          { name: hub.label, url: `/ressources/${slug}` },
-        ]}
-        badges={[
-          `${hub.volume.toLocaleString("fr-FR")} recherches/mois`,
-          `${hub.n_keywords} mots-clés`,
-        ]}
-        faqs={seo.faqs}
-        linkGroups={linkGroups}
-      >
-        {clusters.length > 0 && (
-          <div className="mb-12">
-            <h2 className="mb-6 font-display text-[1.5rem] font-bold text-ink">
-              Articles dans ce thème
-            </h2>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {clusters.map((c) => (
-                <Link
-                  key={c.slug}
-                  href={`/ressources/${c.slug}`}
-                  className="border border-border-soft bg-surface px-6 py-5 transition-colors hover:border-accent-500"
-                >
-                  <h3 className="mb-1 text-[0.95rem] font-medium text-ink">{c.label}</h3>
-                  <p className="text-[0.68rem] text-ink-muted">
-                    {c.volume.toLocaleString("fr-FR")} recherches · {c.n_keywords} mots-clés
-                  </p>
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
-      </ClusterPage>
-    );
-  }
-
-  if (cluster) {
-    const seo = getSEOForRessource(cluster, "cluster");
-    const linkGroups = await getRessourceLinks(slug, "cluster");
-    const keywords = await db.getKeywordsByCluster(slug);
-    const parentHub = await db.getHubBySlug(cluster.hub_slug);
-
-    return (
-      <ClusterPage
-        eyebrow={parentHub?.label || "Ressources"}
-        h1={seo.h1}
-        intro={seo.intro}
-        breadcrumbs={[
-          { name: "Accueil", url: "/" },
-          { name: "Ressources", url: "/ressources" },
-          ...(parentHub
-            ? [{ name: parentHub.label, url: `/ressources/${parentHub.slug}` }]
-            : []),
-          { name: cluster.label, url: `/ressources/${slug}` },
-        ]}
-        badges={[
-          `${cluster.volume.toLocaleString("fr-FR")} recherches/mois`,
-          `${cluster.n_keywords} mots-clés`,
-        ]}
-        faqs={seo.faqs}
-        linkGroups={linkGroups}
-      >
-        {keywords.length > 0 && (
-          <div className="mb-12">
-            <h2 className="mb-6 font-display text-[1.5rem] font-bold text-ink">
-              Mots-clés associés
-            </h2>
-            <div className="flex flex-wrap gap-2">
-              {keywords.map((kw) => (
-                <span
-                  key={kw.slug}
-                  className="border border-border-soft bg-surface px-3 py-1.5 text-[0.72rem] text-ink-muted"
-                >
-                  {kw.label}
-                  <span className="ml-1 text-border-soft">
-                    {kw.volume.toLocaleString("fr-FR")}
-                  </span>
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
       </ClusterPage>
     );
   }
