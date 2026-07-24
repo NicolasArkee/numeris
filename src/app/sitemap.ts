@@ -6,6 +6,7 @@ import { db } from "@/libs/db";
 import { expertisesSlugKey } from "@/libs/content/keys";
 import { SIMULATEURS } from "@/app/simulateurs/registry";
 import { getPublishedCommercialPages } from "@/libs/content/commercial";
+import { DOCUMENTS } from "@/data/documents";
 
 /**
  * Convert a SQLite `datetime('now')` string ("YYYY-MM-DD HH:MM:SS" or
@@ -67,6 +68,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: lastmodFor("simulateurs", sim.slug),
       changeFrequency: "monthly",
       priority: 0.7,
+    });
+  }
+
+  // ─── Documents / modèles (silo — hub + une page par document du registre) ───
+  entries.push({
+    url: `${baseUrl}/documents`,
+    lastModified: lastmodFor("documents", "_hub"),
+    changeFrequency: "monthly",
+    priority: 0.7,
+  });
+  for (const doc of DOCUMENTS) {
+    entries.push({
+      url: `${baseUrl}/documents/${doc.slug}`,
+      lastModified: lastmodFor("documents", doc.slug),
+      changeFrequency: "monthly",
+      priority: 0.6,
     });
   }
 

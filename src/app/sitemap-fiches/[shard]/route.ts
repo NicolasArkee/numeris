@@ -4,11 +4,14 @@ import {
   getEnrichedFichePaths,
   renderUrlset,
 } from "@/libs/sitemap-fiches-data";
+import { withRetry } from "@/libs/db/withRetry";
 
 // Shard n du sitemap fiches : /sitemap-fiches/{n}.xml — tranche stable de
 // 10 000 fiches enrichies (tri SIRET). Référencé par l'index
 // /sitemap-fiches.xml. Un shard vide (course avec la croissance de
-// l'annuaire) rend un urlset vide valide.
+// l'annuaire) rend un urlset vide valide. Route dynamique (segment [shard]) —
+// pas de risque de figer un build vide, mais withRetry évite un 500
+// transitoire (57014) sur une requête de crawler.
 export const revalidate = 86400;
 
 export async function GET(
@@ -21,7 +24,7 @@ export async function GET(
     return new Response("Not found", { status: 404 });
   }
 
-  const paths = await getEnrichedFichePaths();
+  const paths = await withRetry(() => getEnrichedFichePaths(), []);
   const slice = paths.slice((n - 1) * FICHES_PER_SHARD, n * FICHES_PER_SHARD);
   const lastmod = new Date().toISOString().split("T")[0];
 

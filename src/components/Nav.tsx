@@ -8,13 +8,13 @@ import { MegaMenu, type MegaMenuConfig } from "./MegaMenu";
 // Top selections are editorial picks — hardcoded for performance (no DB calls
 // for every SSG page). Update this list when the editorial focus shifts.
 const TOP_PROFESSIONS: { slug: string; name: string }[] = [
-  { slug: "medecins-generalistes", name: "Médecins" },
+  { slug: "medecins", name: "Médecins" },
   { slug: "infirmiers-liberaux", name: "Infirmiers libéraux" },
   { slug: "avocats", name: "Avocats" },
   { slug: "restaurateurs-traditionnels", name: "Restaurateurs" },
-  { slug: "agences-immobilieres", name: "Agences immobilières" },
-  { slug: "artisans-batiment", name: "Artisans du BTP" },
-  { slug: "freelances-it", name: "Freelances IT" },
+  { slug: "agents-immobiliers", name: "Agents immobiliers" },
+  { slug: "macons", name: "Artisans du BTP" },
+  { slug: "developpeurs-web", name: "Freelances IT" },
   { slug: "coiffeurs", name: "Coiffeurs" },
 ];
 
@@ -22,10 +22,10 @@ const TOP_SECTEURS: { slug: string; name: string }[] = [
   { slug: "restauration", name: "Restauration" },
   { slug: "immobilier", name: "Immobilier" },
   { slug: "btp", name: "BTP" },
-  { slug: "e-commerce", name: "E-commerce" },
-  { slug: "sante", name: "Santé" },
-  { slug: "conseil", name: "Conseil" },
-  { slug: "industrie", name: "Industrie" },
+  { slug: "commerce", name: "Commerce" },
+  { slug: "profession-liberale", name: "Professions libérales" },
+  { slug: "association", name: "Associations" },
+  { slug: "transport", name: "Transport" },
   { slug: "start-up", name: "Start-up" },
 ];
 

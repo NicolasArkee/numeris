@@ -1,0 +1,143 @@
+{
+  "version": "directory-service-kg-v1",
+  "serviceFamilies": [
+    {
+      "id": "comptabilite",
+      "label": "Comptabilité générale",
+      "route": "/expertises/comptabilite",
+      "factValue": "Comptabilité générale",
+      "inferForVerifiedAccountingFirm": true,
+      "keywords": ["expertise comptable", "comptabilité", "comptable", "tenue comptable", "bilan", "comptes annuels"],
+      "offers": [
+        {
+          "id": "tenue-comptable",
+          "label": "Tenue comptable",
+          "keywords": ["tenue comptable", "saisie comptable", "comptabilité courante", "suivi comptable"],
+          "description": "Tenue comptable et suivi comptable courant, organisation des pièces, saisie ou contrôle des écritures et structuration des éléments nécessaires au pilotage administratif de l'entreprise."
+        },
+        {
+          "id": "bilan-comptes-annuels",
+          "label": "Bilan et comptes annuels",
+          "keywords": ["bilan", "comptes annuels", "révision comptable", "clôture", "liasse"],
+          "description": "Préparation, révision et sécurisation des comptes annuels, avec mise en cohérence du bilan, du compte de résultat et des obligations de clôture."
+        }
+      ]
+    },
+    {
+      "id": "fiscalite",
+      "label": "Conseil fiscal",
+      "route": "/expertises/fiscalite",
+      "factValue": "Conseil fiscal",
+      "inferForVerifiedAccountingFirm": true,
+      "keywords": ["fiscalité", "impôt", "déclaration fiscale", "tva", "liasse fiscale", "taxe"],
+      "offers": [
+        {
+          "id": "declarations-fiscales",
+          "label": "Déclarations fiscales",
+          "keywords": ["déclaration fiscale", "déclarations fiscales", "liasse fiscale", "impôt sur les sociétés"],
+          "description": "Préparation et suivi des déclarations fiscales professionnelles, avec attention portée aux échéances, aux justificatifs et aux obligations propres à l'activité."
+        },
+        {
+          "id": "tva",
+          "label": "TVA",
+          "keywords": ["tva", "déclaration de tva", "régime de tva", "taxe sur la valeur ajoutée"],
+          "description": "Accompagnement sur les déclarations de TVA, les régimes applicables, les contrôles de cohérence et les arbitrages courants liés aux flux facturés."
+        }
+      ]
+    },
+    {
+      "id": "social",
+      "label": "Gestion sociale",
+      "route": "/expertises/social",
+      "factValue": "Gestion sociale",
+      "inferForVerifiedAccountingFirm": true,
+      "keywords": ["paie", "bulletin de paie", "gestion sociale", "déclaration sociale", "silae", "contrat de travail"],
+      "offers": [
+        {
+          "id": "paie",
+          "label": "Paie",
+          "keywords": ["paie", "bulletin de paie", "bulletins de paie", "salaire"],
+          "description": "Production ou supervision des bulletins de paie, suivi des variables, contrôle des obligations sociales et appui aux dirigeants employeurs."
+        },
+        {
+          "id": "declarations-sociales",
+          "label": "Déclarations sociales",
+          "keywords": ["déclarations sociales", "dsn", "charges sociales", "urssaf", "cotisations"],
+          "description": "Gestion des déclarations sociales, DSN, charges et échéances employeur, avec une logique de conformité et de continuité administrative."
+        }
+      ]
+    },
+    {
+      "id": "creation-entreprise",
+      "label": "Création d'entreprise",
+      "route": "/expertises/creation-entreprise",
+      "factValue": "Création d'entreprise",
+      "inferForVerifiedAccountingFirm": true,
+      "keywords": ["création d'entreprise", "création de société", "statuts", "immatriculation", "business plan", "prévisionnel"],
+      "offers": [
+        {
+          "id": "choix-statut",
+          "label": "Choix du statut",
+          "keywords": ["choix du statut", "forme juridique", "sasu", "sarl", "eurl", "micro entreprise"],
+          "description": "Aide au choix de la forme juridique, du régime fiscal et du cadre social du dirigeant, avant immatriculation ou évolution de structure."
+        },
+        {
+          "id": "previsionnel",
+          "label": "Prévisionnel financier",
+          "keywords": ["prévisionnel", "business plan", "plan de financement", "budget prévisionnel"],
+          "description": "Construction ou relecture d'un prévisionnel financier utile pour cadrer le lancement, dialoguer avec les partenaires et anticiper les besoins de trésorerie."
+        }
+      ]
+    },
+    {
+      "id": "conseil-gestion",
+      "label": "Conseil en gestion",
+      "route": "/expertises/conseil-gestion",
+      "factValue": "Conseil en gestion",
+      "inferForVerifiedAccountingFirm": true,
+      "keywords": ["conseil en gestion", "pilotage", "tableau de bord", "rentabilité", "trésorerie", "dirigeant"],
+      "offers": [
+        {
+          "id": "tableaux-de-bord",
+          "label": "Tableaux de bord",
+          "keywords": ["tableau de bord", "tableaux de bord", "reporting", "indicateurs"],
+          "description": "Mise en place d'indicateurs de gestion, tableaux de bord et points de suivi pour aider le dirigeant à piloter marge, trésorerie et activité."
+        },
+        {
+          "id": "pilotage-tresorerie",
+          "label": "Pilotage de trésorerie",
+          "keywords": ["trésorerie", "cash", "prévision de trésorerie", "besoin en fonds de roulement"],
+          "description": "Suivi des équilibres financiers, anticipation des tensions de trésorerie et lecture des leviers opérationnels à surveiller avec le cabinet."
+        }
+      ]
+    },
+    {
+      "id": "audit",
+      "label": "Audit & commissariat",
+      "route": "/expertises/audit",
+      "factValue": "Audit & commissariat",
+      "inferForVerifiedAccountingFirm": false,
+      "keywords": ["audit", "commissariat aux comptes", "commissaire aux comptes", "cac", "audit légal", "audit contractuel"],
+      "offers": [
+        {
+          "id": "commissariat-aux-comptes",
+          "label": "Commissariat aux comptes",
+          "keywords": ["commissariat aux comptes", "commissaire aux comptes", "cac", "audit légal"],
+          "description": "Missions de commissariat aux comptes et d'audit légal lorsqu'elles sont explicitement mentionnées par le cabinet ou par une source professionnelle vérifiable."
+        },
+        {
+          "id": "audit-contractuel",
+          "label": "Audit contractuel",
+          "keywords": ["audit contractuel", "mission d'audit", "attestation", "revue indépendante"],
+          "description": "Interventions d'audit contractuel, attestations ou revues indépendantes, uniquement lorsqu'une source du cabinet permet de documenter cette compétence."
+        }
+      ]
+    }
+  ],
+  "specificities": {
+    "sectors": ["immobilier", "start-up", "restauration", "profession-liberale", "btp", "commerce", "transport", "association"],
+    "professions": ["avocats", "medecins", "agents-immobiliers", "developpeurs-web", "restaurateurs-traditionnels"],
+    "software": ["Pennylane", "Silae", "Sage", "Cegid", "Tiime", "Dext"],
+    "differentiators": ["cabinet-local", "equipe-identifiee", "accompagnement-createur", "digitalisation", "conseil-dirigeant"]
+  }
+}

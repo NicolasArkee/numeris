@@ -3,15 +3,19 @@ import {
   FICHES_PER_SHARD,
   getEnrichedFichePaths,
 } from "@/libs/sitemap-fiches-data";
+import { withRetry } from "@/libs/db/withRetry";
 
 // SITEMAP INDEX des fiches cabinet enrichies — pointe vers des shards de
 // 10 000 URLs (/sitemap-fiches/{n}.xml). L'URL /sitemap-fiches.xml reste
 // celle déclarée dans robots.ts / soumise à GSC : elle est passée de urlset
 // à sitemapindex quand le volume a dépassé le mono-fichier (2026-07-13).
-export const revalidate = 86400;
+// Route statique prérendue au build : withRetry mitige un 57014 (statement
+// timeout) transitoire côté Supabase pendant la pagination (~35 requêtes) ;
+// revalidate court (1h) limite le dégât si les tentatives échouent quand même.
+export const revalidate = 3600;
 
 export async function GET(): Promise<Response> {
-  const paths = await getEnrichedFichePaths();
+  const paths = await withRetry(() => getEnrichedFichePaths(), []);
   const shardCount = Math.max(1, Math.ceil(paths.length / FICHES_PER_SHARD));
   const lastmod = new Date().toISOString().split("T")[0];
 

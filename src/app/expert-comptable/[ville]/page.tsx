@@ -11,11 +11,13 @@ interface Props {
 }
 
 // SSG initial : uniquement les villes avec au moins 1 cabinet published+verified.
-// Toute autre ville est générée à la demande (ISR) puis cachée 24h.
+// Toute autre ville est générée à la demande (ISR) puis cachée 30 jours — les
+// données annuaire (établissements scrapés) sont figées, pas la peine de
+// revalider tous les jours.
 // getDirectoryListingCabinetsByCity renvoie [] pour les villes sans cabinet listé,
 // auquel cas la page appelle notFound().
 export const dynamicParams = true;
-export const revalidate = 86400;
+export const revalidate = 2592000; // 30 jours
 
 export async function generateStaticParams() {
   const seen = new Set<string>();

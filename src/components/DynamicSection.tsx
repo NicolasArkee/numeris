@@ -35,6 +35,7 @@ import { PricingTeaser } from "./PricingTeaser";
 import { pricingTierToProp, type PricingTierShape } from "./pricing-shared";
 import { ProcessSteps } from "./ProcessSteps";
 import { ProsCons } from "./ProsCons";
+import { RichTable } from "./RichTable";
 import { TableOfContents } from "./TableOfContents";
 import { IconSet, isSupportedIcon } from "./IconSet";
 import type { IconName } from "./IconSet";
@@ -103,6 +104,23 @@ function asFaqArray(v: unknown): FaqEntry[] {
     }
   }
   return out;
+}
+
+/** RichTable items shape: { headers: string[], rows: string[][] } — defensive coercion. */
+function asRichTable(v: unknown): { headers: string[]; rows: string[][] } {
+  if (v === null || typeof v !== "object" || Array.isArray(v)) return { headers: [], rows: [] };
+  const obj = v as Record<string, unknown>;
+  const headers = asStringArray(obj.headers);
+  const rawRows = Array.isArray(obj.rows) ? obj.rows : [];
+  const rows: string[][] = [];
+  for (const row of rawRows) {
+    if (!Array.isArray(row)) continue;
+    const cells = row.map((c) => (typeof c === "string" ? c : c == null ? "" : String(c)));
+    // normalise la largeur des lignes sur le nombre d'en-têtes
+    while (headers.length && cells.length < headers.length) cells.push("");
+    rows.push(headers.length ? cells.slice(0, headers.length) : cells);
+  }
+  return { headers, rows };
 }
 
 function asCitations(v: unknown): Citation[] {
@@ -1048,6 +1066,17 @@ export async function DynamicSection({
           <CitationsFooter citations={citations} />
         </>
       );
+
+    case "RichTable": {
+      const { headers, rows } = asRichTable(parsedItems);
+      if (headers.length === 0 || rows.length === 0) return <UnknownSection section={section} />;
+      return (
+        <>
+          <RichTable title={title} intro={body || null} headers={headers} rows={rows} />
+          <CitationsFooter citations={citations} />
+        </>
+      );
+    }
 
     case "InternalLinks":
       return <InternalLinksInline title={title} items={asStringArray(parsedItems)} />;

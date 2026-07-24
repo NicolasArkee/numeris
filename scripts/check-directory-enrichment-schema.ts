@@ -1,12 +1,13 @@
 import assert from "node:assert/strict";
 import Database from "better-sqlite3";
 import path from "node:path";
-import { SCHEMA } from "../src/libs/db/schema";
+import { SCHEMA, ensureDirectoryProfileFactTypeCompatibility } from "../src/libs/db/schema";
 
 const dbPath = process.env.NUMERIS_DB ?? path.join(process.cwd(), "numeris.db");
 const db = new Database(dbPath);
 db.pragma("journal_mode = WAL");
 db.exec(SCHEMA);
+ensureDirectoryProfileFactTypeCompatibility(db);
 
 const expectedTables = [
   "directory_enrichment_runs",
@@ -38,6 +39,7 @@ for (const column of [
   "source_id",
   "confidence",
   "is_displayable",
+  "metadata_json",
 ]) {
   assert.ok(factsColumns.has(column), `Missing directory_profile_facts.${column}`);
 }
@@ -72,13 +74,25 @@ try {
       establishment_id,
       fact_type,
       label,
-      value
-    ) VALUES (?, NULL, 'website', ?, ?)
+      value,
+      metadata_json
+    ) VALUES (?, NULL, 'source_preview_image', ?, ?, ?)
   `);
 
-  insertFact.run(cabinet.id, "Website", "https://example.test");
+  insertFact.run(
+    cabinet.id,
+    "Apercu source",
+    "/images/directory-previews/test.png",
+    '{"displayMode":"sourced"}',
+  );
   assert.throws(
-    () => insertFact.run(cabinet.id, "Website", "https://example.test"),
+    () =>
+      insertFact.run(
+        cabinet.id,
+        "Apercu source",
+        "/images/directory-previews/test.png",
+        '{"displayMode":"sourced"}',
+      ),
     /UNIQUE constraint failed/,
     "Expected duplicate cabinet-level profile fact to be rejected",
   );

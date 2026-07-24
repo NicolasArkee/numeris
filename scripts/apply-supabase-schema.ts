@@ -38,6 +38,15 @@ function splitStatements(sql: string): string[] {
   for (let i = 0; i < sql.length; i++) {
     const ch = sql[i];
     const rest = sql.slice(i);
+
+    if (!inSingle && !inDollar && rest.startsWith("--")) {
+      const end = sql.indexOf("\n", i);
+      if (end === -1) break;
+      buf += "\n";
+      i = end;
+      continue;
+    }
+
     if (!inSingle && !inDollar) {
       const m = rest.match(/^\$([A-Za-z_]*)\$/);
       if (m) {
@@ -56,6 +65,11 @@ function splitStatements(sql: string): string[] {
         continue;
       }
       buf += ch;
+      continue;
+    }
+    if (ch === "'" && sql[i + 1] === "'") {
+      buf += "''";
+      i++;
       continue;
     }
     if (ch === "'") inSingle = !inSingle;

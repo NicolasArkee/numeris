@@ -34,16 +34,57 @@
       },
       {
         "fact_type": "service",
-        "label": "Service detecte",
-        "value": "Paie",
+        "label": "Service identifié",
+        "value": "Gestion sociale",
         "confidence": 90,
-        "is_displayable": true
+        "is_displayable": true,
+        "metadata_json": {
+          "entityId": "social",
+          "routeSlug": "social",
+          "offerIds": ["paie", "declarations-sociales"],
+          "displayMode": "sourced",
+          "description": "Paie, bulletins de salaire, déclarations sociales et accompagnement administratif employeur sont explicitement rattachés au site officiel dans ce payload pilote.",
+          "evidenceSnippets": ["paie", "gestion sociale"],
+          "sourcePageUrls": ["https://example-cabinet.test/services"],
+          "confidenceReason": "Service mentionné dans le site pilote."
+        }
       },
       {
         "fact_type": "service",
-        "label": "Service detecte",
-        "value": "Fiscalite",
-        "confidence": 90,
+        "label": "Service identifié",
+        "value": "Conseil fiscal",
+        "confidence": 88,
+        "is_displayable": true,
+        "metadata_json": {
+          "entityId": "fiscalite",
+          "routeSlug": "fiscalite",
+          "offerIds": ["declarations-fiscales", "tva"],
+          "displayMode": "sourced",
+          "description": "Déclarations fiscales, TVA et suivi des échéances sont présentés comme des services identifiés dans la source pilote du cabinet.",
+          "evidenceSnippets": ["fiscalite", "TVA"],
+          "sourcePageUrls": ["https://example-cabinet.test/services"],
+          "confidenceReason": "Service mentionné dans le site pilote."
+        }
+      },
+      {
+        "fact_type": "team_signal",
+        "label": "Equipe",
+        "value": "Equipe d'experts-comptables mentionnee",
+        "confidence": 80,
+        "is_displayable": true
+      },
+      {
+        "fact_type": "profile_summary",
+        "label": "Description sourcee",
+        "value": "01 EXPERTS ASSOCIES accompagne les entreprises parisiennes sur des sujets de gestion sociale et de fiscalité d'après les informations publiées dans ce payload pilote. La fiche distingue les services explicitement sourcés des offres probables à confirmer, afin de conserver une page utile au SEO sans mélanger preuve, inférence et données administratives.",
+        "confidence": 92,
+        "is_displayable": true
+      },
+      {
+        "fact_type": "source_preview_image",
+        "label": "Apercu source",
+        "value": "/images/directory-previews/44110142500037-source.png",
+        "confidence": 80,
         "is_displayable": true
       }
     ]

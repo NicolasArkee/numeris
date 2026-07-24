@@ -234,8 +234,49 @@ type CabinetWithRelations = {
 };
 
 type DirectoryListingEstablishmentRef = {
+  cabinetId: number;
   establishmentId: number;
+  siret: string;
+  // Champs du cabinet embarqués (via l'embed !inner) pour trier les cartes
+  // AVANT hydratation, sans re-requêter.
+  oecStatus: DirectoryCabinetCard["cabinet"]["oec_status"];
+  confidenceScore: number;
+  displayName: string | null;
+  legalName: string;
 };
+
+type DirectoryCityEstablishmentRef = {
+  cabinet_id: number;
+  id: number;
+  siret: string;
+};
+
+type DirectoryListingCabinetRef = {
+  id: number;
+  siren: string | null;
+  is_active: boolean | number;
+  oec_status: DirectoryCabinetCard["cabinet"]["oec_status"];
+  confidence_score: number;
+  publish_status: DirectoryCabinetCard["cabinet"]["publish_status"];
+};
+
+function isDirectoryListingCabinetRef(
+  cabinet: DirectoryListingCabinetRef | undefined,
+): cabinet is DirectoryListingCabinetRef {
+  if (!cabinet || !cabinet.is_active) return false;
+  return (
+    (
+      cabinet.publish_status === "published"
+      && cabinet.confidence_score >= 85
+      && ["verified", "manual_verified"].includes(cabinet.oec_status)
+    )
+    || (
+      cabinet.publish_status === "review"
+      && cabinet.confidence_score >= 50
+      && ["unverified", "not_found", "ambiguous"].includes(cabinet.oec_status)
+    )
+  );
+}
 
 function mapCabinetRow(
   row: CabinetWithRelations,
@@ -357,38 +398,131 @@ function chunkArray<T>(items: T[], size: number): T[][] {
   return chunks;
 }
 
-async function fetchDirectoryListingEstablishmentRefsByCity(
-  codeInsee: string,
-): Promise<DirectoryListingEstablishmentRef[]> {
-  const byEstablishmentId = new Map<number, DirectoryListingEstablishmentRef>();
+// Concurrence bornée des lectures paginées « toute la base » (liste des villes) :
+// le build prérend ~30k pages en parallèle et sature déjà Supabase (57014 /
+// connect timeouts). On parallélise les pages MAIS de façon plafonnée pour ne
+// pas aggraver la contention.
+const SUPABASE_FETCH_CONCURRENCY = 6;
+
+async function mapWithConcurrency<T, R>(
+  items: T[],
+  concurrency: number,
+  fn: (item: T) => Promise<R>,
+): Promise<R[]> {
+  const results = new Array<R>(items.length);
+  let cursor = 0;
+  async function worker(): Promise<void> {
+    while (cursor < items.length) {
+      const index = cursor++;
+      results[index] = await fn(items[index]);
+    }
+  }
+  const workers = Array.from(
+    { length: Math.min(Math.max(1, concurrency), items.length) },
+    () => worker(),
+  );
+  await Promise.all(workers);
+  return results;
+}
+
+/**
+ * Toutes les suppressions RGPD actives (siren + siret), lues en un seul balayage
+ * paginé. Sert aux scans « toute la base » (liste des villes) où construire un
+ * `.or(siren.in.(...),siret.in.(...))` avec des milliers d'identifiants
+ * exploserait la limite d'URL PostgREST. La table reste petite (opt-out).
+ */
+async function fetchActiveSuppressions(): Promise<{
+  suppressedSirens: Set<string>;
+  suppressedSirets: Set<string>;
+}> {
+  const suppressedSirens = new Set<string>();
+  const suppressedSirets = new Set<string>();
 
   for (let from = 0; ; from += SUPABASE_PAGE_SIZE) {
     const { data, error } = await getSupabaseClient()
-      .from("directory_cabinets")
-      .select(
-        "id, siren, is_active, establishments:directory_establishments(id, cabinet_id, siret, is_active, city_code_insee)",
-      )
-      .or(DIRECTORY_LISTING_OR_FILTER)
-      .eq("establishments.city_code_insee", codeInsee)
+      .from("privacy_suppression_requests")
+      .select("siren, siret")
+      .eq("status", "active")
       .order("id", { ascending: true })
       .range(from, from + SUPABASE_PAGE_SIZE - 1);
     if (error) throw error;
 
-    const page = (data ?? []) as unknown as CabinetWithRelations[];
-    const active = await filterActiveCabinets(page);
-    for (const cabinet of active) {
-      for (const establishment of cabinet.establishments ?? []) {
-        if (establishment.city_code_insee !== codeInsee) continue;
-        byEstablishmentId.set(establishment.id, {
-          establishmentId: establishment.id,
-        });
-      }
+    const page = (data ?? []) as Array<{
+      siren: string | null;
+      siret: string | null;
+    }>;
+    for (const row of page) {
+      if (row.siren) suppressedSirens.add(row.siren);
+      if (row.siret) suppressedSirets.add(row.siret);
     }
 
-    if ((data ?? []).length < SUPABASE_PAGE_SIZE) break;
+    if (page.length < SUPABASE_PAGE_SIZE) break;
   }
 
-  return Array.from(byEstablishmentId.values());
+  return { suppressedSirens, suppressedSirets };
+}
+
+async function fetchDirectoryListingEstablishmentRefsByCity(
+  codeInsee: string,
+): Promise<DirectoryListingEstablishmentRef[]> {
+  // Gate poussée dans PostgREST via un embed !inner sur le cabinet : PostgREST
+  // ne renvoie que les établissements dont le cabinet passe le filtre listing
+  // (publish_status/confidence/oec) ET est actif. Une requête paginée (souvent
+  // 1 page, même Marseille ~930) remplace l'ancien scan établissements + N
+  // chunks d'hydratation cabinets — bien plus léger au build.
+  type Row = {
+    id: number;
+    cabinet_id: number;
+    siret: string;
+    cabinet: {
+      siren: string | null;
+      oec_status: DirectoryCabinetCard["cabinet"]["oec_status"];
+      confidence_score: number;
+      display_name: string | null;
+      legal_name: string;
+    } | null;
+  };
+  const rows: Row[] = [];
+
+  for (let from = 0; ; from += SUPABASE_PAGE_SIZE) {
+    const { data, error } = await getSupabaseClient()
+      .from("directory_establishments")
+      .select(
+        "id, cabinet_id, siret, cabinet:directory_cabinets!inner(siren, oec_status, confidence_score, display_name, legal_name)",
+      )
+      .eq("city_code_insee", codeInsee)
+      .eq("is_active", true)
+      .eq("cabinet.is_active", true)
+      .or(DIRECTORY_LISTING_OR_FILTER, { referencedTable: "cabinet" })
+      .order("id", { ascending: true })
+      .range(from, from + SUPABASE_PAGE_SIZE - 1);
+    if (error) throw error;
+
+    const page = (data ?? []) as unknown as Row[];
+    rows.push(...page);
+
+    if (page.length < SUPABASE_PAGE_SIZE) break;
+  }
+
+  if (rows.length === 0) return [];
+
+  const { suppressedSirens, suppressedSirets } = await fetchActiveSuppressions();
+
+  return rows
+    .filter((row) => {
+      if (suppressedSirets.has(row.siret)) return false;
+      const siren = row.cabinet?.siren ?? null;
+      return !(siren && suppressedSirens.has(siren));
+    })
+    .map((row) => ({
+      cabinetId: row.cabinet_id,
+      establishmentId: row.id,
+      siret: row.siret,
+      oecStatus: row.cabinet?.oec_status ?? "unverified",
+      confidenceScore: row.cabinet?.confidence_score ?? 0,
+      displayName: row.cabinet?.display_name ?? null,
+      legalName: row.cabinet?.legal_name ?? "",
+    }));
 }
 
 async function fetchDisplayableFactEstablishmentIds(
@@ -452,6 +586,69 @@ async function fetchDisplayableFactEstablishmentIds(
   }
 
   return enriched;
+}
+
+async function fetchSourcePreviewImagesByEstablishmentIds(
+  establishmentIds: number[],
+): Promise<Map<number, string>> {
+  const previews = new Map<number, string>();
+  const factRows: Array<{
+    establishment_id: number | null;
+    source_id: number | null;
+    value: string;
+  }> = [];
+  const sourceIds = new Set<number>();
+
+  for (const idChunk of chunkArray(establishmentIds, SUPABASE_IN_CHUNK_SIZE)) {
+    const { data, error } = await getSupabaseClient()
+      .from("directory_profile_facts")
+      .select("establishment_id, source_id, value")
+      .in("establishment_id", idChunk)
+      .eq("fact_type", "source_preview_image")
+      .eq("is_displayable", true)
+      .order("confidence", { ascending: false })
+      .order("id", { ascending: false });
+    if (error) {
+      if (isUnavailableSupabaseEnrichmentError(error)) return previews;
+      throw error;
+    }
+
+    for (const row of (data ?? []) as Array<{
+      establishment_id: number | null;
+      source_id: number | null;
+      value: string;
+    }>) {
+      factRows.push(row);
+      if (row.source_id != null) sourceIds.add(row.source_id);
+    }
+  }
+
+  const parsedSourceIds = new Set<number>();
+  for (const idChunk of chunkArray(Array.from(sourceIds), SUPABASE_IN_CHUNK_SIZE)) {
+    const { data, error } = await getSupabaseClient()
+      .from("directory_enrichment_sources")
+      .select("id")
+      .in("id", idChunk)
+      .eq("parsed_ok", true);
+    if (error) {
+      if (isUnavailableSupabaseEnrichmentError(error)) return previews;
+      throw error;
+    }
+
+    for (const row of (data ?? []) as Array<{ id: number }>) {
+      parsedSourceIds.add(row.id);
+    }
+  }
+
+  for (const row of factRows) {
+    if (row.establishment_id == null) continue;
+    if (row.source_id != null && !parsedSourceIds.has(row.source_id)) continue;
+    if (!previews.has(row.establishment_id)) {
+      previews.set(row.establishment_id, row.value);
+    }
+  }
+
+  return previews;
 }
 
 function isNewerDirectoryQualificationSnapshot(
@@ -1163,88 +1360,181 @@ const adapter: DbAdapter = {
   },
 
   async getDirectoryListingCities(): Promise<DirectoryCity[]> {
-    const { data: cabinets, error: cabErr } = await getSupabaseClient()
-      .from("directory_cabinets")
-      .select(
-        "is_active, publish_status, confidence_score, oec_status, siren, establishments:directory_establishments(siret, is_active, city_code_insee)",
-      )
-      .or(DIRECTORY_LISTING_OR_FILTER);
-    if (cabErr) throw cabErr;
+    // Sans .range(), PostgREST plafonnait à 1000 cabinets → ~108 villes au lieu
+    // des ~1800 réellement listables. On balaye les établissements listables
+    // (gate poussée en DB via embed !inner sur le cabinet, sans embed lourd
+    // établissements→cabinet qui faisait sauter le 57014), PAGINÉ ET PARALLÉLISÉ
+    // (concurrence bornée) pour tenir sous le timeout de génération statique.
+    const client = getSupabaseClient();
 
-    const active = await filterActiveCabinets(
-      (cabinets ?? []) as unknown as CabinetWithRelations[],
+    const { count, error: countError } = await client
+      .from("directory_establishments")
+      .select("id, cabinet:directory_cabinets!inner(id)", {
+        count: "exact",
+        head: true,
+      })
+      .eq("is_active", true)
+      .eq("cabinet.is_active", true)
+      .or(DIRECTORY_LISTING_OR_FILTER, { referencedTable: "cabinet" });
+    if (countError) throw countError;
+
+    const total = count ?? 0;
+    if (total === 0) return [];
+
+    const offsets = Array.from(
+      { length: Math.ceil(total / SUPABASE_PAGE_SIZE) },
+      (_, i) => i * SUPABASE_PAGE_SIZE,
     );
 
-    const codes = Array.from(
-      new Set(
-        active.flatMap((r) =>
-          r.establishments
-            .map((e) => e.city_code_insee)
-            .filter((v): v is string => Boolean(v)),
-        ),
-      ),
-    );
-    if (codes.length === 0) return [];
+    const { suppressedSirens, suppressedSirets } = await fetchActiveSuppressions();
 
-    const { data, error } = await getSupabaseClient()
-      .from("cities_official")
-      .select("*")
-      .in("code_insee", codes)
-      .order("name", { ascending: true });
-    if (error) throw error;
-    return (data ?? []) as DirectoryCity[];
+    type Row = {
+      siret: string;
+      city_code_insee: string | null;
+      cabinet: { siren: string | null } | null;
+    };
+    const pages = await mapWithConcurrency(
+      offsets,
+      SUPABASE_FETCH_CONCURRENCY,
+      async (from) => {
+        const { data, error } = await client
+          .from("directory_establishments")
+          .select(
+            "siret, city_code_insee, cabinet:directory_cabinets!inner(siren)",
+          )
+          .eq("is_active", true)
+          .eq("cabinet.is_active", true)
+          .or(DIRECTORY_LISTING_OR_FILTER, { referencedTable: "cabinet" })
+          .order("id", { ascending: true })
+          .range(from, from + SUPABASE_PAGE_SIZE - 1);
+        if (error) throw error;
+        return (data ?? []) as unknown as Row[];
+      },
+    );
+
+    const codeSet = new Set<string>();
+    for (const page of pages) {
+      for (const row of page) {
+        if (!row.city_code_insee) continue;
+        if (suppressedSirets.has(row.siret)) continue;
+        const siren = row.cabinet?.siren ?? null;
+        if (siren && suppressedSirens.has(siren)) continue;
+        codeSet.add(row.city_code_insee);
+      }
+    }
+    if (codeSet.size === 0) return [];
+
+    // .in() sur ~1800 codes dépasserait la limite d'URL PostgREST → chunké
+    // (en parallèle borné).
+    const cityPages = await mapWithConcurrency(
+      chunkArray(Array.from(codeSet), SUPABASE_IN_CHUNK_SIZE),
+      SUPABASE_FETCH_CONCURRENCY,
+      async (codeChunk) => {
+        const { data, error } = await client
+          .from("cities_official")
+          .select("*")
+          .in("code_insee", codeChunk);
+        if (error) throw error;
+        return (data ?? []) as DirectoryCity[];
+      },
+    );
+
+    const cities = cityPages.flat();
+    cities.sort((a, b) => a.name.localeCompare(b.name));
+    return cities;
   },
 
   async getDirectoryListingCabinetsByCity(
     codeInsee: string,
     limit = 50,
   ): Promise<DirectoryCabinetCard[]> {
-    const { data, error } = await getSupabaseClient()
-      .from("directory_cabinets")
-      .select(DIRECTORY_CABINET_EMBED)
-      .or(DIRECTORY_LISTING_OR_FILTER)
-      .eq("establishments.city_code_insee", codeInsee);
-    if (error) throw error;
-
-    const filtered = await filterActiveCabinets(
-      (data ?? []) as unknown as CabinetWithRelations[],
-    );
+    // Establishment-first : le filtre embarqué `establishments.city_code_insee`
+    // sans !inner ne restreignait PAS les cabinets parents → PostgREST renvoyait
+    // une fenêtre arbitraire de 1000 cabinets et 0 correspondance pour toute
+    // ville hors de cette fenêtre (404 + noindex sur ~1685 villes listables).
+    // Le helper renvoie déjà les champs de tri du cabinet : on TRIE et TRONQUE
+    // les refs AVANT d'hydrater → on ne charge que les <=limit cabinets affichés
+    // (Marseille : hydratation de 100, pas de ~900).
+    const refs = await fetchDirectoryListingEstablishmentRefsByCity(codeInsee);
+    if (refs.length === 0) return [];
 
     const verifiedSet = new Set(["verified", "manual_verified"]);
+    const firstRefByCabinet = new Map<number, DirectoryListingEstablishmentRef>();
+    for (const ref of refs) {
+      if (!firstRefByCabinet.has(ref.cabinetId)) {
+        firstRefByCabinet.set(ref.cabinetId, ref);
+      }
+    }
 
-    return filtered
-      .map((row) =>
-        mapCabinetRow(row, (ests) =>
-          ests.find((e) => e.city_code_insee === codeInsee),
-        ),
-      )
-      .filter((card): card is DirectoryCabinetCard => card !== null)
+    const topRefs = Array.from(firstRefByCabinet.values())
       .sort((a, b) => {
-        const av = verifiedSet.has(a.cabinet.oec_status) ? 0 : 1;
-        const bv = verifiedSet.has(b.cabinet.oec_status) ? 0 : 1;
+        const av = verifiedSet.has(a.oecStatus) ? 0 : 1;
+        const bv = verifiedSet.has(b.oecStatus) ? 0 : 1;
         if (av !== bv) return av - bv;
-        if (a.cabinet.confidence_score !== b.cabinet.confidence_score) {
-          return b.cabinet.confidence_score - a.cabinet.confidence_score;
+        if (a.confidenceScore !== b.confidenceScore) {
+          return b.confidenceScore - a.confidenceScore;
         }
-        const an = (a.cabinet.display_name ?? a.cabinet.legal_name).toLowerCase();
-        const bn = (b.cabinet.display_name ?? b.cabinet.legal_name).toLowerCase();
+        const an = (a.displayName ?? a.legalName).toLowerCase();
+        const bn = (b.displayName ?? b.legalName).toLowerCase();
         return an.localeCompare(bn);
       })
       .slice(0, limit);
+
+    const rowsByCabinetId = new Map<number, CabinetWithRelations>();
+    for (const idChunk of chunkArray(
+      topRefs.map((ref) => ref.cabinetId),
+      SUPABASE_IN_CHUNK_SIZE,
+    )) {
+      const { data, error } = await getSupabaseClient()
+        .from("directory_cabinets")
+        .select(DIRECTORY_CABINET_EMBED)
+        .in("id", idChunk);
+      if (error) throw error;
+
+      for (const row of (data ?? []) as unknown as CabinetWithRelations[]) {
+        rowsByCabinetId.set(row.id, row);
+      }
+    }
+
+    return topRefs
+      .map((ref) => {
+        const row = rowsByCabinetId.get(ref.cabinetId);
+        if (!row) return null;
+        return mapCabinetRow(row, (ests) =>
+          ests.find(
+            (e) => e.id === ref.establishmentId || e.siret === ref.siret,
+          ),
+        );
+      })
+      .filter((card): card is DirectoryCabinetCard => card !== null);
   },
 
   async getDirectoryListingCabinetBySiret(
     siret: string,
   ): Promise<DirectoryCabinetCard | null> {
+    const { data: establishment, error: establishmentError } = await getSupabaseClient()
+      .from("directory_establishments")
+      .select("id, cabinet_id, siret, is_active")
+      .eq("siret", siret)
+      .eq("is_active", true)
+      .maybeSingle();
+    if (establishmentError) throw establishmentError;
+    if (!establishment) return null;
+
     const { data, error } = await getSupabaseClient()
       .from("directory_cabinets")
       .select(DIRECTORY_CABINET_EMBED)
-      .or(DIRECTORY_LISTING_OR_FILTER)
-      .eq("establishments.siret", siret);
+      .eq("id", (establishment as DirectoryCityEstablishmentRef).cabinet_id)
+      .maybeSingle();
     if (error) throw error;
+    if (!data) return null;
+
+    if (!isDirectoryListingCabinetRef(data as unknown as DirectoryListingCabinetRef)) {
+      return null;
+    }
 
     const filtered = await filterActiveCabinets(
-      (data ?? []) as unknown as CabinetWithRelations[],
+      [data] as unknown as CabinetWithRelations[],
     );
     if (filtered.length === 0) return null;
 
@@ -1256,18 +1546,12 @@ const adapter: DbAdapter = {
   async getDirectoryListingCabinetCountByCity(
     codeInsee: string,
   ): Promise<number> {
-    const { data, error } = await getSupabaseClient()
-      .from("directory_cabinets")
-      .select(
-        "id, is_active, siren, establishments:directory_establishments(siret, is_active, city_code_insee)",
-      )
-      .or(DIRECTORY_LISTING_OR_FILTER)
-      .eq("establishments.city_code_insee", codeInsee);
-    if (error) throw error;
-    const filtered = await filterActiveCabinets(
-      (data ?? []) as unknown as CabinetWithRelations[],
-    );
-    return filtered.length;
+    // Même bug que getDirectoryListingCabinetsByCity : le filtre embarqué sans
+    // !inner ne restreignait pas les parents (fenêtre 1000 → gate robots faux
+    // pour les villes hors fenêtre). Compte establishment-first des cabinets
+    // listables distincts de la ville.
+    const refs = await fetchDirectoryListingEstablishmentRefsByCity(codeInsee);
+    return new Set(refs.map((ref) => ref.cabinetId)).size;
   },
 
   async getDirectoryListingCabinetCount(): Promise<number> {
@@ -1321,31 +1605,47 @@ const adapter: DbAdapter = {
     excludeSiret: string,
     limit = 3,
   ): Promise<DirectoryCabinetCard[]> {
-    const { data, error } = await getSupabaseClient()
-      .from("directory_cabinets")
-      .select(DIRECTORY_CABINET_EMBED)
-      .or(DIRECTORY_LISTING_OR_FILTER)
-      .eq("establishments.city_code_insee", codeInsee)
-      .neq("establishments.siret", excludeSiret);
-    if (error) throw error;
+    const refs = (await fetchDirectoryListingEstablishmentRefsByCity(codeInsee))
+      .filter((ref) => ref.siret !== excludeSiret);
+    if (refs.length === 0) return [];
 
-    const filtered = await filterActiveCabinets(
-      (data ?? []) as unknown as CabinetWithRelations[],
+    const rowsByCabinetId = new Map<number, CabinetWithRelations>();
+    const cabinetIds = Array.from(new Set(refs.map((ref) => ref.cabinetId)));
+    for (const idChunk of chunkArray(cabinetIds, SUPABASE_IN_CHUNK_SIZE)) {
+      const { data, error } = await getSupabaseClient()
+        .from("directory_cabinets")
+        .select(DIRECTORY_CABINET_EMBED)
+        .in("id", idChunk);
+      if (error) throw error;
+
+      for (const row of (data ?? []) as unknown as CabinetWithRelations[]) {
+        rowsByCabinetId.set(row.id, row);
+      }
+    }
+
+    const candidates = refs
+      .map((ref) => {
+        const row = rowsByCabinetId.get(ref.cabinetId);
+        if (!row) return null;
+        return mapCabinetRow(row, (ests) =>
+          ests.find((establishment) =>
+            establishment.id === ref.establishmentId
+            || establishment.siret === ref.siret,
+          ),
+        );
+      })
+      .filter((card): card is DirectoryCabinetCard => card !== null);
+
+    const previews = await fetchSourcePreviewImagesByEstablishmentIds(
+      candidates.map((card) => card.establishment.id),
     );
-
     const verifiedSet = new Set(["verified", "manual_verified"]);
 
-    return filtered
-      .map((row) =>
-        mapCabinetRow(row, (ests) =>
-          ests.find(
-            (e) =>
-              e.city_code_insee === codeInsee && e.siret !== excludeSiret,
-          ),
-        ),
-      )
-      .filter((card): card is DirectoryCabinetCard => card !== null)
+    return candidates
       .sort((a, b) => {
+        const ap = previews.has(a.establishment.id) ? 0 : 1;
+        const bp = previews.has(b.establishment.id) ? 0 : 1;
+        if (ap !== bp) return ap - bp;
         const av = verifiedSet.has(a.cabinet.oec_status) ? 0 : 1;
         const bv = verifiedSet.has(b.cabinet.oec_status) ? 0 : 1;
         if (av !== bv) return av - bv;
@@ -1356,7 +1656,11 @@ const adapter: DbAdapter = {
         const bn = (b.cabinet.display_name ?? b.cabinet.legal_name).toLowerCase();
         return an.localeCompare(bn);
       })
-      .slice(0, limit);
+      .slice(0, limit)
+      .map((card) => ({
+        ...card,
+        sourcePreviewImageUrl: previews.get(card.establishment.id) ?? null,
+      }));
   },
 
   async getDirectoryProfileFactsByEstablishment(
@@ -1376,16 +1680,20 @@ const adapter: DbAdapter = {
     const order = new Map<DirectoryProfileFact["fact_type"], number>([
       ["website", 0],
       ["contact_url", 1],
-      ["phone", 2],
-      ["opening_hours", 3],
-      ["service", 4],
-      ["sector", 5],
-      ["software", 6],
-      ["registry_status", 7],
+      ["email", 2],
+      ["phone", 3],
+      ["opening_hours", 4],
+      ["profile_summary", 5],
+      ["source_preview_image", 6],
+      ["service", 7],
+      ["sector", 8],
+      ["software", 9],
+      ["team_signal", 10],
+      ["registry_status", 11],
     ]);
     return ((data ?? []) as DirectoryProfileFact[]).sort(
       (a, b) =>
-        (order.get(a.fact_type) ?? 8) - (order.get(b.fact_type) ?? 8)
+        (order.get(a.fact_type) ?? 12) - (order.get(b.fact_type) ?? 12)
         || b.confidence - a.confidence
         || a.label.localeCompare(b.label, "fr"),
     );

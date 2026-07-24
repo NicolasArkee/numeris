@@ -1243,5 +1243,155 @@
     "source": "/ressources/logiciel-ciel-integration",
     "destination": "/ressources/paie-previsionnel",
     "permanent": true
+  },
+  {
+    "source": "/ressources/comment-choisir-un-logiciel-de-facturation",
+    "destination": "/comparatifs/comment-choisir-un-logiciel-de-facturation",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/facturation-electronique-2026-obligations-et-calendrier",
+    "destination": "/comparatifs/facturation-electronique-2026-obligations-et-calendrier",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/qu-est-ce-qu-une-neobanque-pro",
+    "destination": "/comparatifs/qu-est-ce-qu-une-neobanque-pro",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/comment-ouvrir-un-compte-pro-en-ligne",
+    "destination": "/comparatifs/comment-ouvrir-un-compte-pro-en-ligne",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/compte-pro-obligatoire-qui-est-concerne",
+    "destination": "/comparatifs/compte-pro-obligatoire-qui-est-concerne",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/difference-entre-expert-comptable-en-ligne-et-cabinet-traditionnel",
+    "destination": "/comparatifs/difference-entre-expert-comptable-en-ligne-et-cabinet-traditionnel",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/combien-coute-un-expert-comptable-en-ligne",
+    "destination": "/comparatifs/combien-coute-un-expert-comptable-en-ligne",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/comment-changer-d-expert-comptable",
+    "destination": "/comparatifs/comment-changer-d-expert-comptable",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/logiciel-de-comptabilite-ou-expert-comptable-que-choisir",
+    "destination": "/comparatifs/logiciel-de-comptabilite-ou-expert-comptable-que-choisir",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/comment-declarer-ses-revenus-lmnp",
+    "destination": "/comparatifs/comment-declarer-ses-revenus-lmnp",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/lmnp-au-reel-ou-micro-bic-comparatif",
+    "destination": "/comparatifs/lmnp-au-reel-ou-micro-bic-comparatif",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/comment-tenir-la-comptabilite-d-une-sci",
+    "destination": "/comparatifs/comment-tenir-la-comptabilite-d-une-sci",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/amortissement-lmnp-comment-ca-marche",
+    "destination": "/comparatifs/amortissement-lmnp-comment-ca-marche",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/comment-creer-son-auto-entreprise-etape-par-etape",
+    "destination": "/comparatifs/comment-creer-son-auto-entreprise-etape-par-etape",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/sasu-ou-eurl-quel-statut-choisir",
+    "destination": "/comparatifs/sasu-ou-eurl-quel-statut-choisir",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/comment-faire-un-depot-de-capital-social",
+    "destination": "/comparatifs/comment-faire-un-depot-de-capital-social",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/comment-etablir-un-bulletin-de-paie",
+    "destination": "/comparatifs/comment-etablir-un-bulletin-de-paie",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/logiciel-de-paie-ou-expert-comptable-pour-la-paie",
+    "destination": "/comparatifs/logiciel-de-paie-ou-expert-comptable-pour-la-paie",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/comment-gerer-la-tresorerie-d-une-tpe",
+    "destination": "/comparatifs/comment-gerer-la-tresorerie-d-une-tpe",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/note-de-frais-regles-et-bonnes-pratiques",
+    "destination": "/comparatifs/note-de-frais-regles-et-bonnes-pratiques",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/comment-choisir-un-crm-pour-une-tpe",
+    "destination": "/comparatifs/comment-choisir-un-crm-pour-une-tpe",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/affiliation-vs-parrainage-vs-apporteur-d-affaires-differences",
+    "destination": "/comparatifs/affiliation-vs-parrainage-vs-apporteur-d-affaires-differences",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/comment-fonctionne-le-parrainage-bancaire-pro",
+    "destination": "/comparatifs/comment-fonctionne-le-parrainage-bancaire-pro",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/logiciel-de-devis-et-facture-guide-complet",
+    "destination": "/comparatifs/logiciel-de-devis-et-facture-guide-complet",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/comment-automatiser-sa-comptabilite",
+    "destination": "/comparatifs/comment-automatiser-sa-comptabilite",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/tva-regimes-et-obligations-pour-tpe",
+    "destination": "/comparatifs/tva-regimes-et-obligations-pour-tpe",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/comment-choisir-sa-banque-pro-en-2026",
+    "destination": "/comparatifs/comment-choisir-sa-banque-pro-en-2026",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/outils-de-gestion-indispensables-pour-freelance",
+    "destination": "/comparatifs/outils-de-gestion-indispensables-pour-freelance",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/comment-digitaliser-la-gestion-de-son-entreprise",
+    "destination": "/comparatifs/comment-digitaliser-la-gestion-de-son-entreprise",
+    "permanent": true
+  },
+  {
+    "source": "/ressources/comparatif-des-plateformes-d-affiliation-compta-gestion",
+    "destination": "/comparatifs/comparatif-des-plateformes-d-affiliation-compta-gestion",
+    "permanent": true
   }
 ]

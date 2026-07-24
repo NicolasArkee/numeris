@@ -1,7 +1,7 @@
 import Database from "better-sqlite3";
 import fs from "node:fs";
 import path from "node:path";
-import { SCHEMA } from "../src/libs/db/schema";
+import { SCHEMA, ensureDirectoryProfileFactTypeCompatibility } from "../src/libs/db/schema";
 import type {
   DirectoryProfileFact,
   DirectoryProfileFactType,
@@ -15,6 +15,7 @@ type PilotFact = {
   value: string;
   confidence: number;
   is_displayable: boolean;
+  metadata_json?: string | Record<string, unknown> | null;
 };
 
 type PilotRecord = {
@@ -55,6 +56,11 @@ function boolToInt(value: boolean): number {
   return value ? 1 : 0;
 }
 
+function normalizeMetadataJson(value: PilotFact["metadata_json"]): string | null {
+  if (value == null) return null;
+  return typeof value === "string" ? value : JSON.stringify(value);
+}
+
 const options = parseArgs();
 const payloadPath = path.resolve(process.cwd(), options.file);
 const records = JSON.parse(fs.readFileSync(payloadPath, "utf8")) as PilotRecord[];
@@ -62,6 +68,7 @@ const records = JSON.parse(fs.readFileSync(payloadPath, "utf8")) as PilotRecord[
 const db = new Database(options.dbPath);
 db.pragma("journal_mode = WAL");
 db.exec(SCHEMA);
+ensureDirectoryProfileFactTypeCompatibility(db);
 
 const importRecord = db.transaction((record: PilotRecord) => {
   const row = db.prepare(
@@ -146,14 +153,15 @@ const importRecord = db.transaction((record: PilotRecord) => {
   for (const fact of record.facts) {
     db.prepare(
       `INSERT INTO directory_profile_facts
-         (cabinet_id, establishment_id, fact_type, label, value, source_id, confidence, is_displayable)
+         (cabinet_id, establishment_id, fact_type, label, value, source_id, confidence, is_displayable, metadata_json)
        VALUES
-         (@cabinet_id, @establishment_id, @fact_type, @label, @value, @source_id, @confidence, @is_displayable)
+         (@cabinet_id, @establishment_id, @fact_type, @label, @value, @source_id, @confidence, @is_displayable, @metadata_json)
        ON CONFLICT DO UPDATE SET
          label = excluded.label,
          source_id = excluded.source_id,
          confidence = excluded.confidence,
          is_displayable = excluded.is_displayable,
+         metadata_json = excluded.metadata_json,
          updated_at = datetime('now')`,
     ).run({
       cabinet_id: row.cabinet_id,
@@ -164,6 +172,7 @@ const importRecord = db.transaction((record: PilotRecord) => {
       source_id: source.id,
       confidence: fact.confidence,
       is_displayable: boolToInt(fact.is_displayable),
+      metadata_json: normalizeMetadataJson(fact.metadata_json),
     });
   }
 

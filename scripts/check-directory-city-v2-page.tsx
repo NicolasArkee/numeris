@@ -18,7 +18,13 @@ async function main(): Promise<void> {
 
   const totalCount = await db.getDirectoryListingCabinetCountByCity(city.code_insee);
   const verifiedCount = await db.getDirectoryCabinetCountByCity(city.code_insee);
+  const enrichmentStatsStart = Date.now();
   const enrichmentStats = await db.getDirectoryCityEnrichmentStats(city.code_insee);
+  const enrichmentStatsMs = Date.now() - enrichmentStatsStart;
+  assert.ok(
+    enrichmentStatsMs < 10_000,
+    `Expected Marseille enrichment stats to avoid Supabase statement timeouts; took ${enrichmentStatsMs}ms`,
+  );
 
   const html = renderToStaticMarkup(
     <DirectoryCityPageV2
@@ -40,10 +46,18 @@ async function main(): Promise<void> {
   assert.match(html, /Ce que l'on peut vérifier publiquement|Ce que l&#x27;on peut vérifier publiquement/);
   assert.match(html, /Profils enrichis/);
   assert.match(html, /Qualifies/);
-  assert.match(html, /data-directory-city-map="static"/);
+  assert.match(html, /data-directory-city-map-explorer/);
+  assert.match(html, /data-directory-cabinet-sidebar/);
+  assert.match(html, /data-directory-city-map="embed"/);
   assert.match(html, /openstreetmap/);
-  assert.match(html, /Cabinets comptables candidats et vérifiés/);
+  assert.match(html, /Cabinets référencés/);
   assert.match(html, /href="\/expert-comptable\/marseille\//);
+  assert.doesNotMatch(html, /data-directory-city-map="static"/);
+  assert.ok(
+    html.indexOf("data-directory-city-map-explorer") > html.indexOf("Cabinets comptables à Marseille")
+    && html.indexOf("data-directory-city-map-explorer") < html.indexOf("Trouver un cabinet comptable à Marseille"),
+    "Expected map explorer to render directly below the hero before editorial content",
+  );
   assert.match(html, /Missions comptables souvent recherchées à Marseille/);
   assert.match(html, /href="\/expertises\/comptabilite"/);
   assert.match(html, /Professions accompagnées par un expert-comptable/);

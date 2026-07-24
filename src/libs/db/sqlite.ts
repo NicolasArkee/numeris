@@ -1,6 +1,6 @@
 import Database from "better-sqlite3";
 import path from "node:path";
-import { SCHEMA } from "./schema";
+import { SCHEMA, ensureDirectoryProfileFactTypeCompatibility } from "./schema";
 import type {
   Cluster,
   DbAdapter,
@@ -47,6 +47,7 @@ function getDb(): Database.Database {
     _dbPath = dbPath;
     _db.pragma("journal_mode = WAL");
     _db.exec(SCHEMA);
+    ensureDirectoryProfileFactTypeCompatibility(_db);
   }
   return _db;
 }
@@ -143,6 +144,7 @@ type DirectoryJoinRow = {
   official_longitude: number | null;
   official_population: number;
   official_updated_at: string | null;
+  source_preview_image_url: string | null;
 };
 
 const DIRECTORY_ACTIVE_WHERE = `
@@ -247,6 +249,7 @@ function mapDirectoryRow(row: DirectoryJoinRow): DirectoryCabinetCard {
           updated_at: row.official_updated_at ?? "",
         }
       : null,
+    sourcePreviewImageUrl: row.source_preview_image_url,
   };
 }
 
@@ -296,7 +299,18 @@ const DIRECTORY_SELECT = `
     c.latitude AS official_latitude,
     c.longitude AS official_longitude,
     c.population AS official_population,
-    c.updated_at AS official_updated_at
+    c.updated_at AS official_updated_at,
+    (
+      SELECT f.value
+      FROM directory_profile_facts f
+      LEFT JOIN directory_enrichment_sources s ON s.id = f.source_id
+      WHERE f.establishment_id = e.id
+        AND f.fact_type = 'source_preview_image'
+        AND f.is_displayable = 1
+        AND (f.source_id IS NULL OR s.parsed_ok = 1)
+      ORDER BY f.confidence DESC, f.id DESC
+      LIMIT 1
+    ) AS source_preview_image_url
   FROM directory_cabinets d
   JOIN directory_establishments e ON e.cabinet_id = d.id
   LEFT JOIN cities_official c ON c.code_insee = e.city_code_insee
@@ -755,6 +769,7 @@ export const sqliteAdapter: DbAdapter = {
            AND e.siret != ?
            AND ${DIRECTORY_LISTING_WHERE}
          ORDER BY
+           CASE WHEN source_preview_image_url IS NOT NULL THEN 0 ELSE 1 END ASC,
            CASE WHEN d.oec_status IN ('verified','manual_verified') THEN 0 ELSE 1 END ASC,
            d.confidence_score DESC,
            COALESCE(d.display_name, d.legal_name) ASC
@@ -777,13 +792,17 @@ export const sqliteAdapter: DbAdapter = {
            CASE fact_type
              WHEN 'website' THEN 0
              WHEN 'contact_url' THEN 1
-             WHEN 'phone' THEN 2
-             WHEN 'opening_hours' THEN 3
-             WHEN 'service' THEN 4
-             WHEN 'sector' THEN 5
-             WHEN 'software' THEN 6
-             WHEN 'registry_status' THEN 7
-             ELSE 8
+             WHEN 'email' THEN 2
+             WHEN 'phone' THEN 3
+             WHEN 'opening_hours' THEN 4
+             WHEN 'profile_summary' THEN 5
+             WHEN 'source_preview_image' THEN 6
+             WHEN 'service' THEN 7
+             WHEN 'sector' THEN 8
+             WHEN 'software' THEN 9
+             WHEN 'team_signal' THEN 10
+             WHEN 'registry_status' THEN 11
+             ELSE 12
            END,
            confidence DESC,
            label ASC`,

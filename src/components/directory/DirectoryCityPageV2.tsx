@@ -11,8 +11,7 @@ import { AppConfig } from "@/utils/AppConfig";
 import { DirectoryComplianceNotice } from "./DirectoryComplianceNotice";
 import { DirectoryFaq } from "./DirectoryFaq";
 import { DirectoryInternalMesh } from "./DirectoryInternalMesh";
-import { DirectoryCityCabinetList } from "./DirectoryCityCabinetList";
-import { DirectoryCityStaticMap } from "./DirectoryCityStaticMap";
+import { DirectoryCityMapExplorer } from "./DirectoryCityMapExplorer";
 import { ItemListJsonLd } from "@/components/JsonLd";
 import {
   cabinetDirectoryPath,
@@ -301,6 +300,12 @@ export function DirectoryCityPageV2({
 
       <article className="bg-bg px-6 py-14 lg:px-12 lg:py-18">
         <div className="mx-auto max-w-328 space-y-14">
+          <DirectoryCityMapExplorer
+            city={city}
+            cabinets={cabinets}
+            stats={stats}
+          />
+
           <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_23rem]">
             <div className="space-y-10">
               <section>
@@ -360,15 +365,6 @@ export function DirectoryCityPageV2({
               enrichmentStats={enrichmentStats}
             />
           </div>
-
-          <section>
-            <h2 className="mb-5 font-display text-[1.5rem] font-bold text-ink">
-              Carte des cabinets à {city.name}
-            </h2>
-            <DirectoryCityStaticMap city={city} totalCount={stats.totalCount} />
-          </section>
-
-          <DirectoryCityCabinetList cabinets={cabinets} stats={stats} />
 
           <DirectoryInternalMesh
             cityName={city.name}

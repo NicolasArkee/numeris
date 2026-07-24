@@ -6,6 +6,7 @@ import { DirectoryComplianceNotice } from "@/components/directory/DirectoryCompl
 import { DirectorySearch } from "@/components/directory/DirectorySearch";
 import { ItemListJsonLd } from "@/components/JsonLd";
 import { getListingCabinetTotal } from "@/components/home/home-data";
+import { withRetry } from "@/libs/db/withRetry";
 
 // ISR: regenerated at most every hour. Keeps this page out of the synchronous
 // SSG batch that saturates Supabase when 30k pages build concurrently.
@@ -18,26 +19,16 @@ export const metadata: Metadata = {
   alternates: { canonical: `${AppConfig.url}/annuaire/experts-comptables` },
 };
 
-/** Un timeout Supabase transitoire (57014) sur cette page SSG faisait échouer
- *  TOUT le build : retry puis dégradation gracieuse — l'ISR (1 h) se rattrape. */
-async function withRetry<T>(fn: () => Promise<T>, fallback: T): Promise<T> {
-  for (let attempt = 0; attempt < 2; attempt++) {
-    try {
-      return await fn();
-    } catch {
-      await new Promise((r) => setTimeout(r, 1500));
-    }
-  }
-  return fallback;
-}
-
 export default async function ExpertsComptablesDirectoryPage() {
-  const cities = await withRetry(() => db.getDirectoryListingCities(), []);
+  // Un timeout Supabase transitoire (57014) sur cette page SSG faisait
+  // échouer TOUT le build : retry puis dégradation gracieuse (withRetry
+  // partagé avec les sitemaps villes/fiches, même classe de bug).
+  const cities = await withRetry(() => db.getDirectoryListingCities(), [], 2);
   // Head-count exact — l'ancien getDirectoryListingCabinetCount post-filtrait
   // une fenêtre PostgREST tronquée à 1 000 rows : chiffre faux ET requête
   // lourde qui timeoutait le prerender (57014) sous charge.
-  const count = await withRetry(() => getListingCabinetTotal(), 0);
-  const verifiedCount = await withRetry(() => db.getPublishedDirectoryCabinetCount(), 0);
+  const count = await withRetry(() => getListingCabinetTotal(), 0, 2);
+  const verifiedCount = await withRetry(() => db.getPublishedDirectoryCabinetCount(), 0, 2);
 
   return (
     <ClusterPage

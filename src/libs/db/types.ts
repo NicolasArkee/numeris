@@ -289,6 +289,8 @@ export type DirectoryProfileFactType =
   | "sector"
   | "software"
   | "team_signal"
+  | "profile_summary"
+  | "source_preview_image"
   | "registry_status";
 
 export interface DirectoryCabinet {
@@ -356,6 +358,7 @@ export interface DirectoryCabinetCard {
   cabinet: DirectoryCabinet;
   establishment: DirectoryEstablishment;
   city: DirectoryCity | null;
+  sourcePreviewImageUrl?: string | null;
 }
 
 export interface DirectoryEnrichmentSource {
@@ -384,6 +387,7 @@ export interface DirectoryProfileFact {
   source_id: number | null;
   confidence: number;
   is_displayable: number | boolean;
+  metadata_json?: string | null;
   created_at: string;
   updated_at: string;
 }

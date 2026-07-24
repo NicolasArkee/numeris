@@ -37,7 +37,16 @@ export type GroupedDirectoryProfileFacts = {
   services: DirectoryProfileFact[];
   sectors: DirectoryProfileFact[];
   software: DirectoryProfileFact[];
+  team: DirectoryProfileFact[];
+  previews: DirectoryProfileFact[];
   evidence: DirectoryProfileFact[];
+};
+
+export type DirectoryTeamMember = {
+  name: string;
+  initials: string;
+  role: string;
+  fact: DirectoryProfileFact;
 };
 
 const USEFUL_FACT_TYPES = new Set<DirectoryProfileFactType>([
@@ -48,6 +57,8 @@ const USEFUL_FACT_TYPES = new Set<DirectoryProfileFactType>([
   "service",
   "sector",
   "software",
+  "profile_summary",
+  "source_preview_image",
   "registry_status",
 ]);
 
@@ -65,6 +76,16 @@ export function hasUsefulDirectoryProfileFacts(
   return displayableFacts(facts).some((fact) => USEFUL_FACT_TYPES.has(fact.fact_type));
 }
 
+export function findDirectoryProfileSummary(
+  facts: DirectoryProfileFact[],
+): DirectoryProfileFact | null {
+  return (
+    displayableFacts(facts)
+      .filter((fact) => fact.fact_type === "profile_summary")
+      .sort((first, second) => second.confidence - first.confidence)[0] ?? null
+  );
+}
+
 export function groupDirectoryProfileFacts(
   facts: DirectoryProfileFact[],
 ): GroupedDirectoryProfileFacts {
@@ -76,8 +97,63 @@ export function groupDirectoryProfileFacts(
     services: shown.filter((fact) => fact.fact_type === "service"),
     sectors: shown.filter((fact) => fact.fact_type === "sector"),
     software: shown.filter((fact) => fact.fact_type === "software"),
+    team: shown.filter((fact) => fact.fact_type === "team_signal"),
+    previews: shown.filter((fact) => fact.fact_type === "source_preview_image"),
     evidence: shown.filter((fact) => fact.fact_type === "registry_status"),
   };
+}
+
+function initialsFromName(name: string): string {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("");
+}
+
+function roleFromTeamFact(value: string): string {
+  return /expert[s]?[-\s]?comptable[s]?/i.test(value)
+    ? "Expert-comptable"
+    : "Membre identifié";
+}
+
+function namesFromTeamFact(value: string): string[] {
+  const withoutPrefix = value.includes(":")
+    ? value.slice(value.indexOf(":") + 1)
+    : value;
+
+  return withoutPrefix
+    .replace(/\bet\b/gi, ",")
+    .split(",")
+    .map((name) => name.trim().replace(/\s+/g, " "))
+    .filter((name) => name.length >= 3);
+}
+
+export function extractDirectoryTeamMembers(
+  facts: DirectoryProfileFact[],
+): DirectoryTeamMember[] {
+  const seen = new Set<string>();
+  const members: DirectoryTeamMember[] = [];
+
+  for (const fact of displayableFacts(facts).filter(
+    (item) => item.fact_type === "team_signal",
+  )) {
+    const role = roleFromTeamFact(fact.value);
+    for (const name of namesFromTeamFact(fact.value)) {
+      const key = name.toLocaleLowerCase("fr-FR");
+      if (seen.has(key)) continue;
+      seen.add(key);
+      members.push({
+        name,
+        initials: initialsFromName(name),
+        role,
+        fact,
+      });
+    }
+  }
+
+  return members;
 }
 
 function isRecent(value: string | null, now: Date): boolean {

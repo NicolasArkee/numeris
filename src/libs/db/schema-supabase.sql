@@ -450,18 +450,22 @@ CREATE TABLE IF NOT EXISTS directory_profile_facts (
   id BIGSERIAL PRIMARY KEY,
   cabinet_id BIGINT NOT NULL REFERENCES directory_cabinets(id) ON DELETE CASCADE,
   establishment_id BIGINT REFERENCES directory_establishments(id) ON DELETE CASCADE,
-  fact_type TEXT NOT NULL CHECK(fact_type IN ('website','phone','email','contact_url','opening_hours','service','sector','software','team_signal','registry_status')),
+  fact_type TEXT NOT NULL CHECK(fact_type IN ('website','phone','email','contact_url','opening_hours','service','sector','software','team_signal','profile_summary','source_preview_image','registry_status')),
   label TEXT NOT NULL,
   value TEXT NOT NULL,
   source_id BIGINT REFERENCES directory_enrichment_sources(id) ON DELETE SET NULL,
   confidence INTEGER NOT NULL DEFAULT 0,
   is_displayable BOOLEAN NOT NULL DEFAULT FALSE,
+  metadata_json TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 CREATE UNIQUE INDEX IF NOT EXISTS idx_directory_profile_facts_unique ON directory_profile_facts(cabinet_id, COALESCE(establishment_id, -1), fact_type, value);
 CREATE INDEX IF NOT EXISTS idx_directory_profile_facts_establishment ON directory_profile_facts(establishment_id, is_displayable, fact_type);
 CREATE INDEX IF NOT EXISTS idx_directory_profile_facts_cabinet ON directory_profile_facts(cabinet_id, is_displayable, fact_type);
+ALTER TABLE directory_profile_facts ADD COLUMN IF NOT EXISTS metadata_json TEXT;
+ALTER TABLE directory_profile_facts DROP CONSTRAINT IF EXISTS directory_profile_facts_fact_type_check;
+ALTER TABLE directory_profile_facts ADD CONSTRAINT directory_profile_facts_fact_type_check CHECK(fact_type IN ('website','phone','email','contact_url','opening_hours','service','sector','software','team_signal','profile_summary','source_preview_image','registry_status'));
 
 CREATE TABLE IF NOT EXISTS directory_qualification_snapshots (
   id BIGSERIAL PRIMARY KEY,

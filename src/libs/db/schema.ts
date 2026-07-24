@@ -448,12 +448,13 @@ CREATE TABLE IF NOT EXISTS directory_profile_facts (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   cabinet_id INTEGER NOT NULL REFERENCES directory_cabinets(id) ON DELETE CASCADE,
   establishment_id INTEGER REFERENCES directory_establishments(id) ON DELETE CASCADE,
-  fact_type TEXT NOT NULL CHECK(fact_type IN ('website','phone','email','contact_url','opening_hours','service','sector','software','team_signal','registry_status')),
+  fact_type TEXT NOT NULL CHECK(fact_type IN ('website','phone','email','contact_url','opening_hours','service','sector','software','team_signal','profile_summary','source_preview_image','registry_status')),
   label TEXT NOT NULL,
   value TEXT NOT NULL,
   source_id INTEGER REFERENCES directory_enrichment_sources(id) ON DELETE SET NULL,
   confidence INTEGER NOT NULL DEFAULT 0,
   is_displayable INTEGER NOT NULL DEFAULT 0,
+  metadata_json TEXT,
   created_at TEXT NOT NULL DEFAULT (datetime('now')),
   updated_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
@@ -575,3 +576,84 @@ CREATE TABLE IF NOT EXISTS commercial_links (
 );
 CREATE INDEX IF NOT EXISTS idx_commercial_links_source ON commercial_links(source_slug);
 `;
+
+type SqliteSchemaDb = {
+  prepare: (sql: string) => {
+    get: (...params: any[]) => unknown;
+  };
+  exec: (sql: string) => unknown;
+};
+
+export function ensureDirectoryProfileFactTypeCompatibility(db: SqliteSchemaDb): void {
+  const row = db
+    .prepare(
+      "SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'directory_profile_facts'",
+    )
+    .get() as { sql: string | null } | undefined;
+
+  if (!row?.sql) {
+    return;
+  }
+
+  if (!row.sql.includes("metadata_json")) {
+    db.exec("ALTER TABLE directory_profile_facts ADD COLUMN metadata_json TEXT;");
+  }
+
+  if (row.sql.includes("'source_preview_image'")) {
+    return;
+  }
+
+  db.exec(`
+PRAGMA foreign_keys=off;
+BEGIN;
+ALTER TABLE directory_profile_facts RENAME TO directory_profile_facts_legacy;
+CREATE TABLE directory_profile_facts (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  cabinet_id INTEGER NOT NULL REFERENCES directory_cabinets(id) ON DELETE CASCADE,
+  establishment_id INTEGER REFERENCES directory_establishments(id) ON DELETE CASCADE,
+  fact_type TEXT NOT NULL CHECK(fact_type IN ('website','phone','email','contact_url','opening_hours','service','sector','software','team_signal','profile_summary','source_preview_image','registry_status')),
+  label TEXT NOT NULL,
+  value TEXT NOT NULL,
+  source_id INTEGER REFERENCES directory_enrichment_sources(id) ON DELETE SET NULL,
+  confidence INTEGER NOT NULL DEFAULT 0,
+  is_displayable INTEGER NOT NULL DEFAULT 0,
+  metadata_json TEXT,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+INSERT INTO directory_profile_facts (
+  id,
+  cabinet_id,
+  establishment_id,
+  fact_type,
+  label,
+  value,
+  source_id,
+  confidence,
+  is_displayable,
+  metadata_json,
+  created_at,
+  updated_at
+)
+SELECT
+  id,
+  cabinet_id,
+  establishment_id,
+  fact_type,
+  label,
+  value,
+  source_id,
+  confidence,
+  is_displayable,
+  metadata_json,
+  created_at,
+  updated_at
+FROM directory_profile_facts_legacy;
+DROP TABLE directory_profile_facts_legacy;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_directory_profile_facts_unique ON directory_profile_facts(cabinet_id, COALESCE(establishment_id, -1), fact_type, value);
+CREATE INDEX IF NOT EXISTS idx_directory_profile_facts_establishment ON directory_profile_facts(establishment_id, is_displayable, fact_type);
+CREATE INDEX IF NOT EXISTS idx_directory_profile_facts_cabinet ON directory_profile_facts(cabinet_id, is_displayable, fact_type);
+COMMIT;
+PRAGMA foreign_keys=on;
+`);
+}

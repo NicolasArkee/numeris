@@ -22,11 +22,13 @@ interface Props {
 }
 
 // SSG initial : uniquement les cabinets published+verified (générés au build, ~3).
-// Tout autre cabinet est généré à la demande (ISR) puis caché 24h via revalidate.
+// Tout autre cabinet est généré à la demande (ISR) puis caché 30 jours via
+// revalidate — données annuaire figées (établissements scrapés), inutile de
+// revalider tous les jours.
 // Le filtre métier (publish_status / oec_status) est appliqué côté DB par
 // getDirectoryListingCabinetBySiret — un cabinet introuvable renvoie notFound().
 export const dynamicParams = true;
-export const revalidate = 86400;
+export const revalidate = 2592000; // 30 jours
 
 function siretFromCabinetParam(value: string): string | null {
   const match = value.match(/-(\d{14})$/);

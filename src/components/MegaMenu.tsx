@@ -108,6 +108,7 @@ export function MegaMenu({ menus, simpleLinks }: MegaMenuProps) {
         <Link
           key={link.href}
           href={link.href}
+          prefetch={false}
           className="font-display text-[0.9375rem] font-medium text-ink-muted transition-colors hover:text-brand-700"
         >
           {link.label}
@@ -152,6 +153,7 @@ function LinksLayout({ menu }: { menu: MegaMenuConfig }) {
               <li key={item.href}>
                 <Link
                   href={item.href}
+                  prefetch={false}
                   className="block rounded-md px-2 py-1.5 text-[0.875rem] text-ink transition-colors hover:bg-bg hover:text-brand-700"
                 >
                   {item.label}
@@ -162,6 +164,7 @@ function LinksLayout({ menu }: { menu: MegaMenuConfig }) {
           {section.seeAll && (
             <Link
               href={section.seeAll.href}
+              prefetch={false}
               className="mt-3 inline-flex items-center gap-1 px-2 font-display text-[0.8125rem] font-semibold text-brand-700 transition-colors hover:text-brand-500"
             >
               {section.seeAll.label}
@@ -190,6 +193,7 @@ function CardsLayout({ menu }: { menu: MegaMenuConfig }) {
               <Link
                 key={item.href}
                 href={item.href}
+                prefetch={false}
                 className="group flex items-start gap-3 rounded-lg p-3 transition-colors hover:bg-bg"
               >
                 {item.icon && (
@@ -213,6 +217,7 @@ function CardsLayout({ menu }: { menu: MegaMenuConfig }) {
           {section.seeAll && (
             <Link
               href={section.seeAll.href}
+              prefetch={false}
               className="mt-3 inline-flex items-center gap-1 px-3 font-display text-[0.8125rem] font-semibold text-brand-700 transition-colors hover:text-brand-500"
             >
               {section.seeAll.label}
