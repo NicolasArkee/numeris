@@ -1,0 +1,943 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-09-08",
+  "defaults": {
+    "format": "webp",
+    "width": 1536,
+    "height": 1024,
+    "aspectRatio": "3:2",
+    "credit": "Illustration générée par IA",
+    "responsiveWidths": [640, 828, 1200, 1536]
+  },
+  "assets": [
+    {
+      "id": "doctor",
+      "status": "approved",
+      "src": "/images/skoria-v2/editorial/doctor.webp",
+      "alt": "Médecin préparant ses documents dans son cabinet",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 97894,
+      "sha256": "9b131832521257d7ceb9bac0825bac2f64947d9c532eb60e453a7377e9740893",
+      "roles": ["profession-hero", "profession-editorial", "home-category-card"],
+      "templateIds": ["home", "profession"],
+      "responsive": {
+        "sizes": "(max-width: 760px) 100vw, 48vw",
+        "objectPosition": { "desktop": "50% 50%", "mobile": "50% 42%" },
+        "variants": [
+          { "width": 640, "height": 427, "src": "/images/skoria-v2/editorial/doctor-640.webp", "bytes": 29418 },
+          { "width": 828, "height": 552, "src": "/images/skoria-v2/editorial/doctor-828.webp", "bytes": 40452 },
+          { "width": 1200, "height": 800, "src": "/images/skoria-v2/editorial/doctor-1200.webp", "bytes": 61762 }
+        ]
+      },
+      "disclosure": { "credit": "Illustration générée par IA", "peopleFictional": true, "publicCaptionRequired": true },
+      "provenance": {
+        "mode": "built-in imagegen",
+        "sourceFile": "exec-5df4c159-b896-4408-83ad-c70f8a6ccad6.png",
+        "sourceBytes": 1977066,
+        "sourceSha256": "7ee58fdcbe7bc2f3ee0d65823a0f0ee92313e34d069126ace12d5c6f5bee7d3e",
+        "prompt": null,
+        "promptStatus": "not-recorded-in-original-v2-manifest"
+      }
+    },
+    {
+      "id": "restaurant",
+      "status": "approved",
+      "src": "/images/skoria-v2/editorial/restaurant.webp",
+      "alt": "Restaurateur préparant son activité au comptoir",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 187590,
+      "sha256": "47e5f2f6eddde6252a11db9c17d844c4e742b4ebe8c5763cedaf4060e13dd44d",
+      "roles": ["sector-hero", "cross-hero", "sector-hub-hero", "home-category-card"],
+      "templateIds": ["home", "sector", "cross", "sectors-hub"],
+      "responsive": {
+        "sizes": "(max-width: 760px) 100vw, 48vw",
+        "objectPosition": { "desktop": "40% 50%", "mobile": "34% 50%" },
+        "variants": [
+          { "width": 640, "height": 427, "src": "/images/skoria-v2/editorial/restaurant-640.webp", "bytes": 51480 },
+          { "width": 828, "height": 552, "src": "/images/skoria-v2/editorial/restaurant-828.webp", "bytes": 72560 },
+          { "width": 1200, "height": 800, "src": "/images/skoria-v2/editorial/restaurant-1200.webp", "bytes": 114200 }
+        ]
+      },
+      "disclosure": { "credit": "Illustration générée par IA", "peopleFictional": true, "publicCaptionRequired": true },
+      "provenance": {
+        "mode": "built-in imagegen",
+        "sourceFile": "exec-f5352b9a-0b7c-4b7e-8c85-a19bca763dbd.png",
+        "sourceBytes": 2285860,
+        "sourceSha256": "52e6c2ff23bc371123b81e9a2cca9e05e5c457b7bb86d041841aed9e25c3388d",
+        "prompt": null,
+        "promptStatus": "not-recorded-in-original-v2-manifest"
+      }
+    },
+    {
+      "id": "workspace",
+      "status": "approved",
+      "src": "/images/skoria-v2/editorial/workspace.webp",
+      "alt": "Bureau avec ordinateur et documents de travail",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 116626,
+      "sha256": "a77fb0aab792607cd4c4c0a85dce4919bbdb930417dbfb9d845455c7134f72b7",
+      "roles": ["home-hero", "service-hero", "review-editorial"],
+      "templateIds": ["home", "service", "review"],
+      "responsive": {
+        "sizes": "(max-width: 760px) 100vw, 48vw",
+        "objectPosition": { "desktop": "50% 50%", "mobile": "58% 50%" },
+        "variants": [
+          { "width": 640, "height": 427, "src": "/images/skoria-v2/editorial/workspace-640.webp", "bytes": 30954 },
+          { "width": 828, "height": 552, "src": "/images/skoria-v2/editorial/workspace-828.webp", "bytes": 43602 },
+          { "width": 1200, "height": 800, "src": "/images/skoria-v2/editorial/workspace-1200.webp", "bytes": 69402 }
+        ]
+      },
+      "disclosure": { "credit": "Illustration générée par IA", "peopleFictional": false, "publicCaptionRequired": false },
+      "provenance": {
+        "mode": "built-in imagegen",
+        "sourceFile": "exec-e9994414-b75f-414c-bf1f-c34868eef3ea.png",
+        "sourceBytes": 2101678,
+        "sourceSha256": "5809fea39555bd05176da676687ce4a56713374298e0f9e9a784dafc355670e4",
+        "prompt": null,
+        "promptStatus": "not-recorded-in-original-v2-manifest"
+      }
+    },
+    {
+      "id": "apartment",
+      "status": "approved",
+      "src": "/images/skoria-v2/editorial/apartment.webp",
+      "alt": "Appartement meublé lumineux avec table, carnet et clés",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 182576,
+      "sha256": "dd3a9cabb2bd027824603dcf0dc6cd272860ce498e4f17ee2e70e519d173030d",
+      "roles": ["guide-hub-feature", "lmnp-hub-editorial", "article-editorial"],
+      "templateIds": ["guides-hub", "hub", "sub-hub", "article"],
+      "responsive": {
+        "sizes": "(max-width: 760px) 100vw, 48vw",
+        "objectPosition": { "desktop": "50% 50%", "mobile": "54% 50%" },
+        "variants": [
+          { "width": 640, "height": 427, "src": "/images/skoria-v2/editorial/apartment-640.webp", "bytes": 43686 },
+          { "width": 828, "height": 552, "src": "/images/skoria-v2/editorial/apartment-828.webp", "bytes": 64076 },
+          { "width": 1200, "height": 800, "src": "/images/skoria-v2/editorial/apartment-1200.webp", "bytes": 104726 }
+        ]
+      },
+      "disclosure": { "credit": "Illustration générée par IA", "peopleFictional": false, "publicCaptionRequired": false },
+      "provenance": {
+        "mode": "built-in imagegen",
+        "sourceFile": "exec-c8e7f749-26e5-43b6-8fed-c39b04cc4464.png",
+        "sourceBytes": 2425741,
+        "sourceSha256": "ffa386c5c5bb616fbec3ff2c0e1a94096ac403940897e0ce68c4f65f16eb8361",
+        "prompt": "Use case: photorealistic-natural. Asset type: editorial photograph for Skoria's long-form furnished-rental property guides and LMNP resource hub. Create a sophisticated architecture-magazine photograph of a compact furnished French apartment: oak table in foreground with a plain notebook and brass keys, cobalt blue upholstered chair, warm cream walls, linen curtains, glimpse of a nicely arranged sitting area. Natural late afternoon sunlight with defined diagonal shadows. No people. Wide 3:2 composition, tactile materials, realistic lived-in details, restrained elegant art direction, not a luxury real-estate advertisement. No logos, text, labels, documents with writing, or watermarks."
+      }
+    },
+    {
+      "id": "atelier",
+      "status": "approved",
+      "src": "/images/skoria-v2/editorial/atelier.webp",
+      "alt": "Architecte travaillant sur une maquette dans son atelier",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 168224,
+      "sha256": "5861864c07b4b99b519acfa44924708b3ffde4fd28297c659d55118f1240a4fc",
+      "roles": ["professions-hub-editorial", "home-category-card"],
+      "templateIds": ["home", "professions-hub"],
+      "responsive": {
+        "sizes": "(max-width: 760px) 100vw, 42vw",
+        "objectPosition": { "desktop": "62% 50%", "mobile": "66% 50%" },
+        "variants": [
+          { "width": 640, "height": 427, "src": "/images/skoria-v2/editorial/atelier-640.webp", "bytes": 47822 },
+          { "width": 828, "height": 552, "src": "/images/skoria-v2/editorial/atelier-828.webp", "bytes": 67000 },
+          { "width": 1200, "height": 800, "src": "/images/skoria-v2/editorial/atelier-1200.webp", "bytes": 104918 }
+        ]
+      },
+      "disclosure": { "credit": "Illustration générée par IA", "peopleFictional": true, "publicCaptionRequired": true },
+      "provenance": {
+        "mode": "built-in imagegen",
+        "sourceFile": "exec-3f1eea73-89d1-4f3f-92ed-6fa2c493a898.png",
+        "sourceBytes": 2208357,
+        "sourceSha256": "0c0e42deeac6a29ed0a40d6886495a9f27e58813b76d19fde52f1255fcc60ff4",
+        "prompt": "Use case: photorealistic-natural. Asset type: bold editorial photograph for the professional-directory hub of Skoria, an independent comparator. A fictional female independent architect in her late thirties wearing a deep navy chore jacket in a bright creative studio, standing side-on studying a physical cardboard architectural model on a broad wooden worktable, orange desk lamp, paper materials and drawing sheets without legible writing. Candid natural gesture and thoughtful expression, not looking at camera. Rich material textures, warm sunlit cream walls, sage and cobalt small accents. Wide landscape 3:2 crop, subject positioned to right of centre with breathing room. Contemporary French editorial photography, grounded and authentic. No branding, logos, text, suits, handshake, watermark. Must not imply a real client or Skoria employee."
+      }
+    },
+    {
+      "id": "cityscape",
+      "status": "approved",
+      "src": "/images/skoria-v2/editorial/cityscape.webp",
+      "alt": "Maquette abstraite d’un quartier français",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 89448,
+      "sha256": "dac52b9156026b733286642deaffa998c864125852067b0e0dbfaff35e38769d",
+      "roles": ["geo-hub-hero"],
+      "templateIds": ["geo-hub", "directory", "city", "profile"],
+      "responsive": {
+        "sizes": "(max-width: 760px) 100vw, 48vw",
+        "objectPosition": { "desktop": "58% 50%", "mobile": "62% 50%" },
+        "variants": [
+          { "width": 640, "height": 427, "src": "/images/skoria-v2/editorial/cityscape-640.webp", "bytes": 18536 },
+          { "width": 828, "height": 552, "src": "/images/skoria-v2/editorial/cityscape-828.webp", "bytes": 27686 },
+          { "width": 1200, "height": 800, "src": "/images/skoria-v2/editorial/cityscape-1200.webp", "bytes": 47494 }
+        ]
+      },
+      "disclosure": { "credit": "Illustration générée par IA", "peopleFictional": false, "publicCaptionRequired": false },
+      "provenance": {
+        "mode": "built-in imagegen",
+        "sourceFile": "exec-464c1a34-5017-4d7f-abdb-1956bb927619.png",
+        "sourceBytes": 1990071,
+        "sourceSha256": "41b044c9d761c25278b6a1a24ab158d29f735fac713bc643b22a71fd24705565",
+        "prompt": "Use case: stylized-concept. Asset type: visual for a geographic directory navigation hub on Skoria. Create an art-directed miniature French neighbourhood made from folded textured paper and matte architectural model materials, seen in a slightly elevated three-quarter perspective. Six or seven cream and pale blue building volumes with slate navy roofs, one orange corner-shop volume, a tiny square with a single stylized green tree and pale pathways connecting buildings. An abstract fictional place, no identifiable city or monument. Large negative space surrounding the small architectural composition, on a pale mint surface and backdrop, precise rich shadows, warm side lighting. Tactile architectural editorial still life, sophisticated not childish, landscape 3:2. No map labels, words, logos, numbers, people, watermarks."
+      }
+    },
+    {
+      "id": "objects",
+      "status": "approved",
+      "src": "/images/skoria-v2/editorial/objects.webp",
+      "alt": "Nature morte de documents et objets de calcul",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 110860,
+      "sha256": "03b2fe3006f9a6731a8df6f8a9ebf44edb5093d6b14e1e5babf63e2dee2b9399",
+      "roles": ["tools-hub-hero", "guides-hub-hero", "editorial-still-life"],
+      "templateIds": ["guides-hub", "tools-hub", "documents-hub"],
+      "responsive": {
+        "sizes": "(max-width: 760px) 100vw, 42vw",
+        "objectPosition": { "desktop": "50% 58%", "mobile": "66% 58%" },
+        "variants": [
+          { "width": 640, "height": 427, "src": "/images/skoria-v2/editorial/objects-640.webp", "bytes": 21708 },
+          { "width": 828, "height": 552, "src": "/images/skoria-v2/editorial/objects-828.webp", "bytes": 32696 },
+          { "width": 1200, "height": 800, "src": "/images/skoria-v2/editorial/objects-1200.webp", "bytes": 57160 }
+        ]
+      },
+      "disclosure": { "credit": "Illustration générée par IA", "peopleFictional": false, "publicCaptionRequired": false },
+      "provenance": {
+        "mode": "built-in imagegen",
+        "sourceFile": "exec-1f30a1a2-015b-4739-ae74-673cdce664a0.png",
+        "sourceBytes": 2211825,
+        "sourceSha256": "dc4daf3c262857add61f97aa71e2a3b218f0ae872b9e2f8e1862dafd9ee5fb31",
+        "prompt": "Use case: stylized-concept. Asset type: editorial still life for a finance tools and document library, used alongside real HTML headings and forms. Create a premium tactile sculptural still life photographed in a studio: a stack of thick off-white paper sheets and a folded navy folder, a small sculptural cobalt abacus-like object with five smooth spherical beads, one terracotta-orange arch and a translucent pale lilac glass disc. Contemporary design magazine aesthetic, minimal surreal object composition with convincing material weight, paper fibres, matte ceramic and soft glass refractions. Full-bleed pale warm lilac background, hard directional sun-like lighting casting expressive shadows. Landscape 3:2. No text, no numbers, no labels, no UI, no actual branded product, no logos, no watermark."
+      }
+    },
+    {
+      "id": "fintech-tools",
+      "status": "approved",
+      "src": "/images/skoria-v2/editorial/fintech-tools.webp",
+      "alt": "Carte professionnelle, terminal et smartphone sans marque sur un bureau",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 94436,
+      "sha256": "ad954ee4c44be1774af74a479ea4dd7a99614c892e5258d1a67e5be58e25a340",
+      "roles": ["comparison-editorial", "review-editorial", "offer-editorial", "commercial-hub-hero"],
+      "templateIds": ["comparison", "review", "offer", "resources-hub", "reviews-hub", "offers-hub"],
+      "responsive": {
+        "sizes": "(max-width: 760px) 100vw, 48vw",
+        "objectPosition": { "desktop": "50% 50%", "mobile": "56% 50%" },
+        "variants": [
+          { "width": 640, "height": 427, "src": "/images/skoria-v2/editorial/fintech-tools-640.webp", "bytes": 21182 },
+          { "width": 828, "height": 552, "src": "/images/skoria-v2/editorial/fintech-tools-828.webp", "bytes": 31052 },
+          { "width": 1200, "height": 800, "src": "/images/skoria-v2/editorial/fintech-tools-1200.webp", "bytes": 50698 }
+        ]
+      },
+      "disclosure": { "credit": "Illustration générée par IA", "peopleFictional": false, "publicCaptionRequired": false },
+      "provenance": {
+        "mode": "built-in imagegen",
+        "sourceFile": "exec-dd5c477e-1b46-46df-8108-9608f4173367.png",
+        "sourceBytes": 2089581,
+        "sourceSha256": "a04c3172cc147660d5f3ff3b0a06d79867c8b6fc0cd0013d91d24383d09a55c3",
+        "prompt": "Use case: photorealistic-concept. Premium editorial still life for an independent French business-banking comparison site: one completely unbranded matte navy payment card with no numbers, a small card reader, a blank-screen smartphone, plain receipts with no legible text and a cobalt notebook, on a pale lilac surface with one terracotta accent, hard directional daylight and expressive shadows, sophisticated design-magazine styling, landscape 3:2, no logos, brand colors, product UI, currency amounts, hands, people or watermark."
+      }
+    },
+    {
+      "id": "accounting-flow",
+      "status": "approved",
+      "src": "/images/skoria-v2/editorial/accounting-flow.webp",
+      "alt": "Documents comptables organisés en étapes avec registre et calculatrice",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 51280,
+      "sha256": "77748b349eb5ca7010675579abe0b3fdb5fa9ca6707107f47d18075649f499a2",
+      "roles": ["service-hub-hero", "service-editorial", "documents-editorial", "home-category-card"],
+      "templateIds": ["home", "service", "services-hub", "documents-hub", "tools-hub"],
+      "responsive": {
+        "sizes": "(max-width: 760px) 100vw, 48vw",
+        "objectPosition": { "desktop": "50% 50%", "mobile": "58% 50%" },
+        "variants": [
+          { "width": 640, "height": 427, "src": "/images/skoria-v2/editorial/accounting-flow-640.webp", "bytes": 8964 },
+          { "width": 828, "height": 552, "src": "/images/skoria-v2/editorial/accounting-flow-828.webp", "bytes": 12884 },
+          { "width": 1200, "height": 800, "src": "/images/skoria-v2/editorial/accounting-flow-1200.webp", "bytes": 23244 }
+        ]
+      },
+      "disclosure": { "credit": "Illustration générée par IA", "peopleFictional": false, "publicCaptionRequired": false },
+      "provenance": {
+        "mode": "built-in imagegen",
+        "sourceFile": "exec-de21683b-1e82-40a7-93fe-e620df717b72.png",
+        "sourceBytes": 2227271,
+        "sourceSha256": "9502d79282178401bb5c916c00cb5d8503f33c4467833783abc9c68a5495448a",
+        "prompt": "Use case: stylized-concept. Tactile overhead editorial composition explaining an accounting workflow: three stacks of off-white papers connected by cobalt tabs, a closed navy ledger, a simple unbranded calculator with blank keys and one orange archive tray, clean warm paper background, precise shadows, landscape 3:2 with generous negative space, no text, numbers, logos, screens, people or watermark."
+      }
+    },
+    {
+      "id": "lmnp-dossier",
+      "status": "approved",
+      "src": "/images/skoria-v2/editorial/lmnp-dossier.webp",
+      "alt": "Plan d’appartement, clés et échantillons de matériaux sur une table",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 216936,
+      "sha256": "0372aa450edcc4681447f6eba241ebb032251a64f9091798ef4c2bb2e9f12948",
+      "roles": ["lmnp-sub-hub-hero", "lmnp-article-editorial", "guide-dossier-editorial"],
+      "templateIds": ["guides-hub", "hub", "sub-hub", "article"],
+      "responsive": {
+        "sizes": "(max-width: 760px) 100vw, 48vw",
+        "objectPosition": { "desktop": "50% 50%", "mobile": "54% 50%" },
+        "variants": [
+          { "width": 640, "height": 427, "src": "/images/skoria-v2/editorial/lmnp-dossier-640.webp", "bytes": 49276 },
+          { "width": 828, "height": 552, "src": "/images/skoria-v2/editorial/lmnp-dossier-828.webp", "bytes": 72980 },
+          { "width": 1200, "height": 800, "src": "/images/skoria-v2/editorial/lmnp-dossier-1200.webp", "bytes": 121712 }
+        ]
+      },
+      "disclosure": { "credit": "Illustration générée par IA", "peopleFictional": false, "publicCaptionRequired": false },
+      "provenance": {
+        "mode": "built-in imagegen",
+        "sourceFile": "exec-98f1b1d2-cff2-4f55-9cb7-9058059b8cd8.png",
+        "sourceBytes": 2655041,
+        "sourceSha256": "4bc3c57fc73cf6b0dc577bfe7870fb007dc09e1306964488f06effcee6ec5808",
+        "prompt": "Use case: photorealistic-natural. Editorial flat lay for a French furnished-rental accounting guide: brass keys, material samples, a simplified architectural floor plan with no readable writing, plain purchase folder and small furniture inventory objects on an oak table, diagonal late-afternoon sunlight, cobalt and terracotta accents, landscape 3:2, no people, addresses, prices, logos, text or watermark."
+      }
+    },
+    {
+      "id": "city-paris",
+      "status": "approved",
+      "src": "/images/skoria-v2/cities/paris.webp",
+      "alt": "Maquette architecturale évoquant Paris",
+      "width": 1200,
+      "height": 900,
+      "bytes": 194914,
+      "sha256": "b66f34b9202552fb7c279a5156206164e3096fee0f5e67a3b103f37287816df9",
+      "roles": [
+        "city-card",
+        "sector-city-navigation",
+        "geo-editorial"
+      ],
+      "templateIds": [
+        "sector",
+        "city",
+        "geo-hub"
+      ],
+      "responsive": {
+        "sizes": "(max-width: 760px) 100vw, (max-width: 1200px) 50vw, 25vw",
+        "objectPosition": {
+          "desktop": "50% 50%",
+          "mobile": "50% 50%"
+        },
+        "variants": [
+          {
+            "width": 640,
+            "height": 480,
+            "src": "/images/skoria-v2/cities/paris-640.webp",
+            "bytes": 67194
+          },
+          {
+            "width": 1200,
+            "height": 900,
+            "src": "/images/skoria-v2/cities/paris.webp",
+            "bytes": 194914
+          }
+        ]
+      },
+      "disclosure": {
+        "credit": "Illustration générée par IA",
+        "peopleFictional": false,
+        "publicCaptionRequired": true
+      },
+      "provenance": {
+        "mode": "built-in imagegen",
+        "sourceFile": "public/images/skoria-v2/cities/source/paris.png",
+        "sourceBytes": 2736010,
+        "sourceSha256": "a5782cdab3f00a08034b12186e40289a2801ccca8a046933d6ec5b388c048591",
+        "prompt": "Use case: stylized-concept\nAsset type: 4:3 editorial city-card image for the Skoria website; request a 1536×1024 landscape output if supported.\nPrimary request: Create a tactile architectural miniature of Paris, seen from a high oblique three-quarter angle. Build a compact, elegant Parisian urban scene with cream-plaster Haussmann-style façades, recognizable zinc rooftops, chimneys, mansards, and a very small distant tower silhouette on the horizon as a subtle Paris cue.\nStyle/medium: handcrafted physical architectural maquette, refined editorial art direction, tactile plaster and matte painted wood, slightly simplified geometry, premium magazine still life; clearly an artistic miniature rather than a real city photograph.\nComposition/framing: landscape 4:3 crop, coherent dense city block, strong foreground-to-background depth, the distant tower stays tiny and secondary, enough clean edges for use as a website card.\nLighting/mood: crisp direct sunlight, bold clean shadows, warm and optimistic but restrained.\nColor palette: cream plaster as the dominant material, cobalt blue accents, terracotta details, muted sage green, zinc grey roofs.\nMaterials/textures: fine plaster grain, matte painted surfaces, subtle paper and wood craftsmanship, tactile but polished.\nConstraints: no text, no letters, no signage, no logo, no brand marks, no people, no watermark.\nAvoid: documentary city view, photoreal aerial photography, postcard aesthetic, tourist montage, oversized landmark, glassy 3D render, clutter, night lighting."
+      }
+    },
+    {
+      "id": "city-marseille",
+      "status": "approved",
+      "src": "/images/skoria-v2/cities/marseille.webp",
+      "alt": "Maquette architecturale évoquant Marseille",
+      "width": 1200,
+      "height": 900,
+      "bytes": 181382,
+      "sha256": "914937c9d7e399abf06c8d32d2fe41e40e0d4d0ee93258f22a248c3d48db9489",
+      "roles": [
+        "city-card",
+        "sector-city-navigation",
+        "geo-editorial"
+      ],
+      "templateIds": [
+        "sector",
+        "city",
+        "geo-hub"
+      ],
+      "responsive": {
+        "sizes": "(max-width: 760px) 100vw, (max-width: 1200px) 50vw, 25vw",
+        "objectPosition": {
+          "desktop": "50% 50%",
+          "mobile": "50% 50%"
+        },
+        "variants": [
+          {
+            "width": 640,
+            "height": 480,
+            "src": "/images/skoria-v2/cities/marseille-640.webp",
+            "bytes": 59996
+          },
+          {
+            "width": 1200,
+            "height": 900,
+            "src": "/images/skoria-v2/cities/marseille.webp",
+            "bytes": 181382
+          }
+        ]
+      },
+      "disclosure": {
+        "credit": "Illustration générée par IA",
+        "peopleFictional": false,
+        "publicCaptionRequired": true
+      },
+      "provenance": {
+        "mode": "built-in imagegen",
+        "sourceFile": "public/images/skoria-v2/cities/source/marseille.png",
+        "sourceBytes": 2707854,
+        "sourceSha256": "47be0dc25fb8cd3c44069eb632f1cf30a313f871c6a850c40c57b80a2d6af084",
+        "prompt": "Use case: stylized-concept\nAsset type: 4:3 editorial city-card image for the Skoria website; request a 1536×1024 landscape output if supported.\nPrimary request: Create a tactile architectural miniature of Marseille, seen from a high oblique three-quarter angle. Build a compact interpretation of the Vieux-Port with pale Mediterranean façades lining the harbor, a few small abstract model boats, quays, and a restrained pale limestone relief rising in the background.\nStyle/medium: handcrafted physical architectural maquette, refined editorial art direction, tactile plaster and matte painted wood, slightly simplified geometry, premium magazine still life; clearly an artistic miniature rather than a real city photograph.\nComposition/framing: landscape 4:3 crop, the old harbor forms the central spatial gesture, boats remain small geometric accents, limestone relief anchors the distance, coherent depth and clean card-friendly edges.\nLighting/mood: crisp direct Mediterranean sunlight, bold clean shadows, warm, airy, and restrained.\nColor palette: cream plaster as the dominant material, cobalt blue water and accents, terracotta roof and boat details, muted sage vegetation, pale limestone.\nMaterials/textures: fine plaster grain, matte painted surfaces, subtle paper and wood craftsmanship, tactile but polished.\nConstraints: no text, no letters, no signage, no logo, no brand marks, no people, no watermark.\nAvoid: documentary harbor view, photoreal aerial photography, postcard aesthetic, tourist montage, realistic branded boats, oversized landmark, glassy 3D render, clutter, night lighting."
+      }
+    },
+    {
+      "id": "city-lyon",
+      "status": "approved",
+      "src": "/images/skoria-v2/cities/lyon.webp",
+      "alt": "Maquette architecturale évoquant Lyon",
+      "width": 1200,
+      "height": 900,
+      "bytes": 205532,
+      "sha256": "9335365f37e98cb183c868d168e40aff641416e3c36e2601fae7848c3fdea609",
+      "roles": [
+        "city-card",
+        "sector-city-navigation",
+        "geo-editorial"
+      ],
+      "templateIds": [
+        "sector",
+        "city",
+        "geo-hub"
+      ],
+      "responsive": {
+        "sizes": "(max-width: 760px) 100vw, (max-width: 1200px) 50vw, 25vw",
+        "objectPosition": {
+          "desktop": "50% 50%",
+          "mobile": "50% 50%"
+        },
+        "variants": [
+          {
+            "width": 640,
+            "height": 480,
+            "src": "/images/skoria-v2/cities/lyon-640.webp",
+            "bytes": 68754
+          },
+          {
+            "width": 1200,
+            "height": 900,
+            "src": "/images/skoria-v2/cities/lyon.webp",
+            "bytes": 205532
+          }
+        ]
+      },
+      "disclosure": {
+        "credit": "Illustration générée par IA",
+        "peopleFictional": false,
+        "publicCaptionRequired": true
+      },
+      "provenance": {
+        "mode": "built-in imagegen",
+        "sourceFile": "public/images/skoria-v2/cities/source/lyon.png",
+        "sourceBytes": 2605511,
+        "sourceSha256": "41f421f0a7e7cbf4dca9419cde4738115af1ba77df094bd1a1ac04de8704fa52",
+        "prompt": "Use case: stylized-concept\nAsset type: 4:3 editorial city-card image for the Skoria website; request a 1536×1024 landscape output if supported.\nPrimary request: Create a tactile architectural miniature of Lyon, seen from a high oblique three-quarter angle. Build an elegant compact city scene organized around the confluence of two distinct ribbon-like waterways, with ochre and cream façades, a layered hill in the background, and one graceful simplified pedestrian footbridge.\nStyle/medium: handcrafted physical architectural maquette, refined editorial art direction, tactile plaster and matte painted wood, slightly simplified geometry, premium magazine still life; clearly an artistic miniature rather than a real city photograph.\nComposition/framing: landscape 4:3 crop, two cobalt water ribbons visibly meet within the composition, the footbridge creates a fine diagonal, ochre façades form the middle ground, the hill closes the horizon, coherent depth and clean card-friendly edges.\nLighting/mood: crisp direct sunlight, bold clean shadows, warm and optimistic but restrained.\nColor palette: cream plaster, cobalt blue waterways and accents, terracotta and ochre façades, muted sage vegetation.\nMaterials/textures: fine plaster grain, matte painted surfaces, subtle paper and wood craftsmanship, tactile but polished.\nConstraints: no text, no letters, no signage, no logo, no brand marks, no people, no watermark.\nAvoid: documentary city view, photoreal aerial photography, postcard aesthetic, tourist montage, literal map graphic, oversized landmark, glassy 3D render, clutter, night lighting."
+      }
+    },
+    {
+      "id": "city-toulouse",
+      "status": "approved",
+      "src": "/images/skoria-v2/cities/toulouse.webp",
+      "alt": "Maquette architecturale évoquant Toulouse",
+      "width": 1200,
+      "height": 900,
+      "bytes": 157940,
+      "sha256": "5ad00d5a124e4a45a0f2881be6981310ef265b62473df706c0b6b520b3d348f4",
+      "roles": [
+        "city-card",
+        "sector-city-navigation",
+        "geo-editorial"
+      ],
+      "templateIds": [
+        "sector",
+        "city",
+        "geo-hub"
+      ],
+      "responsive": {
+        "sizes": "(max-width: 760px) 100vw, (max-width: 1200px) 50vw, 25vw",
+        "objectPosition": {
+          "desktop": "50% 50%",
+          "mobile": "50% 50%"
+        },
+        "variants": [
+          {
+            "width": 640,
+            "height": 480,
+            "src": "/images/skoria-v2/cities/toulouse-640.webp",
+            "bytes": 50706
+          },
+          {
+            "width": 1200,
+            "height": 900,
+            "src": "/images/skoria-v2/cities/toulouse.webp",
+            "bytes": 157940
+          }
+        ]
+      },
+      "disclosure": {
+        "credit": "Illustration générée par IA",
+        "peopleFictional": false,
+        "publicCaptionRequired": true
+      },
+      "provenance": {
+        "mode": "built-in imagegen",
+        "sourceFile": "public/images/skoria-v2/cities/source/toulouse.png",
+        "sourceBytes": 2466683,
+        "sourceSha256": "9d1d0f5220f003377ad745f64baa4c6a3b6f8e8eb8b6e977fc3bee82658c1922",
+        "prompt": "Use case: stylized-concept\nAsset type: editorial city card image for a French accounting comparison website\nPrimary request: Create a tactile architectural miniature evoking Toulouse, France.\nScene/backdrop: a refined tabletop-scale city diorama with Toulouse pink-brick architecture, calm river quays, and one elegant arched bridge crossing the water.\nSubject: compact architectural ensemble clearly evoking Toulouse through warm pink brick, riverfront quays, and the bridge arch; no literal tourist postcard.\nStyle/medium: premium editorial miniature, handcrafted plaster and matte clay, tactile surface grain, simplified architectural forms, sculptural rather than documentary.\nComposition/framing: oblique three-quarter view, landscape canvas, balanced central scene with clean breathing room, strong readable silhouette, composition safe for a 4:3 card crop; request 1536×1024 output if supported.\nLighting/mood: strong direct southern sunlight, crisp sculptural shadows, optimistic and refined.\nColor palette: cream plaster, deep cobalt blue, terracotta, muted sage green, Toulouse pink brick.\nMaterials/textures: chalky plaster, matte ceramic, fine clay grain, subtly textured water.\nConstraints: coherent with a premium editorial city-card series; no text, no letters, no numbers, no logo, no people, no vehicles, no watermark.\nAvoid: documentary photography, photorealistic aerial view, busy streets, postcard framing, glossy plastic, excessive detail."
+      }
+    },
+    {
+      "id": "city-nice",
+      "status": "approved",
+      "src": "/images/skoria-v2/cities/nice.webp",
+      "alt": "Maquette architecturale évoquant Nice",
+      "width": 1200,
+      "height": 900,
+      "bytes": 185082,
+      "sha256": "bf554168a4dfdb4b050d514d89f081278773fb5737bdab2b9df9f03591742f9a",
+      "roles": [
+        "city-card",
+        "sector-city-navigation",
+        "geo-editorial"
+      ],
+      "templateIds": [
+        "sector",
+        "city",
+        "geo-hub"
+      ],
+      "responsive": {
+        "sizes": "(max-width: 760px) 100vw, (max-width: 1200px) 50vw, 25vw",
+        "objectPosition": {
+          "desktop": "50% 50%",
+          "mobile": "50% 50%"
+        },
+        "variants": [
+          {
+            "width": 640,
+            "height": 480,
+            "src": "/images/skoria-v2/cities/nice-640.webp",
+            "bytes": 63596
+          },
+          {
+            "width": 1200,
+            "height": 900,
+            "src": "/images/skoria-v2/cities/nice.webp",
+            "bytes": 185082
+          }
+        ]
+      },
+      "disclosure": {
+        "credit": "Illustration générée par IA",
+        "peopleFictional": false,
+        "publicCaptionRequired": true
+      },
+      "provenance": {
+        "mode": "built-in imagegen",
+        "sourceFile": "public/images/skoria-v2/cities/source/nice.png",
+        "sourceBytes": 2727809,
+        "sourceSha256": "ac1789324fdffb70225e54393d7d345ee122958ad165e60a26cecb1fcf231f97",
+        "prompt": "Use case: stylized-concept\nAsset type: editorial city card image for a French accounting comparison website\nPrimary request: Create a tactile architectural miniature evoking Nice, France.\nScene/backdrop: a refined tabletop-scale Mediterranean city diorama with a sweeping deep-cobalt bay, a curved seafront, pastel façades, and a few stylized palm trees.\nSubject: compact architectural ensemble clearly evoking Nice through the cobalt Mediterranean bay, pastel waterfront façades, and sculptural palms; no literal tourist postcard.\nStyle/medium: premium editorial miniature, handcrafted plaster and matte clay, tactile surface grain, simplified architectural forms, sculptural rather than documentary.\nComposition/framing: oblique three-quarter view, landscape canvas, balanced central scene with clean breathing room, strong readable silhouette, composition safe for a 4:3 card crop; request 1536×1024 output if supported.\nLighting/mood: strong direct Mediterranean sunlight, crisp sculptural shadows, optimistic and refined.\nColor palette: cream plaster, deep cobalt blue, terracotta, muted sage green, restrained pastel façades.\nMaterials/textures: chalky plaster, matte ceramic, fine clay grain, subtly textured water.\nConstraints: coherent with a premium editorial city-card series; no text, no letters, no numbers, no logo, no people, no vehicles, no watermark.\nAvoid: documentary photography, photorealistic aerial view, busy promenade, postcard framing, glossy plastic, excessive detail."
+      }
+    },
+    {
+      "id": "city-nantes",
+      "status": "approved",
+      "src": "/images/skoria-v2/cities/nantes.webp",
+      "alt": "Maquette architecturale évoquant Nantes",
+      "width": 1200,
+      "height": 900,
+      "bytes": 166844,
+      "sha256": "3d3541bce3b1d24925334c2fce1f0d594cb1a1ddc2d2b804d3ffb7529563aa04",
+      "roles": [
+        "city-card",
+        "sector-city-navigation",
+        "geo-editorial"
+      ],
+      "templateIds": [
+        "sector",
+        "city",
+        "geo-hub"
+      ],
+      "responsive": {
+        "sizes": "(max-width: 760px) 100vw, (max-width: 1200px) 50vw, 25vw",
+        "objectPosition": {
+          "desktop": "50% 50%",
+          "mobile": "50% 50%"
+        },
+        "variants": [
+          {
+            "width": 640,
+            "height": 480,
+            "src": "/images/skoria-v2/cities/nantes-640.webp",
+            "bytes": 55138
+          },
+          {
+            "width": 1200,
+            "height": 900,
+            "src": "/images/skoria-v2/cities/nantes.webp",
+            "bytes": 166844
+          }
+        ]
+      },
+      "disclosure": {
+        "credit": "Illustration générée par IA",
+        "peopleFictional": false,
+        "publicCaptionRequired": true
+      },
+      "provenance": {
+        "mode": "built-in imagegen",
+        "sourceFile": "public/images/skoria-v2/cities/source/nantes.png",
+        "sourceBytes": 2463134,
+        "sourceSha256": "ffb3483abfc2ae7e8c0b92e80f38a66c3d05c97fc3f74f5092020c5231337daa",
+        "prompt": "Use case: stylized-concept\nAsset type: editorial city card image for a French accounting comparison website\nPrimary request: Create a tactile architectural miniature evoking Nantes, France.\nScene/backdrop: a refined tabletop-scale Loire city diorama with broad river water, old industrial quays, one stylized port crane, and clean contemporary architecture integrated beside the historic waterfront.\nSubject: compact architectural ensemble clearly evoking Nantes through the Loire, former working quays, a sculptural port crane, and contemporary buildings; no literal tourist postcard.\nStyle/medium: premium editorial miniature, handcrafted plaster and matte clay, tactile surface grain, simplified architectural forms, sculptural rather than documentary.\nComposition/framing: oblique three-quarter view, landscape canvas, balanced central scene with clean breathing room, strong readable silhouette, composition safe for a 4:3 card crop; request 1536×1024 output if supported.\nLighting/mood: strong direct Atlantic sunlight, crisp sculptural shadows, optimistic and refined.\nColor palette: cream plaster, deep cobalt blue, terracotta, muted sage green.\nMaterials/textures: chalky plaster, matte ceramic, fine clay grain, subtly textured river water, understated aged quay stone.\nConstraints: coherent with a premium editorial city-card series; no text, no letters, no numbers, no logo, no people, no vehicles, no watermark.\nAvoid: documentary photography, photorealistic aerial view, busy port activity, postcard framing, glossy plastic, excessive detail."
+      }
+    },
+    {
+      "id": "city-montpellier",
+      "status": "approved",
+      "src": "/images/skoria-v2/cities/montpellier.webp",
+      "alt": "Maquette architecturale évoquant Montpellier",
+      "width": 1200,
+      "height": 900,
+      "bytes": 232622,
+      "sha256": "85fb5d2130a0c6e831d8922bfa9fad49da944fd2d366d844da259af2b5cadf4a",
+      "roles": [
+        "city-card",
+        "sector-city-navigation",
+        "geo-editorial"
+      ],
+      "templateIds": [
+        "sector",
+        "city",
+        "geo-hub"
+      ],
+      "responsive": {
+        "sizes": "(max-width: 760px) 100vw, (max-width: 1200px) 50vw, 25vw",
+        "objectPosition": {
+          "desktop": "50% 50%",
+          "mobile": "50% 50%"
+        },
+        "variants": [
+          {
+            "width": 640,
+            "height": 480,
+            "src": "/images/skoria-v2/cities/montpellier-640.webp",
+            "bytes": 78610
+          },
+          {
+            "width": 1200,
+            "height": 900,
+            "src": "/images/skoria-v2/cities/montpellier.webp",
+            "bytes": 232622
+          }
+        ]
+      },
+      "disclosure": {
+        "credit": "Illustration générée par IA",
+        "peopleFictional": false,
+        "publicCaptionRequired": true
+      },
+      "provenance": {
+        "mode": "built-in imagegen",
+        "sourceFile": "public/images/skoria-v2/cities/source/montpellier.png",
+        "sourceBytes": 2857791,
+        "sourceSha256": "bb62d632e6dd13d8fd5a028b43dce78b2c54da2a2a8dd5c6d19ea5afc60208f6",
+        "prompt": "Use case: stylized-concept\nAsset type: source image for a French city landing-page hero, landscape 3:2\nPrimary request: create a richly detailed miniature architectural diorama unmistakably inspired by Montpellier, France.\nScene/backdrop: the historic center around Place de la Comédie, with the elegant cream-stone Opéra Comédie as the focal building, the Three Graces fountain in the square, pale limestone façades, warm terracotta roofs, a few Mediterranean plane trees, and compact old-town streets.\nSubject: an art-directed scale model of Montpellier's urban character and architecture; no single real person is featured.\nStyle/medium: hyper-detailed handcrafted architectural miniature photographed as if it were a real premium museum model; tactile stone, ceramic roof tiles, tiny trees, convincing architectural craftsmanship; sophisticated editorial realism.\nComposition/framing: wide 1536×1024 landscape, elevated three-quarter aerial view, central civic square, foreground rooftops framing the lower edge, coherent city depth, subtle tilt-shift and shallow depth of field at the near and far edges.\nLighting/mood: warm late-morning Mediterranean sunlight, soft long shadows, airy cream-and-terracotta atmosphere, polished but natural.\nColor palette: warm ivory limestone, sand, terracotta, muted sage green, restrained slate and pale blue accents.\nConstraints: city-specific visual only; architecturally plausible; no captions, no signs, no readable text, no logos, no watermarks, no branding, no modern advertising, no giant or distorted people.\nAvoid: generic skyline, futuristic architecture, postcard collage, fantasy landmarks, toy-like plastic surfaces, exaggerated saturation."
+      }
+    },
+    {
+      "id": "city-strasbourg",
+      "status": "approved",
+      "src": "/images/skoria-v2/cities/strasbourg.webp",
+      "alt": "Maquette architecturale évoquant Strasbourg",
+      "width": 1200,
+      "height": 900,
+      "bytes": 185420,
+      "sha256": "5592b06aa8c3f9651cbbc856af0125382bdeaa1276eea256fc788ae3529a3fe7",
+      "roles": [
+        "city-card",
+        "sector-city-navigation",
+        "geo-editorial"
+      ],
+      "templateIds": [
+        "sector",
+        "city",
+        "geo-hub"
+      ],
+      "responsive": {
+        "sizes": "(max-width: 760px) 100vw, (max-width: 1200px) 50vw, 25vw",
+        "objectPosition": {
+          "desktop": "50% 50%",
+          "mobile": "50% 50%"
+        },
+        "variants": [
+          {
+            "width": 640,
+            "height": 480,
+            "src": "/images/skoria-v2/cities/strasbourg-640.webp",
+            "bytes": 62140
+          },
+          {
+            "width": 1200,
+            "height": 900,
+            "src": "/images/skoria-v2/cities/strasbourg.webp",
+            "bytes": 185420
+          }
+        ]
+      },
+      "disclosure": {
+        "credit": "Illustration générée par IA",
+        "peopleFictional": false,
+        "publicCaptionRequired": true
+      },
+      "provenance": {
+        "mode": "built-in imagegen",
+        "sourceFile": "public/images/skoria-v2/cities/source/strasbourg.png",
+        "sourceBytes": 2633292,
+        "sourceSha256": "e628d776d5246a3181f7a6624716cfc1def2d888833ccdc51c2d039682db18a5",
+        "prompt": "Use case: stylized-concept\nAsset type: source image for a French city landing-page hero, landscape 3:2\nPrimary request: create a richly detailed miniature architectural diorama unmistakably inspired by Strasbourg, France.\nScene/backdrop: Strasbourg's historic center, combining a graceful glimpse of the Ill canal and Petite France with Alsatian half-timbered houses, steep tiled roofs, narrow quays, small stone bridges, and the warm pink-sandstone cathedral spire rising as the principal landmark in the middle distance.\nSubject: an art-directed scale model of Strasbourg's urban character and architecture; no single real person is featured.\nStyle/medium: hyper-detailed handcrafted architectural miniature photographed as if it were a real premium museum model; tactile timber, sandstone, roof tiles and water reflections; sophisticated editorial realism.\nComposition/framing: wide 1536×1024 landscape, elevated three-quarter aerial view, canal guiding the eye through the town, foreground roofs framing the lower edge, cathedral balanced above the old quarter, subtle tilt-shift and shallow depth of field at the near and far edges.\nLighting/mood: clear warm morning light, crisp but gentle shadows, calm civic atmosphere, polished and natural.\nColor palette: pink Vosges sandstone, warm plaster, dark timber, russet and charcoal roofs, muted green trees, soft blue-green water.\nConstraints: city-specific visual only; architecturally plausible; no captions, no signs, no readable text, no logos, no watermarks, no branding, no modern advertising, no giant or distorted people.\nAvoid: generic German village, Christmas decorations, snow, fantasy skyline, postcard collage, toy-like plastic surfaces, exaggerated saturation."
+      }
+    },
+    {
+      "id": "city-bordeaux",
+      "status": "approved",
+      "src": "/images/skoria-v2/cities/bordeaux.webp",
+      "alt": "Maquette architecturale évoquant Bordeaux",
+      "width": 1200,
+      "height": 900,
+      "bytes": 197992,
+      "sha256": "7a1e8c2c9108df510b21907e14b023f1b0685a596cd03c4d3be44c09b580f9f3",
+      "roles": [
+        "city-card",
+        "sector-city-navigation",
+        "geo-editorial"
+      ],
+      "templateIds": [
+        "sector",
+        "city",
+        "geo-hub"
+      ],
+      "responsive": {
+        "sizes": "(max-width: 760px) 100vw, (max-width: 1200px) 50vw, 25vw",
+        "objectPosition": {
+          "desktop": "50% 50%",
+          "mobile": "50% 50%"
+        },
+        "variants": [
+          {
+            "width": 640,
+            "height": 480,
+            "src": "/images/skoria-v2/cities/bordeaux-640.webp",
+            "bytes": 65198
+          },
+          {
+            "width": 1200,
+            "height": 900,
+            "src": "/images/skoria-v2/cities/bordeaux.webp",
+            "bytes": 197992
+          }
+        ]
+      },
+      "disclosure": {
+        "credit": "Illustration générée par IA",
+        "peopleFictional": false,
+        "publicCaptionRequired": true
+      },
+      "provenance": {
+        "mode": "built-in imagegen",
+        "sourceFile": "public/images/skoria-v2/cities/source/bordeaux.png",
+        "sourceBytes": 2650784,
+        "sourceSha256": "80b50d7d20b0c05a5169511138efdc2efa3b86ac91e36759b6e124d0052ec633",
+        "prompt": "Use case: stylized-concept\nAsset type: source image for a French city landing-page hero, landscape 3:2\nPrimary request: create a richly detailed miniature architectural diorama unmistakably inspired by Bordeaux, France.\nScene/backdrop: the Garonne waterfront centered on the harmonious eighteenth-century Place de la Bourse, its pale honey-colored classical façades and slate mansard roofs reflected in a shallow Miroir d'eau, with a hint of the river promenade, orderly trees and surrounding historic blocks.\nSubject: an art-directed scale model of Bordeaux's urban character and architecture; no single real person is featured.\nStyle/medium: hyper-detailed handcrafted architectural miniature photographed as if it were a real premium museum model; tactile limestone, slate, paving and mirror-like water; sophisticated editorial realism.\nComposition/framing: wide 1536×1024 landscape, elevated three-quarter aerial view, Place de la Bourse as the clear focal ensemble, reflecting pool opening the center, foreground rooftops framing the lower edge, coherent waterfront depth, subtle tilt-shift and shallow depth of field at the near and far edges.\nLighting/mood: soft golden late-afternoon Atlantic light, elegant long shadows, calm luminous civic atmosphere, polished but natural.\nColor palette: honey limestone, warm ivory, blue-gray slate, pale sky blue, muted green, restrained terracotta accents.\nConstraints: city-specific visual only; architecturally plausible; no captions, no signs, no readable text, no logos, no watermarks, no branding, no modern advertising, no giant or distorted people.\nAvoid: vineyards as the main subject, wine bottles, generic Parisian boulevard, futuristic skyline, postcard collage, toy-like plastic surfaces, exaggerated saturation."
+      }
+    },
+    {
+      "id": "city-lille",
+      "status": "approved",
+      "src": "/images/skoria-v2/cities/lille.webp",
+      "alt": "Maquette architecturale évoquant Lille",
+      "width": 1200,
+      "height": 900,
+      "bytes": 211500,
+      "sha256": "bd0829a724e0a5ec3d54411de763603d028c33fc1825738fa34fa69f6575f81f",
+      "roles": [
+        "city-card",
+        "sector-city-navigation",
+        "geo-editorial"
+      ],
+      "templateIds": [
+        "sector",
+        "city",
+        "geo-hub"
+      ],
+      "responsive": {
+        "sizes": "(max-width: 760px) 100vw, (max-width: 1200px) 50vw, 25vw",
+        "objectPosition": {
+          "desktop": "50% 50%",
+          "mobile": "50% 50%"
+        },
+        "variants": [
+          {
+            "width": 640,
+            "height": 480,
+            "src": "/images/skoria-v2/cities/lille-640.webp",
+            "bytes": 69392
+          },
+          {
+            "width": 1200,
+            "height": 900,
+            "src": "/images/skoria-v2/cities/lille.webp",
+            "bytes": 211500
+          }
+        ]
+      },
+      "disclosure": {
+        "credit": "Illustration générée par IA",
+        "peopleFictional": false,
+        "publicCaptionRequired": true
+      },
+      "provenance": {
+        "mode": "built-in imagegen",
+        "sourceFile": "public/images/skoria-v2/cities/source/lille.png",
+        "sourceBytes": 2781793,
+        "sourceSha256": "0e818e693ab14a416b8ff502600429783adad8c76bc02d5417578c803bcc95ab",
+        "prompt": "Use case: stylized-concept. Asset type: visual card for Lille in a French expert-accountant comparison website. Primary request: create an elegant tactile architectural miniature that evokes Lille through Flemish brick façades, stepped gables, a compact civic square and subtle northern-France rooflines. Style/medium: premium handcrafted architectural model photographed like a contemporary design magazine, realistic plaster, painted wood and paper textures, not a documentary photograph. Composition/framing: landscape 3:2, oblique isometric viewpoint, compact city cluster with clear depth and generous crop-safe edges for a 4:3 card. Lighting/mood: crisp directional morning sunlight with expressive shadows, warm and optimistic. Color palette: warm cream, terracotta brick, deep cobalt blue and restrained sage accents, consistent with Skoria’s editorial identity. Constraints: architecture only; no people, vehicles, readable signs, text, letters, logos, brands, flags or watermark; do not present it as an exact real-world view."
+      }
+    },
+    {
+      "id": "city-rennes",
+      "status": "approved",
+      "src": "/images/skoria-v2/cities/rennes.webp",
+      "alt": "Maquette architecturale évoquant Rennes",
+      "width": 1200,
+      "height": 900,
+      "bytes": 226302,
+      "sha256": "286a65883c208badf1b5c40c981ff9b1a63099224cfa1ec68bae8a530388eb1a",
+      "roles": [
+        "city-card",
+        "sector-city-navigation",
+        "geo-editorial"
+      ],
+      "templateIds": [
+        "sector",
+        "city",
+        "geo-hub"
+      ],
+      "responsive": {
+        "sizes": "(max-width: 760px) 100vw, (max-width: 1200px) 50vw, 25vw",
+        "objectPosition": {
+          "desktop": "50% 50%",
+          "mobile": "50% 50%"
+        },
+        "variants": [
+          {
+            "width": 640,
+            "height": 480,
+            "src": "/images/skoria-v2/cities/rennes-640.webp",
+            "bytes": 75432
+          },
+          {
+            "width": 1200,
+            "height": 900,
+            "src": "/images/skoria-v2/cities/rennes.webp",
+            "bytes": 226302
+          }
+        ]
+      },
+      "disclosure": {
+        "credit": "Illustration générée par IA",
+        "peopleFictional": false,
+        "publicCaptionRequired": true
+      },
+      "provenance": {
+        "mode": "built-in imagegen",
+        "sourceFile": "public/images/skoria-v2/cities/source/rennes.png",
+        "sourceBytes": 2800853,
+        "sourceSha256": "735b07c1dbc7f4c7bf4605d790cf0ba77bd2007da60fa12a51049515c2a08942",
+        "prompt": "Use case: stylized-concept. Asset type: visual card for Rennes in a French expert-accountant comparison website. Primary request: create an elegant tactile architectural miniature that evokes Rennes through richly colored timber-framed houses, compact Breton street geometry, dark slate roofs and a subtle contemporary cultural-building silhouette. Style/medium: premium handcrafted architectural model photographed like a contemporary design magazine, realistic plaster, painted wood and paper textures, not a documentary photograph. Composition/framing: landscape 3:2, oblique isometric viewpoint, compact city cluster with clear depth and generous crop-safe edges for a 4:3 card. Lighting/mood: crisp directional morning sunlight with expressive shadows, warm and optimistic. Color palette: warm cream, terracotta, deep cobalt blue and restrained sage accents, consistent with Skoria’s editorial identity. Constraints: architecture only; no people, vehicles, readable signs, text, letters, logos, brands, flags or watermark; do not present it as an exact real-world view."
+      }
+    },
+    {
+      "id": "city-reims",
+      "status": "approved",
+      "src": "/images/skoria-v2/cities/reims.webp",
+      "alt": "Maquette architecturale évoquant Reims",
+      "width": 1200,
+      "height": 900,
+      "bytes": 201668,
+      "sha256": "548e05ee204cb7fcdae6c37444fb9d2245000fb53153bfa73016192885350741",
+      "roles": [
+        "city-card",
+        "sector-city-navigation",
+        "geo-editorial"
+      ],
+      "templateIds": [
+        "sector",
+        "city",
+        "geo-hub"
+      ],
+      "responsive": {
+        "sizes": "(max-width: 760px) 100vw, (max-width: 1200px) 50vw, 25vw",
+        "objectPosition": {
+          "desktop": "50% 50%",
+          "mobile": "50% 50%"
+        },
+        "variants": [
+          {
+            "width": 640,
+            "height": 480,
+            "src": "/images/skoria-v2/cities/reims-640.webp",
+            "bytes": 69268
+          },
+          {
+            "width": 1200,
+            "height": 900,
+            "src": "/images/skoria-v2/cities/reims.webp",
+            "bytes": 201668
+          }
+        ]
+      },
+      "disclosure": {
+        "credit": "Illustration générée par IA",
+        "peopleFictional": false,
+        "publicCaptionRequired": true
+      },
+      "provenance": {
+        "mode": "built-in imagegen",
+        "sourceFile": "public/images/skoria-v2/cities/source/reims.png",
+        "sourceBytes": 2729561,
+        "sourceSha256": "5178422d6c32f774485db1ac1a5a461d5d588c9afd9750a1a2bce9770d1231e8",
+        "prompt": "Use case: stylized-concept. Asset type: visual card for Reims in a French expert-accountant comparison website. Primary request: create an elegant tactile architectural miniature that evokes Reims through pale limestone city blocks, refined Art Deco geometry, an abstract distant twin-tower cathedral rhythm and a few subtle vineyard rows at the edge of the composition. Style/medium: premium handcrafted architectural model photographed like a contemporary design magazine, realistic plaster, painted wood and paper textures, not a documentary photograph. Composition/framing: landscape 3:2, oblique isometric viewpoint, compact city cluster with clear depth and generous crop-safe edges for a 4:3 card. Lighting/mood: crisp directional morning sunlight with expressive shadows, warm and optimistic. Color palette: warm cream, terracotta, deep cobalt blue and restrained sage accents, consistent with Skoria’s editorial identity. Constraints: architecture and landscape only; no people, vehicles, readable signs, text, letters, logos, brands, flags or watermark; do not present it as an exact real-world view."
+      }
+    }
+  ]
+}

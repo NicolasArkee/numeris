@@ -5,8 +5,8 @@ import { CommercialHubPage } from "@/components/CommercialHubPage";
 export const revalidate = 86400;
 
 export const metadata: Metadata = {
-  title: `Codes parrainage business | ${AppConfig.name}`,
-  description: `Codes parrainage vérifiés et à jour pour les solutions business : néobanques, comptabilité, paie, outils marketing.`,
+  title: "Codes et offres pour solutions business",
+  description: "Codes et offres pour les solutions business : statut affiché, conditions à examiner et lien vers la source lorsqu’elle est disponible.",
   alternates: { canonical: `${AppConfig.url}/codes-parrainage` },
 };
 

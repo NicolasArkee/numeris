@@ -5,6 +5,8 @@ import { db } from "../src/libs/db";
 import { ExpertiseServiceLandingV3 } from "../src/components/expertises/ExpertiseServiceLandingV3";
 import { getSEOForService } from "../src/data/seo";
 
+globalThis.React = React;
+
 const REQUIRED_TERMS_BY_SERVICE: Record<string, string[]> = {
   comptabilite: [
     "tenue comptable courante",
@@ -98,18 +100,27 @@ function assertVisibleTextIncludes(text: string, needle: string, slug: string) {
   );
 }
 
-const secteurMap = new Map(db.getSecteurs().map((item) => [item.slug, item]));
-const categories = db.getProfessionCategories();
-const services = db.getServices();
+async function main(): Promise<void> {
+const [allSecteurs, categories, services] = await Promise.all([
+  db.getSecteurs(),
+  db.getProfessionCategories(),
+  db.getServices(),
+]);
+const secteurMap = new Map(allSecteurs.map((item) => [item.slug, item]));
 const reports: string[] = [];
 
 for (const service of services) {
-  const secteurs = db.getServiceSecteurs(service.slug)
+  const [serviceSecteurRefs, serviceProfessionRefs] = await Promise.all([
+    db.getServiceSecteurs(service.slug),
+    db.getServiceProfessions(service.slug),
+  ]);
+  const secteurs = serviceSecteurRefs
     .map((item) => secteurMap.get(item.secteur_slug))
     .filter((item): item is NonNullable<typeof item> => Boolean(item));
 
-  const professions = db.getServiceProfessions(service.slug)
-    .map((item) => db.getProfessionBySlug(item.profession_slug))
+  const professions = (await Promise.all(
+    serviceProfessionRefs.map((item) => db.getProfessionBySlug(item.profession_slug)),
+  ))
     .filter((item): item is NonNullable<typeof item> => Boolean(item))
     .slice(0, 10);
 
@@ -134,18 +145,18 @@ for (const service of services) {
   const wordCount = visibleText.match(/[a-z0-9]+(?:'[a-z0-9]+)?/g)?.length ?? 0;
 
   assertVisibleTextIncludes(visibleText, service.title, service.slug);
-  assert.match(html, /Obtenir mon diagnostic/);
-  assert.match(html, new RegExp(`href="/contact\\?expertise=${service.slug}`));
+  assert.match(html, /Préparer mon brief/);
+  assert.match(html, /<button type="button"[^>]*>Préparer mon brief/);
   assert.doesNotMatch(html, /<form[^>]+action="\/contact"/);
   assert.ok(imageCount >= 20, `Expected many image assets for ${service.slug}, got ${imageCount}`);
   assert.equal(sectorAssetCount, secteurs.length, `Unexpected sector asset count for ${service.slug}`);
   assert.equal(professionAssetCount, professions.length, `Unexpected profession asset count for ${service.slug}`);
-  assert.equal(seoAssetCount, 2, `Expected overview and document SEO assets for ${service.slug}`);
+  assert.equal(seoAssetCount, 1, `Expected one accounting-flow SEO asset for ${service.slug}`);
   assert.ok(h2Count >= 10, `Expected rich H2 structure for ${service.slug}, got ${h2Count}`);
   assert.ok(wordCount >= 1450, `Expected at least 1450 visible words for ${service.slug}, got ${wordCount}`);
-  assert.match(html, /Secteurs accompagnés|Secteurs accompagnes/);
-  assert.match(html, /Professions accompagnées|Professions accompagnees/);
-  assert.match(html, /Plan d'action|Plan d&#x27;action/);
+  assert.match(html, /Voir la mission par secteur/);
+  assert.match(html, /Voir la mission pour votre profession/);
+  assert.match(html, /processus de reprise visible dès le devis/);
   assert.ok(
     expertiseLinkCount >= 4,
     `Expected at least 4 internal expertise links for ${service.slug}, got ${expertiseLinkCount}`,
@@ -161,3 +172,9 @@ for (const service of services) {
 }
 
 console.log(`Expertise service V3 pages OK\n${reports.join("\n")}`);
+}
+
+main().catch((error: unknown) => {
+  console.error(error);
+  process.exitCode = 1;
+});

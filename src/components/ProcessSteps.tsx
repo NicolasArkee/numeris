@@ -1,32 +1,36 @@
+import { EditorialArrow } from "./editorial/EditorialElements";
+
 interface Step {
   number: string;
   title: string;
   description: string;
 }
-
 const defaultSteps: Step[] = [
   {
     number: "01",
     title: "Qualifier",
-    description: "Décrire votre activité, vos échéances, vos outils et les sujets à clarifier.",
+    description:
+      "Décrire votre activité, vos échéances, vos outils et les sujets à clarifier.",
   },
   {
     number: "02",
     title: "Comparer",
-    description: "Identifier les critères utiles : périmètre, spécialisation, disponibilité, outils et honoraires.",
+    description:
+      "Identifier les critères utiles : périmètre, spécialisation, disponibilité, outils et honoraires.",
   },
   {
     number: "03",
     title: "Préparer",
-    description: "Rassembler les documents et questions à poser avant le premier échange avec un professionnel.",
+    description:
+      "Rassembler les documents et questions à poser avant le premier échange avec un professionnel.",
   },
   {
     number: "04",
     title: "Décider",
-    description: "Valider les informations, les habilitations et la lettre de mission avant tout engagement.",
+    description:
+      "Valider les informations, les habilitations et la lettre de mission avant tout engagement.",
   },
 ];
-
 interface ProcessStepsProps {
   title?: string;
   subtitle?: string;
@@ -40,49 +44,63 @@ export function ProcessSteps({
   steps = defaultSteps,
   variant = "light",
 }: ProcessStepsProps) {
-  const isDark = variant === "dark";
-
+  const dark = variant === "dark";
   return (
-    <section className={`px-6 py-24 lg:px-[4.5rem] ${isDark ? "bg-brand-ink" : "bg-bg"}`}>
-      <div className="mx-auto max-w-[82rem]">
-        <div className="mb-14 max-w-2xl">
-          <div className="mb-5 flex items-center gap-3.5">
-            <span className="block h-px w-6 flex-shrink-0 bg-accent-500" />
-            <span className={`text-[0.65rem] font-bold uppercase tracking-[0.14em] ${isDark ? "text-accent-500" : "text-accent-700"}`}>
-              Notre approche
-            </span>
-          </div>
-          <h2 className={`mb-4 font-display text-[2.25rem] font-bold leading-[1.15] tracking-tight lg:text-[2.75rem] ${isDark ? "text-surface" : "text-ink"}`}>
+    <section
+      className={`mb-12 rounded-[1.75rem] p-6 sm:p-9 ${dark ? "bg-navy" : "bg-lilac"}`}
+    >
+      <div className="mb-9 grid gap-5 lg:grid-cols-[1fr_.85fr] lg:items-end lg:gap-10">
+        <div>
+          <p
+            className={`mb-4 text-xs font-bold uppercase tracking-[.14em] ${dark ? "text-mint" : "text-blue"}`}
+          >
+            Notre approche
+          </p>
+          <h2
+            className={`font-display text-[clamp(1.6rem,3vw,2.5rem)] font-bold leading-[1.1] tracking-[-.04em] ${dark ? "text-white" : "text-ink"}`}
+          >
             {title}
           </h2>
-          <p className={`text-[0.95rem] leading-relaxed ${isDark ? "text-white/40" : "text-ink-muted"}`}>
-            {subtitle}
-          </p>
         </div>
-
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          {steps.map((step, i) => (
-            <div key={step.number} className="relative">
-              {/* Connecting line */}
-              {i < steps.length - 1 && (
-                <div className={`absolute right-0 top-8 hidden h-px w-full translate-x-1/2 lg:block ${isDark ? "bg-white/10" : "bg-border-soft"}`} />
-              )}
-
-              <div className={`relative z-10 p-7 ${isDark ? "border border-white/10 bg-white/[0.04]" : "border border-border-soft bg-surface"}`}>
-                <span className={`mb-4 block font-display text-[2.5rem] font-bold italic leading-none ${isDark ? "text-accent-500/40" : "text-accent-300"}`}>
-                  {step.number}
-                </span>
-                <h3 className={`mb-2 text-[1rem] font-semibold ${isDark ? "text-surface" : "text-ink"}`}>
-                  {step.title}
-                </h3>
-                <p className={`text-[0.82rem] leading-relaxed ${isDark ? "text-white/40" : "text-ink-muted"}`}>
-                  {step.description}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
+        <p
+          className={`max-w-xl text-base leading-7 ${dark ? "text-white/75" : "text-ink-muted"}`}
+        >
+          {subtitle}
+        </p>
       </div>
+      <ol
+        className={`grid gap-3 ${steps.length === 3 ? "md:grid-cols-3" : "md:grid-cols-2 xl:grid-cols-4"}`}
+      >
+        {steps.map((step, i) => (
+          <li
+            key={`${step.number}-${i}`}
+            className={`min-w-0 rounded-[1.3rem] p-5 sm:p-6 ${dark ? "bg-white/[.07]" : "bg-white/80"}`}
+          >
+            <div className="mb-6 flex items-center justify-between gap-4">
+              <span
+                className={`font-mono text-lg font-bold ${dark ? "text-mint" : "text-blue"}`}
+              >
+                {step.number}
+              </span>
+              {i < steps.length - 1 && (
+                <EditorialArrow
+                  className={dark ? "text-white/50" : "text-blue/50"}
+                />
+              )}
+            </div>
+            <h3
+              className={`font-display text-xl font-bold leading-tight ${dark ? "text-white" : "text-ink"}`}
+            >
+              {step.title}
+            </h3>
+            <p
+              className={`mt-3 text-sm leading-6 ${dark ? "text-white/75" : "text-ink-muted"}`}
+            >
+              {step.description}
+            </p>
+          </li>
+        ))}
+      </ol>
     </section>
   );
 }

@@ -1,96 +1,35 @@
 import React from "react";
 import Link from "next/link";
 import type { DirectoryCabinetCard } from "@/libs/db";
-import {
-  buildDirectoryAddress,
-  directoryDisplayName,
-  isDirectoryCabinetVerified,
-} from "./profile-v2-helpers";
+import { buildDirectoryAddress, directoryDisplayName, isDirectoryCabinetVerified } from "./profile-v2-helpers";
 import { cabinetDirectoryPath } from "./CabinetCard";
 
-export function DirectoryRelatedCabinets({
-  cityName,
-  citySlug,
-  cabinets,
-}: {
-  cityName: string;
-  citySlug: string;
-  cabinets: DirectoryCabinetCard[];
-}) {
+export function DirectoryRelatedCabinets({ cityName, citySlug, cabinets }: { cityName: string; citySlug: string; cabinets: DirectoryCabinetCard[] }) {
   if (cabinets.length === 0) return null;
-
   return (
-    <section>
-      <h2 className="font-display text-[1.5rem] font-bold text-ink">
-        Autres cabinets comptables à {cityName}
-      </h2>
-      <div className="mt-5 grid gap-5 md:grid-cols-3">
+    <section className="rounded-[2rem] bg-apricot p-6 sm:p-8 lg:p-10">
+      <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
+        <div className="max-w-2xl"><p className="text-[.68rem] font-bold uppercase tracking-[.16em] text-blue">Poursuivre la comparaison</p><h2 className="mt-4 font-display text-[clamp(1.8rem,3.5vw,2.6rem)] font-bold leading-[1.15] tracking-tight text-ink">Autres cabinets comptables à {cityName}</h2></div>
+        <Link href={`/expert-comptable/${citySlug}`} prefetch={false} className="inline-flex w-fit shrink-0 items-center gap-3 rounded-full bg-navy px-5 py-3 text-[.8rem] font-bold text-white transition-colors hover:bg-blue">Voir plus de cabinets à {cityName}<span aria-hidden>↗</span></Link>
+      </div>
+      <div className="mt-8 grid gap-5 md:grid-cols-3">
         {cabinets.map((card) => {
           const verified = isDirectoryCabinetVerified(card);
           const name = directoryDisplayName(card);
-          return (
-            <Link
-              key={card.establishment.siret}
-              href={cabinetDirectoryPath(card)}
-              className="group flex min-h-88 flex-col overflow-hidden rounded-lg border border-border bg-surface shadow-sm transition-all hover:-translate-y-0.5 hover:border-brand-500 hover:shadow-md"
-              aria-label={`Voir la fiche de ${name}`}
-            >
-              <div className="relative aspect-[16/9] overflow-hidden border-b border-border-soft bg-bg-muted">
-                {card.sourcePreviewImageUrl ? (
-                  <img
-                    src={card.sourcePreviewImageUrl}
-                    alt={`Aperçu du site de ${name}`}
-                    className="h-full w-full object-cover object-top transition-transform duration-300 group-hover:scale-[1.02]"
-                    loading="lazy"
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-brand-ink px-6 text-center">
-                    <span className="font-display text-[0.75rem] font-semibold uppercase tracking-[0.12em] text-white/70">
-                      Aperçu à enrichir
-                    </span>
-                  </div>
-                )}
-              </div>
-              <div className="flex flex-1 flex-col p-5">
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <h3 className="font-display text-[1rem] font-semibold leading-snug text-ink transition-colors group-hover:text-brand-700">
-                    {name}
-                  </h3>
-                  <span
-                    className={
-                      verified
-                        ? "shrink-0 rounded-full border border-success-500/30 bg-success-50 px-2.5 py-1 font-display text-[0.6875rem] font-semibold text-success-700"
-                        : "shrink-0 rounded-full border border-warning-500/30 bg-warning-50 px-2.5 py-1 font-display text-[0.6875rem] font-semibold text-warning-700"
-                    }
-                  >
-                    {verified ? "Documentée" : "À confirmer"}
-                  </span>
-                </div>
-                <p className="mt-3 line-clamp-2 text-[0.875rem] leading-6 text-ink-muted">
-                  {buildDirectoryAddress(card)}
-                </p>
-                <div className="mt-auto pt-5 font-display text-[0.875rem] font-semibold text-brand-700">
-                  Voir la fiche
-                  <span
-                    aria-hidden
-                    className="ml-1 inline-block transition-transform group-hover:translate-x-1"
-                  >
-                    →
-                  </span>
-                </div>
-              </div>
-            </Link>
-          );
+          const initials = name.split(/\s+/).filter(Boolean).slice(0, 2).map((word) => word[0]).join("");
+          return <Link key={card.establishment.siret} href={cabinetDirectoryPath(card)} aria-label={`Voir la fiche de ${name}`} className="group flex min-w-0 flex-col overflow-hidden rounded-[1.4rem] border border-ink/10 bg-white transition-colors hover:border-blue/40 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue">
+            <div className="relative aspect-[16/9] overflow-hidden bg-navy">
+              {card.sourcePreviewImageUrl ? <img src={card.sourcePreviewImageUrl} alt={`Aperçu du site de ${name}`} className="h-full w-full object-cover object-top transition-transform duration-500 motion-safe:group-hover:scale-105" loading="lazy" /> : <div className="flex h-full flex-col justify-between p-6"><span className="font-display text-4xl font-bold tracking-tight text-lilac" aria-hidden>{initials}</span><span className="text-[.6rem] font-bold uppercase tracking-[.12em] text-white/65">Fiche publique · {cityName}</span></div>}
+            </div>
+            <div className="flex flex-1 flex-col p-5 sm:p-6">
+              <span className={`mb-4 w-fit rounded-full px-3 py-1 text-[.64rem] font-bold ${verified ? "bg-mint text-[#17613b]" : "bg-apricot text-[#8b3d24]"}`}>{verified ? "Documentée" : "À confirmer"}</span>
+              <h3 className="break-words font-display text-[1.2rem] font-bold leading-6 text-ink transition-colors group-hover:text-blue">{name}</h3>
+              <p className="mt-3 text-[.86rem] leading-6 text-ink-muted">{buildDirectoryAddress(card) || "Adresse publique non disponible"}</p>
+              <div className="mt-auto flex items-center justify-between gap-3 pt-6 text-[.8rem] font-bold text-blue">Voir la fiche<span aria-hidden className="flex h-9 w-9 items-center justify-center rounded-full bg-lilac transition-colors group-hover:bg-blue group-hover:text-white">↗</span></div>
+            </div>
+          </Link>;
         })}
       </div>
-      <Link
-        href={`/expert-comptable/${citySlug}`}
-        prefetch={false}
-        className="mt-5 inline-flex items-center gap-2 font-display text-[0.9375rem] font-semibold text-brand-700 transition-colors hover:text-brand-500"
-      >
-        Voir plus de cabinets à {cityName}
-        <span aria-hidden>→</span>
-      </Link>
     </section>
   );
 }

@@ -1564,7 +1564,7 @@ export function buildServiceLandingFaqItems(service: Service): DirectoryFaqItem[
     {
       question: "Puis-je conserver mes outils actuels ?",
       answer:
-        "Oui, lorsque c'est pertinent. Skoria peut cadrer la mission autour de vos outils existants ou proposer une organisation plus fluide si vos processus actuels ralentissent la production.",
+        "Souvent, oui. Indiquez vos outils actuels dans le brief et demandez à chaque professionnel de préciser leur compatibilité, les éventuels changements, la récupération des données et l'accompagnement prévu.",
     },
     {
       question: "Est-ce adapte a une creation ou une reprise de dossier ?",
@@ -1574,7 +1574,7 @@ export function buildServiceLandingFaqItems(service: Service): DirectoryFaqItem[
     {
       question: "Comment se passe la mise en place ?",
       answer:
-        "Apres le rendez-vous, Skoria liste les documents a recuperer, les acces a ouvrir, les echeances a securiser et les premiers livrables a produire.",
+        "Le professionnel retenu organise la reprise selon sa lettre de mission : documents à récupérer, accès à ouvrir, échéances à sécuriser et premiers livrables. Le brief Skoria sert à comparer ce processus avant l'engagement.",
     },
   ];
 

@@ -53,18 +53,29 @@ assert.equal(faq.length, 4);
 assert.ok(faq.some((item) => item.question.includes("expertise comptable")));
 assert.ok(faq.every((item) => item.answer.length > 40));
 
-const dbServices = db.getServices();
-const dbStats = buildExpertisePageStats(
-  dbServices,
-  db.getSecteurs(),
-  db.getProfessionCategories(),
-);
-assert.equal(dbStats.serviceCount, 6);
-assert.ok(dbStats.sectorCount >= 6);
-assert.ok(dbStats.professionCategoryCount >= 8);
-assert.ok(
-  buildExpertiseNeedLinks(dbServices).some((link) => link.href === "/expertises/creation-entreprise"),
-  "Need links should include creation d'entreprise when available",
-);
+async function main(): Promise<void> {
+  const [dbServices, dbSecteurs, dbCategories] = await Promise.all([
+    db.getServices(),
+    db.getSecteurs(),
+    db.getProfessionCategories(),
+  ]);
+  const dbStats = buildExpertisePageStats(
+    dbServices,
+    dbSecteurs,
+    dbCategories,
+  );
+  assert.equal(dbStats.serviceCount, 6);
+  assert.ok(dbStats.sectorCount >= 6);
+  assert.ok(dbStats.professionCategoryCount >= 8);
+  assert.ok(
+    buildExpertiseNeedLinks(dbServices).some((link) => link.href === "/expertises/creation-entreprise"),
+    "Need links should include creation d'entreprise when available",
+  );
 
-console.log("Expertises V2 helpers OK");
+  console.log("Expertises V2 helpers OK");
+}
+
+main().catch((error: unknown) => {
+  console.error(error);
+  process.exitCode = 1;
+});

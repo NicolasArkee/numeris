@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { compareStatuts, fmtEur, type ActiviteMicro } from "@/libs/simulateurs/math";
-import { Disclaimer, FieldNumber, FieldSelect, SimulatorBox, SimulatorCta } from "./ui";
+import { Disclaimer, FieldNumber, FieldSelect, SimulatorBox, SimulatorFields, ResultGrid, SimulatorCta } from "./ui";
 
 export function StatutsSimulator() {
   const [ca, setCa] = useState(80000);
@@ -14,7 +14,7 @@ export function StatutsSimulator() {
 
   return (
     <SimulatorBox>
-      <div className="grid gap-5 md:grid-cols-3">
+      <SimulatorFields columns={3}>
         <FieldNumber label="Chiffre d'affaires annuel HT" value={ca} onChange={setCa} step={5000} suffix="€" />
         <FieldNumber label="Frais professionnels annuels" value={frais} onChange={setFrais} step={1000} suffix="€" hint="Matériel, déplacements, locaux, sous-traitance…" />
         <FieldSelect<ActiviteMicro>
@@ -27,35 +27,29 @@ export function StatutsSimulator() {
             { value: "vente", label: "Vente de marchandises" },
           ]}
         />
-      </div>
+      </SimulatorFields>
 
-      <div className="mt-7 overflow-x-auto">
-        <table className="w-full border-collapse text-left">
-          <thead>
-            <tr className="border-b-2 border-accent-500">
-              <th className="px-4 py-3 text-[0.68rem] font-bold uppercase tracking-[0.08em] text-ink-muted">Statut</th>
-              <th className="px-4 py-3 text-[0.68rem] font-bold uppercase tracking-[0.08em] text-ink-muted">Net avant IR</th>
-              <th className="px-4 py-3 text-[0.68rem] font-bold uppercase tracking-[0.08em] text-ink-muted">Prélèvements</th>
-              <th className="hidden px-4 py-3 text-[0.68rem] font-bold uppercase tracking-[0.08em] text-ink-muted md:table-cell">À savoir</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((r) => (
-              <tr key={r.statut} className={`border-b border-border-soft ${r.net === best ? "bg-accent-50" : "bg-surface"}`}>
-                <td className="px-4 py-4 text-[0.88rem] font-medium text-ink">
-                  {r.statut}
-                  {r.net === best && (
-                    <span className="ml-2 bg-accent-500 px-1.5 py-0.5 text-[0.58rem] font-bold uppercase text-brand-ink">Optimal</span>
-                  )}
-                </td>
-                <td className="px-4 py-4 font-display text-[1.25rem] font-bold italic text-accent-700">{fmtEur(r.net)}</td>
-                <td className="px-4 py-4 text-[0.85rem] text-ink-muted">{fmtEur(r.prelevements)}</td>
-                <td className="hidden px-4 py-4 text-[0.72rem] leading-relaxed text-ink-muted md:table-cell">{r.commentaire}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <ResultGrid columns={3}>
+        {rows.map((r) => (
+          <article key={r.statut} className={`flex min-w-0 flex-col rounded-3xl p-6 sm:p-7 ${r.net === best ? "bg-navy text-white" : "border border-navy/10 bg-lilac/45 text-navy"}`}>
+            <div className="mb-5 min-h-7">
+              {r.net === best && (
+                <span className="inline-flex rounded-full bg-mint px-3 py-1 text-[.67rem] font-bold text-navy">Net le plus élevé dans ce calcul</span>
+              )}
+            </div>
+            <h3 className="text-[1.2rem] font-bold leading-6">{r.statut}</h3>
+            <dl className="mt-7">
+              <dt className={`text-[.77rem] font-medium ${r.net === best ? "text-white/70" : "text-ink-muted"}`}>Net avant IR</dt>
+              <dd className={`mt-2 text-[clamp(1.8rem,2.8vw,2.5rem)] font-bold not-italic leading-tight tracking-[-.04em] tabular-nums [overflow-wrap:anywhere] ${r.net === best ? "text-white" : "text-cobalt"}`}>{fmtEur(r.net)}</dd>
+              <div className={`mt-6 flex flex-wrap items-center justify-between gap-2 border-t pt-4 text-[.82rem] ${r.net === best ? "border-white/20" : "border-navy/10"}`}>
+                <dt>Prélèvements</dt>
+                <dd className="font-semibold tabular-nums">{fmtEur(r.prelevements)}</dd>
+              </div>
+            </dl>
+            <p className={`mt-auto pt-6 text-[.78rem] leading-6 ${r.net === best ? "text-white/70" : "text-ink-muted"}`}>{r.commentaire}</p>
+          </article>
+        ))}
+      </ResultGrid>
 
       <SimulatorCta label="Valider le bon statut avec un expert" />
       <Disclaimer>

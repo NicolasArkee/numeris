@@ -1,12 +1,13 @@
 import type { DbAdapter } from "./types";
 
 // ─── V2: Supabase adapter (live since juin 2026) ───
-// Switch back to sqliteAdapter ONLY for local CLI scripts that don't have the
-// Supabase env vars (e.g. `npm run db:import-directory-candidates` writing to
-// the local numeris.db before re-running migrate-supabase).
+// Le flag explicite sert aux audits et previews locaux lorsque le CMS distant
+// n'est pas joignable. Supabase reste le choix par défaut en production.
 import { supabaseAdapter } from "./supabase";
+import { sqliteAdapter } from "./sqlite";
 
-export const db: DbAdapter = supabaseAdapter;
+export const db: DbAdapter =
+  process.env.SKORIA_DB_ADAPTER === "sqlite" ? sqliteAdapter : supabaseAdapter;
 
 export type { DbAdapter } from "./types";
 export type {

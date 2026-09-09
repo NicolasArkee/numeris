@@ -16,8 +16,8 @@ function StatusLabel({ verified }: { verified: boolean }) {
     <span
       className={
         verified
-          ? "inline-flex w-fit items-center gap-1 rounded-md border border-success-500/30 bg-success-50 px-2.5 py-1 font-display text-[0.6875rem] font-semibold uppercase tracking-wider text-success-700"
-          : "inline-flex w-fit items-center gap-1 rounded-md border border-warning-500/30 bg-warning-50 px-2.5 py-1 font-display text-[0.6875rem] font-semibold uppercase tracking-wider text-warning-700"
+          ? "inline-flex w-fit items-center gap-1 rounded-full border border-[#17613b]/15 bg-mint px-2.5 py-1 font-display text-[0.6875rem] font-semibold uppercase tracking-wider text-[#17613b]"
+          : "inline-flex w-fit items-center gap-1 rounded-full border border-[#8b3d24]/15 bg-apricot px-2.5 py-1 font-display text-[0.6875rem] font-semibold uppercase tracking-wider text-[#8b3d24]"
       }
     >
       <span aria-hidden>{verified ? "✓" : "?"}</span>
@@ -39,7 +39,7 @@ export function DirectoryCityCabinetList({
     <section id="liste-cabinets">
       <div className="mb-5 flex flex-col justify-between gap-3 md:flex-row md:items-end">
         <div>
-          <h2 className="font-display text-[1.5rem] font-bold text-ink">
+          <h2 className="font-display text-[clamp(1.6rem,3vw,2.1rem)] font-bold leading-tight tracking-tight text-ink">
             Cabinets comptables candidats et vérifiés
           </h2>
           <p className="mt-2 max-w-2xl text-[0.9375rem] leading-6 text-ink-muted">
@@ -54,7 +54,7 @@ export function DirectoryCityCabinetList({
         </p>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-border bg-surface shadow-sm">
+      <div className="overflow-hidden rounded-[2rem] border border-ink/10 bg-white">
         <div className="divide-y divide-border-soft">
           {cabinets.map((card) => {
             const name = directoryDisplayName(card);
@@ -67,7 +67,7 @@ export function DirectoryCityCabinetList({
                 className="grid gap-4 px-5 py-5 transition-colors hover:bg-brand-50 lg:grid-cols-[minmax(0,1.2fr)_minmax(15rem,0.8fr)_9rem_7rem] lg:items-center"
               >
                 <div>
-                  <h3 className="font-display text-[1.0625rem] font-semibold text-ink">
+                  <h3 className="font-display text-[1.0625rem] font-bold text-ink">
                     {name}
                   </h3>
                   <p className="mt-1 font-mono text-[0.75rem] text-ink-soft">

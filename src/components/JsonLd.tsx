@@ -22,9 +22,13 @@ function buildOrgRef(): { "@id": string } {
   return { "@id": buildOrgId() };
 }
 
-/** Bare @id reference to the persona Person node — for nesting in author/reviewedBy slots. */
-function buildPersonRef(person: LegalEntity): { "@id": string } {
-  return { "@id": buildPersonId(person) };
+/** A CMS persona id is authoritative as an identifier, but does not provide
+ * enough evidence to manufacture a public name, portrait or profile URL. */
+function buildStoredPersonRef(identifier: string): Record<string, string> {
+  return {
+    "@type": "Person",
+    identifier: identifier.trim(),
+  };
 }
 
 /** Truncate a string to maxLen characters at a word boundary, appending "…" if cut. */
@@ -485,8 +489,8 @@ interface ArticleJsonLdProps {
   dateModified: string;
   mainEntityOfPage: string;
   description?: string;
-  author?: LegalEntity;
-  reviewedBy?: LegalEntity;
+  authorId?: string;
+  reviewedById?: string;
   image?: string;
   articleSection?: string;
 }
@@ -497,8 +501,8 @@ export function ArticleJsonLd({
   dateModified,
   mainEntityOfPage,
   description,
-  author = legalEntity,
-  reviewedBy = legalEntity,
+  authorId,
+  reviewedById,
   image,
   articleSection,
 }: ArticleJsonLdProps) {
@@ -512,10 +516,11 @@ export function ArticleJsonLd({
       "@type": "WebPage",
       "@id": mainEntityOfPage,
     },
-    author: buildPersonRef(author),
-    reviewedBy: buildPersonRef(reviewedBy),
     publisher: buildOrgRef(),
   };
+
+  if (authorId?.trim()) schema.author = buildStoredPersonRef(authorId);
+  if (reviewedById?.trim()) schema.reviewedBy = buildStoredPersonRef(reviewedById);
 
   if (description) schema.description = description;
   if (image) schema.image = image;

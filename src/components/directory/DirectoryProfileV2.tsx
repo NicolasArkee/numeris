@@ -12,6 +12,7 @@ import { AppConfig } from "@/utils/AppConfig";
 import {
   extractDirectoryTeamMembers,
   findDirectoryProfileSummary,
+  groupDirectoryProfileFacts,
 } from "@/libs/directory/enrichment";
 import {
   DirectoryEnrichmentPanel,
@@ -22,6 +23,7 @@ import { DirectoryFaq } from "./DirectoryFaq";
 import { DirectoryInternalMesh } from "./DirectoryInternalMesh";
 import { DirectoryRelatedCabinets } from "./DirectoryRelatedCabinets";
 import { DirectoryStreetView } from "./DirectoryStreetView";
+import { BriefTrigger } from "@/components/journey/BriefTrigger";
 import {
   buildDirectoryAddress,
   buildDirectoryFactRows,
@@ -146,8 +148,8 @@ function StatusBadge({ verified }: { verified: boolean }) {
     <span
       className={
         verified
-          ? "inline-flex w-fit items-center gap-1.5 rounded-md border border-success-500/30 bg-success-50 px-3 py-2 font-display text-[0.8125rem] font-semibold text-success-700"
-          : "inline-flex w-fit items-center gap-1.5 rounded-md border border-warning-500/30 bg-warning-50 px-3 py-2 font-display text-[0.8125rem] font-semibold text-warning-700"
+          ? "inline-flex w-fit items-center gap-1.5 rounded-full border border-[#17613b]/15 bg-mint px-3 py-2 font-display text-[0.8125rem] font-semibold text-[#17613b]"
+          : "inline-flex w-fit items-center gap-1.5 rounded-full border border-[#8b3d24]/15 bg-apricot px-3 py-2 font-display text-[0.8125rem] font-semibold text-[#8b3d24]"
       }
     >
       <span aria-hidden>{verified ? "✓" : "?"}</span>
@@ -232,17 +234,20 @@ function buildCabinetContactAction(
 function SidebarPanel({
   card,
   verified,
+  hasContactFacts,
 }: {
   card: DirectoryCabinetCard;
   verified: boolean;
+  hasContactFacts: boolean;
 }) {
   const address = buildDirectoryAddress(card);
   const retrievedAt = formatDirectoryDate(card.establishment.retrieved_at);
 
   return (
-    <aside className="space-y-5 lg:sticky lg:top-24">
-      <section className="rounded-xl border border-border bg-surface p-6 shadow-sm">
-        <h2 className="font-display text-[1.25rem] font-semibold text-ink">
+    <aside className="space-y-5 lg:sticky lg:top-32 lg:self-start">
+      <section id={hasContactFacts ? undefined : "coordonnees-verifiees"} className="scroll-mt-32 rounded-[1.75rem] border border-ink/10 bg-white p-6 sm:p-7">
+        <p className="mb-3 text-[.65rem] font-bold uppercase tracking-[.16em] text-blue">Les informations utiles</p>
+        <h2 className="font-display text-[1.25rem] font-bold text-ink">
           Coordonnées
         </h2>
         {address && (
@@ -281,15 +286,15 @@ function SidebarPanel({
           </p>
           <Link
             href={`/contact?objet=correction-annuaire&siret=${card.establishment.siret}`}
-            className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-accent-500 px-5 py-3 font-display text-[0.875rem] font-semibold text-surface transition-colors hover:bg-accent-700"
+            className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-blue px-5 py-3 font-display text-[0.875rem] font-bold text-white transition-colors hover:bg-accent-700"
           >
             Demander une correction
           </Link>
         </div>
       </section>
 
-      <section className="rounded-xl border border-border bg-bg-muted p-6">
-        <h2 className="font-display text-[1.0625rem] font-semibold text-ink">
+      <section className="rounded-[1.75rem] bg-mint p-6 sm:p-7">
+        <h2 className="font-display text-[1.0625rem] font-bold text-ink">
           Transparence et conformité
         </h2>
         <p className="mt-3 text-[0.875rem] leading-6 text-ink-muted">
@@ -337,19 +342,20 @@ export function DirectoryProfileV2({
   );
   const sourcedSummary = findDirectoryProfileSummary(sourcedFacts);
   const sourcePreview = sourcedFacts.find(
-    (fact) => fact.fact_type === "source_preview_image",
+    (fact) => fact.fact_type === "source_preview_image" && isDisplayableDirectoryFact(fact),
   );
   const sourcesById = new Map(enrichmentSources.map((source) => [source.id, source]));
   const sourcePreviewSource = sourcePreview?.source_id
     ? sourcesById.get(sourcePreview.source_id) ?? null
     : null;
   const cabinetContactAction = buildCabinetContactAction(sourcedFacts);
+  const hasContactFacts = groupDirectoryProfileFacts(sourcedFacts).contact.length > 0;
 
   return (
     <>
       <section
         data-directory-hero="desktop-v2"
-        className="relative overflow-hidden bg-brand-ink px-6 py-10 text-surface lg:px-12 lg:py-14"
+        className="relative overflow-hidden bg-navy px-6 py-10 text-surface lg:px-12 lg:py-14"
       >
         <div
           aria-hidden
@@ -399,7 +405,7 @@ export function DirectoryProfileV2({
                   Fiche cabinet · {cityName}
                 </span>
               </div>
-              <h1 className="max-w-4xl font-display text-[2.25rem] font-extrabold leading-[1.06] tracking-tight text-surface lg:text-[3.25rem]">
+              <h1 className="max-w-4xl break-words font-display text-[2.25rem] font-extrabold leading-[1.06] tracking-tight text-surface lg:text-[3.25rem]">
                 {name}
               </h1>
               <div className="lg:mt-4 lg:flex lg:items-center lg:gap-4">
@@ -423,7 +429,16 @@ export function DirectoryProfileV2({
               data-directory-hero-actions="desktop-v2"
               className="space-y-4 lg:w-full lg:max-w-96 lg:justify-self-end lg:border-l lg:border-white/10 lg:py-5 lg:pl-8"
             >
-              <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
+              <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap lg:flex-col">
+                <BriefTrigger
+                  prefill={{
+                    city: cityName,
+                    notes: `Échange à préparer avec ${name}`,
+                  }}
+                  className="inline-flex items-center justify-center gap-2 rounded-full bg-orange px-6 py-3 font-display text-[0.9375rem] font-semibold text-brand-ink transition-colors hover:bg-accent-300 lg:w-full"
+                >
+                  Préparer mon échange →
+                </BriefTrigger>
                 <a
                   href={cabinetContactAction.href}
                   target={cabinetContactAction.external ? "_blank" : undefined}
@@ -432,14 +447,14 @@ export function DirectoryProfileV2({
                       ? "nofollow noopener noreferrer"
                       : undefined
                   }
-                  className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-accent-500 px-6 py-3 font-display text-[0.9375rem] font-semibold text-surface transition-colors hover:bg-accent-700 lg:w-full"
+                  className="inline-flex items-center justify-center gap-2 rounded-full border border-white/30 bg-white/5 px-6 py-3 font-display text-[0.9375rem] font-semibold text-surface transition-colors hover:border-white hover:bg-white hover:text-brand-ink lg:w-full"
                 >
                   {cabinetContactAction.label}
                 </a>
                 <Link
                   href={`/expert-comptable/${citySlug}`}
                   prefetch={false}
-                  className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-white/20 bg-white/5 px-6 py-3 font-display text-[0.9375rem] font-semibold text-surface transition-colors hover:border-white/40 hover:bg-white/10 lg:w-full"
+                  className="inline-flex items-center justify-center gap-2 rounded-full border border-white/20 bg-white/5 px-6 py-3 font-display text-[0.9375rem] font-semibold text-surface transition-colors hover:border-white/40 hover:bg-white/10 lg:w-full"
                 >
                   Voir les cabinets à {cityName}
                 </Link>
@@ -449,16 +464,52 @@ export function DirectoryProfileV2({
         </div>
       </section>
 
-      <article className="bg-bg px-6 py-10 lg:px-12 lg:py-12">
+      <nav aria-label="Dans cette fiche" className="border-b border-ink/10 bg-white px-6 lg:px-12">
+        <div className="mx-auto flex max-w-328 gap-6 overflow-x-auto py-5 text-[.75rem] font-bold text-ink-muted sm:gap-8">
+          <a href="#informations-cabinet" className="shrink-0 hover:text-blue">01 · Le cabinet</a>
+          <a href="#informations-administratives" className="shrink-0 hover:text-blue">02 · Données publiques</a>
+          <a href="#profile-prepare-title" className="shrink-0 hover:text-blue">03 · Votre besoin</a>
+          <a href="#questions-annuaire" className="shrink-0 hover:text-blue">04 · Questions fréquentes</a>
+        </div>
+      </nav>
+
+      <section className="bg-lilac px-6 py-10 lg:px-12 lg:py-12" aria-labelledby="profile-prepare-title">
+        <div className="mx-auto grid max-w-328 gap-7 lg:grid-cols-[0.8fr_1.5fr] lg:items-start">
+          <div>
+            <p className="sk-eyebrow text-brand-700">Avant le premier échange</p>
+            <h2 id="profile-prepare-title" className="scroll-mt-32 mt-3 font-display text-[1.8rem] font-bold leading-tight text-ink lg:text-[2.3rem]">
+              Transformez la fiche en questions utiles.
+            </h2>
+            <p className="mt-4 max-w-xl text-[0.95rem] leading-7 text-ink-muted">
+              Les données publiques identifient le cabinet. Le rendez-vous doit ensuite confirmer l'adéquation avec votre activité, le périmètre de mission et la façon de travailler.
+            </p>
+          </div>
+          <ol className="grid gap-3 sm:grid-cols-3">
+            {[
+              ["01", "Votre contexte", "Activité, statut, volume, échéances et outils déjà utilisés."],
+              ["02", "Le périmètre", "Production, conseil, fiscalité, paie et interlocuteur au quotidien."],
+              ["03", "La comparaison", "Livrables, délais, responsabilités, honoraires et conditions de sortie."],
+            ].map(([index, title, copy]) => (
+              <li key={index} className="rounded-2xl border border-brand-ink/10 bg-white/75 p-5">
+                <span className="font-mono text-[0.72rem] font-semibold text-brand-700">{index}</span>
+                <h3 className="mt-5 font-display text-[1rem] font-bold text-ink">{title}</h3>
+                <p className="mt-2 text-[0.84rem] leading-6 text-ink-muted">{copy}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      <article className="bg-paper px-6 py-10 lg:px-12 lg:py-12">
         <div className="mx-auto max-w-328 space-y-14">
           <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_23rem]">
-            <div className="space-y-10">
-              <section>
-                <h2 className="font-display text-[1.5rem] font-bold text-ink">
-                  Présentation du cabinet
+            <div id="informations-cabinet" className="min-w-0 scroll-mt-32 space-y-10">
+              {(sourcePreview || !sourcedSummary) && <section>
+                <h2 className="font-display text-[clamp(1.6rem,3vw,2.1rem)] font-bold leading-tight tracking-tight text-ink">
+                  {sourcePreview ? "Aperçu de la source publique" : "Présentation du cabinet"}
                 </h2>
                 {sourcePreview && (
-                  <figure className="mt-5 overflow-hidden rounded-xl border border-border bg-surface shadow-sm">
+                  <figure className="mt-5 overflow-hidden rounded-[2rem] border border-ink/10 bg-white">
                     <img
                       src={sourcePreview.value}
                       alt={`Capture de la source publique pour ${name}`}
@@ -466,7 +517,7 @@ export function DirectoryProfileV2({
                       loading="eager"
                     />
                     {(sourcePreviewSource?.source_url || sourcePreviewSource?.retrieved_at) && (
-                      <figcaption className="flex flex-wrap items-center justify-between gap-3 border-t border-border-soft bg-bg-muted px-4 py-3 text-[0.8125rem] text-ink-soft">
+                      <figcaption className="flex flex-wrap items-center justify-between gap-3 border-t border-ink/10 bg-mint px-5 py-4 text-[0.8125rem] text-ink-soft">
                         {sourcePreviewSource?.source_url ? (
                           <a
                             href={sourcePreviewSource.source_url}
@@ -488,12 +539,12 @@ export function DirectoryProfileV2({
                     )}
                   </figure>
                 )}
-                <p className="mt-4 max-w-3xl text-[1rem] leading-7 text-ink-muted">
-                  {sourcedSummary
-                    ? sourcedSummary.value
-                    : `${name} est référencé comme cabinet comptable à ${cityName} à partir de données administratives publiques. Les informations ci-dessous servent à identifier l'établissement, sans attester un statut professionnel lorsque la fiche est candidate.`}
-                </p>
-              </section>
+                {!sourcedSummary && (
+                  <p className="mt-4 max-w-3xl text-[1rem] leading-7 text-ink-muted">
+                    {name} est référencé comme cabinet comptable à {cityName} à partir de données administratives publiques. Les informations ci-dessous servent à identifier l'établissement, sans attester un statut professionnel lorsque la fiche est candidate.
+                  </p>
+                )}
+              </section>}
 
               <DirectoryEnrichmentPanel
                 card={card}
@@ -502,8 +553,8 @@ export function DirectoryProfileV2({
                 snapshot={qualificationSnapshot}
               />
 
-              <section>
-                <h2 className="font-display text-[1.5rem] font-bold text-ink">
+              <section id="informations-administratives" className="scroll-mt-32">
+                <h2 className="font-display text-[clamp(1.6rem,3vw,2.1rem)] font-bold leading-tight tracking-tight text-ink">
                   Informations légales et administratives
                 </h2>
                 <div className="mt-5">
@@ -515,7 +566,7 @@ export function DirectoryProfileV2({
                 />
               </section>
 
-              <section>
+              <section className="rounded-[1.75rem] bg-mint p-6 sm:p-8">
                 <h2 className="font-display text-[1.375rem] font-bold text-ink">
                   Ce que l'on peut vérifier publiquement
                 </h2>
@@ -525,21 +576,21 @@ export function DirectoryProfileV2({
                   cabinet.
                 </p>
                 <ul className="mt-5 grid gap-3 text-[0.9375rem] text-ink-muted">
-                  <li className="flex gap-3">
+                  <li className="flex gap-3 rounded-xl bg-white/70 p-4">
                     <span aria-hidden className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-500" />
                     Existence administrative de l'entreprise et de
                     l'établissement.
                   </li>
-                  <li className="flex gap-3">
+                  <li className="flex gap-3 rounded-xl bg-white/70 p-4">
                     <span aria-hidden className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-500" />
                     Activité déclarée d'expertise comptable lorsque le code NAF
                     69.20Z est disponible.
                   </li>
-                  <li className="flex gap-3">
+                  <li className="flex gap-3 rounded-xl bg-white/70 p-4">
                     <span aria-hidden className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-500" />
                     Statut administratif actif selon la source publique.
                   </li>
-                  <li className="flex gap-3">
+                  <li className="flex gap-3 rounded-xl bg-white/70 p-4">
                     <span aria-hidden className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-500" />
                     Identité du dirigeant uniquement si la source publique le
                     fournit.
@@ -548,7 +599,7 @@ export function DirectoryProfileV2({
               </section>
             </div>
 
-            <SidebarPanel card={card} verified={verified} />
+            <SidebarPanel card={card} verified={verified} hasContactFacts={hasContactFacts} />
           </div>
 
           <DirectoryInternalMesh
@@ -566,8 +617,8 @@ export function DirectoryProfileV2({
           <DirectoryFaq items={faqItems} />
 
           <div className="grid gap-5 md:grid-cols-2">
-            <section className="rounded-xl border border-border bg-surface p-7 shadow-sm">
-              <h2 className="font-display text-[1.125rem] font-semibold text-ink">
+            <section className="rounded-[1.75rem] border border-ink/10 bg-white p-7 sm:p-8">
+              <h2 className="font-display text-[1.125rem] font-bold text-ink">
                 Transparence des données
               </h2>
               <p className="mt-3 text-[0.9375rem] leading-7 text-ink-muted">
@@ -583,13 +634,13 @@ export function DirectoryProfileV2({
                 <span aria-hidden>→</span>
               </Link>
             </section>
-            <section className="rounded-xl border border-border bg-surface p-7 shadow-sm">
-              <h2 className="font-display text-[1.125rem] font-semibold text-ink">
+            <section className="rounded-[1.75rem] border border-ink/10 bg-white p-7 sm:p-8">
+              <h2 className="font-display text-[1.125rem] font-bold text-ink">
                 Nous contacter
               </h2>
               <p className="mt-3 text-[0.9375rem] leading-7 text-ink-muted">
-                Une question sur cette fiche, une suggestion ou une demande de
-                partenariat ? Notre équipe vous répond.
+                Une question sur cette fiche, une suggestion ou un élément à
+                clarifier ? Notre équipe vous répond.
               </p>
               <Link
                 href="/contact"

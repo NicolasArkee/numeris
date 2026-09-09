@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { fmtEur, primeFinCdd, TAUX_PRIME_PRECARITE, TAUX_PRIME_REDUIT_BRANCHE } from "@/libs/simulateurs/math";
-import { Disclaimer, FieldNumber, FieldSelect, FieldToggle, ResultValue, SimulatorBox, SimulatorCta } from "./ui";
+import { Disclaimer, FieldNumber, FieldSelect, FieldToggle, ResultValue, SimulatorBox, SimulatorFields, ResultGrid, SimulatorCta } from "./ui";
 
 export function PrimeCddSimulator() {
   const [brutTotal, setBrutTotal] = useState(10000);
@@ -13,7 +13,7 @@ export function PrimeCddSimulator() {
 
   return (
     <SimulatorBox>
-      <div className="grid gap-5 md:grid-cols-2">
+      <SimulatorFields columns={2}>
         <FieldNumber
           label="Rémunération brute totale du contrat"
           value={brutTotal}
@@ -31,16 +31,16 @@ export function PrimeCddSimulator() {
             { value: String(TAUX_PRIME_REDUIT_BRANCHE), label: "6 % — accord de branche avec contreparties" },
           ]}
         />
-      </div>
-      <div className="mt-4">
-        <FieldToggle
-          label="Ajouter l'indemnité compensatrice de congés payés (congés non pris)"
-          value={inclureIccp}
-          onChange={setInclureIccp}
-        />
-      </div>
+        <div className="md:col-span-full">
+          <FieldToggle
+            label="Ajouter l'indemnité compensatrice de congés payés (congés non pris)"
+            value={inclureIccp}
+            onChange={setInclureIccp}
+          />
+        </div>
+      </SimulatorFields>
 
-      <div className="mt-7 grid gap-4 md:grid-cols-3">
+      <ResultGrid columns={3}>
         <ResultValue
           label="Prime de précarité brute"
           value={fmtEur(result.prime)}
@@ -57,7 +57,7 @@ export function PrimeCddSimulator() {
         ) : (
           <ResultValue label="Total brut de fin de contrat" value={fmtEur(result.totalBrutFinContrat)} detail="versé avec le dernier bulletin" />
         )}
-      </div>
+      </ResultGrid>
 
       <SimulatorCta label="Vérifier mon solde de tout compte" />
       <Disclaimer>

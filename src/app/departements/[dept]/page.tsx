@@ -10,6 +10,8 @@ import { getSEOForDepartement } from "@/data/seo";
 import { getDepartementLinks } from "@/utils/taxonomy";
 import { ServicesGrid } from "@/components/ServicesGrid";
 import { VillesStrip } from "@/components/VillesStrip";
+import { LocalComparisonPlanner } from "@/components/templates/geo/LocalComparisonPlanner";
+import { LocalComparisonGuide } from "@/components/templates/geo/LocalComparisonGuide";
 
 interface Props {
   params: Promise<{ dept: string }>;
@@ -46,7 +48,7 @@ export default async function DepartementPage({ params }: Props) {
 
   // ─── DB-first path (route prête pour la pipeline — 0 rows aujourd'hui) ───
   const bundle = await getDbPageBundle(ROUTE, slug);
-  const { sections: dbSections, seo: dbSeo, lastUpdatedDate, hasDbContent } = bundle;
+  const { seo: dbSeo, lastUpdatedDate, hasDbContent } = bundle;
   const canonicalUrl = `${AppConfig.url}/departements/${slug}`;
 
   // ─── Maillage interne — rendu dans les DEUX chemins ───
@@ -70,7 +72,7 @@ export default async function DepartementPage({ params }: Props) {
     eyebrow: `Département ${dept.code}`,
     breadcrumbs: [
       { name: "Accueil", url: "/" },
-      { name: "Villes", url: "/villes" },
+      { name: "Départements", url: "/departements" },
       { name: `${dept.name} (${dept.code})`, url: `/departements/${slug}` },
     ],
     badges: [dept.name, dept.code, dept.region || ""].filter(Boolean),
@@ -82,6 +84,7 @@ export default async function DepartementPage({ params }: Props) {
     ],
     schema: <ExtraJsonLd raw={dbSeo?.json_ld_extra ?? null} />,
     lastUpdatedDate,
+    publication: bundle.publication,
     articleSchema: false,
     canonicalUrl,
   };
@@ -98,6 +101,7 @@ export default async function DepartementPage({ params }: Props) {
         intro={intro}
         faqs={inlineFaq ? undefined : seo.faqs}
       >
+        <LocalComparisonPlanner area={`${dept.name} (${dept.code})`} />
         {bundle.renderableSections.map((s) => (
           <DynamicSection key={s.id} section={s} />
         ))}
@@ -109,6 +113,8 @@ export default async function DepartementPage({ params }: Props) {
   // ─── Fallback enrichi (plus de coquille vide) ───
   return (
     <ClusterPage {...sharedProps} h1={seo.h1} intro={seo.intro} faqs={seo.faqs}>
+      <LocalComparisonPlanner area={`${dept.name} (${dept.code})`} />
+      <LocalComparisonGuide area={`${dept.name} (${dept.code})`} />
       {internalMesh}
     </ClusterPage>
   );

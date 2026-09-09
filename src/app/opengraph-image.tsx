@@ -211,7 +211,7 @@ export default async function Image() {
               color: "#FFFFFF",
             }}
           >
-            skoria.eu
+            skoria.fr
           </div>
         </div>
       </div>

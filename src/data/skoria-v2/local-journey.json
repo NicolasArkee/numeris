@@ -1,0 +1,50 @@
+{
+  "modes": [
+    {
+      "id": "proximite",
+      "label": "En présentiel",
+      "title": "Organiser les rendez-vous autour de votre activité.",
+      "description": "La proximité devient utile lorsque les rendez-vous ont un rôle précis : démarrage de la mission, revue des comptes ou point de gestion. Comparez l'accès au cabinet, les disponibilités et la préparation attendue avant chaque échange.",
+      "questions": ["Qui me reçoit et à quelle fréquence ?", "Quels rendez-vous sont inclus dans la mission ?", "Comment transmettre les documents entre deux rendez-vous ?"],
+      "prepare": "Vos disponibilités, la fréquence souhaitée et les sujets à traiter en face à face."
+    },
+    {
+      "id": "hybride",
+      "label": "Présentiel & visio",
+      "title": "Garder un interlocuteur, varier les formats.",
+      "description": "Un fonctionnement hybride associe des échanges à distance à des rendez-vous ponctuels. Clarifiez quels sujets nécessitent une rencontre, comment les pièces circulent et qui prend le relais en cas d'absence.",
+      "questions": ["Quels points se font en visio ou au cabinet ?", "Ai-je le même interlocuteur entre deux rendez-vous ?", "Comment sont partagés les documents et les comptes rendus ?"],
+      "prepare": "Les rendez-vous essentiels, vos outils actuels et les personnes qui auront besoin d'un accès."
+    },
+    {
+      "id": "distance",
+      "label": "À distance",
+      "title": "Préciser le suivi au-delà de l'outil.",
+      "description": "Une collaboration à distance dépend autant de la disponibilité de l'interlocuteur que du logiciel utilisé. Examinez les canaux d'échange, les délais de réponse annoncés et la façon dont les questions complexes sont traitées.",
+      "questions": ["Quels canaux utiliser pour une question courante ou urgente ?", "Quels délais de réponse sont convenus ?", "Comment récupérer mes documents et mes données en fin de mission ?"],
+      "prepare": "Vos outils, votre autonomie dans la transmission des pièces et votre besoin d'accompagnement."
+    }
+  ],
+  "comparison": [
+    {
+      "title": "Le périmètre de la mission",
+      "description": "Distinguez les tâches récurrentes, les déclarations, le suivi social et les travaux ponctuels. Un intitulé identique peut couvrir des livrables et des responsabilités différents selon le cabinet.",
+      "question": "Qui fait quoi, avec quelles pièces et à quelle échéance ?"
+    },
+    {
+      "title": "L'organisation des échanges",
+      "description": "Identifiez la personne qui suit le dossier, les rendez-vous prévus et les étapes de validation. Le nombre de kilomètres ne permet pas, à lui seul, d'évaluer la disponibilité ou la connaissance de votre activité.",
+      "question": "Quel interlocuteur suit mon activité au quotidien ?"
+    },
+    {
+      "title": "Les outils et la reprise",
+      "description": "Précisez vos logiciels, le volume de pièces et l'état du dossier existant. Demandez comment se déroulent le transfert des données, la prise en main du portail et la restitution des documents en fin de mission.",
+      "question": "Quelles étapes et quels accès prévoir pour démarrer ?"
+    },
+    {
+      "title": "Le détail des honoraires",
+      "description": "Rapprochez les propositions à partir des mêmes volumes et des mêmes livrables. Séparez le suivi récurrent, la mise en place, les options et les travaux exceptionnels pour comprendre ce qui explique l'écart.",
+      "question": "Qu'est-ce qui est inclus et facturé séparément ?"
+    }
+  ]
+}

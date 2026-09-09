@@ -1,25 +1,55 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { db } from "@/libs/db";
+import { db, type PageSection } from "@/libs/db";
 import { AppConfig } from "@/utils/AppConfig";
 import { ClusterPage } from "@/components/ClusterPage";
 import { DynamicSection } from "@/components/DynamicSection";
 import { ExtraJsonLd } from "@/components/ExtraJsonLd";
 import { getDbPageBundle } from "@/libs/content/dbFirst";
+import { normalizeMetaDescription } from "@/libs/content/meta-title";
 import { getSEOForSecteur } from "@/data/seo";
 import { getSecteurLinks } from "@/utils/taxonomy";
-import { getSecteurMarketing } from "@/data/marketing";
-import { ContentSection } from "@/components/ContentSection";
-import { BenefitsGrid } from "@/components/BenefitsGrid";
-import { StatHighlight } from "@/components/StatHighlight";
 import { ServicesGrid } from "@/components/ServicesGrid";
 import { VillesStrip } from "@/components/VillesStrip";
+import { LandingScopeBuilder } from "@/components/journey/LandingScopeBuilder";
+import {
+  buildSectorFallbackSections,
+  getSectorFallbackFaqs,
+  getSectorFallbackTakeaways,
+} from "@/components/templates/sector/SectorFallbackSections";
 
 interface Props {
   params: Promise<{ secteur: string }>;
 }
 
 const ROUTE = "secteurs";
+
+function collectConfiguredText(value: unknown): string {
+  if (typeof value === "string") return value;
+  if (Array.isArray(value)) return value.map(collectConfiguredText).join(" ");
+  if (value && typeof value === "object") {
+    return Object.values(value).map(collectConfiguredText).join(" ");
+  }
+  return "";
+}
+
+function countConfiguredWords(sections: readonly PageSection[]): number {
+  const text = sections.map((section) => {
+    let itemText = "";
+    if (section.items) {
+      try {
+        itemText = collectConfiguredText(JSON.parse(section.items) as unknown);
+      } catch {
+        itemText = section.items;
+      }
+    }
+    return [section.title, section.body, itemText].filter(Boolean).join(" ");
+  }).join(" ");
+
+  return text
+    .replaceAll(/<[^>]+>/g, " ")
+    .match(/[\p{L}\p{N}]+(?:[’'-][\p{L}\p{N}]+)*/gu)?.length ?? 0;
+}
 
 export const revalidate = 86400;
 
@@ -37,7 +67,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   return {
     title: dbSeo?.meta_title ?? fallback.metaTitle,
-    description: dbSeo?.meta_description ?? fallback.metaDescription,
+    description: normalizeMetaDescription(dbSeo?.meta_description ?? fallback.metaDescription),
     alternates: { canonical: `${AppConfig.url}/secteurs/${slug}` },
   };
 }
@@ -76,6 +106,7 @@ export default async function SecteurPage({ params }: Props) {
     const h1 = dbSeo?.h1 ?? seoFallback.h1;
     const intro = dbSeo?.meta_description ?? bundle.heroSection?.body ?? seoFallback.intro;
     const { inlineFaq, keyTakeaways } = bundle;
+    const needsSectorSupport = countConfiguredWords(bundle.renderableSections) < 1_200;
 
     return (
       <ClusterPage
@@ -93,11 +124,18 @@ export default async function SecteurPage({ params }: Props) {
         keyTakeaways={keyTakeaways}
         schema={<ExtraJsonLd raw={dbSeo?.json_ld_extra ?? null} />}
         lastUpdatedDate={lastUpdatedDate}
+        publication={bundle.publication}
         articleSchema={true}
         articleHeadline={h1}
         articleSection="Secteurs d'activité"
         canonicalUrl={canonicalUrl}
       >
+        <LandingScopeBuilder
+          activity={secteur.name}
+          activityKind="secteur"
+          missions={meshServices.map((service) => ({ slug: service.slug, label: service.title }))}
+        />
+        {needsSectorSupport && buildSectorFallbackSections({ secteur })}
         {bundle.renderableSections.map((s) => (
           <DynamicSection key={s.id} section={s} />
         ))}
@@ -108,7 +146,7 @@ export default async function SecteurPage({ params }: Props) {
 
   // ─── Fallback static path ───
   const seo = getSEOForSecteur(secteur);
-  const mkt = getSecteurMarketing(secteur);
+  const fallbackFaqs = getSectorFallbackFaqs(secteur);
 
   return (
     <ClusterPage
@@ -121,34 +159,23 @@ export default async function SecteurPage({ params }: Props) {
         { name: secteur.name, url: `/secteurs/${slug}` },
       ]}
       badges={[secteur.name]}
-      faqs={seo.faqs}
+      faqs={fallbackFaqs}
       linkGroups={linkGroups}
-      keyTakeaways={bundle.keyTakeaways ?? [
-        `Expert-comptable spécialisé ${secteur.name.toLowerCase()}`,
-        `Connaissance des normes et obligations sectorielles`,
-        `Accompagnement sur mesure et interlocuteur dédié`,
-      ]}
+      keyTakeaways={bundle.keyTakeaways ?? getSectorFallbackTakeaways(secteur)}
       schema={<ExtraJsonLd raw={dbSeo?.json_ld_extra ?? null} />}
       lastUpdatedDate={lastUpdatedDate}
+      publication={bundle.publication}
       articleSchema={true}
       articleHeadline={seo.h1}
       articleSection="Secteurs d'activité"
       canonicalUrl={canonicalUrl}
     >
-      {/* Marketing content */}
-      {mkt.contentSections.map((cs) => (
-        <ContentSection key={cs.title} title={cs.title} paragraphs={cs.paragraphs} />
-      ))}
-
-      {/* Benefits */}
-      <BenefitsGrid
-        title={`Les avantages d'un expert-comptable spécialisé ${secteur.name.toLowerCase()}`}
-        benefits={mkt.benefits}
-        columns={4}
+      <LandingScopeBuilder
+        activity={secteur.name}
+        activityKind="secteur"
+        missions={meshServices.map((service) => ({ slug: service.slug, label: service.title }))}
       />
-
-      {/* Stats */}
-      <StatHighlight stats={mkt.stats} />
+      {buildSectorFallbackSections({ secteur })}
 
       {/* Maillage interne (services + villes) */}
       {internalMesh}

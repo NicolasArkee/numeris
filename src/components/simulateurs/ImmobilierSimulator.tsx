@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { compareLmnp, fmtEur } from "@/libs/simulateurs/math";
-import { Disclaimer, FieldNumber, ResultValue, SimulatorBox, SimulatorCta } from "./ui";
+import { Disclaimer, FieldNumber, ResultValue, SimulatorBox, SimulatorFields, ResultGrid, SimulatorCta } from "./ui";
 
 export function ImmobilierSimulator() {
   const [loyers, setLoyers] = useState(12000);
@@ -14,14 +14,14 @@ export function ImmobilierSimulator() {
 
   return (
     <SimulatorBox>
-      <div className="grid gap-5 md:grid-cols-4">
+      <SimulatorFields columns={4}>
         <FieldNumber label="Loyers annuels (CC)" value={loyers} onChange={setLoyers} step={500} suffix="€" />
         <FieldNumber label="Charges annuelles" value={charges} onChange={setCharges} step={250} suffix="€" hint="Copro, taxe foncière, intérêts d'emprunt, assurance, CGA…" />
         <FieldNumber label="Valeur du bien (hors terrain)" value={bien} onChange={setBien} step={10000} suffix="€" />
         <FieldNumber label="Valeur du mobilier" value={mobilier} onChange={setMobilier} step={500} suffix="€" />
-      </div>
+      </SimulatorFields>
 
-      <div className="mt-7 grid gap-4 md:grid-cols-3">
+      <ResultGrid columns={3}>
         <ResultValue label="Base imposable micro-BIC" value={fmtEur(r.baseMicro)} detail="abattement forfaitaire 50 %" />
         <ResultValue label="Base imposable au réel" value={fmtEur(r.baseReel)} highlight detail={`dont amortissement ${fmtEur(r.amortissementAnnuel)}/an`} />
         <ResultValue
@@ -29,7 +29,7 @@ export function ImmobilierSimulator() {
           value={fmtEur(Math.max(0, r.economieBase))}
           detail="par an, réel vs micro-BIC"
         />
-      </div>
+      </ResultGrid>
 
       <SimulatorCta label="Passer au réel avec un expert LMNP" />
       <Disclaimer>

@@ -1,5 +1,9 @@
 import Database from "better-sqlite3";
 import path from "node:path";
+import { normalizeDbMetaTitle, normalizeMetaDescription } from "@/libs/content/meta-title";
+import { sanitizeLegacyPublicSeoText } from "@/libs/skoria-v2/content-safety";
+import { isPublicPageMeta } from "@/libs/skoria-v2/model";
+import { diagnosePagePublication } from "@/libs/skoria-v2/publication";
 import { SCHEMA, ensureDirectoryProfileFactTypeCompatibility } from "./schema";
 import type {
   Cluster,
@@ -521,10 +525,24 @@ export const sqliteAdapter: DbAdapter = {
   },
 
   async getSeoOverride(route: string, slug: string): Promise<SeoOverride | null> {
+    const meta = getDb()
+      .prepare("SELECT * FROM page_meta WHERE route = ? AND slug = ?")
+      .get(route, slug) as PageMeta | undefined;
+    if (!isPublicPageMeta(meta)) return null;
     const row = getDb()
-      .prepare("SELECT * FROM seo_overrides WHERE route = ? AND slug = ?")
+      .prepare(
+        "SELECT * FROM seo_overrides WHERE route = ? AND slug = ?",
+      )
       .get(route, slug) as SeoOverride | undefined;
-    return row ?? null;
+    if (!diagnosePagePublication({ meta, seo: row ?? null }).isPublic) return null;
+    return row ? {
+      ...row,
+      meta_title: normalizeDbMetaTitle(row.meta_title ? sanitizeLegacyPublicSeoText(row.meta_title) : null),
+      meta_description: row.meta_description
+        ? normalizeMetaDescription(sanitizeLegacyPublicSeoText(row.meta_description))
+        : null,
+      h1: row.h1 ? sanitizeLegacyPublicSeoText(row.h1) : null,
+    } : null;
   },
 
   async getPageMeta(route: string, slug: string): Promise<PageMeta | null> {

@@ -1,5 +1,6 @@
 import { legalEntity } from "@/data/legal-entity";
 import { formatDateFr } from "@/libs/content/format";
+import Link from "next/link";
 
 interface ExpertAuthorBoxProps {
   name?: string;
@@ -17,55 +18,58 @@ export function ExpertAuthorBox({
   credentials = [
     "Contenus informatifs, non individualisés",
     "Sources publiques et méthodologie éditoriale",
-    `${legalEntity.companyName} — comparateur fondé en ${legalEntity.creationYear}`,
+    `${legalEntity.companyName} — comparateur indépendant`,
   ],
   date,
   initials = legalEntity.presidentInitials,
   photoUrl = legalEntity.presidentPhotoUrl,
 }: ExpertAuthorBoxProps) {
-  const displayDate = formatDateFr(date);
+  const displayDate = date ? formatDateFr(date) : null;
 
   return (
-    <aside className="border border-border-soft bg-surface p-6" aria-label="Auteur">
-      <div className="flex items-start gap-4">
+    <aside className="rounded-[1.75rem] border border-ink/10 bg-paper p-6 sm:p-8" aria-label="Auteur">
+      <div className="flex flex-col items-start gap-5 sm:flex-row sm:gap-7">
         {photoUrl ? (
-          <div className="flex h-12 w-12 flex-shrink-0 overflow-hidden">
+          <div className="flex h-20 w-20 flex-shrink-0 overflow-hidden rounded-full">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={photoUrl}
               alt={name}
-              width={48}
-              height={48}
+              width={80}
+              height={80}
               loading="lazy"
               className="h-full w-full object-cover"
             />
           </div>
         ) : (
-          <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center bg-brand-ink text-[0.75rem] font-semibold text-accent-500">
+          <div className="flex h-20 w-20 flex-shrink-0 items-center justify-center rounded-full bg-navy font-display text-[1.5rem] font-bold text-[#ffb293]">
             {initials}
           </div>
         )}
-        <div className="flex-1">
+        <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-            <span className="text-[0.88rem] font-semibold text-ink">{name}</span>
-            <span className="bg-accent-300 px-2 py-0.5 text-[0.58rem] font-bold uppercase tracking-wide text-accent-700">
+            <span className="font-display text-[1.3rem] font-bold text-navy">{name}</span>
+            <span className="rounded-full bg-lilac px-3 py-1.5 text-[.61rem] font-bold uppercase tracking-wide text-blue">
               Éditorial
             </span>
           </div>
-          <p className="mt-0.5 text-[0.75rem] text-ink-muted">{role}</p>
-          <div className="mt-3 flex flex-wrap gap-2">
+          <p className="mt-2 text-[.85rem] leading-6 text-ink-muted">{role}</p>
+          <div className="mt-6 grid gap-3 lg:grid-cols-3">
             {credentials.map((c) => (
               <span
                 key={c}
-                className="flex items-center gap-1 text-[0.7rem] text-ink-muted"
+                className="flex items-start gap-2 rounded-xl bg-white px-4 py-3 text-[.75rem] leading-6 text-ink-muted"
               >
-                <span className="text-accent-500">✓</span> {c}
+                <span aria-hidden className="font-bold text-blue">↳</span> {c}
               </span>
             ))}
           </div>
-          <p className="mt-3 text-[0.68rem] text-ink-soft">
-            Mis à jour le {displayDate}
-          </p>
+          {displayDate && (
+            <p className="mt-5 text-[.73rem] text-ink-muted">
+              Mis à jour le {displayDate}
+            </p>
+          )}
+          <Link href="/qui-sommes-nous" className="mt-4 inline-flex min-h-11 items-center gap-3 text-[.8rem] font-bold text-blue hover:underline">Découvrir notre méthode éditoriale <span aria-hidden>↗</span></Link>
         </div>
       </div>
     </aside>

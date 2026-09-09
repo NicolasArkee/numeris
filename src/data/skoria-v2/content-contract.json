@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "description": "Contrat de composition V2 des sections SEO. Le contenu reste côté serveur et les interactions ne masquent jamais la prose initiale.",
+  "defaults": {
+    "renderer": "DynamicSection",
+    "role": "explanation",
+    "width": "prose",
+    "themeCycle": ["white", "paper", "lilac", "white", "mint", "paper", "apricot"],
+    "unknownType": "render-safe-fallback"
+  },
+  "sections": {
+    "Hero": { "role": "explanation", "width": "wide", "placement": "hero", "consumeFirstOnly": true },
+    "EditoIntro": { "role": "explanation", "width": "prose", "themes": ["paper", "white"] },
+    "ContentSection": { "role": "explanation", "width": "prose", "themes": ["white", "paper", "lilac", "mint"] },
+    "DefinitionBox": { "role": "explanation", "width": "prose", "themes": ["lilac", "mint"] },
+    "KeyTakeaways": { "role": "decision", "width": "wide", "placement": "after-hero", "themes": ["mint"] },
+    "StatHighlight": { "role": "proof", "width": "wide", "themes": ["apricot", "mint"] },
+    "StatsBand": { "role": "proof", "width": "full", "themes": ["navy", "blue"] },
+    "RichTable": { "role": "decision", "width": "wide", "themes": ["white", "paper"] },
+    "ComparisonTable": { "role": "decision", "width": "wide", "themes": ["white", "lilac"] },
+    "BenefitsGrid": { "role": "decision", "width": "wide", "themes": ["lilac", "mint", "paper"] },
+    "ProcessSteps": { "role": "action", "width": "wide", "themes": ["navy", "paper"] },
+    "NumberedSteps": { "role": "action", "width": "wide", "themes": ["navy", "paper", "apricot"] },
+    "Checklist": { "role": "action", "width": "prose", "themes": ["mint", "paper"] },
+    "ProsCons": { "role": "decision", "width": "wide", "themes": ["lilac", "white"] },
+    "Calculator": { "role": "action", "width": "wide", "themes": ["mint", "white"] },
+    "SimulatorTeaser": { "role": "action", "width": "wide", "themes": ["mint", "apricot"] },
+    "FAQSection_PAA": { "role": "explanation", "width": "wide", "placement": "faq", "deduplicateWith": ["Faq"] },
+    "Faq": { "role": "explanation", "width": "wide", "placement": "faq", "deduplicateWith": ["FAQSection_PAA"] },
+    "InternalLinks": { "role": "action", "width": "wide", "placement": "next-steps", "requireInternalHref": true },
+    "RelatedArticles": { "role": "action", "width": "wide", "placement": "next-steps", "requireInternalHref": true },
+    "TableOfContents": { "role": "action", "width": "wide", "placement": "sticky-navigation", "stripLeadingHash": true },
+    "AlertBox": { "role": "proof", "width": "prose", "themes": ["apricot", "lilac"] },
+    "QuoteBlock": { "role": "proof", "width": "prose", "themes": ["lilac", "paper"] },
+    "ExpertQuote": { "role": "proof", "width": "prose", "themes": ["lilac", "paper"], "requiresNamedSource": true },
+    "LocalProvidersMap": { "role": "decision", "width": "full", "themes": ["mint", "paper"] },
+    "OpeningHoursTable": { "role": "proof", "width": "prose", "themes": ["white", "paper"], "requiresSource": true },
+    "MapEmbed": { "role": "decision", "width": "full", "themes": ["mint", "paper"] },
+    "PricingTeaser": { "role": "decision", "width": "wide", "themes": ["apricot"], "publishWhen": "verified-current-source-only", "neverPresentAsSkoriaOffer": true },
+    "TestimonialSlider": { "role": "proof", "width": "wide", "themes": ["paper"], "publishWhen": "named-consented-source-only", "disabledByDefault": true }
+  },
+  "grouping": {
+    "maxConsecutiveSectionsPerBand": 2,
+    "avoidConsecutiveThemes": true,
+    "preserveHeadingOrder": true,
+    "preserveServerRenderedText": true
+  },
+  "structuredData": {
+    "oneFaqPagePerUrl": true,
+    "articleTemplateOnly": true,
+    "visibleItemsRequiredForItemList": true,
+    "forbidSkoriaAsAccountingServiceProvider": true
+  }
+}

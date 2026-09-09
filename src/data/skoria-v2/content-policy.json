@@ -1,0 +1,143 @@
+{
+  "schemaVersion": 1,
+  "publication": {
+    "publicStatus": "published",
+    "nonPublicStatuses": ["draft", "review", "archived"],
+    "pageMetaRequired": true,
+    "denyWhenPageMetaMissing": true,
+    "hideSectionsWhenNonPublic": true,
+    "hideSeoOverridesWhenNonPublic": true,
+    "commercialPageRequiresPublishedStatus": true,
+    "previewRequiresDedicatedAuthenticatedPath": true
+  },
+  "databaseContract": {
+    "page_sections": {
+      "key": ["route", "slug", "section_order"],
+      "required": ["route", "slug", "section_type", "section_order"],
+      "jsonTextFields": ["items", "citations"],
+      "rules": [
+        "section_order must be unique within a page",
+        "items and citations must parse before import",
+        "a page may render at most one Faq or FAQSection_PAA block",
+        "all explicit table-of-contents anchors must omit a leading hash"
+      ]
+    },
+    "seo_overrides": {
+      "key": ["route", "slug"],
+      "requiredForPublish": ["meta_title", "meta_description", "h1"],
+      "jsonTextFields": ["key_takeaways", "json_ld_extra"],
+      "rules": [
+        "the route and slug must match page_meta",
+        "json_ld_extra must be validated against the template schema policy",
+        "SEO overrides inherit the publication status of page_meta"
+      ]
+    },
+    "page_meta": {
+      "key": ["route", "slug"],
+      "requiredForPublish": ["author_persona_id", "reviewed_by", "content_hash", "published_at", "pipeline_run_id"],
+      "allowedStatuses": ["draft", "review", "published", "archived"],
+      "rules": [
+        "new and backfilled content starts as draft",
+        "review records the reviewer and a fresh content hash",
+        "published_at is set only after content, SEO, schema and link checks pass"
+      ]
+    },
+    "commercial_pages": {
+      "key": ["slug"],
+      "requiredForPublish": ["route", "url", "archetype", "label", "brief_json", "publish_status"],
+      "allowedRoutes": ["comparatifs", "avis", "codes-parrainage"],
+      "rules": [
+        "brief_json must parse and match its row route, slug and URL",
+        "affiliate disclosure is visible before the first commercial action",
+        "a direct URL must never return a non-published row",
+        "linked commercial targets must also be published"
+      ]
+    }
+  },
+  "sectionPayloads": {
+    "Faq": {
+      "itemsShape": "array<object{q:string,a:string}>",
+      "aliases": ["question", "answer"],
+      "minimumItemsWhenRequired": 5
+    },
+    "FAQSection_PAA": {
+      "itemsShape": "array<object{q:string,a:string}>",
+      "aliases": ["question", "answer"],
+      "minimumItemsWhenRequired": 5
+    },
+    "ComparisonTable": {
+      "itemsShape": "object{headers:string[],rows:string[][]} | array<object> | string[]",
+      "rules": ["headers and rows have consistent widths", "every criterion has a source date when commercial"]
+    },
+    "RichTable": {
+      "itemsShape": "object{headers:string[],rows:string[][]}",
+      "rules": ["headers and rows are non-empty", "rows are normalized to header width"]
+    },
+    "InternalLinks": {
+      "itemsShape": "array<object{label:string,href:string}> | string[]",
+      "rules": ["href is an internal absolute path", "no link points to draft or archived content"]
+    },
+    "TableOfContents": {
+      "itemsShape": "array<object{id:string,label:string,level?:number}>",
+      "aliases": ["anchor", "title"],
+      "rules": ["ids are unique", "ids omit a leading hash", "ids match rendered heading anchors"]
+    },
+    "KeyTakeaways": {
+      "itemsShape": "string[]",
+      "minimumItemsWhenRequired": 3
+    },
+    "BenefitsGrid": {
+      "itemsShape": "array<object{title:string,description:string}> | string[]"
+    },
+    "NumberedSteps": {
+      "itemsShape": "array<object{title:string,description:string,number?:string}>"
+    },
+    "Checklist": {
+      "itemsShape": "string[]"
+    },
+    "StatsBand": {
+      "itemsShape": "array<object{value:string,label:string,source?:string,detail?:string}>"
+    },
+    "ProsCons": {
+      "itemsShape": "object{pros:string[],cons:string[]} | array<object{type:string,text:string}>"
+    }
+  },
+  "seo": {
+    "titleCharacters": {"minimum": 35, "maximum": 65},
+    "descriptionCharacters": {"minimum": 120, "maximum": 165},
+    "h1PerPage": 1,
+    "canonicalRequired": true,
+    "uniqueTitleDescriptionH1": true,
+    "citations": {
+      "requiredForLegalFiscalPricingAndStatistics": true,
+      "officialSourcesPreferred": true,
+      "sourceUrlAndRetrievedAtRequired": true,
+      "rejectStubUrls": true
+    },
+    "schema": {
+      "articleAllowedTemplateIds": ["article"],
+      "OfferRequiresVerifiedCurrentConditions": true,
+      "FAQPageRequiresVisibleFaq": true,
+      "ItemListRequiresVisibleItems": true,
+      "regulatedProviderEntity": "directory cabinet",
+      "forbidSkoriaAsAccountingProvider": true
+    },
+    "language": {
+      "forbiddenClaims": [
+        "Skoria assure votre comptabilité",
+        "Skoria tient votre comptabilité",
+        "nos experts-comptables",
+        "notre cabinet comptable"
+      ],
+      "requiredPositioning": "Skoria informe, structure le besoin et facilite la comparaison de professionnels ou de solutions."
+    }
+  },
+  "commercialFacts": {
+    "required": ["source_url", "retrieved_at", "fact_status"],
+    "allowedFactStatuses": ["verified", "to-confirm", "expired"],
+    "priceAndOfferMaxAgeDays": 30,
+    "featureMaxAgeDays": 90,
+    "unknownValueLabel": "À confirmer auprès du fournisseur",
+    "neverInfer": ["eligibility", "offer amount", "discount duration", "regulatory status", "service availability"]
+  }
+}

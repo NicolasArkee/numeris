@@ -1,20 +1,10 @@
 import type { Metadata } from "next";
 import { db } from "@/libs/db";
-import { HomeHero } from "@/components/home/HomeHero";
-import {
-  HomeMethodStrip,
-  HomeVilles,
-  HomeExpertises,
-  HomeGuides,
-  HomeProfessions,
-  HomeDualCta,
-} from "@/components/home/HomeSections";
-import { HomeTarifs } from "@/components/home/HomeTarifs";
-import { Faq } from "@/components/Faq";
-import { CtaContact } from "@/components/CtaContact";
-import { StickyMobileCTA } from "@/components/StickyMobileCTA";
+import { HomePageV2 } from "@/components/home/HomePageV2";
+import { getListingCabinetTotal } from "@/components/home/home-data";
 import { OrganizationJsonLd, WebSiteJsonLd, FaqJsonLd, WebPageJsonLd } from "@/components/JsonLd";
 import { AppConfig } from "@/utils/AppConfig";
+import type { FaqItem } from "@/libs/db";
 
 // HP « registre » (redesign 2026-07) : hero recherche + compteurs réels,
 // méthode/indépendance, annuaire par ville, missions, tarifs+simulateurs,
@@ -22,36 +12,79 @@ import { AppConfig } from "@/utils/AppConfig";
 export const revalidate = 86400;
 
 export const metadata: Metadata = {
-  title: `${AppConfig.name} | Comparateur indépendant d'experts-comptables`,
+  title: { absolute: "Comparateur indépendant d'experts-comptables | Skoria" },
   description:
-    "Comparez les experts-comptables de votre ville à partir de données publiques : annuaire national, statut de vérification explicite, ordres de prix et simulateurs gratuits.",
+    "Trouvez l'expert-comptable adapté à votre activité. Comparez les missions, explorez l'annuaire et préparez un premier échange à partir de données sourcées.",
   alternates: {
     canonical: `${AppConfig.url}/`,
   },
 };
 
-// FAQ « désamorçage » — les 2 objections frontales du modèle comparateur,
-// affichées avant les questions génériques de la DB.
-const OBJECTION_FAQ = [
+// FAQ éditoriale de la page d'accueil. Elle reste locale au template pour que
+// le contenu visible et le schéma FAQPage partagent exactement la même source.
+// Les anciennes FAQ globales du CMS mélangeaient information comparative et
+// promesses de prestation : elles ne sont donc pas injectées ici.
+const HOME_FAQ_ITEMS: FaqItem[] = [
   {
-    question: "Pourquoi Skoria est-il gratuit ?",
+    id: -1,
+    order_index: 0,
+    question: "À quoi sert Skoria ?",
     answer:
-      "La consultation de l'annuaire, des comparatifs et des simulateurs est gratuite et sans compte. Skoria se finance par des partenariats clairement identifiés sur les pages concernées — jamais par la vente de classements ni par des commissions cachées sur votre mise en relation.",
+      "Skoria rassemble des informations, des critères de comparaison et des outils de préparation. Le site aide à décrire un besoin et à examiner plusieurs options ; la mission et ses conditions se confirment directement avec le cabinet retenu.",
   },
   {
-    question: "Skoria est-il vraiment indépendant ?",
+    id: -2,
+    order_index: 1,
+    question: "Comment comparer deux cabinets d’expertise comptable ?",
     answer:
-      "Oui. Aucun cabinet ne détient Skoria, aucune fiche n'est payante et l'ordre d'affichage n'est pas sponsorisé. Les fiches proviennent de sources administratives publiques (RNE, registre OEC, INSEE) et affichent explicitement leur statut de vérification.",
+      "Utilisez le même périmètre pour chaque échange : tâches incluses, livrables, calendrier, interlocuteur, outils, modalités de reprise et éléments facturés séparément. Vous pourrez alors rapprocher les propositions sans réduire le choix à un montant global.",
+  },
+  {
+    id: -3,
+    order_index: 2,
+    question: "D’où viennent les informations de l’annuaire ?",
+    answer:
+      "Les fiches distinguent les données administratives disponibles, les informations issues de sources publiques ou de sites professionnels et les éléments qui restent à confirmer. La source et le statut affichés permettent d’évaluer chaque information.",
+  },
+  {
+    id: -4,
+    order_index: 3,
+    question: "Un cabinet proche est-il toujours préférable ?",
+    answer:
+      "La proximité peut faciliter certains rendez-vous, mais elle ne renseigne pas à elle seule sur les missions traitées, les outils, les délais ou la disponibilité. Comparez ces critères avec le mode de collaboration à distance proposé par chaque cabinet.",
+  },
+  {
+    id: -5,
+    order_index: 4,
+    question: "Peut-on connaître les honoraires avant le premier échange ?",
+    answer:
+      "Un montant dépend notamment du volume de pièces, de la fréquence de suivi, des déclarations, des outils et des travaux ponctuels. Les simulateurs donnent des repères pédagogiques ; seul un devis détaillé permet de confirmer le périmètre et son prix.",
+  },
+  {
+    id: -6,
+    order_index: 5,
+    question: "Que faut-il préparer avant de contacter un cabinet ?",
+    answer:
+      "Rassemblez votre statut, votre activité, vos volumes, vos échéances, vos outils actuels et les livrables attendus. Le brief Skoria organise ces éléments pour vous aider à poser les mêmes questions à plusieurs interlocuteurs.",
+  },
+  {
+    id: -7,
+    order_index: 6,
+    question: "Comment utiliser le brief préparé sur Skoria ?",
+    answer:
+      "Le brief reste dans votre navigateur et peut être téléchargé. Relisez-le avant chaque rendez-vous, complétez les volumes ou échéances manquants, puis partagez uniquement les éléments utiles avec les cabinets que vous contactez. Conservez la même base pour comparer les réponses, les exclusions et les prochaines étapes proposées.",
   },
 ];
 
 export default async function HomePage() {
-  const services = await db.getServices();
-  const dbFaqItems = await db.getFaqItems();
-  const faqItems = [
-    ...OBJECTION_FAQ.map((f, i) => ({ id: -1 - i, order_index: -2 + i, ...f })),
-    ...dbFaqItems,
-  ];
+  const [services, cities, professions, sectors, cabinetCount] = await Promise.all([
+    db.getServices().catch(() => []),
+    db.getDirectoryListingCities().catch(() => []),
+    db.getProfessions().catch(() => []),
+    db.getSecteurs().catch(() => []),
+    getListingCabinetTotal(),
+  ]);
+  const faqItems = HOME_FAQ_ITEMS;
 
   return (
     <>
@@ -68,17 +101,14 @@ export default async function HomePage() {
           answer: f.answer,
         }))}
       />
-      <HomeHero />
-      <HomeMethodStrip />
-      <HomeVilles />
-      <HomeExpertises services={services} />
-      <HomeTarifs />
-      <HomeGuides />
-      <HomeProfessions />
-      <Faq items={faqItems} />
-      <HomeDualCta />
-      <CtaContact />
-      <StickyMobileCTA />
+      <HomePageV2
+        cities={cities}
+        cabinetCount={cabinetCount}
+        services={services}
+        professions={professions}
+        sectors={sectors}
+        faqItems={faqItems}
+      />
     </>
   );
 }

@@ -5,12 +5,40 @@
 
 import { db } from "@/libs/db";
 import type { PageSection, PageMeta, SeoOverride } from "@/libs/db";
+import {
+  dedupeFaqSections,
+  hasInlineFaq,
+} from "@/libs/skoria-v2/model";
+import {
+  diagnosePagePublication,
+  type PublicationDiagnostic,
+} from "@/libs/skoria-v2/publication";
+import { normalizeDbMetaTitle } from "@/libs/content/meta-title";
+import {
+  sanitizeLegacyPublicJsonText,
+  sanitizeLegacyPublicText,
+} from "@/libs/skoria-v2/content-safety";
+
+export interface DbPagePublication {
+  publishedAt: string | undefined;
+  reviewedAt: string;
+  authorPersonaId: string;
+  reviewedBy: string;
+}
 
 export interface DbPageBundle {
   sections: PageSection[];
   seo: SeoOverride | null;
   meta: PageMeta | null;
+  /** Publication is fail-closed: missing metadata and every non-published
+   *  status produce an empty public bundle. */
+  isPublished: boolean;
   hasDbContent: boolean;
+  /** Contract result used by the public gate. Legacy gaps are warnings;
+   * newer V2 gaps are blockers. */
+  publicationDiagnostic: PublicationDiagnostic;
+  /** Exact publication provenance stored in page_meta. */
+  publication: DbPagePublication | undefined;
   /** page_meta.reviewed_at (ISO 8601) — alimente LastUpdated + Article dates. */
   lastUpdatedDate: string | undefined;
   /** seo_overrides.key_takeaways (JSON string[]) parsé ; fallback : items de
@@ -29,8 +57,6 @@ export interface DbPageBundle {
   renderableSections: PageSection[];
 }
 
-const FAQ_TYPES = new Set(["Faq", "FAQSection_PAA"]);
-
 export function parseTakeaways(raw: string | null): string[] | undefined {
   if (!raw) return undefined;
   try {
@@ -44,10 +70,40 @@ export function parseTakeaways(raw: string | null): string[] | undefined {
   return undefined;
 }
 
-export async function getDbPageBundle(route: string, slug: string): Promise<DbPageBundle> {
-  const sections = await db.getPageSections(route, slug);
-  const seo = await db.getSeoOverride(route, slug);
-  const meta = await db.getPageMeta(route, slug);
+export function buildPublicDbPageBundle(
+  rawSections: readonly PageSection[],
+  rawSeo: SeoOverride | null,
+  meta: PageMeta | null,
+): DbPageBundle {
+  // The public read path is deliberately fail-closed. Draft/review/archived
+  // rows may exist in Supabase for editorial work, but cannot replace the
+  // static fallback or leak their SEO metadata on a direct URL.
+  const publicationDiagnostic = diagnosePagePublication({
+    meta,
+    sections: rawSections,
+    seo: rawSeo,
+  });
+  const isPublished = publicationDiagnostic.isPublic;
+  const sections = isPublished
+    ? dedupeFaqSections(rawSections).map((section) => ({
+        ...section,
+        title: section.title ? sanitizeLegacyPublicText(section.title) : null,
+        body: section.body ? sanitizeLegacyPublicText(section.body) : null,
+        items: sanitizeLegacyPublicJsonText(section.items),
+        citations: sanitizeLegacyPublicJsonText(section.citations),
+      }))
+    : [];
+  const seo = isPublished && rawSeo
+    ? { ...rawSeo, meta_title: normalizeDbMetaTitle(rawSeo.meta_title) }
+    : null;
+  const publication = isPublished && meta
+    ? {
+        publishedAt: meta.published_at ?? undefined,
+        reviewedAt: meta.reviewed_at,
+        authorPersonaId: meta.author_persona_id,
+        reviewedBy: meta.reviewed_by,
+      }
+    : undefined;
 
   // Takeaways : seo_overrides prioritaire, sinon items de la première
   // section KeyTakeaways (string[] JSON-encodé).
@@ -66,13 +122,32 @@ export async function getDbPageBundle(route: string, slug: string): Promise<DbPa
     sections,
     seo,
     meta,
+    isPublished,
     hasDbContent: sections.length > 0,
-    lastUpdatedDate: meta?.reviewed_at,
+    publicationDiagnostic,
+    publication,
+    lastUpdatedDate: publication?.reviewedAt,
     keyTakeaways,
-    inlineFaq: sections.some((s) => FAQ_TYPES.has(s.section_type)),
+    inlineFaq: hasInlineFaq(sections),
     heroSection: sections.find(
       (s) => s.section_type === "Hero" || s.section_type === "ContentSection",
     ),
     renderableSections,
   };
+}
+
+export async function getDbPageBundle(route: string, slug: string): Promise<DbPageBundle> {
+  try {
+    const [rawSections, rawSeo, meta] = await Promise.all([
+      db.getPageSections(route, slug),
+      db.getSeoOverride(route, slug),
+      db.getPageMeta(route, slug),
+    ]);
+    return buildPublicDbPageBundle(rawSections, rawSeo, meta);
+  } catch {
+    // Les familles qui disposent d'un contenu de référence dans le dépôt
+    // restent consultables pendant une indisponibilité du CMS. Aucun contenu
+    // DB n'est alors supposé publié : le repli conserve donc le fail-closed.
+    return buildPublicDbPageBundle([], null, null);
+  }
 }

@@ -29,8 +29,8 @@ const legal = [
 const trustBadges = [
   "Comparateur indépendant",
   "Données publiques sourcées",
-  "Avis vérifiés post-mission",
-  "100 % gratuit, sans engagement",
+  "Statut des informations visible",
+  "Consultation libre et sans compte",
 ];
 
 export function Footer() {

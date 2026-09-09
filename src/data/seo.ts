@@ -101,10 +101,10 @@ export function getSEOForServiceSecteur(
     metaTitle: `${service.title} ${secteur.name} : comparer`,
     metaDescription: `${service.title} pour le secteur ${secteur.name.toLowerCase()} : critères de comparaison, obligations à vérifier et questions à préparer.`,
     h1: `${service.title} pour le secteur ${secteur.name}`,
-    intro: `Les professionnels du ${secteur.name.toLowerCase()} ont des besoins spécifiques en ${service.title.toLowerCase()}. ${AppConfig.name} aide à préparer les critères de comparaison adaptés à cette réalité métier.`,
+    intro: `Dans le secteur « ${secteur.name.toLowerCase()} », les professionnels rencontrent des besoins spécifiques en ${service.title.toLowerCase()}. ${AppConfig.name} aide à préparer les critères de comparaison adaptés à cette réalité métier.`,
     faqs: [
       {
-        question: `Quelles sont les spécificités de la ${service.title.toLowerCase()} en ${secteur.name.toLowerCase()} ?`,
+        question: `Quels points de ${service.title.toLowerCase()} vérifier dans le secteur ${secteur.name.toLowerCase()} ?`,
         answer: `Le secteur ${secteur.name.toLowerCase()} implique des obligations comptables et fiscales particulières. Comparez l'expérience sectorielle, les livrables et les points de contrôle proposés.`,
       },
     ],

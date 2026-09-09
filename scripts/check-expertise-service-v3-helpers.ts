@@ -104,35 +104,44 @@ const expectedServiceTerms = new Map([
   ["audit", "Audit légal"],
 ]);
 
-for (const dbServiceItem of db.getServices()) {
-  const contentPack = buildServiceSeoContentPack(dbServiceItem);
-  const expectedTerm = expectedServiceTerms.get(dbServiceItem.slug);
-  assert.ok(expectedTerm, `Unexpected service ${dbServiceItem.slug}`);
-  assert.ok(
-    contentPack.coverageCards.some((card) => card.title === expectedTerm),
-    `Expected ${dbServiceItem.slug} coverage to include ${expectedTerm}`,
+async function main(): Promise<void> {
+  const dbServices = await db.getServices();
+  for (const dbServiceItem of dbServices) {
+    const contentPack = buildServiceSeoContentPack(dbServiceItem);
+    const expectedTerm = expectedServiceTerms.get(dbServiceItem.slug);
+    assert.ok(expectedTerm, `Unexpected service ${dbServiceItem.slug}`);
+    assert.ok(
+      contentPack.coverageCards.some((card) => card.title === expectedTerm),
+      `Expected ${dbServiceItem.slug} coverage to include ${expectedTerm}`,
+    );
+    assert.ok(contentPack.coverageCards.length >= 6);
+    assert.ok(contentPack.documentBlocks.length >= 6);
+    assert.ok(contentPack.deliverables.length >= 4);
+    assert.ok(contentPack.internalLinks.length >= 4);
+    assert.ok(
+      buildServiceLandingFaqItems(dbServiceItem).length >= 8,
+      `Expected rich FAQ for ${dbServiceItem.slug}`,
+    );
+  }
+
+  const dbService = dbServices.find((item) => item.slug === "comptabilite");
+  assert.ok(dbService);
+  const allSecteurs = await db.getSecteurs();
+  const secteurMap = new Map(allSecteurs.map((item) => [item.slug, item]));
+  const serviceSecteurs = await db.getServiceSecteurs(dbService.slug);
+  const dbSectorCards = buildServiceSectorCards(
+    dbService.slug,
+    serviceSecteurs
+      .map((item) => secteurMap.get(item.secteur_slug))
+      .filter((item): item is Secteur => Boolean(item)),
   );
-  assert.ok(contentPack.coverageCards.length >= 6);
-  assert.ok(contentPack.documentBlocks.length >= 6);
-  assert.ok(contentPack.deliverables.length >= 4);
-  assert.ok(contentPack.internalLinks.length >= 4);
-  assert.ok(
-    buildServiceLandingFaqItems(dbServiceItem).length >= 8,
-    `Expected rich FAQ for ${dbServiceItem.slug}`,
-  );
+  assert.ok(dbSectorCards.length >= 6);
+  assert.ok(dbSectorCards.every((card) => card.asset.src.startsWith("data:image/svg+xml")));
+
+  console.log("Expertise service V3 helpers OK");
 }
 
-const dbService = db.getServices().find((item) => item.slug === "comptabilite");
-assert.ok(dbService);
-const allSecteurs = db.getSecteurs();
-const secteurMap = new Map(allSecteurs.map((item) => [item.slug, item]));
-const dbSectorCards = buildServiceSectorCards(
-  dbService.slug,
-  db.getServiceSecteurs(dbService.slug)
-    .map((item) => secteurMap.get(item.secteur_slug))
-    .filter((item): item is Secteur => Boolean(item)),
-);
-assert.ok(dbSectorCards.length >= 6);
-assert.ok(dbSectorCards.every((card) => card.asset.src.startsWith("data:image/svg+xml")));
-
-console.log("Expertise service V3 helpers OK");
+main().catch((error: unknown) => {
+  console.error(error);
+  process.exitCode = 1;
+});

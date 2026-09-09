@@ -1,3 +1,5 @@
+import { EditorialArrow, EditorialCheck } from "./editorial/EditorialElements";
+
 interface Plan {
   name: string;
   price: string;
@@ -7,7 +9,6 @@ interface Plan {
   cta?: { label: string; href: string };
   highlighted?: boolean;
 }
-
 interface ComparisonTableProps {
   title?: string;
   subtitle?: string;
@@ -19,97 +20,108 @@ export function ComparisonTable({
   subtitle,
   plans,
 }: ComparisonTableProps) {
+  const cols =
+    plans.length === 2
+      ? "md:grid-cols-2"
+      : plans.length === 3
+        ? "md:grid-cols-2 lg:grid-cols-3"
+        : "md:grid-cols-2 xl:grid-cols-4";
   return (
-    <section className="bg-bg px-6 py-24 lg:px-[4.5rem]">
-      <div className="mx-auto max-w-[82rem]">
-        <div className="mb-14 max-w-2xl">
-          <div className="mb-5 flex items-center gap-3.5">
-            <span className="block h-px w-6 flex-shrink-0 bg-accent-500" />
-            <span className="text-[0.65rem] font-bold uppercase tracking-[0.14em] text-accent-700">
-              Tarifs
-            </span>
-          </div>
-          <h2 className="mb-4 font-display text-[2.25rem] font-bold leading-[1.15] tracking-tight text-ink lg:text-[2.75rem]">
+    <section className="bg-paper px-5 py-16 sm:px-8 lg:py-24">
+      <div className="mx-auto max-w-[80rem]">
+        <div className="mb-10 max-w-3xl">
+          <p className="mb-4 text-xs font-bold uppercase tracking-[.14em] text-blue">
+            Comparer les formules
+          </p>
+          <h2 className="font-display text-[clamp(1.8rem,3vw,3rem)] font-bold leading-[1.1] tracking-[-.04em] text-ink">
             {title}
           </h2>
           {subtitle && (
-            <p className="text-[0.95rem] leading-relaxed text-ink-muted">{subtitle}</p>
+            <p className="mt-5 text-base leading-7 text-ink-muted">
+              {subtitle}
+            </p>
           )}
         </div>
-
-        {/* Mobile: stacked cards */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className={`grid gap-4 ${cols}`}>
           {plans.map((plan) => (
-            <div
+            <article
               key={plan.name}
-              className={`flex flex-col ${
-                plan.highlighted
-                  ? "border-t-2 border-t-accent-500 bg-brand-ink text-surface"
-                  : "border border-border-soft bg-surface"
-              }`}
+              className={`flex min-w-0 flex-col overflow-hidden rounded-[1.75rem] ${plan.highlighted ? "bg-navy" : "border border-ink/10 bg-white"}`}
             >
-              {/* Header */}
-              <div className={`p-7 ${plan.highlighted ? "" : ""}`}>
-                {plan.highlighted && (
-                  <span className="mb-3 inline-block bg-accent-500 px-2.5 py-1 text-[0.6rem] font-bold uppercase tracking-wider text-brand-ink">
-                    Recommandé
-                  </span>
-                )}
-                <h3 className={`mb-1 text-[1.1rem] font-semibold ${plan.highlighted ? "text-surface" : "text-ink"}`}>
+              <div className="p-6 sm:p-7">
+                <h3
+                  className={`font-display text-2xl font-bold tracking-[-.03em] ${plan.highlighted ? "text-white" : "text-ink"}`}
+                >
                   {plan.name}
                 </h3>
-                <p className={`mb-4 text-[0.78rem] ${plan.highlighted ? "text-white/40" : "text-ink-muted"}`}>
+                <p
+                  className={`mt-3 text-sm leading-6 ${plan.highlighted ? "text-white/75" : "text-ink-muted"}`}
+                >
                   {plan.description}
                 </p>
-                <div className="flex items-baseline gap-1">
-                  <span className={`font-display text-[2.5rem] font-bold italic leading-none ${plan.highlighted ? "text-accent-500" : "text-accent-700"}`}>
+                <div className="mt-7 flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                  <span
+                    className={`break-words font-display text-4xl font-bold not-italic tracking-[-.04em] ${plan.highlighted ? "text-mint" : "text-blue"}`}
+                  >
                     {plan.price}
                   </span>
-                  <span className={`text-[0.75rem] ${plan.highlighted ? "text-white/30" : "text-ink-muted"}`}>
+                  <span
+                    className={`text-sm ${plan.highlighted ? "text-white/75" : "text-ink-muted"}`}
+                  >
                     {plan.period || "HT/mois"}
                   </span>
                 </div>
               </div>
-
-              {/* Features */}
-              <div className={`flex-1 border-t p-7 ${plan.highlighted ? "border-white/10" : "border-border-soft"}`}>
-                <ul className="space-y-3">
+              <div
+                className={`flex-1 border-t p-6 sm:p-7 ${plan.highlighted ? "border-white/15" : "border-ink/10"}`}
+              >
+                <ul className="space-y-4">
                   {plan.features.map((feature) => (
-                    <li key={feature.label} className="flex items-start gap-2.5 text-[0.82rem]">
-                      <span className={`mt-0.5 flex-shrink-0 ${feature.included ? "text-accent-500" : plan.highlighted ? "text-white/15" : "text-border"}`}>
-                        {feature.included ? "✓" : "—"}
+                    <li
+                      key={feature.label}
+                      className="flex items-start gap-3 text-sm leading-6"
+                    >
+                      <span
+                        aria-hidden="true"
+                        className={`mt-0.5 shrink-0 ${plan.highlighted ? "text-mint" : "text-blue"}`}
+                      >
+                        {feature.included ? (
+                          <EditorialCheck className="h-5 w-5" />
+                        ) : (
+                          <span className="inline-block w-5 text-center">
+                            —
+                          </span>
+                        )}
                       </span>
-                      <span className={
-                        feature.included
-                          ? plan.highlighted ? "text-white/70" : "text-ink-muted"
-                          : plan.highlighted ? "text-white/20" : "text-ink-soft"
-                      }>
+                      <span
+                        className={
+                          plan.highlighted ? "text-white/80" : "text-ink-muted"
+                        }
+                      >
+                        <span className="sr-only">
+                          {feature.included ? "Inclus : " : "Non inclus : "}
+                        </span>
                         {feature.label}
                       </span>
                     </li>
                   ))}
                 </ul>
               </div>
-
-              {/* CTA */}
               {plan.cta && (
-                <div className="p-7 pt-0">
+                <div className="p-6 pt-0 sm:p-7 sm:pt-0">
                   <a
                     href={plan.cta.href}
                     {...(plan.cta.href.startsWith("http")
                       ? { rel: "sponsored nofollow noopener", target: "_blank" }
                       : {})}
-                    className={`block w-full py-3.5 text-center text-[0.82rem] font-semibold transition-colors ${
-                      plan.highlighted
-                        ? "bg-accent-500 text-brand-ink hover:bg-accent-700"
-                        : "border border-border-soft text-ink hover:border-accent-500 hover:text-accent-700"
-                    }`}
+                    className={`inline-flex min-h-12 w-full items-center justify-between gap-4 rounded-full px-5 py-3 text-sm font-bold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue ${plan.highlighted ? "bg-mint text-navy hover:bg-white" : "bg-blue text-white hover:bg-navy"}`}
                   >
                     {plan.cta.label}
+                    <EditorialArrow className="shrink-0" />
                   </a>
                 </div>
               )}
-            </div>
+            </article>
           ))}
         </div>
       </div>

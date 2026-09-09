@@ -1,86 +1,83 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { db } from "@/libs/db";
 import { AppConfig } from "@/utils/AppConfig";
-import { BreadcrumbJsonLd, WebPageJsonLd } from "@/components/JsonLd";
-import { PageHero } from "@/components/PageHero";
+import { BreadcrumbJsonLd, ItemListJsonLd, WebPageJsonLd } from "@/components/JsonLd";
+import { CollectionHubV2 } from "@/components/hubs/shared/CollectionHubV2";
 
 export const metadata: Metadata = {
-  title: `Comparer par ville | ${AppConfig.name}`,
-  description: `Comparez les professionnels comptables dans les principales villes de France : Paris, Lyon, Marseille, Bordeaux, Toulouse et plus.`,
+  title: "Experts-comptables par ville",
+  description: "Explorez les pages locales et préparez vos critères avant de comparer les cabinets comptables référencés dans votre zone.",
   alternates: { canonical: `${AppConfig.url}/villes` },
 };
 
 export default async function VillesPage() {
-  const villes = await db.getVilles();
-  const departements = await db.getDepartements();
+  const [villes, departements] = await Promise.all([
+    db.getVilles().catch(() => []),
+    db.getDepartements().catch(() => []),
+  ]);
+  const items = villes
+    .slice()
+    .sort((a, b) => b.population - a.population)
+    .map((ville) => ({
+      href: `/villes/${ville.slug}`,
+      title: ville.name,
+      description: `Repères pour comparer les missions et les professionnels comptables à ${ville.name}.`,
+      group: ville.region ?? "Autres régions",
+      meta: ville.departement ? `Département ${ville.departement}` : "Page locale",
+    }));
+  const groups = [...new Set(items.map((item) => item.group))].sort((a, b) => a.localeCompare(b, "fr"));
+  const breadcrumbs = [
+    { name: "Accueil", url: "/" },
+    { name: "Villes", url: "/villes" },
+  ];
 
   return (
-    <>
-      <BreadcrumbJsonLd
-        items={[
-          { name: "Accueil", url: "/" },
-          { name: "Villes", url: "/villes" },
-        ]}
-      />
-      <WebPageJsonLd
-        name="Comparer près de chez vous"
-        description={`${AppConfig.name} aide à comparer les professionnels comptables partout en France à partir de critères lisibles.`}
-        url="/villes"
-      />
-
-      <PageHero
-        eyebrow="Géolocalisation"
-        title="Comparer près de chez vous"
-        subtitle={`${AppConfig.name} aide à comparer les professionnels comptables partout en France à partir de critères lisibles.`}
-        breadcrumbs={[
-          { name: "Accueil", url: "/" },
-          { name: "Villes", url: "/villes" },
-        ]}
-        cta={{ label: "Demander une orientation", href: "/contact" }}
-      />
-
-      <section className="bg-bg px-6 py-20 lg:px-[4.5rem]">
-        <div className="mx-auto max-w-[82rem]">
-          {/* Villes */}
-          <h2 className="mb-8 font-display text-[1.75rem] font-bold text-ink">
-            Principales villes
-          </h2>
-          <div className="mb-16 grid gap-4 md:grid-cols-3 lg:grid-cols-4">
-            {villes.map((v) => (
-              <Link
-                key={v.slug}
-                href={`/villes/${v.slug}`}
-                className="border border-border-soft bg-surface px-6 py-5 transition-colors hover:border-accent-500"
-              >
-                <h3 className="mb-1 text-[0.95rem] font-medium text-ink">{v.name}</h3>
-                <p className="text-[0.72rem] text-ink-muted">
-                  {v.region}{v.departement ? ` (${v.departement})` : ""}
-                </p>
-              </Link>
-            ))}
-          </div>
-
-          {/* Departements */}
-          <h2 className="mb-8 font-display text-[1.75rem] font-bold text-ink">
-            Par département
-          </h2>
-          <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4">
-            {departements.map((d) => (
-              <Link
-                key={d.slug}
-                href={`/departements/${d.slug}`}
-                className="border border-border-soft bg-surface px-6 py-5 transition-colors hover:border-accent-500"
-              >
-                <h3 className="mb-1 text-[0.95rem] font-medium text-ink">
-                  {d.name} ({d.code})
-                </h3>
-                <p className="text-[0.72rem] text-ink-muted">{d.region}</p>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-    </>
+    <CollectionHubV2
+      eyebrow="Parcours géographique"
+      title="Commencez près de chez vous,"
+      titleAccent="choisissez avec vos critères."
+      intro="La proximité ouvre la recherche. Votre activité, la mission, les outils et le mode d’échange permettent ensuite de comparer des options réellement pertinentes."
+      breadcrumbs={breadcrumbs}
+      media={{
+        src: "/images/skoria-v2/editorial/cityscape.webp",
+        alt: "Maquette abstraite d’un quartier français",
+      }}
+      tone="mint"
+      stats={[
+        { value: String(villes.length), label: "villes éditoriales" },
+        { value: String(departements.length), label: "départements" },
+        { value: "Public", label: "source des fiches" },
+        { value: "Visible", label: "statut de qualification" },
+      ]}
+      catalogEyebrow="Explorer les villes"
+      catalogTitle="Trouvez une page locale et préparez la comparaison."
+      catalogCopy="Les pages ci-dessous donnent des repères locaux et renvoient vers l’annuaire qualifié. Pour une recherche plus large, utilisez l’annuaire national et sa recherche par ville."
+      items={items}
+      groups={groups}
+      searchPlaceholder="Rechercher une ville ou une région…"
+      steps={[
+        { title: "Choisir une zone", body: "Repérez une ville ou un département compatible avec le mode d’échange que vous recherchez." },
+        { title: "Ouvrir l’annuaire", body: "Consultez l’identité, la provenance, le statut et les informations documentées des établissements." },
+        { title: "Comparer le périmètre", body: "Confirmez l’expérience métier, les livrables, les outils, la disponibilité et les honoraires directement avec les cabinets." },
+      ]}
+      methodTitle="La proximité est un critère. Elle n’est pas une recommandation."
+      methodCopy="Une adresse locale peut faciliter un rendez-vous, la connaissance d’un réseau ou le traitement de certaines pièces. Elle ne prouve ni une spécialisation ni la qualité de l’accompagnement. Skoria distingue les données administratives, les enrichissements et les éléments encore à confirmer."
+      seoTitle="Comparer un expert-comptable dans sa ville."
+      seoParagraphs={[
+        "Une recherche locale commence par le format de relation attendu : rendez-vous physiques, échanges à distance ou combinaison des deux. La zone géographique devient alors un filtre pratique, à compléter par les besoins de l’activité et par l’organisation de la mission.",
+        "Avant de retenir un cabinet, demandez qui sera votre interlocuteur, comment les documents circulent, quels travaux sont inclus et comment une demande ponctuelle est traitée. Les pages locales et les guides métier vous aident à préparer la même grille pour plusieurs échanges.",
+      ]}
+      faqs={[
+        { question: "La première fiche est-elle recommandée par Skoria ?", answer: "Non. La position dans une liste ne constitue pas une recommandation individuelle. Consultez le statut, les sources et confirmez les critères importants avec chaque cabinet." },
+        { question: "Puis-je choisir un cabinet à distance ?", answer: "Oui, si son organisation, ses outils et sa disponibilité correspondent à vos attentes. Comparez le mode d’échange et la gestion des documents aussi attentivement que la distance." },
+        { question: "Quelle différence entre page ville et annuaire ?", answer: "La page ville apporte des repères et du contexte. L’annuaire présente les établissements disponibles avec leur provenance et leur statut de qualification." },
+      ]}
+      ctaNeed="Comparer des cabinets dans ma zone"
+      variant="geo"
+    >
+      <BreadcrumbJsonLd items={breadcrumbs} />
+      <WebPageJsonLd name="Experts-comptables par ville" description={metadata.description as string} url="/villes" />
+      <ItemListJsonLd name="Villes Skoria" url="/villes" items={villes.map((ville) => ({ name: ville.name, url: `/villes/${ville.slug}` }))} />
+    </CollectionHubV2>
   );
 }

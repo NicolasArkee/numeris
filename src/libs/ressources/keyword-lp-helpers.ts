@@ -321,7 +321,7 @@ export function buildKeywordMeta(
       title: pour
         ? `Expert-comptable à ${ville}${pour}`
         : `Expert-comptable à ${ville} : ${compare}`,
-      description: `Trouvez un expert-comptable à ${ville}${dept}${pour} : ${n ? `${n} cabinets recensés, ` : ""}données publiques vérifiables, grille tarifaire dès 59 €/mois et simulateur d'honoraires gratuit.`,
+      description: `Trouvez un expert-comptable à ${ville}${dept}${pour} : ${n ? `${n} cabinets recensés, ` : ""}données publiques disponibles, critères de comparaison et préparation du périmètre de mission.`,
       h1: `Expert-comptable à ${ville}${pour}`,
       intro: `Skoria recense les cabinets d'expertise comptable à ${ville}${dept} à partir de sources administratives publiques${pour ? ` et vous aide à comparer les options pertinentes${pour}` : ""}. Comparez les cabinets, les périmètres de mission et les ordres de prix avant de vous engager.`,
     };
@@ -353,15 +353,15 @@ export function buildKeywordMeta(
     default: {
       const t = hashVariant(kw.slug, 3);
       const title = [
-        `${label} : comparatif et tarifs 2026`,
+        `${label} : comparer les offres et honoraires`,
         `${label} : comparer les offres`,
         `${label} — comparatif indépendant`,
       ][t];
       return {
         title,
-        description: `${label} : critères de choix, ordres de prix (dès 59 €/mois) et points de vigilance pour comparer les offres. Par ${SITE}, comparateur indépendant.`,
+        description: `${label} : périmètre, critères d'honoraires et points de vigilance pour demander puis comparer des propositions équivalentes. Par ${SITE}.`,
         h1: label,
-        intro: `Vous cherchez ${kw.label.toLowerCase()} ? ${SITE} compare les options à partir de critères vérifiables : périmètre de mission, niveau d'accompagnement et ordres de prix.`,
+        intro: `Vous cherchez ${kw.label.toLowerCase()} ? ${SITE} structure les critères à examiner : périmètre de mission, niveau d'accompagnement, outils, exclusions et honoraires à confirmer.`,
       };
     }
   }
@@ -379,7 +379,7 @@ export function buildGeoKeywordFaqItems(
     {
       question: `Combien coûte un expert-comptable à ${cityName} ?`,
       answer:
-        "Les honoraires dépendent du statut juridique, du volume de pièces et du périmètre de mission. Les offres en ligne démarrent autour de 59 € HT/mois pour un indépendant ; un dossier TPE avec salariés se situe plutôt entre 99 et 159 € HT/mois. Utilisez le simulateur d'honoraires pour une fourchette personnalisée.",
+        "Les honoraires dépendent du statut juridique, du volume de pièces, des échéances et du périmètre de mission. Demandez des propositions détaillées puis comparez les inclusions, les exclusions et les hypothèses à périmètre équivalent.",
     },
     {
       question: `Comment choisir un expert-comptable à ${cityName}${themeLabel ? ` pour ${themeLabel}` : ""} ?`,

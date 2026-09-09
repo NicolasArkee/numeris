@@ -24,7 +24,7 @@ async function main(): Promise<void> {
       establishment_id: card.establishment.id,
       fact_type: "website",
       label: "Site officiel",
-      value: "https://example-cabinet.test",
+      value: "https://cabinet-fixture.example.org",
       source_id: 1,
       confidence: 95,
       is_displayable: 1,
@@ -37,7 +37,7 @@ async function main(): Promise<void> {
       establishment_id: card.establishment.id,
       fact_type: "contact_url",
       label: "Page contact",
-      value: "https://example-cabinet.test/contact",
+      value: "https://cabinet-fixture.example.org/contact",
       source_id: 1,
       confidence: 95,
       is_displayable: 1,
@@ -62,7 +62,7 @@ async function main(): Promise<void> {
         description:
           "Gestion des bulletins de paie, accompagnement social courant, déclarations sociales et suivi administratif des obligations employeur lorsque ces éléments sont identifiés dans les sources du cabinet.",
         evidenceSnippets: ["paie et fiscalite"],
-        sourcePageUrls: ["https://example-cabinet.test/services"],
+        sourcePageUrls: ["https://cabinet-fixture.example.org/services"],
         confidenceReason: "Mention explicite dans la source de test.",
       }),
       created_at: "2026-06-28T08:00:00.000Z",
@@ -179,7 +179,7 @@ async function main(): Promise<void> {
         description:
           "Tenue comptable, organisation des pièces, révision des comptes et préparation du bilan peuvent faire partie des besoins à explorer avec ce cabinet, compte tenu de son référencement professionnel.",
         evidenceSnippets: ["Cabinet reference dans l'annuaire de l'Ordre des experts-comptables"],
-        sourcePageUrls: ["https://example-cabinet.test"],
+        sourcePageUrls: ["https://cabinet-fixture.example.org"],
         confidenceReason: "Inference issue d'une fiche professionnelle d'expertise comptable.",
       }),
       created_at: "2026-06-28T08:00:00.000Z",
@@ -203,7 +203,7 @@ async function main(): Promise<void> {
         description:
           "Déclarations fiscales, TVA, liasse fiscale et arbitrages du dirigeant sont des sujets à qualifier lors d'un échange, car ils font partie des missions fréquemment associées à l'expertise comptable.",
         evidenceSnippets: ["Cabinet reference dans l'annuaire de l'Ordre des experts-comptables"],
-        sourcePageUrls: ["https://example-cabinet.test"],
+        sourcePageUrls: ["https://cabinet-fixture.example.org"],
         confidenceReason: "Inference issue d'une fiche professionnelle d'expertise comptable.",
       }),
       created_at: "2026-06-28T08:00:00.000Z",
@@ -231,7 +231,7 @@ async function main(): Promise<void> {
       establishment_id: card.establishment.id,
       source_key: "manual-pilot-example",
       source_type: "manual",
-      source_url: "https://example-cabinet.test",
+      source_url: "https://cabinet-fixture.example.org",
       retrieved_at: "2026-06-28T08:00:00.000Z",
       source_hash: null,
       parsed_ok: 1,
@@ -302,7 +302,7 @@ async function main(): Promise<void> {
     heroActionsIndex,
     html.indexOf("</section>", heroActionsIndex),
   );
-  assert.match(heroActionsHtml, /href="https:\/\/example-cabinet\.test\/contact"/);
+  assert.match(heroActionsHtml, /href="https:\/\/cabinet-fixture\.example\.org\/contact"/);
   assert.match(heroActionsHtml, />Contacter le cabinet</);
   assert.match(heroActionsHtml, /target="_blank"/);
   assert.match(heroActionsHtml, /rel="nofollow noopener noreferrer"/);
@@ -314,7 +314,7 @@ async function main(): Promise<void> {
   assert.doesNotMatch(html, /<dt[^>]*>\s*Équipe\s*<\/dt>/);
   assert.doesNotMatch(html, /Ce que les sources publiques permettent d'identifier/);
   assert.match(html, /Site officiel/);
-  assert.match(html, /https:\/\/example-cabinet\.test/);
+  assert.match(html, /https:\/\/cabinet-fixture\.example\.org/);
   assert.match(html, /Services identifiés/);
   const servicesHeadingIndex = html.indexOf("Services identifiés");
   assert.notEqual(servicesHeadingIndex, -1, "Expected services heading");
@@ -423,7 +423,7 @@ async function main(): Promise<void> {
     />,
   );
 
-  assert.match(jsonLd, /https:\/\/example-cabinet\.test/);
+  assert.match(jsonLd, /https:\/\/cabinet-fixture\.example\.org/);
   assert.match(jsonLd, /"employee"/);
   assert.match(jsonLd, /"@type":"Person"/);
   assert.match(jsonLd, /Sandrine Jeanjacquot/);

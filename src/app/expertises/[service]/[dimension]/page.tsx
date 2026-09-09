@@ -4,19 +4,21 @@ import { db } from "@/libs/db";
 import { AppConfig } from "@/utils/AppConfig";
 import { ClusterPage } from "@/components/ClusterPage";
 import { DynamicSection } from "@/components/DynamicSection";
-import { ExtraJsonLd } from "@/components/ExtraJsonLd";
-import { ProfessionalServiceJsonLd } from "@/components/JsonLd";
+import {
+  CrossDecisionBlock,
+  type CrossBlockKind,
+  type CrossDimensionContext,
+} from "@/components/templates/service/CrossDecisionBlocks";
 import { getDbPageBundle } from "@/libs/content/dbFirst";
+import { normalizeMetaDescription } from "@/libs/content/meta-title";
 import { expertisesSlugKey, type ExpertiseDimType } from "@/libs/content/keys";
 import { getSEOForServiceSecteur, getSEOForServiceVille, getSEOForServiceProfession } from "@/data/seo";
 import { getCrossServiceSecteurLinks, getServiceLinks, getCrossServiceProfessionLinks } from "@/utils/taxonomy";
 import { getServiceSecteurMarketing, getServiceVilleMarketing, getServiceProfessionMarketing } from "@/data/marketing";
 import { ContentSection } from "@/components/ContentSection";
 import { Checklist } from "@/components/Checklist";
-import { StatHighlight } from "@/components/StatHighlight";
 import { BenefitsGrid } from "@/components/BenefitsGrid";
 import { AlertBox } from "@/components/AlertBox";
-import { QuoteBlock } from "@/components/QuoteBlock";
 
 interface Props {
   params: Promise<{ service: string; dimension: string }>;
@@ -50,6 +52,17 @@ export async function generateStaticParams() {
 }
 
 const EXPERTISES_ROUTE = "expertises";
+const CROSS_DECISION_BLOCKS: CrossBlockKind[] = [
+  "diagnostic",
+  "obligations",
+  "scope",
+  "deliverables",
+  "timeline",
+  "documents",
+  "collaboration",
+  "selection",
+  "sources",
+];
 
 // ─── Résolution de la dimension (ordre de précédence : secteur > ville >
 // profession, identique à l'historique). La clé DB suit la convention
@@ -84,7 +97,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   return {
     title: dbSeo?.meta_title ?? seo.metaTitle,
-    description: dbSeo?.meta_description ?? seo.metaDescription,
+    description: normalizeMetaDescription(dbSeo?.meta_description ?? seo.metaDescription),
     alternates: { canonical: `${AppConfig.url}/expertises/${svcSlug}/${dimSlug}` },
   };
 }
@@ -101,7 +114,10 @@ export default async function CrossDimensionPage({ params }: Props) {
   // ─── DB-first bundle — clé composite alignée sur la pipeline ───
   const expertisesSlug = expertisesSlugKey(svcSlug, dimType, dimSlug);
   const bundle = await getDbPageBundle(EXPERTISES_ROUTE, expertisesSlug);
-  const { sections: dbSections, seo: dbSeo, lastUpdatedDate, hasDbContent } = bundle;
+  const { seo: dbSeo, lastUpdatedDate, hasDbContent } = bundle;
+  const dbEditorialSections = bundle.renderableSections.filter(
+    (section) => !/(pricing|testimonial|quote)/i.test(section.section_type),
+  );
   const canonicalUrl = `${AppConfig.url}/expertises/${svcSlug}/${dimSlug}`;
 
   // ─── Chrome par type de dimension (partagé DB + fallback) ───
@@ -151,24 +167,24 @@ export default async function CrossDimensionPage({ params }: Props) {
           `Professionnel spécialisé à comparer selon vos besoins`,
         ];
   const keyTakeaways = bundle.keyTakeaways ?? fallbackTakeaways;
-  const schema = (
-    <>
-      <ProfessionalServiceJsonLd
-        name={seo.h1}
-        description={seo.metaDescription}
-        url={`/expertises/${svcSlug}/${dimSlug}`}
-        serviceType={service.title}
-        {...(ville
-          ? { areaServed: ville.name }
-          : {
-              audience: secteur
-                ? `Professionnels du secteur ${secteur.name}`
-                : profession!.name,
-            })}
-      />
-      <ExtraJsonLd raw={dbSeo?.json_ld_extra ?? null} />
-    </>
-  );
+  const dimensionContext: CrossDimensionContext = secteur
+    ? { type: "secteur", name: secteur.name, description: secteur.description }
+    : ville
+      ? { type: "ville", name: ville.name, region: ville.region }
+      : {
+          type: "profession",
+          name: profession!.name,
+          description: profession!.description,
+          obligations: profession!.obligations,
+        };
+  const decisionBlocks = CROSS_DECISION_BLOCKS.map((kind) => (
+    <CrossDecisionBlock
+      key={kind}
+      kind={kind}
+      service={service}
+      dimension={dimensionContext}
+    />
+  ));
 
   // ─── DB-first path (branche unique, tous types de dimension) ───
   if (hasDbContent) {
@@ -186,14 +202,12 @@ export default async function CrossDimensionPage({ params }: Props) {
         faqs={inlineFaq ? undefined : seo.faqs}
         linkGroups={linkGroups}
         keyTakeaways={keyTakeaways}
-        schema={schema}
         lastUpdatedDate={lastUpdatedDate}
-        articleSchema={true}
-        articleHeadline={h1}
-        articleSection="Expertises comptables"
+        publication={bundle.publication}
         canonicalUrl={canonicalUrl}
       >
-        {bundle.renderableSections.map((s) => (
+        {decisionBlocks}
+        {dbEditorialSections.map((s) => (
           <DynamicSection key={s.id} section={s} />
         ))}
       </ClusterPage>
@@ -213,19 +227,16 @@ export default async function CrossDimensionPage({ params }: Props) {
         faqs={seo.faqs}
         linkGroups={linkGroups}
         keyTakeaways={keyTakeaways}
-        schema={schema}
         lastUpdatedDate={lastUpdatedDate}
-        articleSchema={true}
-        articleHeadline={seo.h1}
-        articleSection="Expertises comptables"
+        publication={bundle.publication}
         canonicalUrl={canonicalUrl}
       >
+        {decisionBlocks}
         {mkt.contentSections.map((cs) => (
           <ContentSection key={cs.title} title={cs.title} paragraphs={cs.paragraphs} />
         ))}
-        <StatHighlight stats={mkt.stats} />
         <Checklist
-          title={`Ce que nous couvrons en ${service.title.toLowerCase()} pour le ${secteur.name.toLowerCase()}`}
+          title={`Points à cadrer en ${service.title.toLowerCase()} pour le ${secteur.name.toLowerCase()}`}
           items={mkt.checklist}
           columns={2}
         />
@@ -245,13 +256,11 @@ export default async function CrossDimensionPage({ params }: Props) {
         faqs={seo.faqs}
         linkGroups={linkGroups}
         keyTakeaways={keyTakeaways}
-        schema={schema}
         lastUpdatedDate={lastUpdatedDate}
-        articleSchema={true}
-        articleHeadline={seo.h1}
-        articleSection="Expertises comptables"
+        publication={bundle.publication}
         canonicalUrl={canonicalUrl}
       >
+        {decisionBlocks}
         {mkt.contentSections.map((cs) => (
           <ContentSection key={cs.title} title={cs.title} paragraphs={cs.paragraphs} />
         ))}
@@ -272,13 +281,11 @@ export default async function CrossDimensionPage({ params }: Props) {
       faqs={seo.faqs}
       linkGroups={linkGroups}
       keyTakeaways={keyTakeaways}
-      schema={schema}
       lastUpdatedDate={lastUpdatedDate}
-      articleSchema={true}
-      articleHeadline={seo.h1}
-      articleSection="Expertises comptables"
+      publication={bundle.publication}
       canonicalUrl={canonicalUrl}
     >
+      {decisionBlocks}
       {profession!.obligations && (
         <ContentSection
           title={`Spécificités ${service.title.toLowerCase()} pour les ${profession!.name.toLowerCase()}`}
@@ -290,14 +297,9 @@ export default async function CrossDimensionPage({ params }: Props) {
         <ContentSection key={cs.title} title={cs.title} paragraphs={cs.paragraphs} />
       ))}
       <Checklist
-        title={`Notre accompagnement pour les ${profession!.name.toLowerCase()}`}
+        title={`Périmètre à comparer pour les ${profession!.name.toLowerCase()}`}
         items={mkt.checklist}
         columns={2}
-      />
-      <QuoteBlock
-        quote={mkt.quote.text}
-        author={mkt.quote.author}
-        role={mkt.quote.role}
       />
     </ClusterPage>
   );

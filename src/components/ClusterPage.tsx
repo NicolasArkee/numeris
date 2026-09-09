@@ -1,21 +1,23 @@
+import Image from "next/image";
 import Link from "next/link";
+import React from "react";
 import { AppConfig } from "@/utils/AppConfig";
 import {
   ArticleJsonLd,
   BreadcrumbJsonLd,
   FaqJsonLd,
-  PersonJsonLd,
   WebPageJsonLd,
 } from "./JsonLd";
 import { InternalLinks } from "./InternalLinks";
 import { ExpertAuthorBox } from "./ExpertAuthorBox";
 import { LastUpdated } from "./LastUpdated";
 import { KeyTakeaways } from "./KeyTakeaways";
-import { CtaContact } from "./CtaContact";
-import { StickyMobileCTA } from "./StickyMobileCTA";
 import { MaillageLinks } from "./MaillageLinks";
-import { ContactButton } from "./ContactButton";
 import type { LinkGroup } from "@/libs/db";
+import contentContract from "@/data/skoria-v2/content-contract.json";
+import type { DbPagePublication } from "@/libs/content/dbFirst";
+import { getMediaById } from "@/libs/skoria-v2/registry";
+import { FaqAccordion } from "./editorial/FaqAccordion";
 
 interface ClusterPageProps {
   eyebrow: string;
@@ -28,20 +30,112 @@ interface ClusterPageProps {
   keyTakeaways?: string[];
   children?: React.ReactNode;
   schema?: React.ReactNode;
-  /** ISO 8601 (page_meta.reviewed_at). Fallback : `new Date().toISOString()`. */
   lastUpdatedDate?: string;
-  /** Si true, émet ArticleJsonLd + PersonJsonLd. */
+  publication?: DbPagePublication;
   articleSchema?: boolean;
-  /** Headline pour ArticleJsonLd. Fallback : h1. */
   articleHeadline?: string;
-  /** Section éditoriale pour ArticleJsonLd (ex: "Professions libérales"). */
   articleSection?: string;
-  /** Canonical URL pour ArticleJsonLd.mainEntityOfPage. Fallback : breadcrumb final. */
   canonicalUrl?: string;
-  /** Label du signal de revue affiche sous le hero. */
   reviewLabel?: string;
 }
 
+type EditorialMedia = {
+  src: string;
+  alt: string;
+  position?: string;
+  peopleFictional?: boolean;
+};
+
+function mediaForPage(path: string, h1: string): EditorialMedia {
+  const value = `${path} ${h1}`.toLowerCase();
+  const citySlug = path.match(/^\/villes\/([^/?#]+)/)?.[1];
+  if (citySlug) {
+    const cityMedia = getMediaById(`city-${citySlug}`);
+    if (cityMedia?.status === "approved") return { src: cityMedia.src, alt: cityMedia.alt };
+  }
+  if (value.includes("medecin") || value.includes("médecin")) {
+    return {
+      src: "/images/skoria-v2/editorial/doctor.webp",
+      alt: "Médecin préparant ses documents dans son cabinet",
+      position: "52% center",
+      peopleFictional: true,
+    };
+  }
+  if (value.includes("restauration") || value.includes("restaurant")) {
+    return {
+      src: "/images/skoria-v2/editorial/restaurant.webp",
+      alt: "Restaurateur préparant son activité au comptoir",
+      position: "35% center",
+      peopleFictional: true,
+    };
+  }
+  if (value.includes("/guides/lmnp/") && path.split("/").filter(Boolean).length > 2) {
+    return {
+      src: "/images/skoria-v2/editorial/lmnp-dossier.webp",
+      alt: "Dossier de location meublée, plan simplifié et clés sur une table",
+    };
+  }
+  if (value.includes("lmnp") || value.includes("meubl")) {
+    return {
+      src: "/images/skoria-v2/editorial/apartment.webp",
+      alt: "Appartement meublé lumineux avec table et carnet",
+    };
+  }
+  if (value.includes("/comparatifs") || value.includes("/avis") || value.includes("/codes-parrainage")) {
+    return {
+      src: "/images/skoria-v2/editorial/fintech-tools.webp",
+      alt: "Carte de paiement sans marque, terminal et carnet sur une table",
+    };
+  }
+  if (value.includes("annuaire") || value.includes("ville") || value.includes("cabinet")) {
+    return {
+      src: "/images/skoria-v2/editorial/cityscape.webp",
+      alt: "Maquette abstraite d’un quartier français",
+    };
+  }
+  if (value.includes("expertise") || value.includes("comptabilit") || value.includes("fiscal")) {
+    return {
+      src: "/images/skoria-v2/editorial/accounting-flow.webp",
+      alt: "Composition illustrant un flux de documents comptables",
+    };
+  }
+  if (value.includes("profession") || value.includes("secteur")) {
+    return {
+      src: "/images/skoria-v2/editorial/atelier.webp",
+      alt: "Architecte travaillant sur une maquette dans son atelier",
+      position: "62% center",
+      peopleFictional: true,
+    };
+  }
+  return {
+    src: "/images/skoria-v2/editorial/objects.webp",
+    alt: "Documents et objets de calcul disposés en composition éditoriale",
+  };
+}
+
+const THEME_CLASS: Record<string, string> = {
+  white: "bg-white",
+  paper: "bg-paper",
+  lilac: "bg-lilac",
+  mint: "bg-mint",
+  apricot: "bg-apricot",
+};
+
+const BAND_STYLES = contentContract.defaults.themeCycle.map(
+  (theme) => THEME_CLASS[theme] ?? "bg-paper",
+);
+
+function isStructuredDataElement(child: React.ReactNode): boolean {
+  if (!React.isValidElement(child)) return false;
+  if (typeof child.type !== "function") return false;
+  return /JsonLd|ExtraJsonLd/.test(child.type.name || "");
+}
+
+/**
+ * Shell V2 pour les LP, dossiers et pages commerciales alimentées par la base.
+ * Le contrat historique est conservé afin que les longues traînes changent de
+ * composition sans migration simultanée de leur contenu.
+ */
 export function ClusterPage({
   eyebrow,
   h1,
@@ -54,6 +148,7 @@ export function ClusterPage({
   children,
   schema,
   lastUpdatedDate,
+  publication,
   articleSchema,
   articleHeadline,
   articleSection,
@@ -61,9 +156,14 @@ export function ClusterPage({
   reviewLabel,
 }: ClusterPageProps) {
   const currentUrl = breadcrumbs[breadcrumbs.length - 1]?.url || "/";
-  const effectiveDate = lastUpdatedDate || new Date().toISOString();
-  const effectiveDateShort = effectiveDate.split("T")[0];
+  const effectiveModifiedDate = publication?.reviewedAt ?? lastUpdatedDate;
+  const effectiveDateShort = effectiveModifiedDate?.split("T")[0];
   const effectiveCanonical = canonicalUrl || `${AppConfig.url}${currentUrl}`;
+  const isEditorialArticle = Boolean(
+    articleSchema && articleSection && /guide|ressource/i.test(articleSection),
+  );
+  const media = mediaForPage(currentUrl, h1);
+  const contentBlocks = React.Children.toArray(children);
 
   return (
     <>
@@ -75,176 +175,208 @@ export function ClusterPage({
         url={currentUrl}
         dateModified={effectiveDateShort}
       />
-      {articleSchema && (
-        <>
-          <PersonJsonLd />
-          <ArticleJsonLd
-            headline={articleHeadline || h1}
-            datePublished={effectiveDate}
-            dateModified={effectiveDate}
-            mainEntityOfPage={effectiveCanonical}
-            description={intro}
-            articleSection={articleSection}
-          />
-        </>
+      {isEditorialArticle && publication?.publishedAt && effectiveModifiedDate && (
+        <ArticleJsonLd
+          headline={articleHeadline || h1}
+          datePublished={publication.publishedAt}
+          dateModified={effectiveModifiedDate}
+          mainEntityOfPage={effectiveCanonical}
+          description={intro}
+          articleSection={articleSection}
+          authorId={publication.authorPersonaId}
+          reviewedById={publication.reviewedBy}
+        />
       )}
       {schema}
 
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-brand-ink px-6 py-20 lg:px-[4.5rem] lg:py-24">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -right-32 -bottom-32 h-130 w-130 rounded-full"
-          style={{
-            background:
-              "radial-gradient(circle, rgba(255,107,53,0.15) 0%, rgba(255,107,53,0) 60%)",
-          }}
-        />
-        <div className="relative z-10 mx-auto max-w-[82rem]">
-          {/* Breadcrumbs */}
-          <nav aria-label="Fil d'Ariane" className="mb-8">
-            <ol className="flex flex-wrap items-center gap-1.5 text-[0.78rem] text-white/70">
-              {breadcrumbs.map((item, i) => (
-                <li key={item.url} className="flex items-center gap-1.5">
-                  {i > 0 && <span>/</span>}
-                  {i < breadcrumbs.length - 1 ? (
-                    <Link href={item.url} className="transition-colors hover:text-accent-500">
-                      {item.name}
-                    </Link>
-                  ) : (
-                    <span className="text-white/90">{item.name}</span>
-                  )}
-                </li>
-              ))}
-            </ol>
-          </nav>
+      <section className="overflow-hidden bg-navy text-white">
+        <div className="mx-auto grid max-w-[90rem] lg:min-h-[40rem] lg:grid-cols-[1.08fr_.92fr]">
+          <div className="flex flex-col justify-center px-5 py-14 sm:px-8 lg:px-14 lg:py-20 xl:pl-20">
+            <nav aria-label="Fil d'Ariane">
+              <ol className="flex flex-wrap items-center gap-2 text-[.72rem] text-white/58">
+                {breadcrumbs.map((item, index) => (
+                  <li key={item.url} className="flex items-center gap-2">
+                    {index > 0 && <span aria-hidden>·</span>}
+                    {index < breadcrumbs.length - 1 ? (
+                      <Link href={item.url} className="underline-offset-4 hover:text-white hover:underline">
+                        {item.name}
+                      </Link>
+                    ) : (
+                      <span aria-current="page">{item.name}</span>
+                    )}
+                  </li>
+                ))}
+              </ol>
+            </nav>
 
-          <div className="mb-6 flex items-center gap-3.5">
-            <span className="block h-px w-7 bg-accent-500" />
-            <span className="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-accent-500">
-              {eyebrow}
-            </span>
+            <p className="mt-10 text-[.67rem] font-bold uppercase tracking-[.2em] text-[#ffb293]">{eyebrow}</p>
+            <h1 className="mt-5 max-w-[52rem] text-balance font-display text-[clamp(3.1rem,6.7vw,5.9rem)] font-semibold leading-[.96] tracking-[-.052em]">
+              {h1}
+            </h1>
+            <p className="mt-7 max-w-[43rem] text-[1.04rem] leading-8 text-white/75 lg:text-[1.14rem]" data-speakable="true">
+              {intro}
+            </p>
+            {badges && badges.length > 0 && (
+              <div className="mt-7 flex flex-wrap gap-2">
+                {badges.map((badge) => (
+                  <span key={badge} className="rounded-full border border-white/20 px-3 py-1.5 text-[.7rem] text-white/80">
+                    {badge}
+                  </span>
+                ))}
+              </div>
+            )}
+            <div className="mt-9 flex flex-wrap gap-3">
+              <button
+                type="button"
+                data-open-brief
+                data-need={h1}
+                className="inline-flex min-h-12 items-center rounded-full bg-orange px-6 text-[.84rem] font-bold text-navy transition-transform hover:-translate-y-0.5"
+              >
+                Préparer mon brief&nbsp; ↗
+              </button>
+              <a href="#contenu" className="inline-flex min-h-12 items-center rounded-full border border-white/25 px-6 text-[.82rem] font-bold text-white hover:bg-white hover:text-navy">
+                Lire le guide
+              </a>
+            </div>
           </div>
 
-          <h1 className="mb-6 max-w-3xl font-display text-[2.25rem] font-bold leading-[1.12] tracking-tight text-surface lg:text-[3.25rem]">
-            {h1}
-          </h1>
+          <figure className="relative min-h-[28rem] overflow-hidden lg:min-h-full">
+            <Image
+              src={media.src}
+              alt={media.alt}
+              fill
+              priority
+              sizes="(max-width: 1024px) 100vw, 46vw"
+              className="object-cover"
+              style={{ objectPosition: media.position ?? "center" }}
+            />
+            <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-navy/45 via-transparent to-transparent" />
+            <figcaption className="absolute bottom-4 left-4 right-4 w-fit rounded-2xl bg-navy/85 px-4 py-2 text-[.65rem] leading-5 text-white/85 backdrop-blur-sm">
+              {media.peopleFictional ? "Illustration générée par IA, personne fictive." : "Illustration éditoriale générée par IA."}
+            </figcaption>
+          </figure>
+        </div>
+      </section>
 
-          <p className="mb-8 max-w-2xl text-[1.05rem] leading-relaxed text-white/85" data-speakable="true">
-            {intro}
+      <div className="border-b border-ink/10 bg-apricot px-5 py-5 sm:px-8">
+        <div className="mx-auto flex max-w-7xl flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <LastUpdated date={effectiveModifiedDate} reviewLabel={reviewLabel} />
+          <p className="max-w-2xl text-[.72rem] leading-5 text-ink-muted">
+            Contenu informatif et comparatif. Les besoins, responsabilités et conditions se confirment directement avec le professionnel retenu.
           </p>
+        </div>
+      </div>
 
-          {badges && badges.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              {badges.map((badge) => (
-                <span
-                  key={badge}
-                  className="border border-white/20 px-3 py-1.5 text-[0.72rem] font-medium text-white/80"
-                >
-                  {badge}
-                </span>
-              ))}
+      <nav aria-label="Dans cette page" className="sticky top-[var(--sticky-header-height,72px)] z-20 overflow-x-auto border-b border-ink/10 bg-white/92 px-5 backdrop-blur-md sm:px-8">
+        <div className="mx-auto flex min-w-max max-w-7xl items-center gap-1 py-3">
+          {keyTakeaways && keyTakeaways.length > 0 && (
+            <a href="#essentiel" className="rounded-full px-4 py-2 text-[.72rem] font-bold text-ink hover:bg-lilac">L’essentiel</a>
+          )}
+          <a href="#contenu" className="rounded-full px-4 py-2 text-[.72rem] font-bold text-ink hover:bg-lilac">Comprendre</a>
+          <a href="#methode" className="rounded-full px-4 py-2 text-[.72rem] font-bold text-ink hover:bg-lilac">Méthode</a>
+          {faqs && faqs.length > 0 && <a href="#faq" className="rounded-full px-4 py-2 text-[.72rem] font-bold text-ink hover:bg-lilac">Questions</a>}
+          <a href="#suite" className="rounded-full px-4 py-2 text-[.72rem] font-bold text-ink hover:bg-lilac">Continuer</a>
+        </div>
+      </nav>
+
+      {keyTakeaways && keyTakeaways.length > 0 && (
+        <section id="essentiel" className="scroll-mt-36 bg-mint px-5 py-14 sm:px-8 lg:py-18">
+          <div className="mx-auto max-w-7xl">
+            <div className="grid gap-8 lg:grid-cols-[.65fr_1.35fr]">
+              <div>
+                <p className="text-[.66rem] font-bold uppercase tracking-[.2em] text-blue">À retenir avant de comparer</p>
+                <h2 className="mt-4 text-[clamp(2rem,4vw,3.4rem)] font-semibold leading-tight text-ink">
+                  Les repères qui structurent votre décision.
+                </h2>
+              </div>
+              <KeyTakeaways items={keyTakeaways} />
+            </div>
+          </div>
+        </section>
+      )}
+
+      <article id="contenu" className="scroll-mt-36">
+        {contentBlocks.map((child, index) => {
+          if (isStructuredDataElement(child)) return <React.Fragment key={`schema-${index}`}>{child}</React.Fragment>;
+          const background = BAND_STYLES[index % BAND_STYLES.length];
+          return (
+            <section key={`block-${index}`} className={`${background} px-5 py-14 sm:px-8 lg:py-20`}>
+              <div className="mx-auto max-w-7xl">{child}</div>
+            </section>
+          );
+        })}
+      </article>
+
+      <section id="methode" className="scroll-mt-36 bg-navy px-5 py-16 text-white sm:px-8 lg:py-20">
+        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[.78fr_1.22fr] lg:gap-20">
+          <div>
+            <p className="text-[.65rem] font-bold uppercase tracking-[.2em] text-[#ffb293]">Méthode Skoria</p>
+            <h2 className="mt-4 text-[clamp(2.3rem,5vw,4rem)] font-semibold leading-[1.03] tracking-[-.04em]">
+              Comparez des périmètres, pas des slogans.
+            </h2>
+          </div>
+          <div className="grid gap-px bg-white/18 sm:grid-cols-3">
+            {[
+              ["01", "Décrire", "Votre activité, vos volumes, vos outils et les échéances à reprendre."],
+              ["02", "Questionner", "Les livrables, les responsabilités, les échanges et les limites de la mission."],
+              ["03", "Confronter", "Les réponses et les propositions avec la même grille de lecture."],
+            ].map(([number, title, copy]) => (
+              <div key={number} className="bg-navy p-6">
+                <span className="font-serif text-[2.6rem] text-[#ffb293]">{number}</span>
+                <h3 className="mt-5 text-lg font-semibold">{title}</h3>
+                <p className="mt-3 text-[.82rem] leading-6 text-white/65">{copy}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="suite" className="scroll-mt-36 bg-paper px-5 py-16 sm:px-8 lg:py-20">
+        <div className="mx-auto max-w-7xl">
+          <MaillageLinks sourceUrl={effectiveCanonical} />
+          {linkGroups.length > 0 && (
+            <div className="mt-12">
+              <InternalLinks groups={linkGroups} />
             </div>
           )}
         </div>
       </section>
 
-      {/* Content */}
-      <article className="bg-bg px-6 pt-20 pb-28 lg:px-[4.5rem] lg:py-20">
-        <div className="mx-auto max-w-[82rem]">
-          {/* Freshness + E-E-A-T signals */}
-          <div className="mb-10">
-            <LastUpdated
-              date={lastUpdatedDate}
-              readingTime="3 min"
-              reviewLabel={reviewLabel}
-            />
-          </div>
-
-          {/* Key takeaways (featured snippet targeting) */}
-          {keyTakeaways && keyTakeaways.length > 0 && (
-            <div className="mb-12 max-w-[72rem]">
-              <KeyTakeaways items={keyTakeaways} />
-            </div>
-          )}
-
-          {children}
-
-          {/* Liens utiles — maillage interne v3 (table maillage_links, par URL canonique) */}
-          <MaillageLinks sourceUrl={effectiveCanonical} />
-
-          {/* CTA mid-page (mini-banner) — placée après le body editorial, avant FAQ */}
-          <aside
-            className="mt-16 flex flex-col items-start gap-5 border border-border-soft border-l-2 border-l-accent-500 bg-surface p-7 lg:flex-row lg:items-center lg:justify-between"
-            aria-label="Contact rapide"
-          >
+      {faqs && faqs.length > 0 && (
+        <section id="faq" className="scroll-mt-36 bg-lilac px-5 py-16 sm:px-8 lg:py-20">
+          <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[.7fr_1.3fr] lg:gap-20">
             <div>
-              <p className="font-display text-[1.15rem] font-bold text-ink">
-                Une question sur votre situation&nbsp;?
-              </p>
-              <p className="mt-1 text-[0.8rem] text-ink-muted">
-                Recevez une orientation pour comparer les options pertinentes.
-              </p>
-            </div>
-            <div className="flex flex-wrap items-center gap-3">
-              <ContactButton
-                className="inline-flex items-center gap-2 bg-accent-500 px-6 py-3 font-body text-[0.82rem] font-semibold text-brand-ink transition-colors hover:bg-accent-700"
-              >
-                Demander une orientation →
-              </ContactButton>
-              <Link
-                href={`tel:${AppConfig.phone.replace(/\s/g, "")}`}
-                className="border border-border-soft px-5 py-3 font-body text-[0.82rem] text-ink-muted transition-colors hover:border-accent-500 hover:text-accent-700"
-              >
-                {AppConfig.phone}
-              </Link>
-            </div>
-          </aside>
-
-          {/* FAQ */}
-          {faqs && faqs.length > 0 && (
-            <div className="mt-16" id="faq">
-              <h2 className="mb-8 font-display text-[1.75rem] font-bold leading-tight text-ink">
-                Questions fréquentes
+              <p className="text-[.65rem] font-bold uppercase tracking-[.2em] text-blue">Questions fréquentes</p>
+              <h2 className="mt-4 text-[clamp(2.3rem,5vw,3.9rem)] font-semibold leading-[1.03] text-ink">
+                Les points à éclaircir avant le premier échange.
               </h2>
-              <div className="grid gap-4">
-                {faqs.map((faq) => (
-                  <details
-                    key={faq.question}
-                    className="group border border-border-soft bg-surface"
-                  >
-                    <summary className="flex cursor-pointer items-center justify-between px-7 py-5 text-[0.95rem] font-medium text-ink transition-colors hover:text-accent-700">
-                      {faq.question}
-                      <span className="ml-4 text-[0.8rem] text-border-soft transition-transform group-open:rotate-45">
-                        +
-                      </span>
-                    </summary>
-                    <div className="max-w-prose border-t border-border-soft px-7 py-5 text-base leading-relaxed text-ink-muted">
-                      {faq.answer}
-                    </div>
-                  </details>
-                ))}
-              </div>
             </div>
-          )}
-
-          {/* Expert author box (E-E-A-T) */}
-          <div className="mt-12">
-            <ExpertAuthorBox date={lastUpdatedDate} />
+            <FaqAccordion items={faqs} />
           </div>
+        </section>
+      )}
 
-          {/* Internal Links */}
-          <div className="mt-16">
-            <InternalLinks groups={linkGroups} />
+      {isEditorialArticle && (
+        <section className="bg-white px-5 py-12 sm:px-8">
+          <div className="mx-auto max-w-7xl">
+            <ExpertAuthorBox date={effectiveModifiedDate} />
           </div>
+        </section>
+      )}
+
+      <section className="bg-blue px-5 py-14 text-white sm:px-8">
+        <div className="mx-auto flex max-w-7xl flex-col gap-7 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <p className="text-[.65rem] font-bold uppercase tracking-[.2em] text-white/65">Passer de la lecture à l’échange</p>
+            <h2 className="mt-3 max-w-3xl text-balance text-[clamp(2rem,4vw,3.35rem)] font-semibold leading-tight">
+              Transformez vos critères en un brief que vous pouvez garder et comparer.
+            </h2>
+          </div>
+          <button type="button" data-open-brief data-need={h1} className="inline-flex min-h-12 shrink-0 items-center justify-center rounded-full bg-orange px-7 text-[.86rem] font-bold text-navy">
+            Construire mon brief&nbsp; ↗
+          </button>
         </div>
-      </article>
-
-      {/* CTA footer dense — full component avec formulaire de rappel */}
-      <CtaContact />
-
-      {/* Sticky mobile bottom bar — visible <800px après scroll 600px */}
-      <StickyMobileCTA />
+      </section>
     </>
   );
 }

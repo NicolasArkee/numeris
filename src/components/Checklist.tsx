@@ -1,5 +1,12 @@
+import {
+  EDITORIAL_HEADING,
+  EditorialArrow,
+  EditorialCheck,
+} from "./editorial/EditorialElements";
+
 interface ChecklistProps {
   title?: string;
+  intro?: string;
   items: string[];
   variant?: "check" | "arrow" | "star";
   columns?: 1 | 2;
@@ -7,34 +14,59 @@ interface ChecklistProps {
 
 export function Checklist({
   title,
+  intro,
   items,
   variant = "check",
   columns = 1,
 }: ChecklistProps) {
-  const icon = { check: "✓", arrow: "→", star: "★" }[variant];
-  const iconColor = { check: "text-accent-500", arrow: "text-accent-700", star: "text-accent-500" }[variant];
-
   return (
-    <div className="mb-12 border border-border-soft bg-surface p-7">
-      {title && (
-        <h2 className="mb-5 font-display text-[1.15rem] font-bold text-ink">
-          {title}
-        </h2>
+    <section className="mb-12 rounded-[1.75rem] bg-mint p-6 sm:p-8">
+      <div className="mb-6 flex items-start justify-between gap-4">
+        {title && <h2 className={EDITORIAL_HEADING}>{title}</h2>}
+        <span
+          aria-hidden="true"
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-navy text-mint"
+        >
+          <EditorialCheck />
+        </span>
+      </div>
+      {intro && (
+        <p className="mb-6 max-w-3xl text-base leading-7 text-ink-muted">
+          {intro}
+        </p>
       )}
-      <ul
-        className={`space-y-3 ${columns === 2 ? "md:columns-2 md:gap-8" : ""}`}
-      >
+      <ul className={`grid gap-3 ${columns === 2 ? "md:grid-cols-2" : ""}`}>
         {items.map((item, i) => (
-          <li key={i} className="flex items-start gap-2.5 break-inside-avoid">
-            <span className={`mt-0.5 flex-shrink-0 text-[0.78rem] font-bold ${iconColor}`}>
-              {icon}
+          <li
+            key={i}
+            className="flex min-w-0 items-start gap-3 rounded-2xl bg-white/75 p-4 sm:gap-4 sm:p-5"
+          >
+            <span
+              aria-hidden="true"
+              className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-navy text-white"
+            >
+              {variant === "arrow" ? (
+                <EditorialArrow className="h-4 w-4" />
+              ) : variant === "star" ? (
+                <svg
+                  className="h-4 w-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                >
+                  <path d="m12 3 2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9Z" />
+                </svg>
+              ) : (
+                <EditorialCheck className="h-4 w-4" />
+              )}
             </span>
-            <span className="text-base leading-relaxed text-ink-muted">
+            <span className="min-w-0 break-words text-base leading-7 text-ink">
               {item}
             </span>
           </li>
         ))}
       </ul>
-    </div>
+    </section>
   );
 }

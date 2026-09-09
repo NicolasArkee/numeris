@@ -38,11 +38,14 @@ export async function KeywordLocalCabinets({
         numberOfItems={totalCount}
         url={annuaireUrl}
       />
-      <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
-        <h2 className="font-display text-[1.5rem] font-bold text-ink">
-          Cabinets d&apos;expertise comptable à {city.name}
-        </h2>
-        <p className="text-[0.78rem] text-ink-muted">
+      <div className="mb-8 flex flex-wrap items-end justify-between gap-6">
+        <div>
+          <p className="font-mono text-[.65rem] font-bold uppercase tracking-[.18em] text-blue">Explorer les établissements</p>
+          <h2 className="mt-4 max-w-3xl text-balance text-[clamp(2rem,4vw,3.3rem)] font-semibold leading-tight text-navy">
+            Cabinets d&apos;expertise comptable à {city.name}
+          </h2>
+        </div>
+        <p className="rounded-full bg-mint px-4 py-2 text-[.75rem] font-semibold text-navy">
           {totalCount} cabinet{totalCount > 1 ? "s" : ""} recensé{totalCount > 1 ? "s" : ""} · sources publiques
         </p>
       </div>
@@ -54,7 +57,7 @@ export async function KeywordLocalCabinets({
       <div className="mt-6">
         <Link
           href={annuaireUrl}
-          className="inline-flex items-center gap-2 bg-accent-500 px-6 py-3 font-body text-[0.82rem] font-semibold text-brand-ink transition-colors hover:bg-accent-700"
+          className="inline-flex min-h-12 items-center justify-center gap-3 rounded-full bg-blue px-6 py-3 text-[.82rem] font-bold text-white transition-colors hover:bg-navy"
         >
           {totalCount > 1 ? `Voir les ${totalCount} cabinets` : "Voir la fiche cabinet"} à {city.name} →
         </Link>

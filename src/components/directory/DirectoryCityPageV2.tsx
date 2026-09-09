@@ -1,5 +1,7 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
+import { DirectoryCityTile, directoryCityImage } from "./DirectoryCityTile";
 import type {
   DirectoryCabinetCard,
   DirectoryCity,
@@ -18,7 +20,13 @@ import {
 } from "./CabinetCard";
 import {
   directoryDisplayName,
+  buildDirectoryAddress,
+  isDirectoryCabinetVerified,
 } from "./profile-v2-helpers";
+import {
+  DirectoryComparePanel,
+  type DirectoryComparisonCandidate,
+} from "./DirectoryComparePanel";
 import {
   buildDirectoryCityFaqItems,
   buildDirectoryCityStats,
@@ -36,8 +44,8 @@ function StatusBadge({ verifiedCount }: { verifiedCount: number }) {
     <span
       className={
         verifiedCount > 0
-          ? "inline-flex w-fit items-center gap-1.5 rounded-md border border-success-500/30 bg-success-50 px-3 py-2 font-display text-[0.8125rem] font-semibold text-success-700"
-          : "inline-flex w-fit items-center gap-1.5 rounded-md border border-warning-500/30 bg-warning-50 px-3 py-2 font-display text-[0.8125rem] font-semibold text-warning-700"
+          ? "inline-flex w-fit items-center gap-1.5 rounded-full border border-[#17613b]/15 bg-mint px-3 py-2 font-display text-[0.8125rem] font-semibold text-[#17613b]"
+          : "inline-flex w-fit items-center gap-1.5 rounded-full border border-[#8b3d24]/15 bg-apricot px-3 py-2 font-display text-[0.8125rem] font-semibold text-[#8b3d24]"
       }
     >
       <span aria-hidden>{verifiedCount > 0 ? "✓" : "?"}</span>
@@ -59,64 +67,45 @@ function CitySummaryPanel({
   candidateCount: number;
   enrichmentStats: DirectoryCityEnrichmentStats;
 }) {
+  const enrichedCount = Math.min(enrichmentStats.enrichedCount, totalCount);
+  const documentedCount = Math.min(enrichmentStats.documentedCount, totalCount);
   const rows = [
     { label: "Cabinets listés", value: formatNumber(totalCount) },
     { label: "Fiches documentées", value: formatNumber(verifiedCount) },
-    { label: "Profils enrichis", value: formatNumber(enrichmentStats.enrichedCount) },
-    { label: "Qualifies", value: formatNumber(enrichmentStats.documentedCount) },
+    { label: "Profils enrichis", value: formatNumber(enrichedCount) },
+    { label: "Qualifiés", value: formatNumber(documentedCount) },
     { label: "Candidats", value: formatNumber(candidateCount) },
     { label: "Département", value: city.department_name ?? city.department_code ?? "Non renseigné" },
     { label: "Région", value: city.region_name ?? city.region_code ?? "Non renseignée" },
   ];
 
   return (
-    <aside className="space-y-5 lg:sticky lg:top-24">
-      <section className="rounded-xl border border-border bg-surface p-6 shadow-sm">
-        <h2 className="font-display text-[1.125rem] font-semibold text-ink">
-          Synthèse publique
-        </h2>
-        <dl className="mt-5 divide-y divide-border-soft">
-          {rows.map((row) => (
-            <div key={row.label} className="flex justify-between gap-5 py-3">
-              <dt className="font-display text-[0.75rem] font-semibold uppercase tracking-[0.08em] text-ink-soft">
-                {row.label}
-              </dt>
-              <dd className="text-right font-mono text-[0.9375rem] font-semibold text-ink">
-                {row.value}
-              </dd>
-            </div>
-          ))}
-        </dl>
-      </section>
-
-      <section className="rounded-xl border border-border bg-surface p-6 shadow-sm">
-        <h2 className="font-display text-[1.125rem] font-semibold text-ink">
-          Statut des fiches
-        </h2>
-        <div className="mt-4">
-          <StatusBadge verifiedCount={verifiedCount} />
+    <aside className="space-y-5 lg:sticky lg:top-32 lg:self-start">
+      <section className="overflow-hidden rounded-[1.75rem] bg-navy text-white">
+        <div className="p-6 sm:p-7">
+          <p className="text-[.65rem] font-bold uppercase tracking-[.16em] text-mint">Les repères de {city.name}</p>
+          <h2 className="mt-3 font-display text-[1.5rem] font-bold leading-tight text-white">Synthèse publique</h2>
+          <dl className="mt-5 divide-y divide-white/15">
+            {rows.map((row) => (
+              <div key={row.label} className="flex items-baseline justify-between gap-5 py-3.5">
+                <dt className="text-[.8rem] text-white/70">{row.label}</dt>
+                <dd className="min-w-0 break-words text-right font-display text-[.98rem] font-bold text-white">{row.value}</dd>
+              </div>
+            ))}
+          </dl>
         </div>
-        <p className="mt-3 text-[0.875rem] leading-6 text-ink-muted">
-          {verifiedCount > 0
+        <div className="bg-mint p-6 text-ink sm:p-7">
+          <h2 className="font-display text-[1.15rem] font-bold text-ink">Statut des fiches</h2>
+          <div className="mt-4"><StatusBadge verifiedCount={verifiedCount} /></div>
+          <p className="mt-3 text-[.85rem] leading-6 text-ink-muted">{verifiedCount > 0
             ? "Les fiches documentées sont identifiées explicitement dans la liste. Les autres restent candidates tant que leur statut professionnel n'est pas confirmé."
-            : "Les fiches de cette ville sont candidates : statut professionnel à confirmer auprès des professionnels concernés."}
-        </p>
+            : "Les fiches de cette ville sont candidates : statut professionnel à confirmer auprès des professionnels concernés."}</p>
+        </div>
       </section>
-
-      <section className="rounded-xl border border-border bg-bg-muted p-6">
-        <h2 className="font-display text-[1rem] font-semibold text-ink">
-          Correction ou opposition
-        </h2>
-        <p className="mt-3 text-[0.875rem] leading-6 text-ink-muted">
-          Un cabinet peut demander une correction, une mise à jour ou le retrait
-          d'une information inexacte.
-        </p>
-        <Link
-          href={`/contact?objet=correction-annuaire&ville=${city.slug}`}
-          className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-accent-500 px-5 py-3 font-display text-[0.875rem] font-semibold text-surface transition-colors hover:bg-accent-700"
-        >
-          Demander une correction
-        </Link>
+      <section className="rounded-[1.75rem] border border-ink/10 bg-white p-6 sm:p-7">
+        <h2 className="font-display text-[1.15rem] font-bold text-ink">Correction ou opposition</h2>
+        <p className="mt-3 text-[.86rem] leading-6 text-ink-muted">Un cabinet peut demander une correction, une mise à jour ou le retrait d'une information inexacte.</p>
+        <Link href={`/contact?objet=correction-annuaire&ville=${city.slug}`} className="mt-5 inline-flex w-full items-center justify-between gap-3 rounded-full bg-blue px-5 py-3 text-[.8rem] font-bold text-white transition-colors hover:bg-navy">Demander une correction <span aria-hidden>↗</span></Link>
       </section>
     </aside>
   );
@@ -141,23 +130,16 @@ function NearbyCities({
 
   return (
     <section>
-      <h2 className="font-display text-[1.5rem] font-bold text-ink">
-        {hasSameDepartment ? "Autres villes proches" : "Autres villes du comparateur"}
-      </h2>
-      <p className="mt-2 max-w-2xl text-[0.9375rem] leading-6 text-ink-muted">
-        Poursuivez votre comparaison locale avec les pages ville les plus utiles
-        du comparateur {AppConfig.name}.
-      </p>
-      <div className="mt-5 flex flex-wrap gap-2">
-        {links.map((link) => (
-          <Link
-            key={link.href}
-            href={link.href}
-            className="rounded-full border border-border bg-surface px-4 py-2 font-display text-[0.8125rem] font-medium text-ink-muted transition-colors hover:border-brand-500 hover:bg-brand-50 hover:text-brand-700"
-          >
-            {link.label}
-          </Link>
-        ))}
+      <div className="mb-7 flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
+        <div>
+          <p className="text-[.68rem] font-bold uppercase tracking-[.16em] text-blue">Élargir votre recherche</p>
+          <h2 className="mt-4 font-display text-[clamp(1.8rem,3.5vw,2.6rem)] font-bold leading-tight tracking-tight text-ink">{hasSameDepartment ? "Autres villes proches" : "Autres villes du comparateur"}</h2>
+          <p className="mt-3 max-w-2xl text-[.94rem] leading-7 text-ink-muted">Poursuivez votre comparaison locale avec les pages ville les plus utiles du comparateur {AppConfig.name}.</p>
+        </div>
+        <Link href="/annuaire/experts-comptables" className="inline-flex w-fit shrink-0 items-center gap-3 rounded-full border border-ink/20 px-5 py-3 text-[.8rem] font-bold text-ink hover:border-blue hover:text-blue">Rechercher une autre ville <span aria-hidden>↗</span></Link>
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {links.map((link) => <DirectoryCityTile key={link.href} name={link.label} slug={link.href.split("/").at(-1)!} />)}
       </div>
     </section>
   );
@@ -184,10 +166,20 @@ export function DirectoryCityPageV2({
 }) {
   const stats = buildDirectoryCityStats(cabinets, totalCount, verifiedCount);
   const faqItems = buildDirectoryCityFaqItems(city, stats);
+  const comparisonCandidates: DirectoryComparisonCandidate[] = cabinets.map((card) => ({
+    siret: card.establishment.siret,
+    name: directoryDisplayName(card),
+    address: buildDirectoryAddress(card),
+    href: cabinetDirectoryPath(card),
+    verified: isDirectoryCabinetVerified(card),
+    confidence: card.cabinet.confidence_score,
+  }));
   const candidateCopy =
     stats.candidateCount > 0
       ? `${formatNumber(stats.candidateCount)} fiche${stats.candidateCount > 1 ? "s" : ""} candidate${stats.candidateCount > 1 ? "s" : ""} avec statut professionnel à confirmer.`
       : "Toutes les fiches affichées disposent d'un statut documenté.";
+  const enrichedCount = Math.min(enrichmentStats.enrichedCount, stats.totalCount);
+  const cityImage = directoryCityImage(city.slug);
 
   return (
     <>
@@ -202,7 +194,7 @@ export function DirectoryCityPageV2({
           url: cabinetDirectoryPath(card),
         }))}
       />
-      <section className="relative overflow-hidden bg-brand-ink px-6 py-14 text-surface lg:px-12 lg:py-18">
+      <section className="relative overflow-hidden bg-navy px-6 py-14 text-surface lg:px-12 lg:py-18">
         <div
           aria-hidden
           className="pointer-events-none absolute -right-32 -bottom-32 h-115 w-115 rounded-full"
@@ -233,7 +225,7 @@ export function DirectoryCityPageV2({
             </ol>
           </nav>
 
-          <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_25rem] lg:items-end">
+          <div className="grid gap-8 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,.8fr)] lg:items-center">
             <div>
               <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-accent-500/30 bg-accent-500/10 px-3.5 py-1.5">
                 <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-accent-500" />
@@ -267,39 +259,55 @@ export function DirectoryCityPageV2({
                 </span>{" "}
                 vérifié{stats.verifiedCount > 1 ? "s" : ""} documenté
                 {stats.verifiedCount > 1 ? "s" : ""}. {candidateCopy}
-                {enrichmentStats.enrichedCount > 0 && (
+                {enrichedCount > 0 && (
                   <>
                     {" "}
                     <span className="font-mono font-semibold text-surface">
-                      {formatNumber(enrichmentStats.enrichedCount)}
+                      {formatNumber(enrichedCount)}
                     </span>{" "}
-                    profil{enrichmentStats.enrichedCount > 1 ? "s" : ""} dispose
-                    {enrichmentStats.enrichedCount > 1 ? "nt" : ""} deja de donnees enrichies sourcees.
+                    profil{enrichedCount > 1 ? "s" : ""} dispose
+                    {enrichedCount > 1 ? "nt" : ""} déjà de données enrichies sourcées.
                   </>
                 )}
               </p>
             </div>
-            <div className="flex flex-col gap-3 sm:flex-row lg:justify-end">
-              <Link
-                href="#liste-cabinets"
-                className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-accent-500 px-6 py-3 font-display text-[0.9375rem] font-semibold text-surface transition-colors hover:bg-accent-700"
-              >
-                Voir les cabinets
-                <span aria-hidden>→</span>
-              </Link>
-              <Link
-                href="/annuaire/experts-comptables"
-                className="inline-flex items-center justify-center whitespace-nowrap rounded-lg border border-white/20 bg-white/5 px-6 py-3 font-display text-[0.9375rem] font-semibold text-surface transition-colors hover:border-white/40 hover:bg-white/10"
-              >
-                Retour annuaire
-              </Link>
+            <div className="space-y-5">
+              {cityImage && <figure className="overflow-hidden rounded-[2rem] bg-lilac">
+                <div className="relative aspect-[4/3]"><Image src={cityImage} alt={`Maquette architecturale évoquant ${city.name}`} fill priority sizes="(max-width: 1024px) 90vw, 40vw" className="object-cover" /></div>
+                <figcaption className="px-5 py-3 text-[.65rem] text-ink-muted">Illustration de {city.name} générée par IA</figcaption>
+              </figure>}
+              {!cityImage && <div className="relative overflow-hidden rounded-[2rem] bg-lilac p-7 text-ink sm:p-9">
+                <span aria-hidden className="absolute -right-12 -top-12 h-56 w-56 rounded-full border-[28px] border-white/45" />
+                <p className="relative text-[.65rem] font-bold uppercase tracking-[.16em] text-blue">Votre recherche locale</p>
+                <p className="relative mt-8 font-display text-[clamp(3.5rem,7vw,6rem)] font-bold leading-none tracking-tight text-blue">{city.department_code || city.name.slice(0, 2).toUpperCase()}</p>
+                <p className="relative mt-5 font-display text-2xl font-bold">{city.name}</p>
+                {(city.department_name || city.region_name) && <p className="relative mt-2 text-[.85rem] leading-6 text-ink-muted">{[city.department_name, city.region_name].filter(Boolean).join(" · ")}</p>}
+              </div>}
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <Link href="#liste-cabinets" className="inline-flex flex-1 items-center justify-center gap-3 rounded-full bg-orange px-5 py-3.5 text-[.85rem] font-bold text-navy transition-colors hover:bg-apricot">Voir les cabinets <span aria-hidden>↘</span></Link>
+                <Link href="/annuaire/experts-comptables" className="inline-flex flex-1 items-center justify-center rounded-full border border-white/30 px-5 py-3.5 text-[.85rem] font-bold text-white transition-colors hover:bg-white hover:text-navy">Retour annuaire</Link>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      <article className="bg-bg px-6 py-14 lg:px-12 lg:py-18">
+      <nav aria-label="Dans cette page" className="border-b border-ink/10 bg-white px-6 lg:px-12">
+        <div className="mx-auto flex max-w-328 gap-6 overflow-x-auto py-5 text-[.75rem] font-bold text-ink-muted sm:gap-8">
+          <a href="#compare-title" className="shrink-0 hover:text-blue">01 · Comparer les fiches</a>
+          <a href="#liste-cabinets" className="shrink-0 hover:text-blue">02 · Explorer la carte</a>
+          <a href="#comprendre-annuaire" className="shrink-0 hover:text-blue">03 · Comprendre les fiches</a>
+          <a href="#questions-annuaire" className="shrink-0 hover:text-blue">04 · Questions fréquentes</a>
+        </div>
+      </nav>
+
+      <article className="bg-paper px-6 py-14 lg:px-12 lg:py-18">
         <div className="mx-auto max-w-328 space-y-14">
+          <DirectoryComparePanel
+            cityName={city.name}
+            candidates={comparisonCandidates}
+          />
+
           <DirectoryCityMapExplorer
             city={city}
             cabinets={cabinets}
@@ -307,9 +315,9 @@ export function DirectoryCityPageV2({
           />
 
           <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_23rem]">
-            <div className="space-y-10">
+            <div id="comprendre-annuaire" className="min-w-0 scroll-mt-32 space-y-10">
               <section>
-                <h2 className="font-display text-[1.5rem] font-bold text-ink">
+                <h2 className="font-display text-[clamp(1.6rem,3vw,2.1rem)] font-bold leading-tight tracking-tight text-ink">
                   Trouver un cabinet comptable à {city.name}
                 </h2>
                 <p className="mt-4 max-w-3xl text-[1rem] leading-7 text-ink-muted">
@@ -321,7 +329,7 @@ export function DirectoryCityPageV2({
                 </p>
               </section>
 
-              <section>
+              <section className="rounded-[1.75rem] border border-ink/10 bg-white p-6 sm:p-8">
                 <h2 className="font-display text-[1.375rem] font-bold text-ink">
                   Ce que l'on peut vérifier publiquement
                 </h2>
@@ -331,22 +339,22 @@ export function DirectoryCityPageV2({
                   directe auprès du professionnel concerné.
                 </p>
                 <ul className="mt-5 grid gap-3 text-[0.9375rem] text-ink-muted">
-                  <li className="flex gap-3">
+                  <li className="flex gap-3 rounded-xl bg-paper p-4">
                     <span aria-hidden className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-500" />
                     Identité administrative, SIRET et adresse publique lorsqu'ils
                     sont disponibles.
                   </li>
-                  <li className="flex gap-3">
+                  <li className="flex gap-3 rounded-xl bg-paper p-4">
                     <span aria-hidden className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-500" />
                     Statut actif de l'entreprise et de l'établissement selon la
                     source publique.
                   </li>
-                  <li className="flex gap-3">
+                  <li className="flex gap-3 rounded-xl bg-paper p-4">
                     <span aria-hidden className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-500" />
                     Code NAF / APE lié à l'activité comptable lorsque la source
                     le fournit.
                   </li>
-                  <li className="flex gap-3">
+                  <li className="flex gap-3 rounded-xl bg-paper p-4">
                     <span aria-hidden className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-500" />
                     Statut professionnel uniquement quand il est documenté par
                     une source fiable ou une validation manuelle.
@@ -377,8 +385,8 @@ export function DirectoryCityPageV2({
           <DirectoryFaq items={faqItems} />
 
           <div className="grid gap-5 md:grid-cols-2">
-            <section className="rounded-xl border border-border bg-surface p-7 shadow-sm">
-              <h2 className="font-display text-[1.125rem] font-semibold text-ink">
+            <section className="rounded-[1.75rem] border border-ink/10 bg-white p-7 sm:p-8">
+              <h2 className="font-display text-[1.125rem] font-bold text-ink">
                 Transparence des données
               </h2>
               <p className="mt-3 text-[0.9375rem] leading-7 text-ink-muted">
@@ -394,8 +402,8 @@ export function DirectoryCityPageV2({
                 <span aria-hidden>→</span>
               </Link>
             </section>
-            <section className="rounded-xl border border-border bg-surface p-7 shadow-sm">
-              <h2 className="font-display text-[1.125rem] font-semibold text-ink">
+            <section className="rounded-[1.75rem] border border-ink/10 bg-white p-7 sm:p-8">
+              <h2 className="font-display text-[1.125rem] font-bold text-ink">
                 Besoin d'une mise à jour ?
               </h2>
               <p className="mt-3 text-[0.9375rem] leading-7 text-ink-muted">

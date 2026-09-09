@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { compterJours } from "@/libs/simulateurs/calendrier";
-import { Disclaimer, FieldDate, ResultValue, SimulatorBox, SimulatorCta } from "./ui";
+import { Disclaimer, FieldDate, ResultValue, SimulatorBox, SimulatorFields, ResultGrid, SimulatorCta } from "./ui";
 
 const fmtDate = (dateISO: string): string =>
   new Date(`${dateISO}T00:00:00Z`).toLocaleDateString("fr-FR", {
@@ -28,7 +28,7 @@ export function JoursOuvresSimulator() {
 
   return (
     <SimulatorBox>
-      <div className="grid gap-5 md:grid-cols-2">
+      <SimulatorFields columns={2}>
         <FieldDate label="Date de début (incluse)" value={debut} onChange={setDebut} />
         <FieldDate
           label="Date de fin (incluse)"
@@ -36,11 +36,11 @@ export function JoursOuvresSimulator() {
           onChange={setFin}
           hint="Du lundi au vendredi d'une même semaine sans férié = 5 jours ouvrés"
         />
-      </div>
+      </SimulatorFields>
 
       {result && (
         <>
-          <div className="mt-7 grid gap-4 md:grid-cols-3">
+          <ResultGrid columns={3}>
             <ResultValue
               label="Jours ouvrés"
               value={String(result.ouvres)}
@@ -49,16 +49,17 @@ export function JoursOuvresSimulator() {
             />
             <ResultValue label="Jours ouvrables" value={String(result.ouvrables)} detail="lundi-samedi hors fériés" />
             <ResultValue label="Jours calendaires" value={String(result.calendaires)} detail="tous les jours, bornes incluses" />
-          </div>
+          </ResultGrid>
           {result.listeFeries.length > 0 && (
-            <div className="mt-5 border border-border-soft bg-bg p-4">
-              <p className="mb-2 text-[0.68rem] font-bold uppercase tracking-[0.1em] text-ink-muted">
+            <div className="mt-6 rounded-3xl bg-lilac/60 p-5 sm:p-7">
+              <p className="mb-4 text-[.94rem] font-bold text-navy">
                 Jours fériés sur la période
               </p>
-              <ul className="space-y-1 text-[0.8rem] text-ink-muted">
+              <ul className="grid gap-3 text-[.82rem] leading-6 text-ink-muted md:grid-cols-2">
                 {result.listeFeries.map((f) => (
-                  <li key={f.dateISO}>
-                    <span className="font-mono tabular-nums text-ink">{fmtDate(f.dateISO)}</span> — {f.nom}
+                  <li key={f.dateISO} className="rounded-2xl border border-navy/10 bg-white p-4">
+                    <span className="block font-semibold tabular-nums text-navy">{fmtDate(f.dateISO)}</span>
+                    <span className="mt-1 block">{f.nom}</span>
                   </li>
                 ))}
               </ul>

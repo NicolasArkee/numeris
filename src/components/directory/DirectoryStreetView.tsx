@@ -25,12 +25,12 @@ export function DirectoryStreetView({
   const panoDeepLink = `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${latitude},${longitude}`;
 
   return (
-    <div className="mt-6">
-      <h3 className="mb-3 font-display text-[0.95rem] font-semibold text-ink">
+    <div className="mt-6 rounded-[1.5rem] bg-lilac p-5 sm:p-6">
+      <h3 className="mb-3 font-display text-[0.95rem] font-bold text-ink">
         Devanture et environnement
       </h3>
       {embedKey ? (
-        <div className="overflow-hidden border border-border-soft">
+        <div className="overflow-hidden rounded-[1.25rem] border border-ink/10">
           <iframe
             title={`Vue de la devanture de ${cabinetName}`}
             src={`https://www.google.com/maps/embed/v1/streetview?key=${embedKey}&location=${latitude},${longitude}&fov=80`}
@@ -45,7 +45,7 @@ export function DirectoryStreetView({
           href={panoDeepLink}
           target="_blank"
           rel="nofollow noopener noreferrer"
-          className="flex items-center justify-between gap-4 border border-border-soft bg-surface px-6 py-5 transition-colors hover:border-accent-500"
+          className="group flex items-center justify-between gap-4 rounded-xl border border-ink/10 bg-white px-5 py-5 transition-colors hover:border-blue"
         >
           <span>
             <span className="block text-[0.9rem] font-medium text-ink">
@@ -55,7 +55,7 @@ export function DirectoryStreetView({
               Street View à l&apos;adresse de l&apos;établissement — s&apos;ouvre dans un nouvel onglet.
             </span>
           </span>
-          <span aria-hidden className="text-accent-700">→</span>
+          <span aria-hidden className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue text-white">→</span>
         </a>
       )}
     </div>

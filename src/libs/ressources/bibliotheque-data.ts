@@ -1,5 +1,6 @@
 import { unstable_cache } from "next/cache";
-import { getSupabaseClient } from "@/libs/db/supabase";
+import { sanitizeLegacyPublicText } from "@/libs/skoria-v2/content-safety";
+import { db } from "@/libs/db";
 
 // Données de la « bibliothèque » /ressources (index V2 + tous-les-dossiers V2).
 
@@ -41,7 +42,7 @@ export const FLAGSHIP_DOSSIERS: FlagshipDossier[] = [
     tag: "Outils",
   },
   {
-    href: "/guides/lmnp",
+    href: "/ressources/lmnp-expert-comptable",
     title: "LMNP : la location meublée",
     description: "Le guide fiscal complet du loueur en meublé : régimes, amortissement, obligations.",
     tag: "Immobilier",
@@ -144,25 +145,34 @@ function normalizeDossierTitle(raw: string): string {
 export const getEditorialDossiers = unstable_cache(
   async (): Promise<EditorialDossier[]> => {
     try {
-      const supa = getSupabaseClient();
-      const { data, error } = await supa
-        .from("page_sections")
-        .select("slug, section_type, title")
-        .eq("route", "ressources")
-        .like("slug", "dossier-%")
-        .limit(400);
-      if (error) throw error;
+      const publishedSlugs = (await db.getAllPageMeta())
+        .filter(
+          (meta) =>
+            meta.route === "ressources"
+            && meta.publish_status === "published"
+            && meta.slug.startsWith("dossier-"),
+        )
+        .map((meta) => meta.slug);
+      const data = (
+        await Promise.all(
+          publishedSlugs.map((slug) => db.getPageSections("ressources", slug)),
+        )
+      ).flat();
       const bySlug = new Map<string, string>();
-      for (const row of (data ?? []) as { slug: string; section_type: string; title: string | null }[]) {
+      for (const row of data) {
         if (!bySlug.has(row.slug) && row.section_type === "Hero" && row.title) {
           bySlug.set(row.slug, row.title);
         }
       }
-      for (const row of (data ?? []) as { slug: string; title: string | null }[]) {
+      for (const row of data) {
         if (!bySlug.has(row.slug)) bySlug.set(row.slug, row.slug.replace(/^dossier-/u, "").replace(/-/gu, " "));
       }
       return [...bySlug.entries()]
-        .map(([slug, title]) => ({ slug, title: normalizeDossierTitle(title), description: null }))
+        .map(([slug, title]) => ({
+          slug,
+          title: normalizeDossierTitle(sanitizeLegacyPublicText(title)),
+          description: null,
+        }))
         .sort((a, b) => a.title.localeCompare(b.title, "fr"));
     } catch {
       return [];
@@ -183,30 +193,36 @@ export interface PillarPage {
 export const getPillarPages = unstable_cache(
   async (): Promise<PillarPage[]> => {
     try {
-      const supa = getSupabaseClient();
-      const { data, error } = await supa
-        .from("keyword_pages")
-        .select("slug, label, volume")
-        .eq("disposition", "enrich")
-        .gte("volume", 1000)
-        .order("volume", { ascending: false })
-        .limit(60);
-      if (error) throw error;
-      const rows = (data ?? []) as { slug: string; label: string }[];
-      const { data: seoRows } = await supa
-        .from("seo_overrides")
-        .select("slug, h1")
-        .eq("route", "ressources")
-        .in("slug", rows.map((r) => r.slug));
-      const h1BySlug = new Map(
-        ((seoRows ?? []) as { slug: string; h1: string | null }[]).map((r) => [r.slug, r.h1]),
+      const [keywords, allMeta] = await Promise.all([
+        db.getAllKeywords(),
+        db.getAllPageMeta(),
+      ]);
+      const published = new Set(
+        allMeta
+          .filter(
+            (meta) => meta.route === "ressources" && meta.publish_status === "published",
+          )
+          .map((meta) => meta.slug),
       );
-      return rows.map((r) => ({
-        slug: r.slug,
-        title:
-          h1BySlug.get(r.slug) ||
-          r.label.charAt(0).toUpperCase() + r.label.slice(1),
-      }));
+      const rows = keywords
+        .filter(
+          (keyword) =>
+            keyword.disposition === "enrich"
+            && keyword.volume >= 1000
+            && published.has(keyword.slug),
+        )
+        .slice(0, 60);
+      return Promise.all(
+        rows.map(async (row) => {
+          const seo = await db.getSeoOverride("ressources", row.slug).catch(() => null);
+          return {
+            slug: row.slug,
+            title:
+              seo?.h1
+              || row.label.charAt(0).toUpperCase() + row.label.slice(1),
+          };
+        }),
+      );
     } catch {
       return [];
     }
@@ -219,13 +235,9 @@ export const getPillarPages = unstable_cache(
 export const getPublishedGuidesCount = unstable_cache(
   async (): Promise<number> => {
     try {
-      const { count, error } = await getSupabaseClient()
-        .from("page_meta")
-        .select("*", { count: "exact", head: true })
-        .eq("route", "ressources")
-        .eq("publish_status", "published");
-      if (error) return 0;
-      return count ?? 0;
+      return (await db.getAllPageMeta()).filter(
+        (meta) => meta.route === "ressources" && meta.publish_status === "published",
+      ).length;
     } catch {
       return 0;
     }

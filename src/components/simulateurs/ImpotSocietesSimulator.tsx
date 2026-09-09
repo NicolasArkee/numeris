@@ -7,7 +7,7 @@ import {
   PLAFOND_IS_TAUX_REDUIT,
   SEUIL_CA_IS_REDUIT,
 } from "@/libs/simulateurs/math";
-import { Disclaimer, FieldNumber, FieldToggle, ResultValue, SimulatorBox, SimulatorCta } from "./ui";
+import { Disclaimer, FieldNumber, FieldToggle, ResultValue, SimulatorBox, SimulatorFields, ResultGrid, SimulatorCta } from "./ui";
 
 export function ImpotSocietesSimulator() {
   const [benefice, setBenefice] = useState(60000);
@@ -20,19 +20,19 @@ export function ImpotSocietesSimulator() {
 
   return (
     <SimulatorBox>
-      <div className="grid gap-5 md:grid-cols-2">
+      <SimulatorFields columns={2}>
         <FieldNumber label="Bénéfice imposable" value={benefice} onChange={setBenefice} min={-10_000_000} step={1000} suffix="€" />
         <FieldNumber label="Chiffre d'affaires annuel HT" value={ca} onChange={setCa} step={10000} suffix="€" />
-      </div>
-      <div className="mt-4">
-        <FieldToggle
-          label="Capital entièrement libéré et détenu à au moins 75 % par des personnes physiques"
-          value={conditionsCapital}
-          onChange={setConditionsCapital}
-        />
-      </div>
+        <div className="md:col-span-full">
+          <FieldToggle
+            label="Capital entièrement libéré et détenu à au moins 75 % par des personnes physiques"
+            value={conditionsCapital}
+            onChange={setConditionsCapital}
+          />
+        </div>
+      </SimulatorFields>
 
-      <div className="mt-7 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <ResultGrid columns={4}>
         <ResultValue
           label="IS total"
           value={fmtEur(result.total)}
@@ -46,7 +46,7 @@ export function ImpotSocietesSimulator() {
         />
         <ResultValue label="Part à 25 %" value={fmtEur(result.trancheNormale)} detail="taux normal" />
         <ResultValue label="Résultat net après IS" value={fmtEur(result.resultatNetApresIs)} detail="avant distribution" />
-      </div>
+      </ResultGrid>
 
       <SimulatorCta label="Optimiser mon résultat avec un expert" />
       <Disclaimer>

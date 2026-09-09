@@ -8,7 +8,7 @@ import {
   fmtEur,
   type ActiviteMicro,
 } from "@/libs/simulateurs/math";
-import { Disclaimer, FieldNumber, FieldSelect, ResultValue, SimulatorBox, SimulatorCta } from "./ui";
+import { Disclaimer, FieldNumber, FieldSelect, ResultValue, SimulatorBox, SimulatorFields, ResultGrid, SimulatorCta } from "./ui";
 
 type Statut = "micro" | "tns" | "assimile";
 
@@ -33,7 +33,7 @@ export function ChargesSimulator() {
 
   return (
     <SimulatorBox>
-      <div className="grid gap-5 md:grid-cols-3">
+      <SimulatorFields columns={3}>
         <FieldSelect<Statut>
           label="Statut"
           value={statut}
@@ -57,13 +57,13 @@ export function ChargesSimulator() {
           />
         )}
         <FieldNumber label={baseLabel} value={montant} onChange={setMontant} step={1000} suffix="€" />
-      </div>
+      </SimulatorFields>
 
-      <div className="mt-7 grid gap-4 md:grid-cols-3">
+      <ResultGrid columns={3}>
         <ResultValue label="Cotisations sociales" value={fmtEur(result.cotisations)} detail={`Taux effectif ≈ ${Math.round(result.tauxEffectif * 100)} %`} />
         <ResultValue label="Net avant impôt" value={fmtEur(result.net)} highlight />
         <ResultValue label="Net mensuel" value={fmtEur(result.net / 12)} detail="avant impôt sur le revenu" />
-      </div>
+      </ResultGrid>
 
       <SimulatorCta />
       <Disclaimer>

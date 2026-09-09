@@ -91,10 +91,50 @@ const MATRIX_INSIGHTS: Record<string, ProfessionMatrixInsight> = {
 function splitSentences(value: string | null | undefined): string[] {
   if (!value) return [];
   return value
-    .split(/[.;]/u)
+    .split(/[,.;]/u)
     .map((item) => item.trim())
     .filter(Boolean)
     .slice(0, 6);
+}
+
+function contextualPainPoints(profession: Profession): string[] {
+  const context = `${profession.name} ${profession.description ?? ""} ${profession.obligations ?? ""}`.toLowerCase();
+  const points = [
+    "échéances et informations à transmettre",
+    "répartition des responsabilités",
+    "organisation des justificatifs",
+  ];
+
+  if (/stock|inventaire|mati[eè]re|marchandise|m[ée]dicament|cave|bois/u.test(context)) {
+    points.push("inventaire et valorisation des stocks");
+  } else if (/chantier|travaux|sous-trait|march[ée] public/u.test(context)) {
+    points.push("suivi des dossiers et chantiers");
+  } else if (/honoraire|bnc|lib[ée]ral|cabinet|consultant/u.test(context)) {
+    points.push("suivi des encaissements et dépenses professionnels");
+  } else if (/subvention|don|association|fondation|syndicat|cse/u.test(context)) {
+    points.push("traçabilité des ressources et de leur affectation");
+  } else {
+    points.push("lecture de la trésorerie et des charges");
+  }
+
+  return points;
+}
+
+function contextualAssets(profession: Profession): string[] {
+  const context = `${profession.name} ${profession.description ?? ""} ${profession.obligations ?? ""}`.toLowerCase();
+  const assets = ["Grille de périmètre", "Check-list des pièces à préparer", "Calendrier partagé des échéances"];
+
+  if (/stock|inventaire|mati[eè]re|marchandise|m[ée]dicament|cave|bois/u.test(context)) {
+    assets[2] = "État d’inventaire à rapprocher des comptes";
+  } else if (/chantier|travaux|sous-trait|march[ée] public/u.test(context)) {
+    assets[2] = "Suivi des dossiers ou chantiers en cours";
+  } else if (/honoraire|bnc|lib[ée]ral|cabinet|consultant/u.test(context)) {
+    assets[2] = "Suivi des recettes et dépenses professionnelles";
+  } else if (/subvention|don|association|fondation|syndicat|cse/u.test(context)) {
+    assets[2] = "Tableau de suivi des ressources affectées";
+  }
+
+  return assets;
 }
 
 export function getProfessionMatrixInsight(
@@ -112,17 +152,8 @@ export function getProfessionMatrixInsight(
     family: category?.name ?? "Professions",
     profession: profession.name,
     specifics: specifics.length > 0 ? specifics : ["obligations comptables", "déclarations fiscales", "pilotage de trésorerie"],
-    painPoints: [
-      "échéances déclaratives",
-      "suivi des charges",
-      "marge et trésorerie",
-      "organisation des justificatifs",
-    ],
-    proposedAssets: [
-      "Diagnostic comptable métier",
-      "Check-list des pièces à préparer",
-      "Tableau de bord mensuel",
-    ],
+    painPoints: contextualPainPoints(profession),
+    proposedAssets: contextualAssets(profession),
     format: "Diagnostic + check-list",
     priority: profession.volume >= 1000 ? "P1" : "P2",
     urgency: profession.volume >= 1000 ? 4 : 3,
@@ -140,14 +171,45 @@ function serviceBySlug(services: Service[], slug: string): Service | undefined {
 
 function resourceDescriptionForService(slug: string): string {
   const descriptions: Record<string, string> = {
-    comptabilite: "Fiabiliser la caisse, les achats, les stocks et les déclarations périodiques.",
-    fiscalite: "Sécuriser les régimes, la TVA et les arbitrages fiscaux de l'activité.",
-    social: "Cadrer la paie, les embauches et les obligations sociales du commerce.",
-    "creation-entreprise": "Choisir le statut, le régime fiscal et le niveau de protection adapté.",
-    "conseil-gestion": "Piloter marge, trésorerie, stock et rentabilité par famille de produits.",
-    audit: "Contrôler les procédures, les flux et les zones de risque avant clôture.",
+    comptabilite: "Comparer la collecte, la révision, les comptes annuels et les restitutions prévues.",
+    fiscalite: "Clarifier les déclarations, les options à étudier et les validations attendues.",
+    social: "Cadrer la paie, les informations à transmettre et le calendrier social lorsqu'une équipe est concernée.",
+    "creation-entreprise": "Comparer le cadrage du statut, du régime fiscal et des formalités de création.",
+    "conseil-gestion": "Vérifier les indicateurs, leur fréquence et le temps d'échange associé.",
+    audit: "Faire préciser l'objet, le référentiel, les pièces, les constats et la restitution de la mission.",
   };
   return descriptions[slug] ?? "Approfondir ce besoin avec une ressource dédiée.";
+}
+
+function contextualMissingData(profession: Profession): string[] {
+  const context = `${profession.name} ${profession.description ?? ""} ${profession.obligations ?? ""}`.toLowerCase();
+  const items = [
+    "Statut, régime fiscal et options connues",
+    "Derniers comptes ou déclarations disponibles",
+    "Prochaines échéances et changements prévus",
+  ];
+
+  if (/caisse|vente|commerce|boutique|restaurant|bar|boulanger|marchandise/u.test(context)) {
+    items.unshift("Exports de ventes ou de caisse par canal");
+  } else if (/honoraire|bnc|lib[ée]ral|cabinet|m[ée]decin|dentiste|avocat/u.test(context)) {
+    items.unshift("Relevé des recettes et dépenses professionnelles");
+  } else if (/chantier|travaux|sous-trait|architecte/u.test(context)) {
+    items.unshift("Liste des dossiers ou chantiers en cours");
+  } else if (/subvention|don|association|fondation|syndicat|cse/u.test(context)) {
+    items.unshift("Subventions, dons ou ressources affectées, selon le cas");
+  } else {
+    items.unshift("Volume et origine des opérations à traiter");
+  }
+
+  if (/stock|inventaire|mati[eè]re|marchandise|m[ée]dicament|cave|bois/u.test(context)) {
+    items.splice(2, 0, "Dernier inventaire et méthode de suivi utilisée");
+  }
+
+  if (/salari|personnel|paie|convention collective|int[ée]rimaire/u.test(context)) {
+    items.splice(2, 0, "Effectif, contrats et calendrier de paie");
+  }
+
+  return [...new Set(items)].slice(0, 5);
 }
 
 function buildOfferLinks(
@@ -223,12 +285,7 @@ export function buildProfessionSidebarData({
         "Détail des coffrets et paniers composés",
         "Séparation ventes magasin / e-commerce",
       ]
-    : [
-        "Volume de pièces mensuel",
-        "Régime fiscal et TVA",
-        "Outils caisse/facturation",
-        "Dernier bilan ou prévisionnel",
-      ];
+    : contextualMissingData(profession);
 
   const taxonomyLinks = linkGroups
     .flatMap((group) => group.links)

@@ -2,14 +2,13 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { db } from "@/libs/db";
 import { AppConfig } from "@/utils/AppConfig";
-import { ExtraJsonLd } from "@/components/ExtraJsonLd";
 import {
   BreadcrumbJsonLd,
   FaqJsonLd,
-  ServiceJsonLd,
   WebPageJsonLd,
 } from "@/components/JsonLd";
 import { getDbPageBundle } from "@/libs/content/dbFirst";
+import { normalizeMetaDescription } from "@/libs/content/meta-title";
 import { getSEOForService } from "@/data/seo";
 import { ExpertiseServiceLandingV3 } from "@/components/expertises/ExpertiseServiceLandingV3";
 import { buildServiceLandingFaqItems } from "@/components/expertises/service-v3-helpers";
@@ -36,7 +35,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const seo = getSEOForService(service);
   return {
     title: dbSeo?.meta_title ?? seo.metaTitle,
-    description: dbSeo?.meta_description ?? seo.metaDescription,
+    description: normalizeMetaDescription(dbSeo?.meta_description ?? seo.metaDescription),
     alternates: { canonical: `${AppConfig.url}/expertises/${slug}` },
   };
 }
@@ -75,16 +74,8 @@ export default async function ServicePage({ params }: Props) {
   const intro = dbSeo?.meta_description ?? bundle.heroSection?.body ?? seo.intro;
   const landingSeo = { ...seo, h1, intro };
   const faqItems = [...buildServiceLandingFaqItems(service), ...seo.faqs];
-  const schema = (
-    <>
-      <ServiceJsonLd
-        name={`${service.title} — ${AppConfig.name}`}
-        description={seo.metaDescription}
-        url={`/expertises/${slug}`}
-        category="Expertise comptable"
-      />
-      <ExtraJsonLd raw={dbSeo?.json_ld_extra ?? null} />
-    </>
+  const dbEditorialSections = bundle.renderableSections.filter(
+    (section) => !/(faq|pricing|testimonial|cta|hero)/i.test(section.section_type),
   );
 
   return (
@@ -97,13 +88,13 @@ export default async function ServicePage({ params }: Props) {
         url={`/expertises/${slug}`}
         dateModified={lastUpdatedDate}
       />
-      {schema}
       <ExpertiseServiceLandingV3
         service={service}
         seo={landingSeo}
         secteurs={sectorCards}
         professions={professions}
         categories={categories}
+        dbSections={dbEditorialSections}
       />
     </>
   );

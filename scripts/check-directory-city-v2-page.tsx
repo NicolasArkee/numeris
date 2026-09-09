@@ -6,6 +6,8 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { db } from "../src/libs/db";
 import { DirectoryCityPageV2 } from "../src/components/directory/DirectoryCityPageV2";
 
+globalThis.React = React;
+
 dotenv.config({ path: path.join(process.cwd(), ".env.local") });
 dotenv.config();
 
@@ -45,7 +47,7 @@ async function main(): Promise<void> {
   assert.match(html, /Fiche documentée|À confirmer/);
   assert.match(html, /Ce que l'on peut vérifier publiquement|Ce que l&#x27;on peut vérifier publiquement/);
   assert.match(html, /Profils enrichis/);
-  assert.match(html, /Qualifies/);
+  assert.match(html, /Qualifiés/);
   assert.match(html, /data-directory-city-map-explorer/);
   assert.match(html, /data-directory-cabinet-sidebar/);
   assert.match(html, /data-directory-city-map="embed"/);

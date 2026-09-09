@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 2,
+  "hubs": [
+    { "id": "professions-hub", "path": "/professions", "theme": "paper", "mediaId": "atelier", "filters": ["category", "query"], "next": ["profession", "service", "brief"] },
+    { "id": "sectors-hub", "path": "/secteurs", "theme": "mint", "mediaId": "restaurant", "filters": ["query"], "next": ["sector", "service", "brief"] },
+    { "id": "services-hub", "path": "/expertises", "theme": "lilac", "mediaId": "accounting-flow", "filters": ["need", "query"], "next": ["service", "cross", "brief"] },
+    { "id": "guides-hub", "path": "/ressources", "theme": "paper", "mediaId": "objects", "filters": ["intention", "query"], "next": ["hub", "article", "tool", "document"] },
+    { "id": "resources-hub", "path": "/comparatifs", "theme": "lilac", "mediaId": "fintech-tools", "filters": ["category", "query"], "next": ["comparison", "review", "offer"] },
+    { "id": "reviews-hub", "path": "/avis", "theme": "apricot", "mediaId": "fintech-tools", "filters": ["category", "query"], "next": ["review", "comparison"] },
+    { "id": "offers-hub", "path": "/codes-parrainage", "theme": "apricot", "mediaId": "fintech-tools", "filters": ["status", "category", "query"], "next": ["offer", "review"] },
+    { "id": "tools-hub", "path": "/simulateurs", "theme": "mint", "mediaId": "objects", "filters": ["category", "query"], "next": ["tool", "brief"] },
+    { "id": "documents-hub", "path": "/documents", "theme": "paper", "mediaId": "accounting-flow", "filters": ["category", "availability", "query"], "next": ["document", "guide"] },
+    { "id": "geo-hub-cities", "path": "/villes", "theme": "mint", "mediaId": "cityscape", "filters": ["region", "query"], "next": ["city", "directory", "brief"] },
+    { "id": "geo-hub-departments", "path": "/departements", "theme": "lilac", "mediaId": "cityscape", "filters": ["region", "query"], "next": ["department", "city", "directory"] }
+  ]
+}

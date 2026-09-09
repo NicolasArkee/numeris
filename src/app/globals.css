@@ -1,75 +1,255 @@
 @import "tailwindcss";
 
-/* ─── SKORIA DESIGN TOKENS — V1 (bleu confiance · accent orange · slate) ─── */
+/* Skoria V2 — editorial, product and conversion foundations.
+ * Existing Tailwind aliases remain available so legacy pages can migrate
+ * without a visual or build-breaking flag day. */
 @theme {
-  /* Brand — bleu confiance institutionnel */
-  --color-brand-50: #eff4fb;
-  --color-brand-100: #d6e2f3;
-  --color-brand-300: #6e92cc;
-  --color-brand-500: #2c5db8;
-  --color-brand-700: #0b3d91;
-  --color-brand-900: #062462;
-  --color-brand-ink: #04173f;
+  /* Existing brand aliases, remapped to the V2 cobalt/navy palette. */
+  --color-brand-50: #eef2ff;
+  --color-brand-100: #dce5ff;
+  --color-brand-300: #8aa6ff;
+  --color-brand-500: #174bf2;
+  --color-brand-700: #123bc1;
+  --color-brand-900: #0b2c79;
+  --color-brand-ink: #071d3c;
 
-  /* Accent — orange chaud (CTA, badges TOP) */
-  --color-accent-50: #fff4ec;
-  --color-accent-300: #ffb388;
-  --color-accent-500: #ff6b35;
-  --color-accent-700: #c44818;
+  /* Existing accent aliases, remapped to the V2 warm orange. */
+  --color-accent-50: #fff3ed;
+  --color-accent-300: #ffb49b;
+  --color-accent-500: #ff7548;
+  --color-accent-700: #d64d24;
 
-  /* Sémantiques */
-  --color-success-50: #ecfdf5;
-  --color-success-500: #16a34a;
-  --color-success-700: #14532d;
-  --color-warning-50: #fffbeb;
-  --color-warning-500: #f59e0b;
-  --color-warning-700: #92400e;
-  --color-danger-50: #fef2f2;
-  --color-danger-500: #dc2626;
-  --color-danger-700: #991b1b;
+  --color-success-50: #edf9f1;
+  --color-success-500: #198754;
+  --color-success-700: #0f5f3a;
+  --color-warning-50: #fff8df;
+  --color-warning-500: #d99000;
+  --color-warning-700: #805600;
+  --color-danger-50: #fff0ef;
+  --color-danger-500: #d94343;
+  --color-danger-700: #922b2b;
+  --color-rating-star: #f4b942;
 
-  /* Étoiles de notation (réservé — ne pas réutiliser pour CTA) */
-  --color-rating-star: #fbbf24;
-
-  /* Neutres froids slate */
+  /* Existing neutral aliases. */
   --color-surface: #ffffff;
-  --color-bg: #f8fafc;
-  --color-bg-muted: #f1f5f9;
-  --color-border: #e2e8f0;
-  --color-border-soft: #edf2f7;
-  --color-ink: #0f172a;
-  --color-ink-muted: #475569;
-  --color-ink-soft: #94a3b8;
+  --color-bg: #f8f6f0;
+  --color-bg-muted: #efede7;
+  --color-border: #d4dcd9;
+  --color-border-soft: #e6e9e5;
+  --color-ink: #10223b;
+  --color-ink-muted: #617085;
+  --color-ink-soft: #8995a4;
 
-  /* Fonts — Skoria v1 (Inter Tight display + Inter body + JetBrains Mono data) */
-  --font-display: "Inter Tight", "Inter", system-ui, sans-serif;
-  --font-body: "Inter", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  /* Named V2 surfaces for the new templates. */
+  --color-paper: #f8f6f0;
+  --color-navy: #071d3c;
+  --color-blue: #174bf2;
+  --color-cobalt: #174bf2;
+  --color-orange: #ff7548;
+  --color-apricot: #ffe2d4;
+  --color-lilac: #e7e4ff;
+  --color-mint: #dcefe4;
+
+  --font-display: var(--font-inter-tight), "Inter Tight", "Inter", system-ui, sans-serif;
+  --font-body: var(--font-inter), "Inter", system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), "JetBrains Mono", ui-monospace, monospace;
+  --font-editorial: var(--font-instrument-serif), "Instrument Serif", Georgia, serif;
+  --font-serif: var(--font-instrument-serif), "Instrument Serif", Georgia, serif;
 }
 
-/* ─── BASE ─── */
+:root {
+  --skoria-ink: #10223b;
+  --skoria-navy: #071d3c;
+  --skoria-blue: #174bf2;
+  --skoria-orange: #ff7548;
+  --skoria-paper: #f8f6f0;
+  --skoria-apricot: #ffe2d4;
+  --skoria-lilac: #e7e4ff;
+  --skoria-mint: #dcefe4;
+  --skoria-line: #d4dcd9;
+  --skoria-muted: #617085;
+  --site-header-height: 4.5rem;
+  --sticky-header-height: var(--site-header-height);
+}
+
+@media (min-width: 64rem) {
+  :root {
+    --site-header-height: 5.5rem;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--site-header-height) + 1.25rem);
+}
+
 body {
-  font-family: var(--font-body);
+  min-width: 20rem;
   background: var(--color-bg);
   color: var(--color-ink);
+  font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-display);
-  letter-spacing: -0.02em;
+  font-style: normal;
+  overflow-wrap: break-word;
+  letter-spacing: -0.025em;
 }
 
-/* Anneau de focus — réservé brand-700 à 25 % */
+/* Les titres V2 restent typographiquement homogènes, y compris lorsque leur
+ * contenu provient de Markdown ou d'un composant avec un accent éditorial. */
+h1 :where(span, em, strong, a, b, i, small, mark, code),
+h2 :where(span, em, strong, a, b, i, small, mark, code),
+h3 :where(span, em, strong, a, b, i, small, mark, code),
+h4 :where(span, em, strong, a, b, i, small, mark, code),
+h5 :where(span, em, strong, a, b, i, small, mark, code),
+h6 :where(span, em, strong, a, b, i, small, mark, code) {
+  font-family: inherit !important;
+  font-style: inherit !important;
+  font-weight: inherit !important;
+}
+
+/* Keep native controls aligned with the body while allowing component type
+ * utilities to set their own size and emphasis. */
+@layer base {
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
+}
+
+button,
+summary,
+select {
+  cursor: pointer;
+}
+
+::selection {
+  background: var(--skoria-apricot);
+  color: var(--skoria-ink);
+}
+
 :focus-visible {
-  outline: 2px solid transparent;
-  outline-offset: 2px;
-  box-shadow: 0 0 0 3px rgba(11, 61, 145, 0.25);
-  border-radius: 4px;
+  outline: 3px solid var(--skoria-orange);
+  outline-offset: 3px;
+  box-shadow: none;
 }
 
-/* ─── ANIMATIONS ─── */
+[id] {
+  scroll-margin-top: calc(var(--site-header-height) + 1.25rem);
+}
+
+.font-editorial,
+.serif {
+  font-family: var(--font-editorial);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+}
+
+.sk-container {
+  width: min(80rem, calc(100% - 2.5rem));
+  margin-inline: auto;
+}
+
+.sk-section {
+  padding-block: 3.5rem;
+}
+
+.sk-section-compact {
+  padding-block: 2.25rem;
+}
+
+.sk-display {
+  max-width: 16ch;
+  font-family: var(--font-display);
+  font-size: clamp(2.875rem, 6.2vw, 4.5rem);
+  font-weight: 650;
+  line-height: 1.02;
+  letter-spacing: -0.055em;
+}
+
+.sk-section-title {
+  max-width: 22ch;
+  font-family: var(--font-display);
+  font-size: clamp(2.125rem, 4vw, 3rem);
+  font-weight: 650;
+  line-height: 1.08;
+  letter-spacing: -0.045em;
+}
+
+.sk-lede {
+  max-width: 42rem;
+  color: var(--skoria-muted);
+  font-size: clamp(1.0625rem, 1.7vw, 1.25rem);
+  line-height: 1.65;
+}
+
+.sk-prose {
+  max-width: 47.5rem;
+  color: var(--skoria-muted);
+  font-size: 1.0625rem;
+  line-height: 1.85;
+}
+
+.sk-prose > * + * {
+  margin-top: 1.25em;
+}
+
+.sk-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 650;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.sk-bg-paper { background: var(--skoria-paper); }
+.sk-bg-white { background: #ffffff; }
+.sk-bg-navy { background: var(--skoria-navy); color: #ffffff; }
+.sk-bg-blue { background: var(--skoria-blue); color: #ffffff; }
+.sk-bg-apricot { background: var(--skoria-apricot); }
+.sk-bg-lilac { background: var(--skoria-lilac); }
+.sk-bg-mint { background: var(--skoria-mint); }
+
+.sk-skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 100;
+  translate: 0 -180%;
+  background: var(--skoria-orange);
+  color: var(--skoria-navy);
+  padding: 0.75rem 1rem;
+  font-weight: 700;
+  transition: translate 150ms ease;
+}
+
+.sk-skip-link:focus {
+  translate: 0;
+}
+
+.sk-reading-progress {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 80;
+  height: 3px;
+  pointer-events: none;
+  transform: scaleX(0);
+  transform-origin: left center;
+  background: var(--skoria-orange);
+  will-change: transform;
+}
+
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: translateY(0); }
@@ -77,4 +257,33 @@ h1, h2, h3, h4, h5, h6 {
 
 .animate-fade-up {
   animation: fadeUp 0.6s ease both;
+}
+
+@media (min-width: 48rem) {
+  .sk-container {
+    width: min(80rem, calc(100% - 7rem));
+  }
+
+  .sk-section {
+    padding-block: 5.5rem;
+  }
+
+  .sk-section-compact {
+    padding-block: 3.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

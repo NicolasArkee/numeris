@@ -1,0 +1,335 @@
+{
+  "calcul-tva": {
+    "title": "Calculateur de TVA : convertir HT et TTC",
+    "h1": "Calculateur de TVA : du HT au TTC et du TTC au HT",
+    "description": "Convertissez gratuitement un montant HT en TTC ou TTC en HT. Retrouvez le montant de TVA et comparez les résultats selon les taux proposés.",
+    "toolHeading": "Convertissez votre montant et comparez les taux de TVA.",
+    "inputs": [
+      "Montant HT ou TTC",
+      "Sens de conversion",
+      "Taux de TVA"
+    ],
+    "outputs": [
+      "Montant hors taxes",
+      "Montant de TVA",
+      "Montant toutes taxes comprises",
+      "Tableau comparatif par taux"
+    ],
+    "methodIntro": "Le calcul applique le taux choisi au montant HT, ou divise le montant TTC par un plus ce taux. La différence donne la TVA ; les montants sont arrondis au centime.",
+    "relatedSlugs": [
+      "charges",
+      "calcul-impot-societes",
+      "tjm",
+      "honoraires"
+    ]
+  },
+  "frais-kilometriques": {
+    "title": "Calculateur de frais kilométriques : voiture et moto",
+    "h1": "Calculateur de frais kilométriques pour voiture et moto",
+    "description": "Calculez vos frais kilométriques selon la distance, la puissance et le véhicule. Indemnité annuelle, coût par km et option électrique. Gratuit.",
+    "toolHeading": "Calculez l’indemnité correspondant à vos kilomètres professionnels.",
+    "inputs": [
+      "Voiture ou moto de plus de 50 cm³",
+      "Puissance fiscale",
+      "Distance professionnelle annuelle",
+      "Véhicule entièrement électrique"
+    ],
+    "outputs": [
+      "Indemnité kilométrique annuelle",
+      "Coût moyen par kilomètre",
+      "Équivalent mensuel",
+      "Formule appliquée et comparaison des puissances"
+    ],
+    "methodIntro": "L’outil sélectionne la tranche de distance et les coefficients du véhicule et de sa puissance fiscale, puis applique la majoration électrique si elle est cochée. Le tableau compare les puissances pour la même distance.",
+    "relatedSlugs": [
+      "charges",
+      "tjm",
+      "calcul-tva",
+      "jours-ouvres"
+    ]
+  },
+  "cout-salarie": {
+    "title": "Simulateur de coût employeur d’un salarié",
+    "h1": "Simulateur de coût d’un salarié pour l’employeur",
+    "description": "Estimez gratuitement le coût mensuel et annuel d’un salarié, les charges patronales et le net avant impôt à partir d’un salaire brut ou net.",
+    "toolHeading": "Estimez votre budget d’embauche à partir du salaire.",
+    "inputs": [
+      "Point de départ brut ou net",
+      "Salaire mensuel",
+      "Statut cadre ou non-cadre",
+      "Entreprise de 50 salariés et plus"
+    ],
+    "outputs": [
+      "Coût employeur mensuel",
+      "Charges patronales estimées",
+      "Coût employeur annuel",
+      "Net mensuel avant impôt"
+    ],
+    "methodIntro": "L’outil reconstitue d’abord le brut si vous partez du net. Il applique les hypothèses de cotisations et de réduction générale selon le statut et l’effectif, puis annualise le coût mensuel hors primes et avantages.",
+    "relatedSlugs": [
+      "jours-ouvres",
+      "prime-fin-cdd",
+      "rupture-conventionnelle",
+      "grille-salaire-expert-comptable"
+    ]
+  },
+  "jours-ouvres": {
+    "title": "Calculateur de jours ouvrés entre deux dates",
+    "h1": "Calculateur de jours ouvrés, ouvrables et calendaires",
+    "description": "Comptez gratuitement les jours ouvrés, ouvrables et calendaires entre deux dates, bornes incluses, avec les jours fériés de France métropolitaine.",
+    "toolHeading": "Choisissez deux dates pour décompter les jours de votre période.",
+    "inputs": [
+      "Date de début incluse",
+      "Date de fin incluse"
+    ],
+    "outputs": [
+      "Nombre de jours ouvrés",
+      "Nombre de jours ouvrables",
+      "Nombre de jours calendaires",
+      "Liste des jours fériés sur la période"
+    ],
+    "methodIntro": "Le calcul parcourt la période, bornes incluses. Il compte tous les jours calendaires, puis exclut les week-ends concernés et les jours fériés métropolitains pour distinguer les jours ouvrés des jours ouvrables.",
+    "relatedSlugs": [
+      "tjm",
+      "cout-salarie",
+      "prime-fin-cdd",
+      "rupture-conventionnelle"
+    ]
+  },
+  "rupture-conventionnelle": {
+    "title": "Calculateur d’indemnité de rupture conventionnelle",
+    "h1": "Calculateur d’indemnité minimale de rupture conventionnelle",
+    "description": "Estimez l’indemnité minimale de rupture conventionnelle selon votre ancienneté et vos salaires moyens, avec le salaire de référence retenu.",
+    "toolHeading": "Estimez l’indemnité à partir du salaire et de l’ancienneté.",
+    "inputs": [
+      "Salaire brut moyen des 12 derniers mois",
+      "Salaire brut moyen des 3 derniers mois",
+      "Ancienneté en années",
+      "Mois d’ancienneté supplémentaires"
+    ],
+    "outputs": [
+      "Indemnité minimale estimée",
+      "Salaire de référence retenu",
+      "Équivalent en mois de salaire"
+    ],
+    "methodIntro": "L’outil retient le plus élevé des deux salaires moyens saisis et applique les fractions de salaire prévues dans le moteur selon l’ancienneté, mois supplémentaires compris. Les dispositions conventionnelles ne sont pas calculées.",
+    "relatedSlugs": [
+      "cout-salarie",
+      "jours-ouvres",
+      "prime-fin-cdd",
+      "grille-salaire-expert-comptable"
+    ]
+  },
+  "calcul-impot-societes": {
+    "title": "Calculateur d’impôt sur les sociétés (IS)",
+    "h1": "Calculateur d’impôt sur les sociétés : estimez votre IS",
+    "description": "Estimez gratuitement l’IS selon votre bénéfice et les conditions du taux réduit. Consultez le détail par tranche et le résultat net après IS.",
+    "toolHeading": "Calculez l’IS et visualisez sa répartition par tranche.",
+    "inputs": [
+      "Bénéfice imposable",
+      "Chiffre d’affaires annuel HT",
+      "Conditions de libération et de détention du capital"
+    ],
+    "outputs": [
+      "Impôt sur les sociétés total",
+      "Part au taux réduit",
+      "Part au taux normal",
+      "Résultat net après IS"
+    ],
+    "methodIntro": "L’outil détermine l’accès au taux réduit à partir du chiffre d’affaires et de l’option relative au capital. Il calcule l’impôt par tranche sur le bénéfice positif, puis le résultat restant après cet IS.",
+    "relatedSlugs": [
+      "statuts",
+      "capital-social",
+      "calcul-tva",
+      "honoraires"
+    ]
+  },
+  "prime-fin-cdd": {
+    "title": "Calculateur de prime de fin de CDD",
+    "h1": "Calculateur de prime de précarité et de fin de CDD",
+    "description": "Estimez gratuitement votre prime de fin de CDD à partir du brut total et du taux choisi, avec une option pour les congés payés non pris.",
+    "toolHeading": "Calculez la prime de fin de CDD et l’option congés payés.",
+    "inputs": [
+      "Rémunération brute totale du contrat",
+      "Taux de prime applicable",
+      "Ajout des congés payés non pris"
+    ],
+    "outputs": [
+      "Prime de précarité brute",
+      "Prime nette approximative",
+      "Indemnité de congés payés si sélectionnée",
+      "Total brut des indemnités calculées"
+    ],
+    "methodIntro": "Le calcul applique le taux choisi à la rémunération brute totale. Si l’option congés payés est activée, l’indemnité est estimée sur le brut augmenté de la prime. L’outil ne détermine pas votre éligibilité à la prime.",
+    "relatedSlugs": [
+      "cout-salarie",
+      "jours-ouvres",
+      "rupture-conventionnelle",
+      "grille-salaire-expert-comptable"
+    ]
+  },
+  "capital-social": {
+    "title": "Simulateur de répartition du capital social",
+    "h1": "Simulateur de capital social : apports, parts et répartition",
+    "description": "Simulez gratuitement la répartition du capital entre associés : apports, nombre de parts, pourcentages et repères de contrôle indicatifs.",
+    "toolHeading": "Répartissez les apports et visualisez les parts de chaque associé.",
+    "inputs": [
+      "Valeur nominale d’une part",
+      "Nom de chaque associé",
+      "Apport de chaque associé"
+    ],
+    "outputs": [
+      "Capital social total",
+      "Nombre de parts",
+      "Pourcentage de chaque associé",
+      "Graphique de répartition et repères de contrôle"
+    ],
+    "methodIntro": "L’outil additionne les apports, calcule les parts entières selon leur valeur nominale et la proportion de chaque apport. Il signale les répartitions particulières et affiche des repères de contrôle à rapprocher de la forme sociale et des statuts.",
+    "relatedSlugs": [
+      "statuts",
+      "calcul-impot-societes",
+      "charges",
+      "honoraires"
+    ]
+  },
+  "charges": {
+    "title": "Simulateur de charges sociales : micro, TNS, SASU",
+    "h1": "Simulateur de charges sociales selon votre statut",
+    "description": "Estimez gratuitement vos cotisations sociales et votre revenu net avant impôt selon votre statut : micro-entreprise, TNS ou assimilé salarié.",
+    "toolHeading": "Estimez vos cotisations et le revenu restant selon votre statut.",
+    "inputs": [
+      "Statut social",
+      "Activité pour la micro-entreprise",
+      "Chiffre d’affaires, bénéfice ou enveloppe annuelle selon le statut"
+    ],
+    "outputs": [
+      "Cotisations sociales estimées",
+      "Taux effectif estimé",
+      "Net annuel avant impôt",
+      "Net mensuel avant impôt"
+    ],
+    "methodIntro": "Le calcul utilise le chiffre d’affaires pour la micro-entreprise, le bénéfice pour le TNS au réel et l’enveloppe employeur pour l’assimilé salarié. Il applique les hypothèses propres au statut et ramène le net annuel à un équivalent mensuel.",
+    "relatedSlugs": [
+      "statuts",
+      "tjm",
+      "cout-salarie",
+      "honoraires"
+    ]
+  },
+  "statuts": {
+    "title": "Comparateur de statuts : micro, EI ou SASU",
+    "h1": "Simulateur de statuts : micro-entreprise, EI et SASU",
+    "description": "Comparez les revenus et prélèvements estimés de trois scénarios micro-entreprise, EI et SASU à partir du chiffre d’affaires et des frais.",
+    "toolHeading": "Explorez trois scénarios de statut avec les mêmes données d’activité.",
+    "inputs": [
+      "Chiffre d’affaires annuel HT",
+      "Frais professionnels annuels",
+      "Nature de l’activité"
+    ],
+    "outputs": [
+      "Revenu estimé de chaque scénario",
+      "Prélèvements estimés par scénario",
+      "Hypothèses propres à chaque statut"
+    ],
+    "methodIntro": "Le moteur applique les cotisations micro ou TNS aux deux premiers scénarios. Pour la SASU, il déduit l’IS puis le prélèvement sur les dividendes. Les résultats n’intègrent donc pas tous le même traitement de l’impôt personnel.",
+    "relatedSlugs": [
+      "charges",
+      "calcul-impot-societes",
+      "capital-social",
+      "tjm"
+    ]
+  },
+  "tjm": {
+    "title": "Calculateur de TJM freelance selon votre revenu cible",
+    "h1": "Calculateur de TJM freelance : estimez votre tarif journalier",
+    "description": "Calculez gratuitement votre TJM cible selon le revenu net souhaité, les frais, le statut et les jours facturés. Consultez le CA annuel associé.",
+    "toolHeading": "Estimez le tarif journalier correspondant à votre objectif de revenu.",
+    "inputs": [
+      "Net mensuel souhaité avant impôt",
+      "Jours facturés par mois",
+      "Frais professionnels mensuels",
+      "Statut"
+    ],
+    "outputs": [
+      "TJM cible hors taxes",
+      "Chiffre d’affaires annuel correspondant",
+      "Nombre de jours facturés par an"
+    ],
+    "methodIntro": "L’outil additionne le revenu net visé et les frais, puis intègre l’hypothèse de cotisations et de structure du statut choisi. Le chiffre d’affaires mensuel obtenu est divisé par les jours facturés saisis.",
+    "relatedSlugs": [
+      "charges",
+      "jours-ouvres",
+      "calcul-tva",
+      "statuts"
+    ]
+  },
+  "immobilier": {
+    "title": "Simulateur LMNP : micro-BIC ou régime réel",
+    "h1": "Simulateur LMNP : comparez les bases imposables micro-BIC et réel",
+    "description": "Comparez gratuitement les bases imposables micro-BIC et réel de votre location meublée, selon les loyers, charges et amortissements simplifiés.",
+    "toolHeading": "Comparez les bases imposables de votre location meublée.",
+    "inputs": [
+      "Loyers annuels charges comprises",
+      "Charges annuelles",
+      "Valeur du bien saisie",
+      "Valeur du mobilier"
+    ],
+    "outputs": [
+      "Base imposable micro-BIC",
+      "Base imposable au régime réel",
+      "Amortissement annuel estimé",
+      "Réduction de base affichée entre réel et micro-BIC"
+    ],
+    "methodIntro": "Le moteur applique un abattement forfaitaire aux loyers pour le micro-BIC. Au réel, il retranche charges et amortissements simplifiés du bâti et du mobilier, avec une base plancher à zéro. Il compare des bases, pas le montant final de l’impôt.",
+    "relatedSlugs": [
+      "honoraires",
+      "calcul-impot-societes",
+      "capital-social"
+    ]
+  },
+  "honoraires": {
+    "title": "Simulateur d’honoraires d’expert-comptable",
+    "h1": "Simulateur d’honoraires : estimez le coût d’un expert-comptable",
+    "description": "Estimez gratuitement une fourchette mensuelle HT d’honoraires comptables selon la forme juridique, le CA, les salariés et la TVA.",
+    "toolHeading": "Obtenez un ordre de grandeur pour comparer les honoraires.",
+    "inputs": [
+      "Forme juridique",
+      "Chiffre d’affaires annuel",
+      "Nombre de salariés",
+      "Assujettissement à la TVA"
+    ],
+    "outputs": [
+      "Fourchette mensuelle HT indicative",
+      "Périmètre indicatif à comparer"
+    ],
+    "methodIntro": "La grille interne fait varier une base mensuelle selon la forme juridique, les tranches de chiffre d’affaires, les salariés et l’option TVA. Elle donne une fourchette indicative et un repère de périmètre, sans constituer un devis.",
+    "relatedSlugs": [
+      "charges",
+      "statuts",
+      "calcul-tva",
+      "cout-salarie"
+    ]
+  },
+  "grille-salaire-expert-comptable": {
+    "title": "Grille interactive des salaires en expertise comptable",
+    "h1": "Grille interactive des salaires en expertise comptable",
+    "description": "Explorez les fourchettes de salaires en expertise comptable selon le profil et la région, avec les minima conventionnels indicatifs. Gratuit.",
+    "toolHeading": "Explorez les rémunérations par profil et par région.",
+    "inputs": [
+      "Profil et niveau d’expérience",
+      "Région"
+    ],
+    "outputs": [
+      "Fourchette brute annuelle indicative",
+      "Fourchette nette mensuelle approximative",
+      "Grille des minima conventionnels par coefficient"
+    ],
+    "methodIntro": "L’outil applique un coefficient régional aux fourchettes du profil choisi et estime un équivalent net mensuel. La grille conventionnelle est présentée séparément : il ne s’agit pas du calcul d’un bulletin de salaire individuel.",
+    "relatedSlugs": [
+      "cout-salarie",
+      "jours-ouvres",
+      "rupture-conventionnelle",
+      "prime-fin-cdd"
+    ]
+  }
+}

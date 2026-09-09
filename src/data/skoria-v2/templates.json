@@ -1,0 +1,773 @@
+{
+  "schemaVersion": 1,
+  "templates": [
+    {
+      "id": "home",
+      "title": "Accueil",
+      "routePattern": "/",
+      "examplePath": "/",
+      "family": "home",
+      "dataBinding": {
+        "source": "hybrid",
+        "route": null,
+        "keyStrategy": "fixed",
+        "currentCoverage": "partial",
+        "existingFields": ["services", "sectors", "professions", "cities", "testimonials", "faq"],
+        "missingFields": ["intent journeys", "method proof points", "featured content rails", "media assignments"]
+      },
+      "content": {
+        "minWords": 900,
+        "maxWords": 1600,
+        "requiredBlocks": ["compact-hero", "intent-router", "method-proof", "featured-paths", "directory-entry", "editorial-rails", "faq", "closing-brief"],
+        "recommendedBlocks": ["stats-band", "visual-break", "recently-reviewed"],
+        "faqMinItems": 5,
+        "requiresCitations": true
+      },
+      "seo": {
+        "schemaTypes": ["WebPage", "FAQPage", "BreadcrumbList"],
+        "indexRequiresPublished": false,
+        "commercialDisclosure": false,
+        "forbidSkoriaProviderClaim": true
+      },
+      "mediaRoles": ["hero-ambient", "profession-story", "sector-story", "editorial-card"],
+      "interactions": ["intent-switcher", "profession-search", "city-search", "context-memory"],
+      "journeyTargets": ["professions-hub", "sectors-hub", "services-hub", "directory", "guides-hub"]
+    },
+    {
+      "id": "profession",
+      "title": "Expert-comptable par métier",
+      "routePattern": "/professions/{profession}",
+      "examplePath": "/professions/medecins",
+      "family": "landing",
+      "dataBinding": {
+        "source": "hybrid",
+        "route": "professions",
+        "keyStrategy": "slug",
+        "currentCoverage": "draft-only",
+        "existingFields": ["profession taxonomy", "profession category", "service relations", "page_sections", "seo_overrides", "page_meta", "internal mesh"],
+        "missingFields": ["verified métier proof", "deliverable facts", "pricing context", "conversion brief fields", "media assignment"]
+      },
+      "content": {
+        "minWords": 1600,
+        "maxWords": 2600,
+        "requiredBlocks": ["conversion-hero", "fit-check", "mission-scope", "metier-obligations", "deliverables", "collaboration-process", "pricing-context", "selection-method", "faq", "contextual-links", "closing-brief"],
+        "recommendedBlocks": ["expert-quote", "document-checklist", "related-professions", "visual-break"],
+        "faqMinItems": 6,
+        "requiresCitations": true
+      },
+      "seo": {
+        "schemaTypes": ["WebPage", "FAQPage", "BreadcrumbList"],
+        "indexRequiresPublished": true,
+        "commercialDisclosure": false,
+        "forbidSkoriaProviderClaim": true
+      },
+      "mediaRoles": ["hero-profession", "process-ambient", "closing-ambient"],
+      "interactions": ["need-selector", "mission-checklist", "brief-builder", "context-memory"],
+      "journeyTargets": ["service", "cross", "directory", "city", "documents-hub"]
+    },
+    {
+      "id": "service",
+      "title": "Landing page expertise",
+      "routePattern": "/expertises/{service}",
+      "examplePath": "/expertises/comptabilite",
+      "family": "landing",
+      "dataBinding": {
+        "source": "hybrid",
+        "route": "expertises",
+        "keyStrategy": "slug",
+        "currentCoverage": "partial",
+        "existingFields": ["service taxonomy", "sector relations", "profession relations", "static SEO fallback", "service FAQ"],
+        "missingFields": ["page_sections for audited service", "seo_overrides", "page_meta", "scope matrix", "deliverables", "pricing facts", "media assignment"]
+      },
+      "content": {
+        "minWords": 1500,
+        "maxWords": 2400,
+        "requiredBlocks": ["conversion-hero", "need-router", "mission-scope", "responsibility-matrix", "deliverables", "collaboration-process", "pricing-context", "selection-criteria", "faq", "sector-profession-links", "closing-brief"],
+        "recommendedBlocks": ["case-scenarios", "document-checklist", "expert-quote", "visual-break"],
+        "faqMinItems": 6,
+        "requiresCitations": true
+      },
+      "seo": {
+        "schemaTypes": ["WebPage", "FAQPage", "BreadcrumbList"],
+        "indexRequiresPublished": true,
+        "commercialDisclosure": false,
+        "forbidSkoriaProviderClaim": true
+      },
+      "mediaRoles": ["hero-service", "scope-ambient", "closing-ambient"],
+      "interactions": ["need-switcher", "scope-builder", "brief-builder", "context-memory"],
+      "journeyTargets": ["cross", "profession", "sector", "directory", "documents-hub"]
+    },
+    {
+      "id": "cross",
+      "title": "Expertise par métier ou secteur",
+      "routePattern": "/expertises/{service}/{dimension}",
+      "examplePath": "/expertises/comptabilite/restauration",
+      "family": "landing",
+      "dataBinding": {
+        "source": "hybrid",
+        "route": "expertises",
+        "keyStrategy": "expertise-composite",
+        "currentCoverage": "partial",
+        "existingFields": ["service taxonomy", "sector profession and city relations", "static SEO fallback", "composite key helper"],
+        "missingFields": ["page_sections for audited cross page", "seo_overrides", "page_meta", "dimension-specific proof", "media assignment"]
+      },
+      "content": {
+        "minWords": 1700,
+        "maxWords": 2700,
+        "requiredBlocks": ["conversion-hero", "dimension-diagnostic", "specific-obligations", "mission-scope", "deadline-timeline", "deliverables", "pricing-context", "selection-criteria", "faq", "local-or-related-paths", "closing-brief"],
+        "recommendedBlocks": ["case-scenarios", "risk-map", "document-checklist", "visual-break"],
+        "faqMinItems": 6,
+        "requiresCitations": true
+      },
+      "seo": {
+        "schemaTypes": ["WebPage", "FAQPage", "BreadcrumbList"],
+        "indexRequiresPublished": true,
+        "commercialDisclosure": false,
+        "forbidSkoriaProviderClaim": true
+      },
+      "mediaRoles": ["hero-dimension", "operational-story", "closing-ambient"],
+      "interactions": ["situation-switcher", "deadline-checklist", "brief-builder", "context-memory"],
+      "journeyTargets": ["service", "profession", "sector", "directory", "city"]
+    },
+    {
+      "id": "sector",
+      "title": "Expert-comptable par secteur",
+      "routePattern": "/secteurs/{sector}",
+      "examplePath": "/secteurs/restauration",
+      "family": "landing",
+      "dataBinding": {
+        "source": "hybrid",
+        "route": "secteurs",
+        "keyStrategy": "slug",
+        "currentCoverage": "draft-only",
+        "existingFields": ["sector taxonomy", "service relations", "page_sections", "seo_overrides", "page_meta", "internal mesh"],
+        "missingFields": ["verified sector proof", "operating-cycle facts", "service scope variants", "pricing context", "media assignment"]
+      },
+      "content": {
+        "minWords": 1500,
+        "maxWords": 2500,
+        "requiredBlocks": ["conversion-hero", "operating-cycle", "sector-obligations", "mission-scope", "risk-calendar", "deliverables", "pricing-context", "selection-method", "faq", "service-city-links", "closing-brief"],
+        "recommendedBlocks": ["margin-scenario", "document-checklist", "expert-quote", "visual-break"],
+        "faqMinItems": 6,
+        "requiresCitations": true
+      },
+      "seo": {
+        "schemaTypes": ["WebPage", "FAQPage", "BreadcrumbList"],
+        "indexRequiresPublished": true,
+        "commercialDisclosure": false,
+        "forbidSkoriaProviderClaim": true
+      },
+      "mediaRoles": ["hero-sector", "operational-story", "closing-ambient"],
+      "interactions": ["situation-switcher", "risk-checklist", "brief-builder", "context-memory"],
+      "journeyTargets": ["cross", "service", "directory", "city", "documents-hub"]
+    },
+    {
+      "id": "directory",
+      "title": "Annuaire national",
+      "routePattern": "/annuaire/experts-comptables",
+      "examplePath": "/annuaire/experts-comptables",
+      "family": "directory",
+      "dataBinding": {
+        "source": "directory",
+        "route": null,
+        "keyStrategy": "fixed",
+        "currentCoverage": "live",
+        "existingFields": ["official cities", "directory cabinets", "establishments", "qualification status", "confidence score", "profile facts"],
+        "missingFields": ["search journey configuration", "comparison selection state", "method copy", "media assignment"]
+      },
+      "content": {
+        "minWords": 700,
+        "maxWords": 1300,
+        "requiredBlocks": ["search-first-hero", "location-search", "method-proof", "featured-cities", "selection-checklist", "profession-sector-paths", "faq"],
+        "recommendedBlocks": ["coverage-stats", "data-provenance", "visual-break"],
+        "faqMinItems": 5,
+        "requiresCitations": true
+      },
+      "seo": {
+        "schemaTypes": ["SearchResultsPage", "ItemList", "FAQPage", "BreadcrumbList"],
+        "indexRequiresPublished": false,
+        "commercialDisclosure": false,
+        "forbidSkoriaProviderClaim": true
+      },
+      "mediaRoles": ["hero-directory", "method-ambient"],
+      "interactions": ["city-search", "department-filter", "cabinet-selection", "brief-builder", "context-memory"],
+      "journeyTargets": ["city", "profile", "profession", "sector", "services-hub"]
+    },
+    {
+      "id": "city",
+      "title": "Annuaire par ville",
+      "routePattern": "/expert-comptable/{city}",
+      "examplePath": "/expert-comptable/rennes",
+      "family": "directory",
+      "dataBinding": {
+        "source": "directory",
+        "route": "villes",
+        "keyStrategy": "slug",
+        "currentCoverage": "partial",
+        "existingFields": ["official city", "qualified cabinet cards", "establishments", "map coordinates", "profile facts", "page_sections draft for legacy city route"],
+        "missingFields": ["comparison fields", "city decision copy", "verified local stats", "media assignment"]
+      },
+      "content": {
+        "minWords": 900,
+        "maxWords": 1600,
+        "requiredBlocks": ["search-results-hero", "filters-sort", "cabinet-results", "selection-tray", "comparison-table", "city-decision-guide", "first-contact-checklist", "faq", "nearby-cities"],
+        "recommendedBlocks": ["map-secondary", "coverage-stats", "visual-break"],
+        "faqMinItems": 5,
+        "requiresCitations": true
+      },
+      "seo": {
+        "schemaTypes": ["SearchResultsPage", "ItemList", "FAQPage", "BreadcrumbList"],
+        "indexRequiresPublished": false,
+        "commercialDisclosure": false,
+        "forbidSkoriaProviderClaim": true
+      },
+      "mediaRoles": ["city-illustration", "method-ambient"],
+      "interactions": ["result-filter", "result-sort", "pagination", "cabinet-selection", "compare-download", "context-memory"],
+      "journeyTargets": ["profile", "directory", "profession", "service", "geo-hub"]
+    },
+    {
+      "id": "profile",
+      "title": "Fiche cabinet",
+      "routePattern": "/expert-comptable/{city}/{cabinet-siret}",
+      "examplePath": "/expert-comptable/rennes/colliance-48825060600057",
+      "family": "directory",
+      "dataBinding": {
+        "source": "directory",
+        "route": null,
+        "keyStrategy": "directory-siret",
+        "currentCoverage": "partial",
+        "existingFields": ["legal identity", "SIREN SIRET", "address", "website", "qualification status", "source records", "displayable profile facts", "source preview image"],
+        "missingFields": ["fact freshness labels", "agenda topics", "comparison state", "confirmed services separate from inferred services"]
+      },
+      "content": {
+        "minWords": 450,
+        "maxWords": 1000,
+        "requiredBlocks": ["identity-hero", "verified-facts", "source-provenance", "website-preview", "contact-agenda", "unknowns-to-confirm", "compare-actions", "nearby-cabinets"],
+        "recommendedBlocks": ["qualification-timeline", "correction-link", "related-city-guide"],
+        "faqMinItems": 0,
+        "requiresCitations": true
+      },
+      "seo": {
+        "schemaTypes": ["ProfilePage", "BreadcrumbList"],
+        "indexRequiresPublished": true,
+        "commercialDisclosure": false,
+        "forbidSkoriaProviderClaim": true
+      },
+      "mediaRoles": ["website-preview"],
+      "interactions": ["agenda-builder", "cabinet-selection", "source-details", "context-memory"],
+      "journeyTargets": ["city", "directory", "profession", "service"]
+    },
+    {
+      "id": "hub",
+      "title": "Hub de guides",
+      "routePattern": "/guides/{pillar}",
+      "examplePath": "/guides/lmnp",
+      "family": "editorial",
+      "dataBinding": {
+        "source": "page_sections",
+        "route": "guides",
+        "keyStrategy": "guide-segments",
+        "currentCoverage": "draft-only",
+        "existingFields": ["page_sections", "seo_overrides", "page_meta", "brief hierarchy", "internal link targets"],
+        "missingFields": ["reader profiles", "chapter progression", "tool links", "source recency", "media assignment"]
+      },
+      "content": {
+        "minWords": 1400,
+        "maxWords": 2400,
+        "requiredBlocks": ["pillar-hero", "reader-router", "executive-summary", "chapter-grid", "learning-path", "preparation-checklist", "tools-documents", "sources-method", "faq", "next-step"],
+        "recommendedBlocks": ["stats-band", "visual-break", "recently-reviewed"],
+        "faqMinItems": 6,
+        "requiresCitations": true
+      },
+      "seo": {
+        "schemaTypes": ["CollectionPage", "ItemList", "FAQPage", "BreadcrumbList"],
+        "indexRequiresPublished": true,
+        "commercialDisclosure": false,
+        "forbidSkoriaProviderClaim": true
+      },
+      "mediaRoles": ["hero-editorial", "chapter-card", "visual-break"],
+      "interactions": ["reader-profile-tabs", "chapter-filter", "progress-memory", "context-memory"],
+      "journeyTargets": ["sub-hub", "article", "tools-hub", "documents-hub", "service"]
+    },
+    {
+      "id": "article",
+      "title": "Article de guide",
+      "routePattern": "/guides/{pillar}/{subhub}/{article}",
+      "examplePath": "/guides/lmnp/amortissement/amortissement-bien-immobilier",
+      "family": "editorial",
+      "dataBinding": {
+        "source": "page_sections",
+        "route": "guides",
+        "keyStrategy": "guide-segments",
+        "currentCoverage": "draft-only",
+        "existingFields": ["page_sections", "seo_overrides", "page_meta", "brief section plan", "citations", "internal link targets"],
+        "missingFields": ["stable heading anchors", "calculator assumptions", "author and reviewer evidence", "source recency", "media assignment"]
+      },
+      "content": {
+        "minWords": 1900,
+        "maxWords": 3300,
+        "requiredBlocks": ["answer-first-hero", "key-takeaways", "sticky-toc", "long-form-sections", "worked-example", "pedagogical-tool", "limits-alert", "sources-method", "faq", "related-reading", "contextual-cta"],
+        "recommendedBlocks": ["definition", "comparison-table", "expert-quote", "visual-break"],
+        "faqMinItems": 5,
+        "requiresCitations": true
+      },
+      "seo": {
+        "schemaTypes": ["Article", "FAQPage", "BreadcrumbList"],
+        "indexRequiresPublished": true,
+        "commercialDisclosure": false,
+        "forbidSkoriaProviderClaim": true
+      },
+      "mediaRoles": ["article-hero", "worked-example", "visual-break"],
+      "interactions": ["active-toc", "calculator", "progress-memory", "context-memory"],
+      "journeyTargets": ["sub-hub", "hub", "tools-hub", "documents-hub", "service"]
+    },
+    {
+      "id": "comparison",
+      "title": "Comparatif de solutions",
+      "routePattern": "/comparatifs/{comparison}",
+      "examplePath": "/comparatifs/meilleure-neobanque-pro",
+      "family": "commercial",
+      "dataBinding": {
+        "source": "commercial_pages",
+        "route": "comparatifs",
+        "keyStrategy": "commercial-slug",
+        "currentCoverage": "draft-only",
+        "existingFields": ["commercial page brief", "affiliate programs", "program ranks", "commercial links", "page_sections", "seo_overrides", "page_meta"],
+        "missingFields": ["criteria source dates", "normalized product facts", "price assumptions", "visible methodology", "verified disclosure copy", "media assignment"]
+      },
+      "content": {
+        "minWords": 2000,
+        "maxWords": 3400,
+        "requiredBlocks": ["comparison-hero", "affiliate-disclosure", "profile-router", "comparison-matrix", "criteria-method", "scenario-costs", "product-deep-dives", "limits", "sources-method", "faq", "reviews-offers-links"],
+        "recommendedBlocks": ["calculator", "decision-tree", "alternatives", "visual-break"],
+        "faqMinItems": 6,
+        "requiresCitations": true
+      },
+      "seo": {
+        "schemaTypes": ["WebPage", "ItemList", "FAQPage", "BreadcrumbList"],
+        "indexRequiresPublished": true,
+        "commercialDisclosure": true,
+        "forbidSkoriaProviderClaim": true
+      },
+      "mediaRoles": ["commercial-hero", "scenario-illustration", "visual-break"],
+      "interactions": ["profile-switcher", "detail-toggle", "comparison-filter", "cost-calculator", "context-memory"],
+      "journeyTargets": ["review", "offer", "resources-hub", "service"]
+    },
+    {
+      "id": "review",
+      "title": "Avis sur une solution",
+      "routePattern": "/avis/{solution}",
+      "examplePath": "/avis/qonto",
+      "family": "commercial",
+      "dataBinding": {
+        "source": "commercial_pages",
+        "route": "avis",
+        "keyStrategy": "commercial-slug",
+        "currentCoverage": "draft-only",
+        "existingFields": ["commercial page brief", "primary program", "commercial links", "page_sections", "seo_overrides", "page_meta"],
+        "missingFields": ["dated product facts", "test protocol", "profile-specific verdicts", "price assumptions", "verified disclosure copy", "media assignment"]
+      },
+      "content": {
+        "minWords": 1900,
+        "maxWords": 3200,
+        "requiredBlocks": ["verdict-hero", "affiliate-disclosure", "profile-fit", "test-method", "feature-analysis", "pricing-scenarios", "pros-cons", "limits", "alternatives", "sources-method", "faq", "comparison-offer-links"],
+        "recommendedBlocks": ["calculator", "usage-timeline", "support-analysis", "visual-break"],
+        "faqMinItems": 6,
+        "requiresCitations": true
+      },
+      "seo": {
+        "schemaTypes": ["WebPage", "FAQPage", "BreadcrumbList"],
+        "indexRequiresPublished": true,
+        "commercialDisclosure": true,
+        "forbidSkoriaProviderClaim": true
+      },
+      "mediaRoles": ["commercial-hero", "usage-story", "visual-break"],
+      "interactions": ["profile-switcher", "cost-calculator", "feature-explorer", "context-memory"],
+      "journeyTargets": ["comparison", "offer", "reviews-hub", "service"]
+    },
+    {
+      "id": "offer",
+      "title": "Offre et parrainage",
+      "routePattern": "/codes-parrainage/{solution}",
+      "examplePath": "/codes-parrainage/qonto",
+      "family": "commercial",
+      "dataBinding": {
+        "source": "commercial_pages",
+        "route": "codes-parrainage",
+        "keyStrategy": "commercial-slug",
+        "currentCoverage": "draft-only",
+        "existingFields": ["commercial page brief", "primary program", "affiliate URL", "commercial links", "page_sections", "seo_overrides", "page_meta"],
+        "missingFields": ["offer status", "verified eligibility", "dated conditions", "divergence record", "verified disclosure copy", "media assignment"]
+      },
+      "content": {
+        "minWords": 1300,
+        "maxWords": 2300,
+        "requiredBlocks": ["offer-status-hero", "affiliate-disclosure", "verified-conditions", "eligibility-check", "activation-steps", "limits-divergences", "source-timestamps", "faq", "review-comparison-links"],
+        "recommendedBlocks": ["savings-scenario", "support-note", "visual-break"],
+        "faqMinItems": 5,
+        "requiresCitations": true
+      },
+      "seo": {
+        "schemaTypes": ["WebPage", "Offer", "FAQPage", "BreadcrumbList"],
+        "indexRequiresPublished": true,
+        "commercialDisclosure": true,
+        "forbidSkoriaProviderClaim": true
+      },
+      "mediaRoles": ["commercial-hero", "activation-story"],
+      "interactions": ["eligibility-questionnaire", "conditions-toggle", "context-memory"],
+      "journeyTargets": ["review", "comparison", "offers-hub", "service"]
+    },
+    {
+      "id": "professions-hub",
+      "title": "Hub des professions",
+      "routePattern": "/professions",
+      "examplePath": "/professions",
+      "family": "hub",
+      "dataBinding": {
+        "source": "taxonomy",
+        "route": null,
+        "keyStrategy": "registry",
+        "currentCoverage": "complete",
+        "existingFields": ["114 professions", "14 profession categories", "service relations"],
+        "missingFields": ["intent labels", "featured profession rationale", "hub editorial copy", "media assignment"]
+      },
+      "content": {
+        "minWords": 850,
+        "maxWords": 1500,
+        "requiredBlocks": ["hub-hero", "profession-search", "category-filters", "profession-catalog", "need-panel", "selection-method", "faq", "next-step"],
+        "recommendedBlocks": ["featured-professions", "stats-band", "visual-break"],
+        "faqMinItems": 5,
+        "requiresCitations": false
+      },
+      "seo": {
+        "schemaTypes": ["CollectionPage", "ItemList", "FAQPage", "BreadcrumbList"],
+        "indexRequiresPublished": false,
+        "commercialDisclosure": false,
+        "forbidSkoriaProviderClaim": true
+      },
+      "mediaRoles": ["hub-professions", "profession-card"],
+      "interactions": ["profession-search", "category-filter", "need-builder", "context-memory"],
+      "journeyTargets": ["profession", "cross", "directory", "services-hub"]
+    },
+    {
+      "id": "sectors-hub",
+      "title": "Hub des secteurs",
+      "routePattern": "/secteurs",
+      "examplePath": "/secteurs",
+      "family": "hub",
+      "dataBinding": {
+        "source": "taxonomy",
+        "route": null,
+        "keyStrategy": "registry",
+        "currentCoverage": "complete",
+        "existingFields": ["8 sectors", "service relations", "sector SEO fallbacks"],
+        "missingFields": ["operating-model labels", "qualification questions", "hub editorial copy", "media assignment"]
+      },
+      "content": {
+        "minWords": 850,
+        "maxWords": 1500,
+        "requiredBlocks": ["hub-hero", "sector-catalog", "operating-model-router", "qualification-panel", "service-bridge", "selection-method", "faq", "next-step"],
+        "recommendedBlocks": ["featured-sectors", "stats-band", "visual-break"],
+        "faqMinItems": 5,
+        "requiresCitations": false
+      },
+      "seo": {
+        "schemaTypes": ["CollectionPage", "ItemList", "FAQPage", "BreadcrumbList"],
+        "indexRequiresPublished": false,
+        "commercialDisclosure": false,
+        "forbidSkoriaProviderClaim": true
+      },
+      "mediaRoles": ["hub-sectors", "sector-card"],
+      "interactions": ["operating-model-filter", "need-builder", "context-memory"],
+      "journeyTargets": ["sector", "cross", "directory", "services-hub"]
+    },
+    {
+      "id": "services-hub",
+      "title": "Hub des services",
+      "routePattern": "/expertises",
+      "examplePath": "/expertises",
+      "family": "hub",
+      "dataBinding": {
+        "source": "taxonomy",
+        "route": null,
+        "keyStrategy": "registry",
+        "currentCoverage": "complete",
+        "existingFields": ["6 services", "sector relations", "profession relations", "service SEO fallbacks"],
+        "missingFields": ["need taxonomy", "responsibility matrices", "hub editorial copy", "media assignment"]
+      },
+      "content": {
+        "minWords": 900,
+        "maxWords": 1600,
+        "requiredBlocks": ["hub-hero", "need-router", "service-catalog", "responsibility-explainer", "scope-builder", "profession-sector-bridge", "faq", "next-step"],
+        "recommendedBlocks": ["service-comparison", "stats-band", "visual-break"],
+        "faqMinItems": 5,
+        "requiresCitations": false
+      },
+      "seo": {
+        "schemaTypes": ["CollectionPage", "ItemList", "FAQPage", "BreadcrumbList"],
+        "indexRequiresPublished": false,
+        "commercialDisclosure": false,
+        "forbidSkoriaProviderClaim": true
+      },
+      "mediaRoles": ["hub-services", "service-card"],
+      "interactions": ["need-switcher", "scope-builder", "context-memory"],
+      "journeyTargets": ["service", "cross", "profession", "sector", "directory"]
+    },
+    {
+      "id": "guides-hub",
+      "title": "Bibliothèque de ressources",
+      "routePattern": "/ressources",
+      "examplePath": "/ressources",
+      "family": "hub",
+      "dataBinding": {
+        "source": "hybrid",
+        "route": "ressources",
+        "keyStrategy": "registry",
+        "currentCoverage": "partial",
+        "existingFields": ["silos", "hubs", "clusters", "keywords", "flagship dossiers", "intention rails", "published page_meta"],
+        "missingFields": ["format labels", "project taxonomy", "editorial recency", "media assignment"]
+      },
+      "content": {
+        "minWords": 950,
+        "maxWords": 1700,
+        "requiredBlocks": ["hub-hero", "resource-search", "theme-filters", "format-filters", "flagship-dossiers", "intention-rails", "reading-hierarchy", "method-proof", "faq"],
+        "recommendedBlocks": ["recently-reviewed", "visual-break", "tools-documents-bridge"],
+        "faqMinItems": 5,
+        "requiresCitations": false
+      },
+      "seo": {
+        "schemaTypes": ["CollectionPage", "ItemList", "FAQPage", "BreadcrumbList"],
+        "indexRequiresPublished": false,
+        "commercialDisclosure": false,
+        "forbidSkoriaProviderClaim": true
+      },
+      "mediaRoles": ["hub-editorial", "dossier-card", "visual-break"],
+      "interactions": ["resource-search", "theme-filter", "format-filter", "context-memory"],
+      "journeyTargets": ["hub", "sub-hub", "article", "tools-hub", "documents-hub"]
+    },
+    {
+      "id": "sub-hub",
+      "title": "Sous-hub éditorial",
+      "routePattern": "/guides/{pillar}/{subhub}",
+      "examplePath": "/guides/lmnp/amortissement",
+      "family": "editorial",
+      "dataBinding": {
+        "source": "page_sections",
+        "route": "guides",
+        "keyStrategy": "guide-segments",
+        "currentCoverage": "draft-only",
+        "existingFields": ["page_sections", "seo_overrides", "page_meta", "brief hierarchy", "internal link targets"],
+        "missingFields": ["learning-step labels", "progress state", "chapter anchors", "source recency", "media assignment"]
+      },
+      "content": {
+        "minWords": 1200,
+        "maxWords": 2100,
+        "requiredBlocks": ["subhub-hero", "executive-summary", "learning-path", "chapter-grid", "preparation-checklist", "worked-example", "sources-method", "faq", "next-step"],
+        "recommendedBlocks": ["definition", "tool-bridge", "visual-break"],
+        "faqMinItems": 5,
+        "requiresCitations": true
+      },
+      "seo": {
+        "schemaTypes": ["CollectionPage", "ItemList", "FAQPage", "BreadcrumbList"],
+        "indexRequiresPublished": true,
+        "commercialDisclosure": false,
+        "forbidSkoriaProviderClaim": true
+      },
+      "mediaRoles": ["subhub-hero", "chapter-card", "visual-break"],
+      "interactions": ["learning-stepper", "progress-memory", "context-memory"],
+      "journeyTargets": ["article", "hub", "tools-hub", "documents-hub"]
+    },
+    {
+      "id": "resources-hub",
+      "title": "Hub des comparatifs",
+      "routePattern": "/comparatifs",
+      "examplePath": "/comparatifs",
+      "family": "hub",
+      "dataBinding": {
+        "source": "commercial_pages",
+        "route": "comparatifs",
+        "keyStrategy": "registry",
+        "currentCoverage": "draft-only",
+        "existingFields": ["186 draft commercial pages", "commercial briefs", "program relations", "commercial links"],
+        "missingFields": ["published pages", "comparison categories", "usage filters", "methodology copy", "media assignment"]
+      },
+      "content": {
+        "minWords": 850,
+        "maxWords": 1500,
+        "requiredBlocks": ["hub-hero", "affiliate-disclosure", "usage-router", "category-filters", "comparison-catalog", "method-proof", "reviews-offers-bridge", "faq"],
+        "recommendedBlocks": ["featured-comparisons", "recently-reviewed", "visual-break"],
+        "faqMinItems": 5,
+        "requiresCitations": true
+      },
+      "seo": {
+        "schemaTypes": ["CollectionPage", "ItemList", "FAQPage", "BreadcrumbList"],
+        "indexRequiresPublished": true,
+        "commercialDisclosure": true,
+        "forbidSkoriaProviderClaim": true
+      },
+      "mediaRoles": ["hub-commercial", "comparison-card"],
+      "interactions": ["usage-filter", "category-filter", "context-memory"],
+      "journeyTargets": ["comparison", "review", "offer", "services-hub"]
+    },
+    {
+      "id": "reviews-hub",
+      "title": "Hub des avis",
+      "routePattern": "/avis",
+      "examplePath": "/avis",
+      "family": "hub",
+      "dataBinding": {
+        "source": "commercial_pages",
+        "route": "avis",
+        "keyStrategy": "registry",
+        "currentCoverage": "draft-only",
+        "existingFields": ["77 draft commercial pages", "commercial briefs", "program relations", "commercial links"],
+        "missingFields": ["published pages", "usage profiles", "review protocol", "fact recency", "media assignment"]
+      },
+      "content": {
+        "minWords": 850,
+        "maxWords": 1500,
+        "requiredBlocks": ["hub-hero", "affiliate-disclosure", "profile-router", "review-catalog", "test-method", "comparison-offer-bridge", "faq"],
+        "recommendedBlocks": ["featured-reviews", "recently-reviewed", "visual-break"],
+        "faqMinItems": 5,
+        "requiresCitations": true
+      },
+      "seo": {
+        "schemaTypes": ["CollectionPage", "ItemList", "FAQPage", "BreadcrumbList"],
+        "indexRequiresPublished": true,
+        "commercialDisclosure": true,
+        "forbidSkoriaProviderClaim": true
+      },
+      "mediaRoles": ["hub-commercial", "review-card"],
+      "interactions": ["profile-filter", "feature-filter", "context-memory"],
+      "journeyTargets": ["review", "comparison", "offer", "services-hub"]
+    },
+    {
+      "id": "offers-hub",
+      "title": "Hub des offres",
+      "routePattern": "/codes-parrainage",
+      "examplePath": "/codes-parrainage",
+      "family": "hub",
+      "dataBinding": {
+        "source": "commercial_pages",
+        "route": "codes-parrainage",
+        "keyStrategy": "registry",
+        "currentCoverage": "draft-only",
+        "existingFields": ["77 draft commercial pages", "commercial briefs", "affiliate URLs", "commercial links"],
+        "missingFields": ["published pages", "verified offer states", "dated eligibility conditions", "divergence tracking", "media assignment"]
+      },
+      "content": {
+        "minWords": 750,
+        "maxWords": 1400,
+        "requiredBlocks": ["hub-hero", "affiliate-disclosure", "offer-status-filter", "offer-catalog", "conditions-method", "review-comparison-bridge", "faq"],
+        "recommendedBlocks": ["recently-verified", "activation-guide", "visual-break"],
+        "faqMinItems": 5,
+        "requiresCitations": true
+      },
+      "seo": {
+        "schemaTypes": ["CollectionPage", "ItemList", "FAQPage", "BreadcrumbList"],
+        "indexRequiresPublished": true,
+        "commercialDisclosure": true,
+        "forbidSkoriaProviderClaim": true
+      },
+      "mediaRoles": ["hub-commercial", "offer-card"],
+      "interactions": ["offer-status-filter", "category-filter", "context-memory"],
+      "journeyTargets": ["offer", "review", "comparison", "services-hub"]
+    },
+    {
+      "id": "tools-hub",
+      "title": "Hub des simulateurs",
+      "routePattern": "/simulateurs",
+      "examplePath": "/simulateurs",
+      "family": "hub",
+      "dataBinding": {
+        "source": "hybrid",
+        "route": "simulateurs",
+        "keyStrategy": "registry",
+        "currentCoverage": "live",
+        "existingFields": ["14 published simulator page_meta", "simulator registry", "page_sections", "seo_overrides"],
+        "missingFields": ["question taxonomy", "result next steps", "hub editorial copy", "media assignment"]
+      },
+      "content": {
+        "minWords": 850,
+        "maxWords": 1500,
+        "requiredBlocks": ["hub-hero", "question-router", "tool-search", "tool-catalog", "interactive-workshop", "result-explainer", "documents-guides-bridge", "faq"],
+        "recommendedBlocks": ["popular-tools", "assumption-method", "visual-break"],
+        "faqMinItems": 5,
+        "requiresCitations": true
+      },
+      "seo": {
+        "schemaTypes": ["CollectionPage", "ItemList", "SoftwareApplication", "FAQPage", "BreadcrumbList"],
+        "indexRequiresPublished": false,
+        "commercialDisclosure": false,
+        "forbidSkoriaProviderClaim": true
+      },
+      "mediaRoles": ["hub-tools", "tool-card", "workshop-ambient"],
+      "interactions": ["tool-search", "question-filter", "inline-calculator", "context-memory"],
+      "journeyTargets": ["article", "documents-hub", "service", "guides-hub"]
+    },
+    {
+      "id": "documents-hub",
+      "title": "Hub des documents",
+      "routePattern": "/documents",
+      "examplePath": "/documents",
+      "family": "hub",
+      "dataBinding": {
+        "source": "registry",
+        "route": "documents",
+        "keyStrategy": "registry",
+        "currentCoverage": "partial",
+        "existingFields": ["document categories", "document registry", "2 specimen PDFs", "document page_sections"],
+        "missingFields": ["preview metadata", "completion guidance", "document lifecycle", "media assignment"]
+      },
+      "content": {
+        "minWords": 800,
+        "maxWords": 1450,
+        "requiredBlocks": ["hub-hero", "document-search", "category-filters", "document-catalog", "dynamic-preview", "usage-guide", "guides-services-bridge", "faq"],
+        "recommendedBlocks": ["featured-documents", "document-checklist", "visual-break"],
+        "faqMinItems": 5,
+        "requiresCitations": true
+      },
+      "seo": {
+        "schemaTypes": ["CollectionPage", "ItemList", "FAQPage", "BreadcrumbList"],
+        "indexRequiresPublished": false,
+        "commercialDisclosure": false,
+        "forbidSkoriaProviderClaim": true
+      },
+      "mediaRoles": ["hub-documents", "document-preview", "workspace-ambient"],
+      "interactions": ["document-search", "category-filter", "preview-switcher", "download", "context-memory"],
+      "journeyTargets": ["article", "service", "guides-hub", "tools-hub"]
+    },
+    {
+      "id": "geo-hub",
+      "title": "Hubs géographiques",
+      "routePattern": "/villes",
+      "examplePath": "/villes",
+      "family": "hub",
+      "dataBinding": {
+        "source": "hybrid",
+        "route": "villes",
+        "keyStrategy": "registry",
+        "currentCoverage": "partial",
+        "existingFields": ["2000 official cities", "departments", "regions", "directory coverage", "city page_sections draft"],
+        "missingFields": ["geographic hierarchy config", "coverage counts by area", "local decision copy", "media assignment"]
+      },
+      "content": {
+        "minWords": 750,
+        "maxWords": 1400,
+        "requiredBlocks": ["hub-hero", "location-search", "region-department-browser", "featured-cities", "coverage-method", "directory-bridge", "profession-service-bridge", "faq"],
+        "recommendedBlocks": ["cityscape-visual", "coverage-stats", "nearby-paths"],
+        "faqMinItems": 5,
+        "requiresCitations": true
+      },
+      "seo": {
+        "schemaTypes": ["CollectionPage", "ItemList", "FAQPage", "BreadcrumbList"],
+        "indexRequiresPublished": false,
+        "commercialDisclosure": false,
+        "forbidSkoriaProviderClaim": true
+      },
+      "mediaRoles": ["hub-geo", "cityscape", "city-card"],
+      "interactions": ["location-search", "region-filter", "department-drilldown", "context-memory"],
+      "journeyTargets": ["city", "directory", "profession", "service"]
+    }
+  ]
+}

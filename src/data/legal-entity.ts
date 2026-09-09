@@ -125,7 +125,7 @@ export const legalEntity: LegalEntity = {
 
   creationYear: 1996,
   publicationDirector: "Équipe éditoriale Skoria",
-  websiteDomain: "skoria.eu",
+  websiteDomain: "skoria.fr",
 };
 
 export default legalEntity;

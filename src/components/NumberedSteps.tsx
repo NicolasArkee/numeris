@@ -1,46 +1,49 @@
+import { EDITORIAL_HEADING } from "./editorial/EditorialElements";
+
 interface Step {
   title: string;
   description: string;
 }
-
 interface NumberedStepsProps {
   title?: string;
+  intro?: string;
   steps: Step[];
 }
 
-export function NumberedSteps({ title, steps }: NumberedStepsProps) {
+export function NumberedSteps({ title, intro, steps }: NumberedStepsProps) {
   return (
-    <div className="mb-12">
-      {title && (
-        <h2 className="mb-6 font-display text-[1.25rem] font-bold text-ink">
-          {title}
-        </h2>
+    <section className="mb-12 min-w-0">
+      {title && <h2 className={`mb-7 ${EDITORIAL_HEADING}`}>{title}</h2>}
+      {intro && (
+        <p className="mb-7 max-w-3xl text-base leading-7 text-ink-muted">
+          {intro}
+        </p>
       )}
-      <div className="space-y-0">
+      <ol className="grid gap-3">
         {steps.map((step, i) => (
-          <div key={i} className="relative flex gap-5 pb-8 last:pb-0">
-            {/* Vertical line */}
-            {i < steps.length - 1 && (
-              <div className="absolute left-[15px] top-9 h-full w-px bg-border-soft" />
-            )}
-            {/* Number circle */}
-            <div className="relative z-10 flex h-8 w-8 flex-shrink-0 items-center justify-center border border-accent-500 bg-accent-50">
-              <span className="text-[0.72rem] font-bold text-accent-700">
-                {String(i + 1).padStart(2, "0")}
-              </span>
-            </div>
-            {/* Content */}
-            <div className="pt-0.5">
-              <h3 className="mb-1 text-[0.9rem] font-semibold text-ink">
+          <li
+            key={i}
+            className="grid min-w-0 gap-4 rounded-[1.5rem] border border-ink/10 bg-white p-5 sm:grid-cols-[4rem_1fr] sm:gap-6 sm:p-7"
+          >
+            <span
+              aria-hidden="true"
+              className={`flex h-12 w-12 items-center justify-center rounded-2xl font-mono text-lg font-bold ${i === 0 ? "bg-blue text-white" : "bg-lilac text-blue"}`}
+            >
+              {String(i + 1).padStart(2, "0")}
+            </span>
+            <div className="min-w-0">
+              <h3 className="font-display text-[1.2rem] font-bold leading-tight tracking-[-.02em] text-ink">
                 {step.title}
               </h3>
-              <p className="text-[0.82rem] leading-relaxed text-ink-muted">
-                {step.description}
-              </p>
+              {step.description && step.description !== step.title && (
+                <p className="mt-3 text-base leading-7 text-ink-muted">
+                  {step.description}
+                </p>
+              )}
             </div>
-          </div>
+          </li>
         ))}
-      </div>
-    </div>
+      </ol>
+    </section>
   );
 }

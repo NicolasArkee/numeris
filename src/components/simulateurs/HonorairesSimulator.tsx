@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { estimeHonoraires, fmtEur, type FormeJuridique } from "@/libs/simulateurs/math";
-import { Disclaimer, FieldNumber, FieldSelect, FieldToggle, ResultValue, SimulatorBox, SimulatorCta } from "./ui";
+import { Disclaimer, FieldNumber, FieldSelect, FieldToggle, ResultValue, SimulatorBox, SimulatorFields, ResultGrid, SimulatorCta } from "./ui";
 
 export function HonorairesSimulator({ professionLabel }: { professionLabel?: string }) {
   const [forme, setForme] = useState<FormeJuridique>("ei");
@@ -19,7 +19,7 @@ export function HonorairesSimulator({ professionLabel }: { professionLabel?: str
           Estimation pré-paramétrée pour : <span className="font-medium text-ink">{professionLabel}</span>
         </p>
       )}
-      <div className="grid gap-5 md:grid-cols-4">
+      <SimulatorFields columns={4}>
         <FieldSelect<FormeJuridique>
           label="Forme juridique"
           value={forme}
@@ -35,23 +35,23 @@ export function HonorairesSimulator({ professionLabel }: { professionLabel?: str
         <div className="flex items-end pb-3">
           <FieldToggle label="Assujetti à la TVA" value={tva} onChange={setTva} />
         </div>
-      </div>
+      </SimulatorFields>
 
-      <div className="mt-7 grid gap-4 md:grid-cols-2">
+      <ResultGrid columns={2}>
         <ResultValue
-          label="Fourchette d'honoraires estimée"
+          label="Ordre de grandeur estimé"
           value={`${fmtEur(r.min)} – ${fmtEur(r.max)}`}
           highlight
-          detail="par mois HT"
+          detail="par mois HT · à confirmer"
         />
-        <ResultValue label="Formule recommandée" value={r.formule} detail="tenue + déclarations + accompagnement" />
-      </div>
+        <ResultValue label="Périmètre à comparer" value={r.formule} detail="tenue + déclarations + suivi à préciser" />
+      </ResultGrid>
 
-      <SimulatorCta label="Obtenir un devis ferme sous 24h" />
+      <SimulatorCta label="Ajouter cette estimation au brief" />
       <Disclaimer>
-        Estimation fondée sur notre grille tarifaire standard ({fmtEur(59)}–{fmtEur(159)}/mois HT
-        selon formule). Le devis ferme dépend du volume de pièces, des spécificités sectorielles
-        et des missions complémentaires (prévisionnel, social, juridique).
+        Cette estimation pédagogique repose sur une grille simplifiée. Elle ne constitue ni une offre
+        ni un devis. Le montant réel dépend du volume de pièces, du périmètre, des outils, du secteur
+        et des travaux complémentaires ; demandez à chaque cabinet de détailler ses hypothèses.
       </Disclaimer>
     </SimulatorBox>
   );

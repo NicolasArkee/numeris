@@ -23,8 +23,8 @@ const ROUTE_LABEL: Record<CommercialRoute, string> = {
 
 const DISCLOSURE =
   `${AppConfig.name} est un comparateur indépendant. Certains liens de cette page sont des liens d'affiliation : ` +
-  "si vous souscrivez, nous pouvons percevoir une commission, sans surcoût pour vous. " +
-  "Cela n'influence pas notre classement, fondé sur des critères objectifs.";
+  "si vous souscrivez depuis l’un d’eux, Skoria peut percevoir une commission. " +
+  "La présence et la nature de ces liens sont signalées pour que vous puissiez les identifier.";
 
 export async function commercialGenerateStaticParams(
   route: CommercialRoute,
@@ -43,7 +43,7 @@ export async function commercialGenerateMetadata(
   const bundle = await getDbPageBundle(route, page.slug);
   const canonical = `${AppConfig.url}${page.url}`;
   return {
-    title: bundle.seo?.meta_title ?? `${page.label} — ${AppConfig.name}`,
+    title: bundle.seo?.meta_title ?? page.label,
     description:
       bundle.seo?.meta_description ??
       `${page.label} : comparatif indépendant, avis et offres. ${page.target_query ?? ""}`.trim(),
@@ -54,46 +54,47 @@ export async function commercialGenerateMetadata(
 function ProgramsBlock({ programs }: { programs: PageProgram[] }) {
   if (programs.length === 0) return null;
   return (
-    <div className="mb-12">
-      <div className="mb-5 text-[0.68rem] leading-relaxed text-ink-muted">
-        Liens partenaires — {AppConfig.name} peut percevoir une commission, sans surcoût pour vous.
+    <section className="overflow-hidden rounded-[1.75rem] bg-navy p-6 text-white sm:p-9">
+      <div className="grid gap-6 lg:grid-cols-[1fr_.7fr] lg:items-end">
+        <div>
+          <p className="font-mono text-[.65rem] font-bold uppercase tracking-[.18em] text-[#ffb293]">Retrouver les sources</p>
+          <h2 className="mt-4 text-[clamp(2rem,4vw,3.3rem)] font-semibold leading-tight">Offres comparées</h2>
+        </div>
+        <p className="max-w-xl text-[.82rem] leading-7 text-white/72">Consultez les conditions de chaque offre avant de poursuivre. Les liens partenaires sont identifiés ; {AppConfig.name} peut percevoir une commission.</p>
       </div>
-      <h2 className="mb-6 font-display text-[1.5rem] font-bold text-ink">
-        Offres comparées
-      </h2>
-      <div className="grid gap-4 md:grid-cols-2">
-        {programs.map((p) => (
-          <div
+      <div className="mt-8 grid gap-4 md:grid-cols-2">
+        {programs.map((p, index) => (
+          <article
             key={p.slug}
-            className="flex flex-col border border-border-soft bg-surface px-6 py-5"
+            className={`flex min-w-0 flex-col rounded-[1.35rem] p-6 text-navy sm:p-7 ${index % 3 === 1 ? "bg-mint" : index % 3 === 2 ? "bg-apricot" : "bg-lilac"}`}
           >
-            <div className="mb-2 flex items-center justify-between gap-3">
-              <h3 className="text-[1rem] font-medium text-ink">{p.name}</h3>
-              {p.is_primary === 1 && (
-                <span className="shrink-0 bg-accent-500 px-2 py-0.5 text-[0.62rem] font-semibold uppercase tracking-[0.1em] text-surface">
-                  Notre choix
-                </span>
-              )}
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <span aria-hidden className="font-mono text-[.65rem] font-bold text-blue">{String(index + 1).padStart(2, "0")}</span>
+              <span className="rounded-full bg-white/75 px-3 py-1.5 text-[.65rem] font-bold">{p.affiliate_url ? "Lien partenaire" : "Source publique"}</span>
             </div>
-            <p className="mb-1 text-[0.78rem] text-ink-muted">{formatProgramType(p)}</p>
-            {p.commission_display && (
-              <p className="mb-1 text-[0.8rem] text-ink">{p.commission_display}</p>
-            )}
+            <h3 className="mt-7 text-[1.65rem] font-bold leading-tight [overflow-wrap:anywhere]">{p.name}</h3>
+            <p className="mt-3 text-[.86rem] leading-7 text-ink-muted">{formatProgramType(p)}</p>
             {p.platform && (
-              <p className="mb-3 text-[0.68rem] text-border-soft">Plateforme : {p.platform}</p>
+              <p className="mt-2 text-[.72rem] leading-6 text-ink-muted">Plateforme partenaire : {p.platform}</p>
             )}
-            <a
-              href={p.affiliate_url ?? p.source_url ?? "#"}
-              rel="sponsored nofollow noopener"
-              target="_blank"
-              className="mt-auto inline-block border border-ink px-4 py-2 text-center text-[0.78rem] font-medium text-ink transition-colors hover:bg-ink hover:text-surface"
-            >
-              Voir l&apos;offre
-            </a>
-          </div>
+            <details className="mb-6 mt-6 rounded-2xl border border-ink/15 bg-white/50 p-4">
+              <summary className="cursor-pointer text-[.8rem] font-bold">Les points à vérifier</summary>
+              <p className="mt-3 text-[.78rem] leading-6 text-ink-muted">Rapprochez les fonctions incluses, le prix après une éventuelle promotion, la durée d'engagement et les conditions de résiliation avec votre besoin. La source permet de confirmer les conditions en vigueur.</p>
+            </details>
+            {(p.affiliate_url || p.source_url) && (
+              <a
+                href={p.affiliate_url ?? p.source_url ?? undefined}
+                rel={p.affiliate_url ? "sponsored nofollow noopener" : "noopener"}
+                target="_blank"
+                className="mt-auto inline-flex min-h-12 items-center justify-between gap-3 rounded-full bg-blue px-5 py-3 text-[.79rem] font-bold text-white transition-colors hover:bg-navy"
+              >
+                {p.affiliate_url ? "Consulter l’offre partenaire" : "Consulter la source"}<span aria-hidden>↗</span>
+              </a>
+            )}
+          </article>
         ))}
       </div>
-    </div>
+    </section>
   );
 }
 
@@ -142,15 +143,17 @@ export async function CommercialRouteView({
       keyTakeaways={bundle.keyTakeaways}
       schema={<ExtraJsonLd raw={bundle.seo?.json_ld_extra ?? null} />}
       lastUpdatedDate={bundle.lastUpdatedDate}
+      publication={bundle.publication}
       articleSchema={true}
       articleHeadline={h1}
       articleSection="Comparatifs & Avis"
       canonicalUrl={canonicalUrl}
     >
       {programs.length > 0 && (
-        <div className="mb-8 border border-accent-500/40 bg-accent-500/5 px-5 py-3 text-[0.72rem] leading-relaxed text-ink-muted">
-          {DISCLOSURE}
-        </div>
+        <aside className="grid gap-5 rounded-[1.5rem] bg-apricot p-6 sm:p-8 lg:grid-cols-[.45fr_1fr]" aria-label="Transparence des liens partenaires">
+          <p className="font-mono text-[.65rem] font-bold uppercase tracking-[.16em] text-blue">En toute transparence</p>
+          <p className="max-w-3xl text-[.88rem] leading-7 text-ink-muted">{DISCLOSURE}</p>
+        </aside>
       )}
       {bundle.renderableSections.map((s) => (
         <DynamicSection key={s.id} section={s} />

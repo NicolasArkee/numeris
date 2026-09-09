@@ -6,13 +6,11 @@ import { ClusterPage } from "@/components/ClusterPage";
 import { DynamicSection } from "@/components/DynamicSection";
 import { ExtraJsonLd } from "@/components/ExtraJsonLd";
 import { getDbPageBundle } from "@/libs/content/dbFirst";
+import { normalizeMetaDescription } from "@/libs/content/meta-title";
 import { getSEOForProfession } from "@/data/seo";
 import { getProfessionLinks } from "@/utils/taxonomy";
-import { getProfessionMarketing } from "@/data/marketing";
-import { ContentSection } from "@/components/ContentSection";
-import { BenefitsGrid } from "@/components/BenefitsGrid";
-import { StatHighlight } from "@/components/StatHighlight";
 import { ServicesGrid } from "@/components/ServicesGrid";
+import { RelatedPages } from "@/components/RelatedPages";
 import {
   getProfessionSectionAside,
   ProfessionSectionWithAside,
@@ -21,6 +19,12 @@ import {
   buildProfessionSidebarData,
   dedupeProfessionRenderableSections,
 } from "@/components/professions/profession-v2-helpers";
+import { LandingScopeBuilder } from "@/components/journey/LandingScopeBuilder";
+import {
+  buildProfessionFallbackSections,
+  getProfessionFallbackFaqs,
+  getProfessionFallbackTakeaways,
+} from "@/components/templates/profession/ProfessionFallbackSections";
 
 interface Props {
   params: Promise<{ profession: string }>;
@@ -44,7 +48,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   return {
     title: dbSeo?.meta_title ?? fallback.metaTitle,
-    description: dbSeo?.meta_description ?? fallback.metaDescription,
+    description: normalizeMetaDescription(dbSeo?.meta_description ?? fallback.metaDescription),
     alternates: { canonical: `${AppConfig.url}/professions/${slug}` },
   };
 }
@@ -82,22 +86,12 @@ export default async function ProfessionPage({ params }: Props) {
         hrefBuilder={(svc) => `/expertises/${svc.slug}/${slug}`}
       />
       {siblingProfessions.length > 0 && (
-        <div className="mb-12">
-          <h2 className="mb-4 font-display text-[1.25rem] font-bold text-ink">
-            Professions similaires
-          </h2>
-          <div className="flex flex-wrap gap-2">
-            {siblingProfessions.map((p) => (
-              <a
-                key={p.slug}
-                href={`/professions/${p.slug}`}
-                className="border border-border-soft bg-surface px-4 py-2 text-[0.78rem] text-ink-muted transition-colors hover:border-accent-500 hover:text-accent-700"
-              >
-                {p.name}
-              </a>
-            ))}
-          </div>
-        </div>
+        <RelatedPages
+          title="Professions similaires"
+          eyebrow={category?.name || "Autres activités"}
+          description="Votre activité recoupe plusieurs métiers ? Explorez leurs enjeux et gardez les questions qui correspondent à votre situation."
+          links={siblingProfessions.map((p) => ({ href: `/professions/${p.slug}`, label: p.name }))}
+        />
       )}
     </>
   );
@@ -136,6 +130,11 @@ export default async function ProfessionPage({ params }: Props) {
         articleSection="Professions libérales et indépendants"
         canonicalUrl={canonicalUrl}
       >
+        <LandingScopeBuilder
+          activity={profession.name}
+          activityKind="profession"
+          missions={services.map((service) => ({ slug: service.slug, label: service.title }))}
+        />
         {dedupeProfessionRenderableSections(bundle.renderableSections).map((s) => {
           const aside = getProfessionSectionAside(sidebarData, s);
           return (
@@ -154,7 +153,7 @@ export default async function ProfessionPage({ params }: Props) {
 
   // ─── Fallback static path ───
   const seo = getSEOForProfession(profession);
-  const mkt = getProfessionMarketing(profession);
+  const fallbackFaqs = getProfessionFallbackFaqs(profession);
 
   return (
     <ClusterPage
@@ -171,13 +170,9 @@ export default async function ProfessionPage({ params }: Props) {
         profession.name,
         category?.name || "",
       ].filter(Boolean)}
-      faqs={seo.faqs}
+      faqs={fallbackFaqs}
       linkGroups={linkGroups}
-      keyTakeaways={bundle.keyTakeaways ?? [
-        `Expert-comptable spécialisé pour les ${profession.name.toLowerCase()}`,
-        `Maîtrise des obligations comptables et fiscales de votre métier`,
-        `Accompagnement dédié et conseils personnalisés`,
-      ]}
+      keyTakeaways={getProfessionFallbackTakeaways(profession)}
       schema={<ExtraJsonLd raw={dbSeo?.json_ld_extra ?? null} />}
       lastUpdatedDate={lastUpdatedDate}
       articleSchema={true}
@@ -185,54 +180,12 @@ export default async function ProfessionPage({ params }: Props) {
       articleSection="Professions libérales et indépendants"
       canonicalUrl={canonicalUrl}
     >
-      <ProfessionSectionWithAside
-        aside={getProfessionSectionAside(sidebarData, {
-          section_type: "ContentSection",
-          section_order: 1,
-          title: `Obligations comptables des ${profession.name.toLowerCase()}`,
-        })}
-      >
-        {profession.obligations && (
-          <ContentSection
-            title={`Obligations comptables des ${profession.name.toLowerCase()}`}
-            paragraphs={[profession.obligations]}
-            variant="highlighted"
-          />
-        )}
-      </ProfessionSectionWithAside>
-
-      {mkt.contentSections.map((cs, index) => (
-        <ProfessionSectionWithAside
-          key={cs.title}
-          aside={
-            index === 0
-              ? getProfessionSectionAside(sidebarData, {
-                  section_type: "Hero",
-                  section_order: index + 2,
-                  title: cs.title,
-                })
-              : undefined
-          }
-        >
-          <ContentSection title={cs.title} paragraphs={cs.paragraphs} />
-        </ProfessionSectionWithAside>
-      ))}
-
-      <BenefitsGrid
-        title={`Pourquoi choisir ${AppConfig.name} pour les ${profession.name.toLowerCase()} ?`}
-        benefits={mkt.benefits}
-        columns={4}
+      <LandingScopeBuilder
+        activity={profession.name}
+        activityKind="profession"
+        missions={services.map((service) => ({ slug: service.slug, label: service.title }))}
       />
-
-      <ProfessionSectionWithAside
-        aside={getProfessionSectionAside(sidebarData, {
-          section_type: "StatsBand",
-          section_order: 6,
-          title: "Chiffres clés",
-        })}
-      >
-        <StatHighlight stats={mkt.stats} />
-      </ProfessionSectionWithAside>
+      {buildProfessionFallbackSections({ profession, category })}
 
       {/* Maillage interne (services + professions similaires) */}
       {internalMesh}

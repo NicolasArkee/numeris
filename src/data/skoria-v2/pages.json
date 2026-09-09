@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 2,
+  "home": {
+    "templateId": "home",
+    "heroMediaId": "workspace",
+    "eyebrow": "Un comparateur · votre activité au centre",
+    "title": "Votre entreprise mérite le bon interlocuteur.",
+    "journeyEntries": ["profession", "sector", "service", "city"],
+    "situationTabs": ["create", "switch", "scope"],
+    "sections": ["hero", "trust", "profiles", "situations", "missions", "cities", "proposal-reading", "resources", "professions", "faq", "brief-cta"]
+  },
+  "examples": {
+    "profession-medecins": {
+      "templateId": "profession",
+      "path": "/professions/medecins",
+      "heroMediaId": "doctor",
+      "journeyEntry": "profession"
+    },
+    "sector-restauration": {
+      "templateId": "sector",
+      "path": "/secteurs/restauration",
+      "heroMediaId": "restaurant",
+      "journeyEntry": "sector"
+    },
+    "service-comptabilite": {
+      "templateId": "service",
+      "path": "/expertises/comptabilite",
+      "heroMediaId": "accounting-flow",
+      "journeyEntry": "service"
+    },
+    "cross-comptabilite-restauration": {
+      "templateId": "cross",
+      "path": "/expertises/comptabilite/restauration",
+      "heroMediaId": "restaurant",
+      "journeyEntry": "cross"
+    },
+    "guide-lmnp": {
+      "templateId": "hub",
+      "path": "/guides/lmnp",
+      "heroMediaId": "apartment",
+      "journeyEntry": "guide"
+    },
+    "article-lmnp": {
+      "templateId": "article",
+      "pathPrefix": "/guides/lmnp/",
+      "heroMediaId": "lmnp-dossier",
+      "journeyEntry": "article"
+    }
+  },
+  "storage": {
+    "brief": "skoria:brief:v2",
+    "journey": "skoria:journey:v2",
+    "directorySelection": "skoria:directory-selection:v2",
+    "readingPrefix": "skoria:reading:v2:"
+  }
+}

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { db } from "@/libs/db";
 import { AppConfig } from "@/utils/AppConfig";
+import { filterDirectoryFactsWithLoadedSources, isPublicDirectoryEnrichmentSource } from "@/libs/directory/public-enrichment";
 import { BreadcrumbJsonLd, WebPageJsonLd } from "@/components/JsonLd";
 import {
   cabinetDirectorySlug,
@@ -64,8 +65,11 @@ function summaryExcerpt(summary: string): string {
 /** Résumé éditorial displayable de plus haute confiance (fiche enrichie). */
 async function findEnrichedSummary(establishmentId: number): Promise<string | null> {
   try {
-    const facts = await db.getDirectoryProfileFactsByEstablishment(establishmentId);
-    const summaries = facts
+    const [facts, sources] = await Promise.all([
+      db.getDirectoryProfileFactsByEstablishment(establishmentId),
+      db.getDirectoryEnrichmentSourcesByEstablishment(establishmentId),
+    ]);
+    const summaries = filterDirectoryFactsWithLoadedSources(facts, sources)
       .filter((f) => f.fact_type === "profile_summary" && f.is_displayable)
       .sort((a, b) => b.confidence - a.confidence);
     return summaries[0]?.value ?? null;
@@ -131,12 +135,15 @@ export default async function DirectoryCabinetPage({ params }: Props) {
   const cityName = card.city?.name ?? card.establishment.city_name ?? "Ville";
   const cityCode = card.city?.code_insee ?? card.establishment.city_code_insee;
   const pagePath = `/expert-comptable/${ville}/${cabinet}`;
-  const enrichmentFacts = await db.getDirectoryProfileFactsByEstablishment(
+  const loadedFacts = await db.getDirectoryProfileFactsByEstablishment(
     card.establishment.id,
   );
-  const enrichmentSources = await db.getDirectoryEnrichmentSourcesByEstablishment(
+  const loadedSources = await db.getDirectoryEnrichmentSourcesByEstablishment(
     card.establishment.id,
   );
+  // Filter before passing props so demonstration data cannot enter the RSC payload.
+  const enrichmentSources = loadedSources.filter(isPublicDirectoryEnrichmentSource);
+  const enrichmentFacts = filterDirectoryFactsWithLoadedSources(loadedFacts, enrichmentSources);
   const qualificationSnapshot = await db.getLatestDirectoryQualificationSnapshot(
     card.cabinet.id,
     card.establishment.id,

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { db } from "@/libs/db";
 import type { Ville } from "@/libs/db";
@@ -15,6 +16,9 @@ import { BenefitsGrid } from "@/components/BenefitsGrid";
 import { QuoteBlock } from "@/components/QuoteBlock";
 import { ServicesGrid } from "@/components/ServicesGrid";
 import { LocalBusinessVilleJsonLd } from "@/components/JsonLd";
+import { BriefTrigger } from "@/components/journey/BriefTrigger";
+import { LocalComparisonPlanner } from "@/components/templates/geo/LocalComparisonPlanner";
+import { LocalComparisonGuide } from "@/components/templates/geo/LocalComparisonGuide";
 
 interface Props {
   params: Promise<{ ville: string }>;
@@ -43,50 +47,28 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 // ─── Info card locale — invariant rendu dans les DEUX chemins (DB + fallback).
 // Entièrement pilotée par les colonnes per-ville de la DB.
-function VilleInfoCard({ ville }: { ville: Ville }) {
+function VilleInfoCard({ ville, directoryHref }: { ville: Ville; directoryHref: string }) {
   return (
-    <div className="mb-12 border border-border-soft border-l-2 border-l-accent-500 bg-surface p-7">
-      <h2 className="mb-4 font-display text-[1.25rem] font-bold text-ink">
-        Comparer à {ville.name}
-      </h2>
-      <div className="grid gap-6 md:grid-cols-3">
+    <section className="overflow-hidden rounded-[1.75rem] bg-lilac p-6 sm:p-9 lg:p-11" aria-label={`Votre recherche à ${ville.name}`}>
+      <div className="grid gap-8 lg:grid-cols-[1fr_.8fr] lg:items-end">
         <div>
-          <span className="mb-1 block text-[0.68rem] font-bold uppercase tracking-[0.1em] text-ink-muted">
-            Zone
-          </span>
-          <p className="text-[0.85rem] text-ink">
-            {ville.address ? (
-              <>
-                {ville.postal_code} {ville.name}
-              </>
-            ) : (
-              ville.name
-            )}
-          </p>
+          <p className="font-mono text-[.65rem] font-bold uppercase tracking-[.18em] text-blue">Votre point de départ</p>
+          <h2 className="mt-4 max-w-[20ch] text-balance text-[clamp(2rem,4vw,3.5rem)] font-semibold leading-[1.05] text-navy">Comparer à {ville.name} avec les bons repères.</h2>
+          <p className="mt-5 max-w-xl text-[.9rem] leading-7 text-ink-muted">Commencez par les établissements recensés, puis rapprochez votre activité, votre organisation et les missions à confier. Une adresse donne un point de départ à la recherche ; les modalités d'accompagnement restent à confirmer.</p>
         </div>
-        <div>
-          <span className="mb-1 block text-[0.68rem] font-bold uppercase tracking-[0.1em] text-ink-muted">
-            Données
-          </span>
-          <p className="text-[0.85rem] text-ink">
-            Fiches publiques et critères de comparaison.
-          </p>
-          {ville.opening_hours && (
-            <p className="mt-1 text-[0.72rem] text-ink-muted">
-              Informations à confirmer auprès du professionnel.
-            </p>
-          )}
-        </div>
-        <div>
-          <span className="mb-1 block text-[0.68rem] font-bold uppercase tracking-[0.1em] text-ink-muted">
-            Orientation
-          </span>
-          <a href="/contact" className="text-[0.85rem] font-medium text-accent-700 hover:underline">
-            Préparer ma demande →
-          </a>
-        </div>
+        <dl className="overflow-hidden rounded-[1.25rem] bg-white p-5 sm:p-6">
+          {[
+            ["Ville", [ville.postal_code, ville.name].filter(Boolean).join(" ")],
+            ["Département", ville.departement || "À préciser"],
+            ["Région", ville.region || "À préciser"],
+          ].map(([label, value]) => <div key={label} className="flex flex-wrap justify-between gap-x-6 gap-y-2 border-t border-ink/10 py-4 first:border-0"><dt className="text-[.78rem] text-ink-muted">{label}</dt><dd className="text-[.88rem] font-bold text-navy">{value}</dd></div>)}
+        </dl>
       </div>
-    </div>
+      <div className="mt-8 flex flex-wrap gap-3 border-t border-ink/15 pt-6">
+        <Link href={directoryHref} className="inline-flex min-h-12 items-center justify-center gap-3 rounded-full bg-blue px-6 py-3 text-[.83rem] font-bold text-white hover:bg-navy">Explorer l'annuaire <span aria-hidden>↗</span></Link>
+        <BriefTrigger prefill={{ city: ville.name }} className="inline-flex min-h-12 items-center justify-center gap-3 rounded-full border border-ink/20 px-6 py-3 text-[.83rem] font-bold text-navy hover:bg-white">Préparer mon besoin <span aria-hidden>→</span></BriefTrigger>
+      </div>
+    </section>
   );
 }
 
@@ -100,7 +82,7 @@ export default async function VillePage({ params }: Props) {
 
   // ─── DB-first path ───
   const bundle = await getDbPageBundle(VILLES_ROUTE, slug);
-  const { sections: dbSections, seo: dbSeo, lastUpdatedDate, hasDbContent } = bundle;
+  const { seo: dbSeo, lastUpdatedDate, hasDbContent } = bundle;
   const canonicalUrl = `${AppConfig.url}/villes/${slug}`;
 
   // Invariants des DEUX chemins : LocalBusiness JSON-LD (via schema), info
@@ -112,6 +94,8 @@ export default async function VillePage({ params }: Props) {
     </>
   );
   const servicesForGrid = await db.getServices();
+  const directoryCity = await db.getDirectoryCityBySlug(slug).catch(() => null);
+  const directoryHref = directoryCity ? `/expert-comptable/${directoryCity.slug}` : "/annuaire/experts-comptables";
   const servicesGrid = (
     <ServicesGrid
       title={`Expertises à comparer à ${ville.name}`}
@@ -153,10 +137,12 @@ export default async function VillePage({ params }: Props) {
         keyTakeaways={keyTakeaways}
         schema={schema}
         lastUpdatedDate={lastUpdatedDate}
+        publication={bundle.publication}
         articleSchema={false}
         canonicalUrl={canonicalUrl}
       >
-        <VilleInfoCard ville={ville} />
+        <VilleInfoCard ville={ville} directoryHref={directoryHref} />
+        <LocalComparisonPlanner city={ville.name} area={ville.name} />
         {bundle.renderableSections.map((s) => (
           <DynamicSection key={s.id} section={s} />
         ))}
@@ -180,10 +166,13 @@ export default async function VillePage({ params }: Props) {
       keyTakeaways={keyTakeaways}
       schema={schema}
       lastUpdatedDate={lastUpdatedDate}
+      publication={bundle.publication}
       articleSchema={false}
       canonicalUrl={canonicalUrl}
     >
-      <VilleInfoCard ville={ville} />
+      <VilleInfoCard ville={ville} directoryHref={directoryHref} />
+      <LocalComparisonPlanner city={ville.name} area={ville.name} />
+      <LocalComparisonGuide area={ville.name} />
 
       {/* Marketing content */}
       {mkt.contentSections.map((cs) => (
@@ -193,11 +182,12 @@ export default async function VillePage({ params }: Props) {
       {/* Benefits */}
       <BenefitsGrid benefits={mkt.benefits} columns={4} />
 
-      {/* Testimonial */}
+      {/* Citation de méthode, sans note ni témoignage client. */}
       <QuoteBlock
         quote={mkt.quote.text}
         author={mkt.quote.author}
         role={mkt.quote.role}
+        variant="citation"
       />
 
       {servicesGrid}

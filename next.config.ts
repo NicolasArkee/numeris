@@ -13,6 +13,9 @@ function loadRessourcesRedirects(): { source: string; destination: string; perma
 
 const nextConfig: NextConfig = {
   devIndicators: false,
+  images: {
+    formats: ["image/avif", "image/webp"],
+  },
   // Les routes d'agrégation annuaire (sitemap-villes, page annuaire, pages
   // villes des grosses métropoles) balayent des milliers de lignes Supabase et,
   // sous la contention du prerender de ~30k pages, dépassent parfois le défaut

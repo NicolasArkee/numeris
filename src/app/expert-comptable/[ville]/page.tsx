@@ -37,8 +37,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const listedCount = await db.getDirectoryListingCabinetCountByCity(city.code_insee);
 
   return {
-    title: `Comparer les cabinets comptables a ${city.name} | Skoria`,
-    description: `Cabinets comptables a ${city.name}, avec provenance administrative et statut de verification explicite.`,
+    title: `Comparer les cabinets comptables à ${city.name}`,
+    description: `Comparez les cabinets comptables à ${city.name} à partir de leurs implantations et données publiques disponibles, puis préparez les critères à confirmer lors de l’échange.`,
     alternates: { canonical: `${AppConfig.url}/expert-comptable/${city.slug}` },
     robots: buildDirectoryCityRobots(listedCount),
   };

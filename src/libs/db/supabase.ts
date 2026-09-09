@@ -12,6 +12,10 @@
  */
 
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { normalizeDbMetaTitle, normalizeMetaDescription } from "@/libs/content/meta-title";
+import { sanitizeLegacyPublicSeoText } from "@/libs/skoria-v2/content-safety";
+import { isPublicPageMeta } from "@/libs/skoria-v2/model";
+import { diagnosePagePublication } from "@/libs/skoria-v2/publication";
 import type {
   Cluster,
   DbAdapter,
@@ -1131,14 +1135,37 @@ const adapter: DbAdapter = {
     route: string,
     slug: string,
   ): Promise<SeoOverride | null> {
-    const { data, error } = await getSupabaseClient()
+    const client = getSupabaseClient();
+    const { data: meta, error: metaError } = await client
+      .from("page_meta")
+      .select("*")
+      .eq("route", route)
+      .eq("slug", slug)
+      .maybeSingle();
+    if (metaError) throw metaError;
+    if (!isPublicPageMeta((meta ?? null) as PageMeta | null)) {
+      return null;
+    }
+
+    const { data, error } = await client
       .from("seo_overrides")
       .select("*")
       .eq("route", route)
       .eq("slug", slug)
       .maybeSingle();
     if (error) throw error;
-    return (data ?? null) as SeoOverride | null;
+    const row = (data ?? null) as SeoOverride | null;
+    if (!diagnosePagePublication({ meta: (meta ?? null) as PageMeta | null, seo: row }).isPublic) {
+      return null;
+    }
+    return row ? {
+      ...row,
+      meta_title: normalizeDbMetaTitle(row.meta_title ? sanitizeLegacyPublicSeoText(row.meta_title) : null),
+      meta_description: row.meta_description
+        ? normalizeMetaDescription(sanitizeLegacyPublicSeoText(row.meta_description))
+        : null,
+      h1: row.h1 ? sanitizeLegacyPublicSeoText(row.h1) : null,
+    } : null;
   },
 
   async getPageMeta(route: string, slug: string): Promise<PageMeta | null> {
@@ -1555,17 +1582,17 @@ const adapter: DbAdapter = {
   },
 
   async getDirectoryListingCabinetCount(): Promise<number> {
-    const { data, error } = await getSupabaseClient()
+    const { count, error } = await getSupabaseClient()
       .from("directory_cabinets")
       .select(
-        "id, is_active, siren, establishments:directory_establishments(siret, is_active)",
+        "id, establishments:directory_establishments!inner(id)",
+        { count: "exact", head: true },
       )
+      .eq("is_active", true)
+      .eq("establishments.is_active", true)
       .or(DIRECTORY_LISTING_OR_FILTER);
     if (error) throw error;
-    const filtered = await filterActiveCabinets(
-      (data ?? []) as unknown as CabinetWithRelations[],
-    );
-    return filtered.length;
+    return count ?? 0;
   },
 
   async getTopDirectoryListingCabinets(

@@ -301,6 +301,8 @@ export async function getCrossServiceProfessionLinks(serviceSlug: string, profes
  */
 export async function getRessourceLinks(slug: string, type: "silo" | "hub" | "cluster" | "keyword"): Promise<LinkGroup[]> {
   const groups: LinkGroup[] = [];
+  const resourceHref = (resourceSlug: string) =>
+    resourceSlug === "geolocalisation" ? "/villes" : `/ressources/${resourceSlug}`;
 
   if (type === "silo") {
     const hubs = await db.getHubsBySilo(slug);
@@ -309,7 +311,7 @@ export async function getRessourceLinks(slug: string, type: "silo" | "hub" | "cl
         title: "Sujets",
         links: hubs.map((h) => ({
           label: h.label,
-          href: `/ressources/${h.slug}`,
+          href: resourceHref(h.slug),
         })),
       });
     }
@@ -333,7 +335,7 @@ export async function getRessourceLinks(slug: string, type: "silo" | "hub" | "cl
       if (silo) {
         groups.push({
           title: "Catégorie",
-          links: [{ label: silo.label, href: `/ressources/${silo.slug}` }],
+          links: [{ label: silo.label, href: resourceHref(silo.slug) }],
         });
       }
     }
@@ -398,7 +400,7 @@ export async function getRessourceLinks(slug: string, type: "silo" | "hub" | "cl
           if (silo) {
             groups.push({
               title: "Catégorie",
-              links: [{ label: silo.label, href: `/ressources/${silo.slug}` }],
+              links: [{ label: silo.label, href: resourceHref(silo.slug) }],
             });
           }
         }

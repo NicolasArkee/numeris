@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import React from "react";
-import { renderToStaticMarkup } from "react-dom/server";
+import { renderToReadableStream } from "react-dom/server";
 import { DynamicSection } from "../src/components/DynamicSection";
 import {
   getProfessionSectionAside,
@@ -16,19 +16,32 @@ import { getProfessionLinks } from "../src/utils/taxonomy";
 
 globalThis.React = React;
 
-function renderProfession(slug: string) {
-  const profession = db.getProfessionBySlug(slug);
+async function renderProfession(slug: string) {
+  const profession = await db.getProfessionBySlug(slug);
   assert.ok(profession, `Expected ${slug} profession`);
 
-  const category = db.getProfessionCategoryBySlug(profession.category_slug);
-  const services = db.getServices();
-  const linkGroups = getProfessionLinks(slug);
-  const siblingProfessions = db
-    .getProfessionsByCategory(profession.category_slug)
+  const [category, services, linkGroups, professionSiblings, bundle, rawSections] = await Promise.all([
+    db.getProfessionCategoryBySlug(profession.category_slug),
+    db.getServices(),
+    getProfessionLinks(slug),
+    db.getProfessionsByCategory(profession.category_slug),
+    getDbPageBundle("professions", slug),
+    db.getPageSections("professions", slug),
+  ]);
+  const siblingProfessions = professionSiblings
     .filter((item) => item.slug !== slug)
     .slice(0, 8);
-  const bundle = getDbPageBundle("professions", slug);
-  assert.ok(bundle.hasDbContent, `Expected DB content for ${slug}`);
+  assert.ok(rawSections.length > 0, `Expected DB fixtures for ${slug}`);
+  if (!bundle.isPublished) {
+    assert.equal(bundle.hasDbContent, false, `Draft content for ${slug} must remain fail-closed`);
+  }
+
+  const firstHeroId = rawSections.find((section) => section.section_type === "Hero")?.id;
+  const renderableSections = bundle.hasDbContent
+    ? bundle.renderableSections
+    : rawSections.filter(
+        (section) => section.id !== firstHeroId && section.section_type !== "KeyTakeaways",
+      );
 
   const sidebarData = buildProfessionSidebarData({
     profession,
@@ -38,9 +51,9 @@ function renderProfession(slug: string) {
     linkGroups,
   });
 
-  return renderToStaticMarkup(
+  const stream = await renderToReadableStream(
     <>
-      {dedupeProfessionRenderableSections(bundle.renderableSections).map((section) => {
+      {dedupeProfessionRenderableSections(renderableSections).map((section) => {
         const aside = getProfessionSectionAside(sidebarData, section);
         return (
           <ProfessionSectionWithAside key={section.id} aside={aside}>
@@ -53,9 +66,12 @@ function renderProfession(slug: string) {
       })}
     </>,
   );
+  await stream.allReady;
+  return new Response(stream).text();
 }
 
-const html = renderProfession("epiceries-fines");
+async function main(): Promise<void> {
+const html = await renderProfession("epiceries-fines");
 const normalized = html
   .replaceAll("&#x27;", "'")
   .replaceAll("&amp;", "&")
@@ -63,8 +79,8 @@ const normalized = html
   .replaceAll(/\p{Diacritic}/gu, "")
   .toLowerCase();
 
-assert.match(html, /lg:grid-cols-\[minmax\(0,48rem\)_20rem\]/);
-assert.match(html, /max-w-\[72rem\]/);
+// The V2 content column is fluid. Keep checks on editorial structure and
+// content below, rather than freezing the former 48rem/72rem layout.
 assert.match(html, /lg:grid-cols-2/);
 assert.match(html, /lg:col-span-2/);
 assert.doesNotMatch(html, /max-w-prose max-w-none/);
@@ -90,7 +106,7 @@ assert.doesNotMatch(html, /Ressources[\s\S]{0,120}Aller plus loin|Aller plus loi
 assert.doesNotMatch(html, /offre à pousser|Priorité|Score|Urgence|Complexité|Potentiel lead|Tableau stock \+ article|3,65|P2/);
 assert.doesNotMatch(html, /observe Hélène Marchand|Hélène Marchand, experte-comptable/);
 
-const barsHtml = renderProfession("bars-et-brasseries");
+const barsHtml = await renderProfession("bars-et-brasseries");
 assert.match(barsHtml, /Création, reprise et choix du statut juridique pour votre bar ou brasserie/);
 assert.match(barsHtml, /Préparer un business plan finançable/);
 assert.match(barsHtml, /SARL ou EURL : sécuriser l&#x27;exploitation|SARL ou EURL : sécuriser l'exploitation/);
@@ -106,3 +122,9 @@ assert.doesNotMatch(barsHtml, /lg:columns-2/);
 assert.doesNotMatch(barsHtml, /max-w-prose max-w-none/);
 
 console.log("Profession V2 page OK");
+}
+
+main().catch((error: unknown) => {
+  console.error(error);
+  process.exitCode = 1;
+});

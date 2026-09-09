@@ -6,6 +6,8 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { db } from "../src/libs/db";
 import { DirectoryProfileV2 } from "../src/components/directory/DirectoryProfileV2";
 
+globalThis.React = React;
+
 dotenv.config({ path: path.join(process.cwd(), ".env.local") });
 dotenv.config();
 

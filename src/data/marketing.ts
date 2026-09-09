@@ -9,22 +9,22 @@ export function getServiceMarketing(service: { slug: string; title: string }) {
 
   const benefitsMap: Record<string, { icon: string; title: string; description: string }[]> = {
     comptabilite: [
-      { icon: "📊", title: "Tenue comptable complète", description: "Saisie, rapprochement bancaire, lettrage : votre comptabilité est à jour en permanence." },
-      { icon: "📅", title: "Bilan & liasses fiscales", description: "Établissement du bilan annuel et des liasses fiscales dans les délais légaux." },
-      { icon: "📈", title: "Tableaux de bord", description: "Suivi mensuel de vos indicateurs clés : trésorerie, rentabilité, charges." },
-      { icon: "🔄", title: "Révision des comptes", description: "Contrôle régulier pour garantir la fiabilité de vos données financières." },
+      { icon: "📊", title: "Tenue comptable", description: "Saisie, rapprochement et lettrage : faites préciser les tâches, contrôles et responsabilités inclus." },
+      { icon: "📅", title: "Bilan & liasses fiscales", description: "Demandez quels documents sont produits, selon quel calendrier et avec quelles validations." },
+      { icon: "📈", title: "Tableaux de bord", description: "Comparez les indicateurs, leur fréquence, leurs données sources et le temps de restitution prévu." },
+      { icon: "🔄", title: "Révision des comptes", description: "Faites décrire les contrôles, les réserves et le traitement des informations manquantes." },
     ],
     "gestion-fiscale": [
-      { icon: "📋", title: "Déclarations fiscales", description: "TVA, IS, IR, CFE, CVAE : toutes vos obligations déclaratives gérées." },
-      { icon: "🎯", title: "Optimisation fiscale", description: "Identification des leviers légaux pour réduire votre charge fiscale." },
-      { icon: "🛡️", title: "Contrôle fiscal", description: "Accompagnement et représentation en cas de vérification de l'administration." },
-      { icon: "💡", title: "Veille réglementaire", description: "Anticipation des évolutions fiscales impactant votre activité." },
+      { icon: "📋", title: "Déclarations fiscales", description: "TVA, IS, IR, CFE ou autres déclarations : listez celles qui entrent réellement dans la mission." },
+      { icon: "🎯", title: "Options fiscales", description: "Faites expliciter les hypothèses, les limites et les validations nécessaires avant un choix." },
+      { icon: "🛡️", title: "Contrôle fiscal", description: "Demandez si l’assistance ou la représentation figure au périmètre et sous quelles conditions." },
+      { icon: "💡", title: "Veille réglementaire", description: "Comparez la façon dont les évolutions applicables sont identifiées et communiquées." },
     ],
     "gestion-sociale": [
-      { icon: "💰", title: "Bulletins de paie", description: "Édition des fiches de paie conformes, du premier au dernier salarié." },
-      { icon: "📝", title: "Déclarations sociales", description: "DSN, URSSAF, caisses de retraite : toutes vos obligations sont couvertes." },
-      { icon: "⚖️", title: "Droit du travail", description: "Conseil sur les contrats, les conventions collectives et les procédures." },
-      { icon: "👥", title: "Gestion des entrées/sorties", description: "DPAE, solde de tout compte, attestations : chaque étape est gérée." },
+      { icon: "💰", title: "Bulletins de paie", description: "Faites préciser les données attendues, le calendrier de validation et les contrôles inclus." },
+      { icon: "📝", title: "Déclarations sociales", description: "DSN, Urssaf et caisses : listez les déclarations effectivement couvertes par la proposition." },
+      { icon: "⚖️", title: "Droit du travail", description: "Vérifiez quelles questions relèvent du conseil inclus et lesquelles demandent un autre professionnel." },
+      { icon: "👥", title: "Entrées et sorties", description: "DPAE, soldes et attestations : répartissez les tâches et les dates entre l’entreprise et le cabinet." },
     ],
   };
 
@@ -40,12 +40,6 @@ export function getServiceMarketing(service: { slug: string; title: string }) {
     { title: "Critères de comparaison", description: "Comparer le périmètre, les livrables, les outils, la localisation et le niveau d'accompagnement." },
     { title: "Préparation du rendez-vous", description: "Lister les documents et questions utiles avant de contacter un professionnel habilité." },
     { title: "Choix éclairé", description: "Conserver une trace claire des points à confirmer avant toute lettre de mission." },
-  ];
-
-  const stats = [
-    { value: "100+", label: "Pages métiers" },
-    { value: "30k+", label: "Fiches publiques" },
-    { value: "0", label: "Avis inventé" },
   ];
 
   const checklist = [
@@ -65,7 +59,7 @@ export function getServiceMarketing(service: { slug: string; title: string }) {
     role: "Comparateur indépendant",
   };
 
-  return { benefits, steps, stats, checklist, alert, quote };
+  return { benefits, steps, checklist, alert, quote };
 }
 
 // ─── Service × Secteur ───
@@ -94,17 +88,12 @@ export function getServiceSecteurMarketing(
       },
     ],
     checklist: [
-      `Connaissance approfondie des obligations du ${s}`,
-      `Plan comptable adapté à votre secteur d'activité`,
-      `Veille réglementaire spécifique ${s}`,
-      `Optimisation fiscale sectorielle`,
-      `Interlocuteur spécialisé dédié`,
-      `Accompagnement lors des contrôles`,
-    ],
-    stats: [
-      { value: "15+", label: "Secteurs couverts" },
-      { value: "100+", label: "Professions documentées" },
-      { value: "0", label: "Promesse inventée" },
+      `Expérience du ${s} illustrée par un processus concret`,
+      `Plan comptable et circuits adaptés aux opérations réellement présentes`,
+      `Méthode de veille réglementaire applicable au ${s}`,
+      `Options fiscales expliquées avec leurs hypothèses et leurs limites`,
+      `Interlocuteurs et relais identifiés dans la proposition`,
+      `Périmètre d’assistance en cas de contrôle clairement décrit`,
     ],
   };
 }
@@ -155,12 +144,12 @@ export function getServiceProfessionMarketing(
       },
     ],
     checklist: [
-      `Maîtrise des obligations spécifiques aux ${p}`,
-      `Optimisation du régime fiscal applicable`,
-      `Gestion des charges et frais professionnels`,
-      `Conseil en structuration juridique`,
-      `Accompagnement déclaratif complet`,
-      `Suivi de trésorerie adapté à votre activité`,
+      `Expérience des obligations des ${p} à documenter`,
+      `Hypothèses fiscales et validations à expliciter`,
+      `Traitement des charges et frais professionnels à décrire`,
+      `Conseil en structuration juridique inclus ou séparé`,
+      `Déclarations couvertes et responsabilités listées`,
+      `Indicateurs de trésorerie, fréquence et sources à comparer`,
     ],
     quote: {
       text: `Pour les ${profession.name.toLowerCase()}, le bon échange commence par des données simples : volume d'activité, échéances, statut, outils et points de blocage.`,
@@ -179,21 +168,16 @@ export function getSecteurMarketing(secteur: { slug: string; name: string; descr
       {
         title: `Les enjeux comptables du ${s}`,
         paragraphs: [
-          `Le secteur ${s} est soumis à des réglementations comptables et fiscales spécifiques. Plans comptables sectoriels, taux de TVA particuliers, obligations sociales dédiées : la gestion comptable de votre activité ne s'improvise pas.`,
-          `Faire appel à un expert-comptable spécialisé en ${s}, c'est s'assurer que chaque spécificité est maîtrisée et que votre entreprise reste en conformité tout en optimisant sa fiscalité.`,
+          `Les opérations, taux de TVA, obligations sociales et rythmes de production peuvent varier dans le secteur ${s}. La comparaison doit partir des flux réellement présents et des règles applicables à la situation.`,
+          `Une expérience sectorielle se vérifie à partir d’exemples de processus, de documents attendus et de points de contrôle. La lettre de mission du professionnel choisi précise ensuite les tâches, les responsabilités et les limites de son intervention.`,
         ],
       },
     ],
     benefits: [
-      { icon: "🏛", title: "Expertise sectorielle", description: `Connaissance approfondie des normes comptables du ${s}.` },
+      { icon: "🏛", title: "Expérience sectorielle", description: `Méthode et références de travail dans le ${s} à documenter.` },
       { icon: "⚖️", title: "Points à vérifier", description: `Obligations réglementaires spécifiques à confirmer avec le professionnel choisi.` },
       { icon: "📈", title: "Pilotage", description: `Leviers fiscaux, sociaux et de gestion à comparer selon votre situation.` },
       { icon: "🤝", title: "Choix éclairé", description: `Critères pour identifier un professionnel habitué à votre métier.` },
-    ],
-    stats: [
-      { value: "100+", label: "Métiers couverts" },
-      { value: "15+", label: "Secteurs documentés" },
-      { value: "0", label: "Garantie inventée" },
     ],
   };
 }
@@ -243,11 +227,6 @@ export function getProfessionMarketing(profession: { slug: string; name: string;
       { icon: "📋", title: "Obligations à couvrir", description: "Les sujets comptables et fiscaux à intégrer dans le périmètre." },
       { icon: "💡", title: "Questions à poser", description: "Points de pilotage, régime fiscal, TVA, paie et outils à clarifier." },
       { icon: "⏱", title: "Préparation", description: "Documents et échéances à rassembler avant le premier échange." },
-    ],
-    stats: [
-      { value: "100+", label: "Professions documentées" },
-      { value: "6", label: "Axes de comparaison" },
-      { value: "0", label: "Avis fictif" },
     ],
   };
 }

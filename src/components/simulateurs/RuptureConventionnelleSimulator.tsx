@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { fmtEur, indemniteRuptureConventionnelle } from "@/libs/simulateurs/math";
-import { Disclaimer, FieldNumber, ResultValue, SimulatorBox, SimulatorCta } from "./ui";
+import { Disclaimer, FieldNumber, ResultValue, SimulatorBox, SimulatorFields, ResultGrid, SimulatorCta } from "./ui";
 
 export function RuptureConventionnelleSimulator() {
   const [salaire12, setSalaire12] = useState(2500);
@@ -14,7 +14,7 @@ export function RuptureConventionnelleSimulator() {
 
   return (
     <SimulatorBox>
-      <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+      <SimulatorFields columns={4}>
         <FieldNumber
           label="Salaire brut moyen — 12 derniers mois"
           value={salaire12}
@@ -40,9 +40,9 @@ export function RuptureConventionnelleSimulator() {
           suffix="mois"
           hint="Indemnité due dès le premier mois, au prorata"
         />
-      </div>
+      </SimulatorFields>
 
-      <div className="mt-7 grid gap-4 md:grid-cols-3">
+      <ResultGrid columns={3}>
         <ResultValue
           label="Indemnité minimale"
           value={fmtEur(result.indemnite)}
@@ -59,8 +59,8 @@ export function RuptureConventionnelleSimulator() {
           value={result.equivalentMois.toLocaleString("fr-FR", { maximumFractionDigits: 2 })}
           detail="¼ de mois/an jusqu'à 10 ans, ⅓ au-delà"
         />
-      </div>
-      <p className="mt-4 border-l-2 border-l-border-soft pl-4 text-[0.75rem] leading-relaxed text-ink-muted">
+      </ResultGrid>
+      <p className="mt-5 rounded-2xl bg-paper px-5 py-4 text-[.8rem] leading-6 text-ink-muted">
         Régime indicatif : indemnité exonérée de cotisations dans la limite de 2 plafonds annuels de la
         Sécurité sociale (96 120 € en 2026), avec contribution patronale de 40 % sur la part exonérée
         (taux relevé par la LFSS 2026), et exonérée d&apos;impôt sur le revenu dans certaines limites.

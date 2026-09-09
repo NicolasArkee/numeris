@@ -28,6 +28,15 @@ type EditorialGroup = { title: string; body: Block[] };
 
 function sanitizeGeneratedText(text: string): string {
   return text
+    // A small part of the historical corpus contains HTML fragments even
+    // though this component deliberately renders Markdown-lite. Converting
+    // the known structural tags keeps headings and paragraphs legible while
+    // React continues to render plain text rather than injected markup.
+    .replaceAll(/<h[23][^>]*>(.*?)<\/h[23]>/giu, "\n### $1\n")
+    .replaceAll(/<br\s*\/?>/giu, "\n")
+    .replaceAll(/<\/?p[^>]*>/giu, "\n")
+    .replaceAll(/<\/?em[^>]*>/giu, "*")
+    .replaceAll(/<[^>]+>/gu, " ")
     .replaceAll(
       /«\s*\*?([^»]+?)\*?\s*»,\s*observe\s+Hélène\s+Marchand,\s+experte-comptable\./gu,
       "$1.",
@@ -196,7 +205,13 @@ function buildFallbackEditorialLayout(blocks: Block[]): { intro: Block[]; groups
 }
 
 /** Inline parser for **bold** and *italic*. Returns React children. */
-function renderInline(text: string): React.ReactNode {
+function renderInline(text: string, allowEmphasis = true): React.ReactNode {
+  if (!allowEmphasis) {
+    return text
+      .replaceAll(/\*\*([^*\n]+)\*\*/gu, "$1")
+      .replaceAll(/\*([^*\n]+)\*/gu, "$1");
+  }
+
   // Split on **bold** first
   const parts = text.split(/(\*\*[^*\n]+\*\*)/g);
   return parts.map((part, i) => {
@@ -239,7 +254,7 @@ function renderBlock(b: Block, i: number, h3ClassName?: string) {
           ?? "mt-6 mb-3 min-w-0 break-words font-display text-[1.15rem] font-medium text-ink [break-inside:avoid] [break-after:avoid]"
         }
       >
-        {renderInline(b.text)}
+        {renderInline(b.text, false)}
       </h3>
     );
   }

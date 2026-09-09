@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 2,
+  "primary": [
+    {
+      "id": "cabinets",
+      "label": "Cabinets",
+      "href": "/annuaire/experts-comptables",
+      "description": "Explorer les établissements et leur statut de qualification.",
+      "links": [
+        { "label": "Annuaire national", "href": "/annuaire/experts-comptables" },
+        { "label": "Villes", "href": "/villes" },
+        { "label": "Départements", "href": "/departements" },
+        { "label": "Cabinets à Rennes", "href": "/expert-comptable/rennes" }
+      ]
+    },
+    {
+      "id": "metiers",
+      "label": "Métiers",
+      "href": "/professions",
+      "description": "Partir des obligations et du quotidien de votre activité.",
+      "links": [
+        { "label": "Toutes les professions", "href": "/professions" },
+        { "label": "Tous les secteurs", "href": "/secteurs" },
+        { "label": "Professionnels de santé", "href": "/professions/medecins" },
+        { "label": "Restauration", "href": "/secteurs/restauration" }
+      ]
+    },
+    {
+      "id": "services",
+      "label": "Services",
+      "href": "/expertises",
+      "description": "Comparer le périmètre, les livrables et les responsabilités.",
+      "links": [
+        { "label": "Toutes les missions", "href": "/expertises" },
+        { "label": "Comptabilité générale", "href": "/expertises/comptabilite" },
+        { "label": "Conseil fiscal", "href": "/expertises/fiscalite" },
+        { "label": "Gestion sociale", "href": "/expertises/social" },
+        { "label": "Création d’entreprise", "href": "/expertises/creation-entreprise" }
+      ]
+    },
+    {
+      "id": "ressources",
+      "label": "Ressources",
+      "href": "/ressources",
+      "description": "Relier les guides, outils et documents à une décision.",
+      "links": [
+        { "label": "Bibliothèque", "href": "/ressources" },
+        { "label": "Dossier LMNP", "href": "/ressources/lmnp-expert-comptable" },
+        { "label": "Simulateurs", "href": "/simulateurs" },
+        { "label": "Documents expliqués", "href": "/documents" }
+      ]
+    },
+    {
+      "id": "comparer",
+      "label": "Comparer",
+      "href": "/comparatifs",
+      "description": "Examiner produits, avis et offres avec une méthode visible.",
+      "links": [
+        { "label": "Tous les comparatifs", "href": "/comparatifs" },
+        { "label": "Tous les avis", "href": "/avis" },
+        { "label": "Offres et parrainages", "href": "/codes-parrainage" },
+        { "label": "Méthode éditoriale", "href": "/qui-sommes-nous" }
+      ]
+    }
+  ],
+  "briefCta": {
+    "label": "Construire mon brief",
+    "action": "open-brief"
+  },
+  "footer": [
+    {
+      "title": "Explorer",
+      "links": [
+        { "label": "Annuaire complet", "href": "/annuaire/experts-comptables" },
+        { "label": "Par profession", "href": "/professions" },
+        { "label": "Par secteur", "href": "/secteurs" },
+        { "label": "Par expertise", "href": "/expertises" },
+        { "label": "Par ville", "href": "/villes" },
+        { "label": "Par département", "href": "/departements" }
+      ]
+    },
+    {
+      "title": "Comprendre",
+      "links": [
+        { "label": "Guides & dossiers", "href": "/ressources" },
+        { "label": "Comparatifs", "href": "/comparatifs" },
+        { "label": "Avis sur les solutions", "href": "/avis" },
+        { "label": "Simulateurs", "href": "/simulateurs" },
+        { "label": "Modèles de documents", "href": "/documents" },
+        { "label": "Offres & parrainages", "href": "/codes-parrainage" }
+      ]
+    }
+  ],
+  "legal": [
+    { "label": "Qui sommes-nous", "href": "/qui-sommes-nous" },
+    { "label": "Contact", "href": "/contact" },
+    { "label": "Mentions légales", "href": "/mentions-legales" },
+    { "label": "Confidentialité", "href": "/confidentialite" },
+    { "label": "CGU", "href": "/cgu" }
+  ]
+}

@@ -1,21 +1,34 @@
 import Link from "next/link";
-import { AppConfig } from "@/utils/AppConfig";
+import { ClusterPage } from "@/components/ClusterPage";
+import { CtaContact } from "@/components/CtaContact";
+import { InternalLinks } from "@/components/InternalLinks";
+import { BreadcrumbJsonLd, FaqJsonLd, WebPageJsonLd } from "@/components/JsonLd";
+import { KeyTakeaways } from "@/components/KeyTakeaways";
+import { LastUpdated } from "@/components/LastUpdated";
+import { MaillageLinks } from "@/components/MaillageLinks";
+import { PageHero } from "@/components/PageHero";
+import { SimulatorTeaser } from "@/components/SimulatorTeaser";
+import {
+  AnchoredDynamicSection,
+  buildEditorialSectionEntries,
+  editorialTocItems,
+  EditorialSectionStream,
+} from "@/components/hubs/editorial/EditorialSections";
+import { EditorialToc } from "@/components/hubs/editorial/EditorialToc";
+import {
+  EDITORIAL_DECISION_TOC,
+  EditorialContextWorkshop,
+  EditorialScenarioLab,
+  EditorialVerificationPlan,
+} from "@/components/hubs/editorial/EditorialDecisionSupport";
+import { buildNearbyDirectoryCityLinks } from "@/components/directory/city-v2-helpers";
 import { db } from "@/libs/db";
 import type { DirectoryCity, LinkGroup, PageSection } from "@/libs/db";
 import type { KeywordClass } from "@/libs/ressources/keyword-lp-helpers";
-import { BreadcrumbJsonLd, FaqJsonLd, WebPageJsonLd } from "@/components/JsonLd";
-import { DynamicSection } from "@/components/DynamicSection";
-import { InternalLinks } from "@/components/InternalLinks";
-import { KeyTakeaways } from "@/components/KeyTakeaways";
-import { CtaContact } from "@/components/CtaContact";
-import { StickyMobileCTA } from "@/components/StickyMobileCTA";
-import { MaillageLinks } from "@/components/MaillageLinks";
-import { ContactButton } from "@/components/ContactButton";
-import { PricingTeaser } from "@/components/PricingTeaser";
-import { SimulatorTeaser } from "@/components/SimulatorTeaser";
-import { pricingTierToProp } from "@/components/pricing-shared";
-import { buildNearbyDirectoryCityLinks } from "@/components/directory/city-v2-helpers";
+import { AppConfig } from "@/utils/AppConfig";
 import { KeywordLocalCabinets } from "./KeywordLocalCabinets";
+import { FaqAccordion } from "@/components/editorial/FaqAccordion";
+import type { DbPagePublication } from "@/libs/content/dbFirst";
 
 export interface KeywordLandingPageProps {
   cls: KeywordClass;
@@ -25,25 +38,56 @@ export interface KeywordLandingPageProps {
   breadcrumbs: { name: string; url: string }[];
   canonicalUrl: string;
   linkGroups: LinkGroup[];
-  /** Sections gen-IA (page_sections) rendues via DynamicSection. */
+  /** Sections publiées de page_sections, déjà filtrées par getDbPageBundle. */
   sections: PageSection[];
-  keyTakeaways?: string[] | undefined;
-  /** FAQ data-driven — ignorée si une section Faq gen-IA est déjà rendue. */
+  keyTakeaways?: string[];
   faqs: { question: string; answer: string }[];
   inlineFaq: boolean;
-  /** Ville résolue (classes geo / geo-theme). */
   city?: DirectoryCity | null;
-  /** Libellé thème (« l'agriculture ») + route riche à mailler. */
-  themeLabel?: string | undefined;
-  themeHref?: string | undefined;
-  lastUpdatedDate?: string | undefined;
+  cabinetCount?: number;
+  themeLabel?: string;
+  themeHref?: string;
+  lastUpdatedDate?: string;
+  publication?: DbPagePublication;
   schema?: React.ReactNode;
 }
 
-/** Landing page des keyword_pages /ressources — remplace le chrome « article
- *  de blog » (ClusterPage) : hero conversion, blocs data-driven (cabinets
- *  locaux, tarifs, simulateurs), sections gen-IA, FAQ, maillage, CTA.
- *  Pas d'ArticleJsonLd ni de badges volume/intent (footprint outillage SEO). */
+function lpMedia(cls: KeywordClass) {
+  if (cls === "geo" || cls === "geo-theme") {
+    return {
+      src: "/images/skoria-v2/editorial/cityscape.webp",
+      alt: "Maquette abstraite d’un quartier français et de ses implantations professionnelles",
+    };
+  }
+  if (cls === "navigational") {
+    return {
+      src: "/images/skoria-v2/editorial/objects.webp",
+      alt: "Documents et objets de comparaison organisés sur une table",
+    };
+  }
+  return {
+    src: "/images/skoria-v2/editorial/accounting-flow.webp",
+    alt: "Composition illustrant un flux de documents comptables",
+  };
+}
+
+function publishedSectionWordCount(sections: readonly PageSection[]): number {
+  return sections
+    .flatMap((section) => [section.title, section.body, section.items])
+    .filter((value): value is string => Boolean(value))
+    .join(" ")
+    .replace(/<[^>]+>/gu, " ")
+    .replace(/[\[\]{}":,]/gu, " ")
+    .trim()
+    .split(/\s+/u)
+    .filter(Boolean).length;
+}
+
+/**
+ * Les requêtes informationnelles deviennent de vrais articles longs. Les
+ * intentions locales, commerciales et navigationnelles gardent une structure
+ * de landing page, enrichie par tout le contenu éditorial publié.
+ */
 export async function KeywordLandingPage({
   cls,
   h1,
@@ -57,27 +101,63 @@ export async function KeywordLandingPage({
   faqs,
   inlineFaq,
   city,
+  cabinetCount = 0,
   themeLabel,
   themeHref,
   lastUpdatedDate,
+  publication,
   schema,
 }: KeywordLandingPageProps) {
-  const isGeo = (cls === "geo" || cls === "geo-theme") && !!city;
-  const showPricing = cls !== "navigational" && cls !== "informational";
-  const showSimulators = cls !== "navigational";
+  const canonicalPath = canonicalUrl.startsWith(AppConfig.url)
+    ? canonicalUrl.slice(AppConfig.url.length) || "/"
+    : canonicalUrl;
+  const isGeo = (cls === "geo" || cls === "geo-theme") && Boolean(city);
+  const isInformational = cls === "informational";
+  const showScopePrimer = cls !== "navigational" && !isInformational;
+  const showSimulators = cls !== "navigational" && !isInformational;
   const showFaq = !inlineFaq && faqs.length > 0;
 
-  const pricingTiers = showPricing
-    ? await db.getPricingTiers().then((t) => t.map(pricingTierToProp)).catch(() => [])
-    : [];
+  if (isInformational) {
+    const entries = buildEditorialSectionEntries(sections);
+    const needsDecisionSupport = publishedSectionWordCount(sections) < 1_500;
+    const tocItems = [
+      ...editorialTocItems(entries),
+      ...(needsDecisionSupport ? EDITORIAL_DECISION_TOC : []),
+    ];
+    return (
+      <ClusterPage
+        eyebrow={eyebrow}
+        h1={h1}
+        intro={intro}
+        breadcrumbs={breadcrumbs}
+        faqs={showFaq ? faqs : undefined}
+        linkGroups={linkGroups}
+        keyTakeaways={keyTakeaways}
+        schema={schema}
+        lastUpdatedDate={lastUpdatedDate}
+        publication={publication}
+        articleSchema
+        articleHeadline={h1}
+        articleSection="Ressources pratiques"
+        canonicalUrl={canonicalUrl}
+      >
+        <EditorialToc items={tocItems} title="Dans cet article" />
+        {entries.map((entry) => (
+          <AnchoredDynamicSection key={entry.section.id} entry={entry} />
+        ))}
+        {needsDecisionSupport && <EditorialContextWorkshop subject={h1} />}
+        {needsDecisionSupport && <EditorialScenarioLab subject={h1} />}
+        {needsDecisionSupport && <EditorialVerificationPlan subject={h1} />}
+      </ClusterPage>
+    );
+  }
+
   const nearbyLinks = isGeo
     ? await db
         .getDirectoryListingCities()
         .then((cities) => buildNearbyDirectoryCityLinks(cities, city!, 8))
         .catch(() => [])
     : [];
-
-  const trustBadges = ["Comparateur indépendant", "Données publiques", "100 % gratuit"];
 
   return (
     <>
@@ -86,214 +166,194 @@ export async function KeywordLandingPage({
       <WebPageJsonLd
         name={h1}
         description={intro}
-        url={canonicalUrl}
-        dateModified={(lastUpdatedDate ?? new Date().toISOString()).split("T")[0]}
+        url={canonicalPath}
+        dateModified={lastUpdatedDate?.split("T")[0]}
       />
       {schema}
 
-      {/* Hero conversion */}
-      <section className="relative overflow-hidden bg-brand-ink px-6 py-20 lg:px-[4.5rem] lg:py-24">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -right-32 -bottom-32 h-130 w-130 rounded-full"
-          style={{
-            background:
-              "radial-gradient(circle, rgba(255,107,53,0.15) 0%, rgba(255,107,53,0) 60%)",
-          }}
-        />
-        <div className="relative z-10 mx-auto max-w-[82rem]">
-          <nav aria-label="Fil d'Ariane" className="mb-8">
-            <ol className="flex flex-wrap items-center gap-1.5 text-[0.78rem] text-white/70">
-              {breadcrumbs.map((item, i) => (
-                <li key={item.url} className="flex items-center gap-1.5">
-                  {i > 0 && <span>/</span>}
-                  {i < breadcrumbs.length - 1 ? (
-                    <Link href={item.url} className="transition-colors hover:text-accent-500">
-                      {item.name}
-                    </Link>
-                  ) : (
-                    <span className="text-white/90">{item.name}</span>
-                  )}
-                </li>
-              ))}
-            </ol>
-          </nav>
+      <PageHero
+        eyebrow={eyebrow}
+        title={h1}
+        subtitle={intro}
+        breadcrumbs={breadcrumbs}
+        badges={
+          cls === "navigational"
+            ? ["Sources publiques", "Présentation indépendante"]
+            : ["Parcours guidé", "Repères vérifiables", "Brief exportable"]
+        }
+        cta={isGeo ? { label: "Voir les cabinets", href: "#cabinets" } : undefined}
+        ctaSecondary={{
+          label: isGeo ? "Estimer les honoraires" : "Lire les critères",
+          href: isGeo ? "/simulateurs/honoraires" : "#contenu",
+        }}
+        tone={isGeo ? "mint" : cls === "navigational" ? "lilac" : "navy"}
+        media={lpMedia(cls)}
+      >
+        {cls === "commercial" && (
+          <button
+            type="button"
+            data-open-brief
+            data-need={h1}
+            className="mt-5 inline-flex min-h-12 items-center rounded-full bg-orange px-6 text-[.84rem] font-bold text-navy transition-transform hover:-translate-y-0.5"
+          >
+            Préparer mon brief&nbsp; ↗
+          </button>
+        )}
+      </PageHero>
 
-          <div className="mb-6 flex items-center gap-3.5">
-            <span className="block h-px w-7 bg-accent-500" />
-            <span className="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-accent-500">
-              {eyebrow}
-            </span>
-          </div>
-
-          <h1 className="mb-6 max-w-3xl font-display text-[2.25rem] font-bold leading-[1.12] tracking-tight text-surface lg:text-[3.25rem]">
-            {h1}
-          </h1>
-
-          <p className="mb-8 max-w-2xl text-[1.05rem] leading-relaxed text-white/85" data-speakable="true">
-            {intro}
-          </p>
-
-          <div className="mb-8 flex flex-wrap items-center gap-3">
-            {isGeo ? (
-              <Link
-                href="#cabinets"
-                className="inline-flex items-center gap-2 bg-accent-500 px-6 py-3 font-body text-[0.82rem] font-semibold text-brand-ink transition-colors hover:bg-accent-700"
-              >
-                Voir les cabinets →
-              </Link>
-            ) : (
-              <ContactButton className="inline-flex items-center gap-2 bg-accent-500 px-6 py-3 font-body text-[0.82rem] font-semibold text-brand-ink transition-colors hover:bg-accent-700">
-                Comparer les options →
-              </ContactButton>
-            )}
-            <Link
-              href="/simulateurs/honoraires"
-              className="border border-white/20 px-5 py-3 font-body text-[0.82rem] text-white/85 transition-colors hover:border-accent-500 hover:text-accent-500"
-            >
-              Estimer les honoraires
-            </Link>
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            {trustBadges.map((badge) => (
-              <span
-                key={badge}
-                className="border border-white/20 px-3 py-1.5 text-[0.72rem] font-medium text-white/80"
-              >
-                ✓ {badge}
-              </span>
-            ))}
+      {lastUpdatedDate && (
+        <div className="border-b border-ink/10 bg-apricot px-5 py-5 sm:px-8">
+          <div className="mx-auto max-w-7xl">
+            <LastUpdated date={lastUpdatedDate} reviewLabel="Données et contenu vérifiés" />
           </div>
         </div>
-      </section>
+      )}
 
-      <div className="bg-bg px-6 pt-16 pb-28 lg:px-[4.5rem] lg:py-16">
-        <div className="mx-auto max-w-[82rem]">
-          {/* Disclaimer d'indépendance (requêtes marque/plateforme) */}
-          {cls === "navigational" && (
-            <aside className="mb-12 border border-border-soft border-l-2 border-l-accent-500 bg-surface px-7 py-5 text-[0.9rem] leading-relaxed text-ink-muted">
+      <div id="contenu" className="scroll-mt-36">
+        {cls === "navigational" && (
+          <aside className="bg-apricot px-5 py-8 sm:px-8">
+            <div className="mx-auto max-w-7xl rounded-[1rem] border border-ink/12 bg-white px-6 py-5 text-[.9rem] leading-7 text-ink-muted">
               <strong className="text-ink">{AppConfig.name} est un comparateur indépendant.</strong>{" "}
-              Cette page présente une offre tierce à titre informatif, sans lien commercial ni
-              affiliation avec la marque citée, à partir d&apos;informations publiques.
-            </aside>
-          )}
+              Cette page présente une offre tierce à titre informatif, sans affiliation avec la marque citée, à partir d’informations publiques.
+            </div>
+          </aside>
+        )}
 
-          {/* Stats locales (LP géo) */}
-          {isGeo && (
-            <div className="mb-12 grid gap-4 border border-border-soft bg-surface p-7 sm:grid-cols-3">
-              <div>
-                <p className="font-display text-[1.6rem] font-bold text-ink">
+        {isGeo && (
+          <section className="bg-mint px-5 py-12 sm:px-8 lg:py-16">
+            <div className="mx-auto grid max-w-7xl overflow-hidden rounded-[1.25rem] border border-ink/12 bg-white sm:grid-cols-3">
+              <div className="border-b border-ink/12 p-7 sm:border-b-0 sm:border-r">
+                <p className="font-serif text-[clamp(2.1rem,5vw,3.5rem)] leading-none text-blue">
                   {city!.population.toLocaleString("fr-FR")}
                 </p>
-                <p className="text-[0.78rem] text-ink-muted">habitants à {city!.name}</p>
+                <p className="mt-3 text-[.76rem] text-ink-muted">habitants à {city!.name}</p>
               </div>
-              <div>
-                <p className="font-display text-[1.6rem] font-bold text-ink">
-                  {city!.department_name ?? city!.department_code ?? "—"}
+              <div className="border-b border-ink/12 p-7 sm:border-b-0 sm:border-r">
+                <p className="text-[1.35rem] font-semibold leading-tight text-ink">
+                  {city!.department_name ?? city!.department_code ?? "Territoire local"}
                 </p>
-                <p className="text-[0.78rem] text-ink-muted">département</p>
+                <p className="mt-3 text-[.76rem] text-ink-muted">zone de recherche</p>
               </div>
-              <div>
-                <p className="font-display text-[1.6rem] font-bold text-ink">dès 59&nbsp;€/mois</p>
-                <p className="text-[0.78rem] text-ink-muted">offres en ligne comparées</p>
+              <div className="p-7">
+                <p className="font-serif text-[clamp(2.1rem,5vw,3.5rem)] leading-none text-blue">
+                  {cabinetCount > 0 ? cabinetCount.toLocaleString("fr-FR") : "Local"}
+                </p>
+                <p className="mt-3 text-[.76rem] text-ink-muted">
+                  {cabinetCount > 0 ? `cabinet${cabinetCount > 1 ? "s" : ""} recensé${cabinetCount > 1 ? "s" : ""}` : "recherche dans l’annuaire"}
+                </p>
               </div>
             </div>
-          )}
+          </section>
+        )}
 
-          {keyTakeaways && keyTakeaways.length > 0 && (
-            <div className="mb-12 max-w-[72rem]">
+        {keyTakeaways && keyTakeaways.length > 0 && (
+          <section className="bg-lilac px-5 py-14 sm:px-8 lg:py-20">
+            <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[.65fr_1.35fr]">
+              <div>
+                <p className="text-[.65rem] font-bold uppercase tracking-[.2em] text-blue">Avant de comparer</p>
+                <h2 className="mt-4 text-balance text-[clamp(2.2rem,5vw,3.8rem)] font-semibold leading-[1.03] tracking-[-.04em] text-ink">
+                  Les repères à garder sous la main.
+                </h2>
+              </div>
               <KeyTakeaways items={keyTakeaways} />
             </div>
-          )}
+          </section>
+        )}
 
-          {/* Sections éditoriales gen-IA (page_sections) */}
-          {sections.map((s) => (
-            <DynamicSection key={s.id} section={s} />
-          ))}
+        <EditorialSectionStream sections={sections} tocTitle="Dans cette page" />
 
-          {/* Annuaire local (LP géo) */}
-          {isGeo && <KeywordLocalCabinets city={city!} limit={6} />}
+        {isGeo && (
+          <section className="bg-white px-5 py-16 sm:px-8 lg:py-20">
+            <div className="mx-auto max-w-7xl">
+              <KeywordLocalCabinets city={city!} limit={6} />
+            </div>
+          </section>
+        )}
 
-          {/* Lien thème (LP géo-thème) */}
-          {isGeo && themeLabel && themeHref && (
-            <div className="mb-12 border border-border-soft bg-surface px-7 py-6">
-              <p className="mb-2 text-[0.72rem] font-semibold uppercase tracking-[0.12em] text-accent-500">
-                Guide associé
-              </p>
-              <Link
-                href={themeHref}
-                className="text-[1.05rem] font-medium text-ink transition-colors hover:text-accent-700"
-              >
-                Expertise comptable pour {themeLabel} →
+        {isGeo && themeLabel && themeHref && (
+          <section className="bg-apricot px-5 py-14 sm:px-8">
+            <div className="mx-auto max-w-7xl">
+              <Link href={themeHref} className="group grid gap-5 rounded-[1.2rem] bg-navy p-7 text-white sm:p-10 lg:grid-cols-[.65fr_1.35fr] lg:items-end">
+                <p className="text-[.65rem] font-bold uppercase tracking-[.2em] text-[#ffb293]">Guide métier associé</p>
+                <p className="text-balance text-[clamp(1.8rem,4vw,3.3rem)] font-semibold leading-tight">
+                  Expertise comptable pour {themeLabel}
+                  <span aria-hidden className="ml-3 inline-block text-[#ffb293] transition-transform group-hover:translate-x-1">↗</span>
+                </p>
               </Link>
             </div>
-          )}
+          </section>
+        )}
 
-          {/* Grille tarifaire (données pricing_tiers) */}
-          {pricingTiers.length > 0 && (
-            <PricingTeaser title="Ordres de prix des offres comparées" tiers={pricingTiers} />
-          )}
-
-          {/* FAQ data-driven */}
-          {showFaq && (
-            <div className="mt-4 mb-12" id="faq">
-              <h2 className="mb-8 font-display text-[1.75rem] font-bold leading-tight text-ink">
-                Questions fréquentes
-              </h2>
-              <div className="grid gap-4">
-                {faqs.map((faq) => (
-                  <details key={faq.question} className="group border border-border-soft bg-surface">
-                    <summary className="flex cursor-pointer items-center justify-between px-7 py-5 text-[0.95rem] font-medium text-ink transition-colors hover:text-accent-700">
-                      {faq.question}
-                      <span className="ml-4 text-[0.8rem] text-border-soft transition-transform group-open:rotate-45">
-                        +
-                      </span>
-                    </summary>
-                    <div className="max-w-prose border-t border-border-soft px-7 py-5 text-base leading-relaxed text-ink-muted">
-                      {faq.answer}
-                    </div>
-                  </details>
-                ))}
+        {showScopePrimer && (
+          <section className="bg-paper px-5 py-16 sm:px-8 lg:py-20">
+            <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[.72fr_1.28fr] lg:gap-20">
+              <div>
+                <p className="text-[.65rem] font-bold uppercase tracking-[.2em] text-blue">Préparer un devis comparable</p>
+                <h2 className="mt-4 text-balance text-[clamp(2.2rem,5vw,3.9rem)] font-semibold leading-[1.03] text-ink">
+                  Le prix devient lisible quand le périmètre est précis.
+                </h2>
+              </div>
+              <div className="space-y-6 text-[.94rem] leading-7 text-ink-muted">
+                <p>
+                  Le volume de pièces, les déclarations, les outils, la fréquence des échanges et les travaux ponctuels peuvent modifier une proposition. Décrivez ces éléments avant de demander un chiffrage.
+                </p>
+                <p>
+                  Demandez ensuite à chaque interlocuteur ce qui est inclus, ce qui reste à votre charge et ce qui fera l’objet d’un montant séparé. Vous comparerez ainsi des missions de même portée.
+                </p>
+                <button
+                  type="button"
+                  data-open-brief
+                  data-need={h1}
+                  className="inline-flex min-h-12 items-center rounded-full bg-blue px-6 text-[.84rem] font-bold text-white"
+                >
+                  Préparer mon périmètre&nbsp; ↗
+                </button>
               </div>
             </div>
-          )}
+          </section>
+        )}
 
-          {/* Villes voisines (LP géo) */}
-          {nearbyLinks.length > 0 && (
-            <div className="mb-12">
-              <h2 className="mb-4 font-display text-[1.25rem] font-bold text-ink">
-                Experts-comptables à proximité
-              </h2>
-              <div className="flex flex-wrap gap-2">
+        {showFaq && (
+          <section id="faq" className="scroll-mt-36 bg-lilac px-5 py-16 sm:px-8 lg:py-20">
+            <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[.68fr_1.32fr] lg:gap-20">
+              <div>
+                <p className="text-[.65rem] font-bold uppercase tracking-[.2em] text-blue">Questions fréquentes</p>
+                <h2 className="mt-4 text-[clamp(2.2rem,5vw,3.9rem)] font-semibold leading-[1.03] text-ink">
+                  Clarifier les points locaux avant de choisir.
+                </h2>
+              </div>
+              <FaqAccordion items={faqs} />
+            </div>
+          </section>
+        )}
+
+        {nearbyLinks.length > 0 && (
+          <section className="bg-mint px-5 py-14 sm:px-8">
+            <div className="mx-auto max-w-7xl">
+              <h2 className="text-[1.35rem] font-semibold text-ink">Experts-comptables à proximité</h2>
+              <div className="mt-5 flex flex-wrap gap-2">
                 {nearbyLinks.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className="border border-border-soft bg-surface px-3 py-1.5 text-[0.78rem] text-ink-muted transition-colors hover:border-accent-500 hover:text-accent-700"
-                  >
+                  <Link key={link.href} href={link.href} className="rounded-full border border-ink/15 bg-white px-4 py-2 text-[.76rem] font-bold text-ink-muted hover:border-blue hover:text-blue">
                     {link.label}
                   </Link>
                 ))}
               </div>
             </div>
-          )}
+          </section>
+        )}
 
-          {/* Maillage interne v3 (table maillage_links) */}
-          <MaillageLinks sourceUrl={canonicalUrl} />
-
-          {/* Liens taxonomiques */}
-          <div className="mt-16">
-            <InternalLinks groups={linkGroups} />
+        <section className="bg-white px-5 py-16 sm:px-8 lg:py-20">
+          <div className="mx-auto max-w-7xl">
+            <MaillageLinks sourceUrl={canonicalUrl} />
+            {linkGroups.length > 0 && (
+              <div className="mt-12"><InternalLinks groups={linkGroups} /></div>
+            )}
           </div>
-        </div>
+        </section>
       </div>
 
-      {/* Simulateurs */}
       {showSimulators && <SimulatorTeaser />}
-
       <CtaContact />
-      <StickyMobileCTA />
     </>
   );
 }

@@ -5,8 +5,13 @@ import { notFound } from "next/navigation";
 import { db } from "@/libs/db";
 import { AppConfig } from "@/utils/AppConfig";
 import { ClusterPage } from "@/components/ClusterPage";
-import { DynamicSection } from "@/components/DynamicSection";
 import { ExtraJsonLd } from "@/components/ExtraJsonLd";
+import {
+  AnchoredDynamicSection,
+  buildEditorialSectionEntries,
+  editorialTocItems,
+} from "@/components/hubs/editorial/EditorialSections";
+import { EditorialToc } from "@/components/hubs/editorial/EditorialToc";
 import { KeywordLandingPage } from "@/components/ressources/KeywordLandingPage";
 import { TaxonomyHubPage, type TaxonomyChild } from "@/components/ressources/TaxonomyHubPage";
 import { AllDossiersPage } from "@/components/ressources/AllDossiersPage";
@@ -119,6 +124,13 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { theme: slug } = await params;
+  if (slug === "tous-les-dossiers") {
+    return {
+      title: "Tous les dossiers",
+      description: "Parcourez tous les dossiers et guides publiés par Skoria pour comprendre, chiffrer et préparer vos choix comptables.",
+      alternates: { canonical: `${AppConfig.url}/ressources/tous-les-dossiers` },
+    };
+  }
   const dbSeo = await db.getSeoOverride(ROUTE, slug);
 
   // Try hub first, then cluster
@@ -157,6 +169,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
+  // Dossiers éditoriaux DB-only : l'override est déjà filtré par le gate
+  // page_meta=published dans l'adaptateur.
+  if (dbSeo) {
+    return {
+      title: dbSeo.meta_title ?? dbSeo.h1 ?? undefined,
+      description: dbSeo.meta_description ?? undefined,
+      alternates: { canonical: `${AppConfig.url}/ressources/${slug}` },
+    };
+  }
+
   return {};
 }
 
@@ -175,16 +197,14 @@ export default async function ThemePage({ params }: Props) {
 
   // ─── DB-first short-circuit (applies regardless of entity type) ───
   const bundle = await getDbPageBundle(ROUTE, slug);
-  const { sections: dbSections, seo: dbSeo, lastUpdatedDate, hasDbContent } = bundle;
+  const { seo: dbSeo, lastUpdatedDate, hasDbContent } = bundle;
   const canonicalUrl = `${AppConfig.url}/ressources/${slug}`;
 
   // 404 only when the slug is neither a taxonomy entity NOR a DB-rendered page
   // (the latter covers maillage-v3 `dossier-*` hubs that have no hub/cluster/keyword).
   if (!hub && !cluster && !keyword && !hasDbContent) notFound();
 
-  // ─── Keyword → LANDING PAGE, que des sections gen-IA existent ou non ───
-  // (jamais le chrome article ClusterPage : pas d'ArticleJsonLd, pas de badges
-  // volume/intent, hero conversion + blocs data-driven.)
+  // ─── Keyword → article informationnel ou LP selon l'intention ───
   if (keyword) {
     const { geo, cls, theme, cabinetCount, meta } = await getKeywordLpContext(keyword);
 
@@ -218,7 +238,7 @@ export default async function ThemePage({ params }: Props) {
       <KeywordLandingPage
         cls={cls}
         h1={dbSeo?.h1 || meta.h1}
-        intro={meta.intro}
+        intro={dbSeo?.meta_description || meta.intro}
         eyebrow={parentCluster?.label ?? parentHub?.label ?? "Ressources"}
         breadcrumbs={breadcrumbs}
         canonicalUrl={canonicalUrl}
@@ -228,9 +248,11 @@ export default async function ThemePage({ params }: Props) {
         faqs={faqs}
         inlineFaq={bundle.inlineFaq}
         city={geo?.city ?? null}
+        cabinetCount={cabinetCount}
         themeLabel={theme?.label}
         themeHref={theme?.href}
         lastUpdatedDate={lastUpdatedDate}
+        publication={bundle.publication}
         schema={<ExtraJsonLd raw={dbSeo?.json_ld_extra ?? null} />}
       />
     );
@@ -267,23 +289,44 @@ export default async function ThemePage({ params }: Props) {
     // Sommaire : enfants vivants uniquement (hors 301/noindex).
     let children_: TaxonomyChild[] = [];
     if (hub) {
-      children_ = (await db.getClustersByHub(slug))
-        .filter((c) => !redirected.has(c.slug))
-        .map((c) => ({ slug: c.slug, label: c.label }));
+      const clusterCandidates = (await db.getClustersByHub(slug)).filter(
+        (candidate) => !redirected.has(candidate.slug),
+      );
+      const visibleClusters = await Promise.all(
+        clusterCandidates.map(async (candidate): Promise<TaxonomyChild | null> => {
+          try {
+            const meta = await db.getPageMeta(ROUTE, candidate.slug);
+            if (meta && meta.publish_status !== "published") return null;
+            return { slug: candidate.slug, label: candidate.label, tag: "Dossier" };
+          } catch {
+            return null;
+          }
+        }),
+      );
+      children_ = visibleClusters.filter((child): child is TaxonomyChild => child !== null);
     } else {
       const kws = (await db.getKeywordsByCluster(slug)).filter(
         (k) => (k.disposition ?? "enrich") === "enrich",
       );
-      children_ = await Promise.all(
-        kws.map(async (k) => {
+      const visibleKeywords = await Promise.all(
+        kws.map(async (k): Promise<TaxonomyChild | null> => {
+          let pageMeta;
+          try {
+            pageMeta = await db.getPageMeta(ROUTE, k.slug);
+          } catch {
+            return null;
+          }
+          if (pageMeta && pageMeta.publish_status !== "published") return null;
           const kwSeo = await db.getSeoOverride(ROUTE, k.slug).catch(() => null);
           return {
             slug: k.slug,
             label: kwSeo?.h1 || k.label,
             description: kwSeo?.meta_description ?? null,
+            tag: "Guide",
           };
         }),
       );
+      children_ = visibleKeywords.filter((child): child is TaxonomyChild => child !== null);
     }
 
     const editoIntro = bundle.sections.find((s) => s.section_type === "EditoIntro");
@@ -300,6 +343,24 @@ export default async function ThemePage({ params }: Props) {
         childrenTitle={isHub ? "Les dossiers de ce thème" : "Les guides de ce dossier"}
         sections={sections}
         linkGroups={linkGroups}
+        level={isHub ? "hub" : "subhub"}
+        media={
+          /lmnp|meubl/iu.test(`${slug} ${node.label}`)
+            ? {
+                src: isHub
+                  ? "/images/skoria-v2/editorial/apartment.webp"
+                  : "/images/skoria-v2/editorial/lmnp-dossier.webp",
+                alt: isHub
+                  ? "Appartement meublé lumineux avec table et carnet"
+                  : "Dossier de location meublée, plan simplifié et clés sur une table",
+              }
+            : {
+                src: "/images/skoria-v2/editorial/objects.webp",
+                alt: "Documents et objets de calcul disposés en composition éditoriale",
+              }
+        }
+        lastUpdatedDate={lastUpdatedDate}
+        schema={<ExtraJsonLd raw={dbSeo?.json_ld_extra ?? null} />}
       />
     );
   }
@@ -318,6 +379,8 @@ export default async function ThemePage({ params }: Props) {
     const intro = dbSeo?.meta_description ?? bundle.heroSection?.body ?? "";
     const { keyTakeaways } = bundle;
 
+    const entries = buildEditorialSectionEntries(bundle.renderableSections);
+
     return (
       <ClusterPage
         eyebrow="Ressources"
@@ -328,13 +391,15 @@ export default async function ThemePage({ params }: Props) {
         keyTakeaways={keyTakeaways}
         schema={<ExtraJsonLd raw={dbSeo?.json_ld_extra ?? null} />}
         lastUpdatedDate={lastUpdatedDate}
+        publication={bundle.publication}
         articleSchema={true}
         articleHeadline={h1}
         articleSection="Ressources éditoriales"
         canonicalUrl={canonicalUrl}
       >
-        {bundle.renderableSections.map((s) => (
-          <DynamicSection key={s.id} section={s} />
+        <EditorialToc items={editorialTocItems(entries)} title="Dans ce dossier" />
+        {entries.map((entry) => (
+          <AnchoredDynamicSection key={entry.section.id} entry={entry} />
         ))}
       </ClusterPage>
     );

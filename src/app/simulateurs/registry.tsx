@@ -329,7 +329,7 @@ export const SIMULATEURS: SimulateurDef[] = [
       {
         question: "Ce comparateur prend-il en compte mon impôt sur le revenu ?",
         answer:
-          "Non, il compare le net avant IR : votre taux d'imposition personnel dépend de votre foyer fiscal. Un expert-comptable intègre l'IR, l'ACRE et votre protection sociale dans l'arbitrage final.",
+          "Le traitement diffère selon le scénario : les résultats micro-entreprise et EI sont affichés avant impôt personnel. Le scénario SASU retranche l’IS puis un prélèvement sur les dividendes. Le calcul ne modélise pas votre foyer fiscal ; les trois résultats ne représentent donc pas tous un revenu après impôt comparable.",
       },
     ],
   },
@@ -400,16 +400,16 @@ export const SIMULATEURS: SimulateurDef[] = [
     h1: "Combien coûte un expert-comptable ? Estimez vos honoraires",
     metaTitle: "Tarif Expert-Comptable : Simulateur d'Honoraires 2026",
     metaDescription:
-      "Estimez en 2 minutes le tarif mensuel de votre expert-comptable selon votre forme juridique, votre chiffre d'affaires et vos salariés. Devis ferme sous 24h.",
+      "Estimez un ordre de grandeur mensuel selon votre forme juridique, votre chiffre d'affaires et vos salariés, puis préparez des demandes comparables.",
     eyebrow: "Outil gratuit",
     intro:
-      "Le prix d'un expert-comptable dépend de trois facteurs principaux : votre forme juridique, votre volume d'activité et votre social. Obtenez une fourchette honnête, puis un devis ferme.",
+      "Le prix d'un expert-comptable dépend notamment de votre forme juridique, de votre volume d'activité et du nombre de salariés. Obtenez une fourchette indicative, puis confrontez-la à des propositions détaillées.",
     render: () => <HonorairesSimulator />,
     faqs: [
       {
         question: "Quel est le prix moyen d'un expert-comptable en 2026 ?",
         answer:
-          "De 59 €/mois HT pour une micro-entreprise à 250 €+/mois HT pour une société avec salariés. La moyenne pour une TPE se situe entre 100 et 200 €/mois HT selon le volume de pièces.",
+          "Il n'existe pas de tarif universel : le périmètre, le volume de pièces, les déclarations, la paie, les outils et le niveau de suivi font varier les propositions. Utilisez la fourchette comme point de départ et demandez le détail de chaque devis.",
       },
       {
         question: "Qu'est-ce qui fait varier les honoraires ?",

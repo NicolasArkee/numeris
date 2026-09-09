@@ -1,16 +1,23 @@
-import Link from "next/link";
 import { BreadcrumbJsonLd, WebPageJsonLd } from "@/components/JsonLd";
-import { DynamicSection } from "@/components/DynamicSection";
-import { InternalLinks } from "@/components/InternalLinks";
 import { CtaContact } from "@/components/CtaContact";
-import { StickyMobileCTA } from "@/components/StickyMobileCTA";
+import { InternalLinks } from "@/components/InternalLinks";
+import { LastUpdated } from "@/components/LastUpdated";
 import { MaillageLinks } from "@/components/MaillageLinks";
+import { PageHero } from "@/components/PageHero";
+import { EditorialPathChooser } from "@/components/hubs/editorial/EditorialPathChooser";
+import { EditorialSectionStream } from "@/components/hubs/editorial/EditorialSections";
+import { CollectionExplorer, type CollectionItem } from "@/components/hubs/shared/CollectionExplorer";
 import type { LinkGroup, PageSection } from "@/libs/db";
+import { AppConfig } from "@/utils/AppConfig";
 
 export interface TaxonomyChild {
   slug: string;
   label: string;
   description?: string | null;
+  /** Permet aux hubs /guides de conserver leur arborescence propre. */
+  href?: string;
+  meta?: string;
+  tag?: string;
 }
 
 export interface TaxonomyHubPageProps {
@@ -19,19 +26,33 @@ export interface TaxonomyHubPageProps {
   eyebrow: string;
   breadcrumbs: { name: string; url: string }[];
   canonicalUrl: string;
-  /** Sous-pages du thème — la raison d'être de la page, affichées en grille
-   *  proéminente juste après le chapeau. */
   children_: TaxonomyChild[];
   childrenTitle: string;
-  /** Chapeau éditorial généré (EditoIntro/ContentSection/Faq). */
   sections: PageSection[];
   linkGroups: LinkGroup[];
+  level?: "hub" | "subhub";
+  media?: {
+    src: string;
+    alt: string;
+    position?: string;
+    disclaimer?: string;
+  };
+  lastUpdatedDate?: string;
+  schema?: React.ReactNode;
 }
 
-/** Page HUB de la taxonomie /ressources (hubs + clusters) — remplace le chrome
- *  « article » (ClusterPage) : pas de badges volume/mots-clés (footprint
- *  d'outillage SEO), pas de temps de lecture ; le sommaire des sous-pages est
- *  l'élément central. */
+const DEFAULT_MEDIA = {
+  hub: {
+    src: "/images/skoria-v2/editorial/objects.webp",
+    alt: "Documents et objets de calcul disposés en composition éditoriale",
+  },
+  subhub: {
+    src: "/images/skoria-v2/editorial/lmnp-dossier.webp",
+    alt: "Dossier, plan simplifié et clés disposés sur une table",
+  },
+} as const;
+
+/** Hub éditorial V2 : un parcours d'abord, puis la profondeur SEO complète. */
 export function TaxonomyHubPage({
   h1,
   intro,
@@ -42,9 +63,22 @@ export function TaxonomyHubPage({
   childrenTitle,
   sections,
   linkGroups,
+  level = "hub",
+  media,
+  lastUpdatedDate,
+  schema,
 }: TaxonomyHubPageProps) {
-  const editoSections = sections.filter((s) => s.section_type !== "Faq" && s.section_type !== "FAQSection_PAA");
-  const faqSections = sections.filter((s) => s.section_type === "Faq" || s.section_type === "FAQSection_PAA");
+  const canonicalPath = canonicalUrl.startsWith(AppConfig.url)
+    ? canonicalUrl.slice(AppConfig.url.length) || "/"
+    : canonicalUrl;
+  const itemKind = level === "hub" ? "Dossier" : "Guide";
+  const items: CollectionItem[] = children_.map((child) => ({
+    href: child.href ?? `/ressources/${child.slug}`,
+    title: child.label,
+    description: child.description,
+    meta: child.meta ?? `${itemKind} · lecture guidée`,
+    tag: child.tag,
+  }));
 
   return (
     <>
@@ -52,109 +86,83 @@ export function TaxonomyHubPage({
       <WebPageJsonLd
         name={h1}
         description={intro}
-        url={canonicalUrl}
-        dateModified={new Date().toISOString().split("T")[0]}
+        url={canonicalPath}
+        dateModified={lastUpdatedDate?.split("T")[0]}
+      />
+      {schema}
+
+      <PageHero
+        eyebrow={`${eyebrow} · ${level === "hub" ? "thème" : "dossier"}`}
+        title={h1}
+        subtitle={intro}
+        breadcrumbs={breadcrumbs}
+        badges={children_.length > 0 ? [`${children_.length} ${itemKind.toLowerCase()}${children_.length > 1 ? "s" : ""}`] : undefined}
+        ctaSecondary={children_.length > 0 ? { label: "Explorer le dossier", href: "#catalogue" } : undefined}
+        variant={level === "subhub" ? "compact" : "default"}
+        tone={level === "subhub" ? "lilac" : "navy"}
+        media={media ?? DEFAULT_MEDIA[level]}
       />
 
-      {/* Hero hub */}
-      <section className="relative overflow-hidden bg-brand-ink px-6 py-16 lg:px-[4.5rem] lg:py-20">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 opacity-[0.5]"
-          style={{
-            backgroundImage:
-              "linear-gradient(to right, rgba(255,255,255,0.045) 1px, transparent 1px)",
-            backgroundSize: "96px 100%",
-          }}
-        />
-        <div className="relative z-10 mx-auto max-w-[82rem]">
-          <nav aria-label="Fil d'Ariane" className="mb-7">
-            <ol className="flex flex-wrap items-center gap-1.5 text-[0.78rem] text-white/70">
-              {breadcrumbs.map((item, i) => (
-                <li key={item.url} className="flex items-center gap-1.5">
-                  {i > 0 && <span>/</span>}
-                  {i < breadcrumbs.length - 1 ? (
-                    <Link href={item.url} className="transition-colors hover:text-accent-500">
-                      {item.name}
-                    </Link>
-                  ) : (
-                    <span className="text-white/90">{item.name}</span>
-                  )}
-                </li>
-              ))}
-            </ol>
-          </nav>
+      {lastUpdatedDate && (
+        <div className="border-b border-ink/10 bg-apricot px-5 py-5 sm:px-8">
+          <div className="mx-auto max-w-7xl">
+            <LastUpdated date={lastUpdatedDate} reviewLabel="Contenu vérifié par l’équipe éditoriale" />
+          </div>
+        </div>
+      )}
 
-          <p className="mb-5 font-mono text-[0.68rem] uppercase tracking-[0.2em] text-accent-300">
-            {eyebrow} · dossier
-          </p>
-          <h1 className="mb-5 max-w-3xl font-display text-[2.1rem] font-extrabold leading-[1.08] tracking-tight text-surface lg:text-[3rem]">
-            {h1}
-          </h1>
-          <p className="max-w-2xl text-[1rem] leading-relaxed text-white/80" data-speakable="true">
-            {intro}
-          </p>
-          {children_.length > 0 && (
-            <p className="mt-6 font-mono text-[0.72rem] uppercase tracking-[0.14em] text-white/50">
-              {children_.length} guide{children_.length > 1 ? "s" : ""} dans ce dossier
-            </p>
+      <EditorialPathChooser
+        items={items.map((item) => ({
+          href: item.href,
+          title: item.title,
+          description: item.description,
+          meta: item.meta,
+        }))}
+        title={level === "hub" ? "Trouvez le dossier adapté à votre question" : "Construisez votre parcours de lecture"}
+      />
+
+      {items.length > 0 && (
+        <section id="catalogue" className="scroll-mt-36 bg-paper px-5 py-16 sm:px-8 lg:py-24">
+          <div className="mx-auto max-w-7xl">
+            <div className="mb-10 grid gap-6 lg:grid-cols-[.72fr_1.28fr] lg:items-end">
+              <div>
+                <p className="text-[.65rem] font-bold uppercase tracking-[.2em] text-blue">
+                  {level === "hub" ? "Vue d’ensemble" : "Dans ce dossier"}
+                </p>
+                <h2 className="mt-4 text-balance text-[clamp(2.25rem,5vw,4rem)] font-semibold leading-[1.04] tracking-[-.04em] text-ink">
+                  {childrenTitle}
+                </h2>
+              </div>
+              <p className="max-w-2xl text-[.94rem] leading-7 text-ink-muted lg:justify-self-end">
+                Recherchez un sujet précis ou parcourez l’ensemble des contenus disponibles. Chaque destination conserve sa profondeur éditoriale et ses liens utiles.
+              </p>
+            </div>
+            <CollectionExplorer
+              items={items}
+              searchPlaceholder={level === "hub" ? "Rechercher un dossier…" : "Rechercher dans les guides…"}
+              emptyMessage="Aucun contenu ne correspond à cette recherche."
+            />
+          </div>
+        </section>
+      )}
+
+      <EditorialSectionStream
+        sections={sections}
+        tocTitle={level === "hub" ? "Comprendre ce thème" : "Repères du dossier"}
+      />
+
+      <section className="bg-white px-5 py-16 sm:px-8 lg:py-20">
+        <div className="mx-auto max-w-7xl">
+          <MaillageLinks sourceUrl={canonicalUrl} />
+          {linkGroups.length > 0 && (
+            <div className="mt-12">
+              <InternalLinks groups={linkGroups} />
+            </div>
           )}
         </div>
       </section>
 
-      <div className="bg-bg px-6 pt-14 pb-24 lg:px-[4.5rem]">
-        <div className="mx-auto max-w-[82rem]">
-          {/* Sommaire du dossier — la fonction hub, en premier */}
-          {children_.length > 0 && (
-            <section className="mb-14">
-              <h2 className="mb-6 font-display text-[1.4rem] font-bold text-ink">
-                {childrenTitle}
-              </h2>
-              <div className="grid gap-px border border-border bg-border md:grid-cols-2 lg:grid-cols-3">
-                {children_.map((child, i) => (
-                  <Link
-                    key={child.slug}
-                    href={`/ressources/${child.slug}`}
-                    className="group flex min-h-28 flex-col justify-between bg-surface p-6 transition-colors hover:bg-brand-50"
-                  >
-                    <span className="font-mono text-[0.65rem] tabular-nums text-accent-700">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <span className="mt-2 font-display text-[0.98rem] font-bold leading-snug text-ink group-hover:text-brand-700">
-                      {child.label}
-                      <span aria-hidden className="ml-1.5 text-accent-500 opacity-0 transition-opacity group-hover:opacity-100">→</span>
-                    </span>
-                    {child.description && (
-                      <span className="mt-2 line-clamp-2 text-[0.78rem] leading-snug text-ink-muted">
-                        {child.description}
-                      </span>
-                    )}
-                  </Link>
-                ))}
-              </div>
-            </section>
-          )}
-
-          {/* Chapeau éditorial généré */}
-          {editoSections.map((s) => (
-            <DynamicSection key={s.id} section={s} />
-          ))}
-
-          {/* FAQ générée */}
-          {faqSections.map((s) => (
-            <DynamicSection key={s.id} section={s} />
-          ))}
-
-          <MaillageLinks sourceUrl={canonicalUrl} />
-
-          <div className="mt-14">
-            <InternalLinks groups={linkGroups} />
-          </div>
-        </div>
-      </div>
-
       <CtaContact />
-      <StickyMobileCTA />
     </>
   );
 }

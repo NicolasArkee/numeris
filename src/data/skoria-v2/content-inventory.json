@@ -1,0 +1,189 @@
+{
+  "schemaVersion": 1,
+  "snapshot": {
+    "scope": "local SQLite staging snapshot and repository registries",
+    "runtimeDatabase": "Supabase",
+    "writePerformed": false,
+    "counts": {
+      "services": 6,
+      "sectors": 8,
+      "professions": 114,
+      "professionCategories": 14,
+      "serviceSectorRelations": 48,
+      "serviceProfessionRelations": 684,
+      "serviceCityRelations": 60,
+      "officialCities": 2000,
+      "directoryCabinets": 27307,
+      "directoryEstablishments": 32508,
+      "pageSections": 7817,
+      "pageSectionPages": 994,
+      "commercialPages": 340,
+      "commercialPagesPublished": 0,
+      "directoryCabinetsPublished": 3,
+      "displayableDirectoryFacts": 27277,
+      "documentsWithSpecimenPdf": 2
+    }
+  },
+  "sourceMap": [
+    {
+      "name": "page content",
+      "runtime": "Supabase",
+      "staging": "numeris.db",
+      "tables": ["page_sections", "seo_overrides", "page_meta"],
+      "consumer": "src/libs/content/dbFirst.ts"
+    },
+    {
+      "name": "commercial content",
+      "runtime": "Supabase",
+      "staging": "numeris.db and external briefs",
+      "tables": ["commercial_pages", "affiliate_programs", "page_affiliate_programs", "commercial_links"],
+      "consumer": "src/libs/content/commercial.ts"
+    },
+    {
+      "name": "directory",
+      "runtime": "Supabase",
+      "staging": "numeris.db and enrichment batches",
+      "tables": ["directory_cabinets", "directory_establishments", "cities_official", "directory_profile_facts", "directory_enrichment_sources"],
+      "consumer": "src/libs/db/supabase.ts"
+    },
+    {
+      "name": "documents",
+      "runtime": "repository registry",
+      "staging": "repository files",
+      "tables": [],
+      "consumer": "src/data/documents.ts"
+    },
+    {
+      "name": "simulators",
+      "runtime": "repository registry plus page content",
+      "staging": "repository files and Supabase",
+      "tables": ["page_sections", "seo_overrides", "page_meta"],
+      "consumer": "src/app/simulateurs/registry.tsx"
+    }
+  ],
+  "representativePages": [
+    {
+      "templateId": "profession",
+      "contentKey": "professions/medecins",
+      "sections": 11,
+      "approximateBodyWords": 2331,
+      "status": "draft",
+      "requiredBackfills": ["replace provider claim", "deduplicate FAQ", "add structured LP conversion blocks", "assign profession media"]
+    },
+    {
+      "templateId": "service",
+      "contentKey": "expertises/comptabilite",
+      "sections": 0,
+      "approximateBodyWords": 0,
+      "status": "missing",
+      "requiredBackfills": ["create page_sections", "create seo_overrides", "create draft page_meta", "add mission scope and responsibility matrix"]
+    },
+    {
+      "templateId": "cross",
+      "contentKey": "expertises/comptabilite__secteur__restauration",
+      "sections": 0,
+      "approximateBodyWords": 0,
+      "status": "missing",
+      "requiredBackfills": ["create page_sections", "create seo_overrides", "create draft page_meta", "add restaurant-specific facts"]
+    },
+    {
+      "templateId": "sector",
+      "contentKey": "secteurs/restauration",
+      "sections": 11,
+      "status": "draft",
+      "requiredBackfills": ["replace provider claim", "deduplicate FAQ", "add operating-cycle and deadline content", "assign sector media"]
+    },
+    {
+      "templateId": "hub",
+      "contentKey": "guides/guides-lmnp",
+      "sections": 13,
+      "status": "draft",
+      "requiredBackfills": ["separate pillar from article structure", "add reader journeys", "add chapter and tool links", "assign editorial media"]
+    },
+    {
+      "templateId": "sub-hub",
+      "contentKey": "guides/guides-lmnp-amortissement",
+      "sections": 15,
+      "status": "draft",
+      "requiredBackfills": ["add learning path", "add chapter progression", "add stable anchors", "assign editorial media"]
+    },
+    {
+      "templateId": "article",
+      "contentKey": "guides/guides-lmnp-amortissement-amortissement-bien-immobilier",
+      "sections": 12,
+      "status": "draft",
+      "requiredBackfills": ["add stable anchors", "verify calculator assumptions", "add source dates", "assign article media"]
+    },
+    {
+      "templateId": "comparison",
+      "contentKey": "comparatifs/meilleure-neobanque-pro",
+      "sections": 8,
+      "status": "draft",
+      "requiredBackfills": ["normalize comparison facts", "add methodology and disclosure", "add price source dates", "assign commercial media"]
+    },
+    {
+      "templateId": "review",
+      "contentKey": "avis/avis-qonto",
+      "sections": 9,
+      "status": "draft",
+      "requiredBackfills": ["add profile verdicts", "add test protocol", "date product facts", "assign commercial media"]
+    },
+    {
+      "templateId": "offer",
+      "contentKey": "codes-parrainage/qonto-code-parrainage",
+      "sections": 7,
+      "status": "draft",
+      "requiredBackfills": ["verify offer state", "date conditions", "record divergences", "assign commercial media"]
+    }
+  ],
+  "migrationOrder": [
+    {
+      "order": 1,
+      "name": "validate registries",
+      "writesRuntimeDatabase": false,
+      "requirements": ["templates JSON valid", "content policy valid", "media manifest valid", "all cross-references resolve"]
+    },
+    {
+      "order": 2,
+      "name": "prepare media",
+      "writesRuntimeDatabase": false,
+      "requirements": ["copy generated masters to repository asset paths", "create responsive derivatives", "verify dimensions and hashes", "review alt text and fictional-ambience disclosure"]
+    },
+    {
+      "order": 3,
+      "name": "backfill page identity as draft",
+      "writesRuntimeDatabase": true,
+      "requirements": ["upsert page_meta with draft status", "record author persona", "record pipeline run", "leave published_at null"]
+    },
+    {
+      "order": 4,
+      "name": "backfill and normalize content",
+      "writesRuntimeDatabase": true,
+      "requirements": ["generate missing landing-page sections", "normalize items JSON shapes", "deduplicate FAQ sections", "add stable heading anchors", "retain draft status"]
+    },
+    {
+      "order": 5,
+      "name": "backfill SEO and structured data",
+      "writesRuntimeDatabase": true,
+      "requirements": ["replace regulated-provider claims", "write unique title description and h1", "validate schema by template", "retain draft status"]
+    },
+    {
+      "order": 6,
+      "name": "verify facts and commercial disclosures",
+      "writesRuntimeDatabase": true,
+      "requirements": ["attach sources and retrieval dates", "mark unknown facts to-confirm", "expire stale prices and offers", "verify affiliate disclosure placement", "retain draft status"]
+    },
+    {
+      "order": 7,
+      "name": "quality assurance",
+      "writesRuntimeDatabase": false,
+      "requirements": ["content contract passes", "links resolve to public or scheduled pages", "responsive visual review passes", "accessibility review passes", "SEO and schema review passes"]
+    },
+    {
+      "order": 8,
+      "name": "controlled publication",
+      "writesRuntimeDatabase": true,
+      "requirements": ["explicit editorial approval", "fresh content hash", "reviewer recorded", "atomic status change to published", "cache revalidation after commit"]
+    }
+  ]
+}

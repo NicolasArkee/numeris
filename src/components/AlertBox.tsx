@@ -1,65 +1,36 @@
+import { RichText } from "./RichText";
+import { IconSet } from "./IconSet";
+
 interface AlertBoxProps {
   type?: "info" | "warning" | "tip" | "important";
   title?: string;
   children: string;
 }
-
 const config = {
-  info: {
-    icon: "ℹ",
-    border: "border-l-brand-500",
-    bg: "bg-brand-50",
-    iconColor: "text-brand-500",
-    titleColor: "text-brand-700",
-    label: "Information",
-  },
-  warning: {
-    icon: "⚠",
-    border: "border-l-warning-500",
-    bg: "bg-warning-50",
-    iconColor: "text-warning-700",
-    titleColor: "text-warning-700",
-    label: "Attention",
-  },
-  tip: {
-    icon: "💡",
-    border: "border-l-success-500",
-    bg: "bg-success-50",
-    iconColor: "text-success-500",
-    titleColor: "text-success-700",
-    label: "Conseil",
-  },
-  important: {
-    icon: "📌",
-    border: "border-l-ink",
-    bg: "bg-surface",
-    iconColor: "text-ink",
-    titleColor: "text-ink",
-    label: "Important",
-  },
+  info: { bg: "bg-lilac", icon: "book", label: "Information" },
+  warning: { bg: "bg-apricot", icon: "shield", label: "Attention" },
+  tip: { bg: "bg-mint", icon: "target", label: "Conseil" },
+  important: { bg: "bg-paper", icon: "scale", label: "Important" },
 };
 
-export function AlertBox({
-  type = "info",
-  title,
-  children,
-}: AlertBoxProps) {
-  const c = config[type];
-
+export function AlertBox({ type = "info", title, children }: AlertBoxProps) {
+  const style = config[type];
   return (
-    <div
-      className={`mb-12 rounded-md border border-border-soft border-l-[3px] ${c.border} ${c.bg} p-6`}
+    <aside
+      className={`mb-12 rounded-[1.75rem] p-6 sm:p-8 ${style.bg}`}
       role="note"
     >
-      <div className="mb-2 flex items-center gap-2">
-        <span className={c.iconColor}>{c.icon}</span>
-        <span className={`font-display text-[0.75rem] font-bold uppercase tracking-[0.08em] ${c.titleColor}`}>
-          {title || c.label}
+      <div className="flex flex-col gap-5 sm:flex-row sm:gap-6">
+        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-navy text-white">
+          <IconSet name={style.icon} size={25} />
         </span>
+        <div className="min-w-0 flex-1">
+          <h3 className="mb-3 font-display text-xl font-bold leading-tight tracking-[-.025em] text-ink">
+            {title || style.label}
+          </h3>
+          <RichText text={children} className="max-w-none" />
+        </div>
       </div>
-      <p className="max-w-prose text-base leading-relaxed text-ink-muted">
-        {children}
-      </p>
-    </div>
+    </aside>
   );
 }

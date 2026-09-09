@@ -1,18 +1,12 @@
 // ─── StatsBand ───
 // Bande de stats homepage : chrome de section (border-b + paddings) autour
-// de StatHighlight variant="band". Les 4 stats par défaut sont la copy
-// homepage historique ; passer `stats` pour un autre jeu.
+// de StatHighlight variant="band". Les données doivent toujours être passées
+// explicitement afin d'éviter de republier d'anciens chiffres non sourcés.
 
 import { StatHighlight, type Stat } from "./StatHighlight";
 
-const defaultStats: Stat[] = [
-  { value: "500+", label: "Clients accompagnés" },
-  { value: "28", label: "Années d'expérience" },
-  { value: "15", label: "Collaborateurs experts" },
-  { value: "98%", label: "Taux de fidélisation" },
-];
-
-export function StatsBand({ stats = defaultStats }: { stats?: Stat[] }) {
+export function StatsBand({ stats }: { stats: Stat[] }) {
+  if (stats.length === 0) return null;
   return (
     <section className="border-b border-border-soft bg-surface">
       <div className="mx-auto max-w-[82rem] px-6 py-12 lg:px-[4.5rem]">

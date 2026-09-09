@@ -1,5 +1,8 @@
 import Link from "next/link";
 import { SIMULATEURS } from "@/app/simulateurs/registry";
+import { IconSet, isSupportedIcon } from "./IconSet";
+import type { IconName } from "./IconSet";
+import { EditorialArrow, EDITORIAL_FOCUS } from "./editorial/EditorialElements";
 
 interface Simulator {
   slug: string;
@@ -9,18 +12,20 @@ interface Simulator {
   badge?: string;
   icon?: string;
 }
-
-// Dérivé du registry (source unique) : les 4 premiers outils = ordre
-// éditorial du registre, plus de liste hardcodée désynchronisée.
-const defaultSimulators: Simulator[] = SIMULATEURS.slice(0, 4).map((sim, i) => ({
+const defaultSimulators: Simulator[] = SIMULATEURS.slice(0, 4).map((sim) => ({
   slug: sim.slug,
   title: sim.title,
   description: `${sim.metaDescription.split(".")[0]}.`,
   href: `/simulateurs/${sim.slug}`,
   icon: sim.icon,
-  ...(i === 0 ? { badge: "Populaire" } : {}),
 }));
-
+const simulatorIcons: Record<string, IconName> = {
+  charges: "chart",
+  statuts: "scale",
+  tjm: "euro",
+  immobilier: "book",
+  honoraires: "euro",
+};
 interface SimulatorTeaserProps {
   title?: string;
   subtitle?: string;
@@ -29,62 +34,65 @@ interface SimulatorTeaserProps {
 
 export function SimulatorTeaser({
   title = "Nos outils gratuits",
-  subtitle = "Faites vos premières estimations en quelques clics. Nos simulateurs sont conçus pour vous aider à prendre les bonnes décisions.",
+  subtitle = "Faites une première estimation, puis identifiez les hypothèses à vérifier avec un professionnel.",
   simulators = defaultSimulators,
 }: SimulatorTeaserProps) {
   return (
-    <section className="bg-surface px-6 py-24 lg:px-[4.5rem]">
-      <div className="mx-auto max-w-[82rem]">
-        <div className="mb-14 max-w-2xl">
-          <div className="mb-5 flex items-center gap-3.5">
-            <span className="block h-px w-6 flex-shrink-0 bg-accent-500" />
-            <span className="text-[0.65rem] font-bold uppercase tracking-[0.14em] text-accent-700">
-              Simulateurs
-            </span>
-          </div>
-          <h2 className="mb-4 font-display text-[2.25rem] font-bold leading-[1.15] tracking-tight text-ink lg:text-[2.75rem]">
+    <section className="mb-12 rounded-[1.75rem] bg-navy p-6 sm:p-9">
+      <div className="mb-8 grid gap-5 lg:grid-cols-[1fr_.85fr] lg:items-end lg:gap-10">
+        <div>
+          <p className="mb-4 text-xs font-bold uppercase tracking-[.14em] text-mint">
+            Passer aux chiffres
+          </p>
+          <h2 className="font-display text-[clamp(1.6rem,3vw,2.5rem)] font-bold leading-[1.1] tracking-[-.04em] text-white">
             {title}
           </h2>
-          <p className="text-[0.95rem] leading-relaxed text-ink-muted">{subtitle}</p>
         </div>
-
-        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
-          {simulators.map((sim) => (
-            <Link
-              key={sim.href}
-              href={sim.href}
-              className="group relative border border-border-soft bg-surface p-7 transition-all hover:-translate-y-0.5 hover:border-accent-500 hover:shadow-lg"
-            >
+        <p className="max-w-xl text-base leading-7 text-white/75">{subtitle}</p>
+      </div>
+      <div className="grid gap-3 md:grid-cols-2">
+        {simulators.map((sim, i) => (
+          <Link
+            key={sim.href}
+            href={sim.href}
+            className={`group flex min-w-0 flex-col rounded-[1.4rem] p-5 transition-colors hover:bg-white sm:p-6 ${EDITORIAL_FOCUS} ${i % 2 ? "bg-mint" : "bg-lilac"}`}
+          >
+            <div className="mb-5 flex items-center justify-between gap-3">
+              <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/75 text-blue">
+                <IconSet
+                  name={
+                    sim.icon && isSupportedIcon(sim.icon)
+                      ? sim.icon
+                      : (simulatorIcons[sim.slug] ?? "chart")
+                  }
+                  size={24}
+                />
+              </span>
               {sim.badge && (
-                <span className="absolute right-4 top-4 bg-accent-300 px-2 py-0.5 text-[0.6rem] font-semibold tracking-wide text-accent-700">
+                <span className="rounded-full bg-white/75 px-3 py-1 text-xs font-bold text-blue">
                   {sim.badge}
                 </span>
               )}
-              <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-md border border-brand-100 bg-brand-50 text-[1.3rem] transition-colors group-hover:border-accent-300 group-hover:bg-accent-50">
-                <span aria-hidden>{sim.icon ?? "🧮"}</span>
-              </div>
-              <h3 className="mb-2 text-[0.95rem] font-semibold text-ink transition-colors group-hover:text-accent-700">
-                {sim.title}
-              </h3>
-              <p className="text-[0.78rem] leading-relaxed text-ink-muted">
-                {sim.description}
-              </p>
-              <span className="mt-4 block text-[0.75rem] font-medium text-accent-700 opacity-0 transition-opacity group-hover:opacity-100">
-                Accéder au simulateur →
-              </span>
-            </Link>
-          ))}
-        </div>
-
-        <div className="mt-8">
-          <Link
-            href="/simulateurs"
-            className="inline-flex items-center gap-2 text-[0.85rem] font-medium text-accent-700 transition-colors hover:text-accent-500"
-          >
-            Tous nos outils gratuits →
+              <EditorialArrow className="ml-auto text-blue transition-transform group-hover:translate-x-1" />
+            </div>
+            <h3 className="font-display text-xl font-bold leading-tight tracking-[-.025em] text-ink">
+              {sim.title}
+            </h3>
+            <p className="mt-3 flex-1 text-sm leading-6 text-ink-muted">
+              {sim.description}
+            </p>
+            <span className="mt-5 text-sm font-bold text-blue">
+              Ouvrir le simulateur
+            </span>
           </Link>
-        </div>
+        ))}
       </div>
+      <Link
+        href="/simulateurs"
+        className={`mt-7 inline-flex min-h-11 items-center gap-3 rounded-full border border-white/30 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-white/10 ${EDITORIAL_FOCUS}`}
+      >
+        Tous les simulateurs <EditorialArrow />
+      </Link>
     </section>
   );
 }

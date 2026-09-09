@@ -161,35 +161,42 @@ assert.deepEqual(
 
 const faq = buildDirectoryFaqItems(candidate);
 assert.equal(faq.length, 4);
-assert.ok(faq[0]!.question.includes("Non verifie Ordre"));
+assert.ok(faq[0]!.question.includes("statut a confirmer"));
 assert.ok(faq.some((item) => item.answer.includes("SIRET")));
 
-const paris = db.getDirectoryCityBySlug("paris");
-assert.ok(paris, "Expected Paris to exist in imported directory data");
-const related = db.getDirectoryRelatedListingCabinetsByCity(
-  paris.code_insee,
-  "44110142500037",
-  10,
-);
-assert.ok(related.length > 0, "Expected related Paris cabinets");
-assert.ok(
-  related.every((card) => card.establishment.siret !== "44110142500037"),
-  "Related cabinets must exclude the current establishment",
-);
+async function main(): Promise<void> {
+  const paris = await db.getDirectoryCityBySlug("paris");
+  assert.ok(paris, "Expected Paris to exist in imported directory data");
+  const related = await db.getDirectoryRelatedListingCabinetsByCity(
+    paris.code_insee,
+    "44110142500037",
+    10,
+  );
+  assert.ok(related.length > 0, "Expected related Paris cabinets");
+  assert.ok(
+    related.every((card) => card.establishment.siret !== "44110142500037"),
+    "Related cabinets must exclude the current establishment",
+  );
 
-const profileServices = db.getDirectoryProfileServices();
-assert.deepEqual(
-  profileServices.map((service) => service.slug),
-  ["comptabilite", "fiscalite", "social", "creation-entreprise", "conseil-gestion", "audit"],
-);
+  const profileServices = await db.getDirectoryProfileServices();
+  assert.deepEqual(
+    profileServices.map((service) => service.slug),
+    ["comptabilite", "fiscalite", "social", "creation-entreprise", "conseil-gestion", "audit"],
+  );
 
-const profileProfessions = db.getDirectoryProfileProfessions(8);
-assert.equal(profileProfessions.length, 8);
-assert.ok(
-  profileProfessions.every((profession, index, list) =>
-    index === 0 || list[index - 1]!.volume >= profession.volume
-  ),
-  "Profile professions should be ordered by descending volume",
-);
+  const profileProfessions = await db.getDirectoryProfileProfessions(8);
+  assert.equal(profileProfessions.length, 8);
+  assert.ok(
+    profileProfessions.every((profession, index, list) =>
+      index === 0 || list[index - 1]!.volume >= profession.volume
+    ),
+    "Profile professions should be ordered by descending volume",
+  );
 
-console.log("Directory profile V2 helpers OK");
+  console.log("Directory profile V2 helpers OK");
+}
+
+main().catch((error: unknown) => {
+  console.error(error);
+  process.exitCode = 1;
+});

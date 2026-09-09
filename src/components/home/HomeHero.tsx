@@ -56,7 +56,7 @@ export async function HomeHero() {
                 />
               </span>{" "}
               les{" "}
-              <span className="font-mono font-semibold tabular-nums text-accent-300">
+              <span className="tabular-nums text-accent-300">
                 {cabinetCount > 0 ? cabinetCount.toLocaleString("fr-FR") : ""}
               </span>{" "}
               cabinets comptables de France.
@@ -128,18 +128,16 @@ export async function HomeHero() {
                 </p>
                 <dl className="mt-4 space-y-3.5 text-[0.78rem]">
                   <div>
-                    <dt className="text-white/45">À partir de</dt>
-                    <dd className="mt-0.5 font-mono text-[1rem] font-semibold tabular-nums text-accent-300">
-                      59 € HT/mois
-                    </dd>
+                    <dt className="text-white/45">Honoraires</dt>
+                    <dd className="mt-0.5 text-white/85">À confirmer selon le périmètre</dd>
                   </div>
                   <div>
                     <dt className="text-white/45">Échanges</dt>
-                    <dd className="mt-0.5 text-white/85">100 % à distance, outils temps réel</dd>
+                    <dd className="mt-0.5 text-white/85">À distance ou hybrides selon le cabinet</dd>
                   </div>
                   <div>
                     <dt className="text-white/45">Idéal pour</dt>
-                    <dd className="mt-0.5 text-white/85">Indépendants, TPE digitalisées</dd>
+                    <dd className="mt-0.5 text-white/85">À évaluer selon vos outils et votre autonomie</dd>
                   </div>
                 </dl>
               </div>
@@ -151,17 +149,15 @@ export async function HomeHero() {
                 <dl className="mt-4 space-y-3.5 text-[0.78rem]">
                   <div>
                     <dt className="text-white/45">Honoraires</dt>
-                    <dd className="mt-0.5 font-mono text-[1rem] font-semibold tabular-nums text-surface">
-                      Sur devis
-                    </dd>
+                    <dd className="mt-0.5 text-white/85">À confirmer selon le périmètre</dd>
                   </div>
                   <div>
                     <dt className="text-white/45">Échanges</dt>
-                    <dd className="mt-0.5 text-white/85">Rendez-vous, terrain, réseau local</dd>
+                    <dd className="mt-0.5 text-white/85">Présentiel, hybride ou à distance</dd>
                   </div>
                   <div>
                     <dt className="text-white/45">Idéal pour</dt>
-                    <dd className="mt-0.5 text-white/85">Commerces, dossiers complexes</dd>
+                    <dd className="mt-0.5 text-white/85">À évaluer selon vos échanges attendus</dd>
                   </div>
                 </dl>
               </div>

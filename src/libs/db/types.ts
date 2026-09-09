@@ -479,6 +479,7 @@ export interface DbAdapter {
   // ─── Page content (sections, SEO, meta) ───
   // READ
   getPageSections(route: string, slug: string): Promise<PageSection[]>;
+  /** Public read: returns null unless the matching page_meta row is published. */
   getSeoOverride(route: string, slug: string): Promise<SeoOverride | null>;
   getPageMeta(route: string, slug: string): Promise<PageMeta | null>;
   /** P4a — needed by sitemap.ts for real lastmod from page_meta.reviewed_at. */

@@ -9,7 +9,7 @@ import {
   indemniteKm,
   type TypeVehicule,
 } from "@/libs/simulateurs/math";
-import { Disclaimer, FieldNumber, FieldSelect, FieldToggle, ResultValue, SimulatorBox, SimulatorCta } from "./ui";
+import { Disclaimer, FieldNumber, FieldSelect, FieldToggle, ResultValue, SimulatorTable, SimulatorBox, SimulatorFields, ResultGrid, SimulatorCta } from "./ui";
 
 export function FraisKmSimulator() {
   const [type, setType] = useState<TypeVehicule>("voiture");
@@ -23,7 +23,7 @@ export function FraisKmSimulator() {
 
   return (
     <SimulatorBox>
-      <div className="grid gap-5 md:grid-cols-3">
+      <SimulatorFields columns={3}>
         <FieldSelect<TypeVehicule>
           label="Type de véhicule"
           value={type}
@@ -43,12 +43,12 @@ export function FraisKmSimulator() {
           options={baremes.map((b) => ({ value: b.id, label: b.label }))}
         />
         <FieldNumber label="Distance professionnelle" value={distance} onChange={setDistance} step={500} suffix="km/an" />
-      </div>
-      <div className="mt-4">
-        <FieldToggle label="Véhicule 100 % électrique (majoration de 20 %)" value={electrique} onChange={setElectrique} />
-      </div>
+        <div className="md:col-span-full">
+          <FieldToggle label="Véhicule 100 % électrique (majoration de 20 %)" value={electrique} onChange={setElectrique} />
+        </div>
+      </SimulatorFields>
 
-      <div className="mt-7 grid gap-4 md:grid-cols-3">
+      <ResultGrid columns={3}>
         <ResultValue
           label="Indemnité annuelle"
           value={fmtEur(result.indemnite)}
@@ -57,17 +57,18 @@ export function FraisKmSimulator() {
         />
         <ResultValue label="Coût moyen par km" value={fmtEurPrecis(result.coutParKm)} detail="indemnité ÷ distance" />
         <ResultValue label="Équivalent mensuel" value={fmtEur(result.indemnite / 12)} detail="sur 12 mois" />
-      </div>
+      </ResultGrid>
 
-      <div className="mt-7 overflow-x-auto">
-        <table className="w-full min-w-[24rem] text-left text-[0.85rem]">
+      <SimulatorTable title="Comparer les puissances fiscales">
+        <table className="min-w-[32rem]">
+          <caption className="sr-only">Indemnités et coût kilométrique par puissance fiscale</caption>
           <thead>
-            <tr className="border-b-2 border-accent-500">
-              <th className="py-2.5 pr-4 font-display text-[0.78rem] uppercase tracking-[0.08em] text-ink-muted">Puissance</th>
-              <th className="py-2.5 pr-4 font-display text-[0.78rem] uppercase tracking-[0.08em] text-ink-muted">
+            <tr>
+              <th scope="col">Puissance</th>
+              <th scope="col">
                 Indemnité pour {distance.toLocaleString("fr-FR")} km
               </th>
-              <th className="py-2.5 font-display text-[0.78rem] uppercase tracking-[0.08em] text-ink-muted">€/km</th>
+              <th scope="col">€/km</th>
             </tr>
           </thead>
           <tbody>
@@ -75,7 +76,7 @@ export function FraisKmSimulator() {
               const r = indemniteKm(distance, b.id, type, electrique);
               const active = b.id === puissanceValide;
               return (
-                <tr key={b.id} className={`border-b border-border-soft ${active ? "bg-accent-50" : ""}`}>
+                <tr key={b.id} className={`border-b border-border-soft ${active ? "bg-mint" : "bg-white"}`}>
                   <td className="py-2.5 pr-4 text-ink">{b.label}</td>
                   <td className="py-2.5 pr-4 font-mono tabular-nums text-ink">{fmtEur(r.indemnite)}</td>
                   <td className="py-2.5 font-mono tabular-nums text-ink-muted">{fmtEurPrecis(r.coutParKm)}</td>
@@ -84,7 +85,7 @@ export function FraisKmSimulator() {
             })}
           </tbody>
         </table>
-      </div>
+      </SimulatorTable>
 
       <SimulatorCta label="Arbitrer frais réels vs forfait" />
       <Disclaimer>

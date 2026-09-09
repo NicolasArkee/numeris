@@ -8,7 +8,7 @@ import {
   PROFILS_SALAIRE,
   REGIONS_SALAIRE,
 } from "@/libs/simulateurs/math";
-import { Disclaimer, FieldSelect, ResultValue, SimulatorBox } from "./ui";
+import { Disclaimer, FieldSelect, ResultValue, SimulatorTable, SimulatorBox, SimulatorFields, ResultGrid } from "./ui";
 
 export function SalaireGrille() {
   const [profil, setProfil] = useState("collaborateur");
@@ -19,7 +19,7 @@ export function SalaireGrille() {
 
   return (
     <SimulatorBox>
-      <div className="grid gap-5 md:grid-cols-2">
+      <SimulatorFields columns={2}>
         <FieldSelect
           label="Profil / expérience"
           value={profil}
@@ -32,12 +32,12 @@ export function SalaireGrille() {
           onChange={setRegion}
           options={REGIONS_SALAIRE.map((rg) => ({ value: rg.id, label: rg.label }))}
         />
-      </div>
+      </SimulatorFields>
       {profilData && (
         <p className="mt-3 text-[0.75rem] text-ink-muted">{profilData.detail}</p>
       )}
 
-      <div className="mt-7 grid gap-4 md:grid-cols-2">
+      <ResultGrid columns={2}>
         <ResultValue
           label="Salaire brut annuel"
           value={`${fmtEur(r.brutMin)} – ${fmtEur(r.brutMax)}`}
@@ -48,36 +48,32 @@ export function SalaireGrille() {
           value={`${fmtEur(r.netMensuelMin)} – ${fmtEur(r.netMensuelMax)}`}
           detail="avant impôt sur le revenu (net ≈ 78 % du brut)"
         />
-      </div>
+      </ResultGrid>
 
       {/* Grille CCN 787 — minima conventionnels indicatifs */}
-      <div className="mt-9">
-        <h3 className="mb-4 font-display text-[1.15rem] font-bold text-ink">
-          Minima conventionnels — CCN des cabinets d&apos;experts-comptables (n° 787)
-        </h3>
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse text-left">
+      <SimulatorTable title="Minima conventionnels — CCN des cabinets d’experts-comptables (n° 787)">
+          <table className="min-w-[34rem]">
+          <caption className="sr-only">Grille des minima conventionnels par coefficient</caption>
             <thead>
-              <tr className="border-b-2 border-accent-500">
-                <th className="px-4 py-2.5 text-[0.68rem] font-bold uppercase tracking-[0.08em] text-ink-muted">Coefficient</th>
-                <th className="px-4 py-2.5 text-[0.68rem] font-bold uppercase tracking-[0.08em] text-ink-muted">Niveau</th>
-                <th className="px-4 py-2.5 text-[0.68rem] font-bold uppercase tracking-[0.08em] text-ink-muted">Brut annuel minimum</th>
-                <th className="px-4 py-2.5 text-[0.68rem] font-bold uppercase tracking-[0.08em] text-ink-muted">Brut mensuel</th>
+              <tr>
+                <th scope="col">Coefficient</th>
+                <th scope="col">Niveau</th>
+                <th scope="col">Brut annuel minimum</th>
+                <th scope="col">Brut mensuel</th>
               </tr>
             </thead>
             <tbody>
               {GRILLE_CCN.map((row) => (
-                <tr key={row.coef} className="border-b border-border-soft bg-surface">
+                <tr key={row.coef} className="even:bg-paper">
                   <td className="px-4 py-3 text-[0.85rem] font-medium text-ink">{row.coef}</td>
                   <td className="px-4 py-3 text-[0.8rem] text-ink-muted">{row.niveau}</td>
-                  <td className="px-4 py-3 text-[0.85rem] font-medium text-accent-700">{fmtEur(row.brutAnnuel)}</td>
+                  <td className="px-4 py-3 text-[0.85rem] font-medium text-cobalt">{fmtEur(row.brutAnnuel)}</td>
                   <td className="px-4 py-3 text-[0.8rem] text-ink-muted">{fmtEur(row.brutAnnuel / 12)}</td>
                 </tr>
               ))}
             </tbody>
           </table>
-        </div>
-      </div>
+      </SimulatorTable>
 
       <Disclaimer>
         Fourchettes de marché et minima conventionnels indicatifs 2026 (CCN 787, base 35h),

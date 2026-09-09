@@ -1,9 +1,9 @@
+import { EDITORIAL_FOCUS } from "./editorial/EditorialElements";
 interface TocItem {
   id: string;
   label: string;
   level?: number;
 }
-
 interface TableOfContentsProps {
   items: TocItem[];
   title?: string;
@@ -13,32 +13,32 @@ export function TableOfContents({
   items,
   title = "Sommaire",
 }: TableOfContentsProps) {
-  if (items.length === 0) return null;
-
+  if (!items.length) return null;
   return (
-    <nav
-      className="border border-border-soft bg-surface p-6"
-      aria-label="Sommaire"
-    >
-      <h2 className="mb-4 flex items-center gap-2 text-[0.82rem] font-bold uppercase tracking-[0.08em] text-ink">
-        <span className="text-accent-500">§</span> {title}
+    <nav className="rounded-[1.5rem] bg-lilac p-5 sm:p-7" aria-label="Sommaire">
+      <h2 className="mb-5 font-display text-xl font-bold tracking-[-.025em] text-ink">
+        {title}
       </h2>
-      <ol className="space-y-1.5">
-        {items.map((item, i) => (
-          <li key={item.id}>
-            <a
-              href={`#${item.id}`}
-              className={`flex items-baseline gap-2 text-[0.82rem] leading-snug text-ink-muted transition-colors hover:text-accent-700 ${
-                item.level === 3 ? "ml-5" : ""
-              }`}
-            >
-              <span className="flex-shrink-0 text-[0.68rem] font-medium text-accent-500">
-                {i + 1}.
-              </span>
-              {item.label}
-            </a>
-          </li>
-        ))}
+      <ol className="grid gap-2">
+        {items.map((item, i) => {
+          const id = item.id.trim().replace(/^#+/, "");
+          return (
+            <li key={id}>
+              <a
+                href={`#${id}`}
+                className={`group flex items-start gap-3 rounded-xl px-3 py-3 text-sm leading-6 text-ink transition-colors hover:bg-white/80 hover:text-blue ${EDITORIAL_FOCUS} ${item.level === 3 ? "ml-5" : "bg-white/50"}`}
+              >
+                <span
+                  aria-hidden="true"
+                  className="mt-0.5 shrink-0 font-mono text-xs font-bold text-blue"
+                >
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <span>{item.label}</span>
+              </a>
+            </li>
+          );
+        })}
       </ol>
     </nav>
   );

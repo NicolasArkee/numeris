@@ -118,16 +118,23 @@ assert.deepEqual(
 const faq = buildDirectoryCityFaqItems(makeCity(), stats);
 assert.equal(faq.length, 4);
 assert.ok(faq.some((item) => item.question.includes("expert-comptable a Paris")));
-assert.ok(faq.some((item) => item.answer.includes("inscription Ordre non confirmee")));
+assert.ok(faq.some((item) => item.answer.includes("statut professionnel")));
 
-const paris = db.getDirectoryCityBySlug("paris");
-assert.ok(paris, "Expected Paris to exist in imported directory data");
-const parisCount = db.getDirectoryListingCabinetCountByCity(paris.code_insee);
-assert.ok(parisCount > 0, "Expected Paris listing count");
-const parisCards = db.getDirectoryListingCabinetsByCity(paris.code_insee, 5);
-const parisStats = buildDirectoryCityStats(parisCards, parisCount);
-assert.equal(parisStats.totalCount, parisCount);
-assert.equal(parisStats.displayedCount, 5);
-assert.ok(parisStats.hasMoreResults);
+async function main(): Promise<void> {
+  const paris = await db.getDirectoryCityBySlug("paris");
+  assert.ok(paris, "Expected Paris to exist in imported directory data");
+  const parisCount = await db.getDirectoryListingCabinetCountByCity(paris.code_insee);
+  assert.ok(parisCount > 0, "Expected Paris listing count");
+  const parisCards = await db.getDirectoryListingCabinetsByCity(paris.code_insee, 5);
+  const parisStats = buildDirectoryCityStats(parisCards, parisCount);
+  assert.equal(parisStats.totalCount, parisCount);
+  assert.equal(parisStats.displayedCount, 5);
+  assert.ok(parisStats.hasMoreResults);
 
-console.log("Directory city V2 helpers OK");
+  console.log("Directory city V2 helpers OK");
+}
+
+main().catch((error: unknown) => {
+  console.error(error);
+  process.exitCode = 1;
+});

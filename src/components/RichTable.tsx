@@ -1,9 +1,6 @@
-/**
- * RichTable — vrai tableau comparatif multi-colonnes (headers + rows) pour le contenu éditorial.
- * Comble le manque : `ComparisonTable`/`ComparisonInline` ne rend qu'une liste 2 colonnes.
- * Data-driven via `items = { headers: string[], rows: string[][] }`. La 1ʳᵉ colonne est traitée
- * comme libellé de ligne (mise en avant). Responsive : scroll-x sur mobile, jamais de débordement.
- */
+import { EDITORIAL_HEADING } from "./editorial/EditorialElements";
+
+/** Scrollable data table. The first cell of each row is its accessible row heading. */
 export function RichTable({
   title,
   intro,
@@ -17,54 +14,66 @@ export function RichTable({
   rows: string[][];
   caption?: string | null;
 }) {
-  if (headers.length === 0 || rows.length === 0) return null;
-
+  if (!headers.length || !rows.length) return null;
   return (
-    <section className="mx-auto mb-12 max-w-[60rem]">
-      {title && (
-        <h2 className="mb-4 font-display text-[1.25rem] font-bold text-ink">{title}</h2>
-      )}
+    <section className="mx-auto mb-12 min-w-0 max-w-[72rem]">
+      {title && <h2 className={`mb-5 ${EDITORIAL_HEADING}`}>{title}</h2>}
       {intro && (
-        <p className="mb-4 max-w-prose text-base leading-relaxed text-ink-muted">{intro}</p>
+        <p className="mb-6 max-w-3xl text-base leading-7 text-ink-muted">
+          {intro}
+        </p>
       )}
-      <div className="overflow-x-auto border border-border-soft">
-        <table className="w-full border-collapse text-left text-[0.88rem]">
-          {caption && <caption className="sr-only">{caption}</caption>}
-          <thead>
-            <tr className="bg-surface">
-              {headers.map((h, i) => (
-                <th
-                  key={i}
-                  scope="col"
-                  className={`border-b border-border-soft px-4 py-3 font-display text-[0.9rem] font-semibold text-ink ${
-                    i === 0 ? "min-w-[9rem]" : ""
-                  }`}
-                >
-                  {h}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row, r) => (
-              <tr key={r} className={r % 2 === 1 ? "bg-bg" : "bg-surface/40"}>
-                {row.map((cell, c) => (
-                  <td
-                    key={c}
-                    {...(c === 0 ? { scope: "row" as const } : {})}
-                    className={`border-b border-border-soft px-4 py-3 align-top leading-relaxed ${
-                      c === 0
-                        ? "font-semibold text-ink"
-                        : "text-ink-muted"
-                    }`}
+      <div className="overflow-hidden rounded-[1.5rem] border border-ink/10 bg-white">
+        <div
+          className="overflow-x-auto overscroll-x-contain focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue"
+          tabIndex={0}
+          role="region"
+          aria-label={title || caption || "Tableau comparatif"}
+        >
+          <table className="w-full min-w-[36rem] border-collapse text-left text-sm">
+            {caption && <caption className="sr-only">{caption}</caption>}
+            <thead className="bg-navy text-white">
+              <tr>
+                {headers.map((header, i) => (
+                  <th
+                    key={i}
+                    scope="col"
+                    className="px-5 py-5 font-bold leading-6 sm:px-6"
                   >
-                    {cell}
-                  </td>
+                    {header}
+                  </th>
                 ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {rows.map((row, r) => (
+                <tr
+                  key={r}
+                  className={`border-t border-ink/10 ${r % 2 ? "bg-paper/70" : "bg-white"}`}
+                >
+                  {row.map((cell, c) =>
+                    c === 0 ? (
+                      <th
+                        key={c}
+                        scope="row"
+                        className="min-w-36 px-5 py-5 align-top font-bold leading-6 text-ink sm:px-6"
+                      >
+                        {cell}
+                      </th>
+                    ) : (
+                      <td
+                        key={c}
+                        className="min-w-36 px-5 py-5 align-top leading-6 text-ink-muted sm:px-6"
+                      >
+                        {cell}
+                      </td>
+                    ),
+                  )}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </section>
   );

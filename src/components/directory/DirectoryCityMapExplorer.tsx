@@ -109,8 +109,8 @@ function SidebarStatus({ verified }: { verified: boolean }) {
     <span
       className={
         verified
-          ? "inline-flex w-fit items-center gap-1 rounded-md border border-success-500/30 bg-success-50 px-2 py-0.5 font-display text-[0.625rem] font-semibold uppercase tracking-wider text-success-700"
-          : "inline-flex w-fit items-center gap-1 rounded-md border border-warning-500/30 bg-warning-50 px-2 py-0.5 font-display text-[0.625rem] font-semibold uppercase tracking-wider text-warning-700"
+          ? "inline-flex w-fit items-center gap-1 rounded-full border border-[#17613b]/15 bg-mint px-2 py-0.5 font-display text-[0.625rem] font-semibold uppercase tracking-wider text-[#17613b]"
+          : "inline-flex w-fit items-center gap-1 rounded-full border border-[#8b3d24]/15 bg-apricot px-2 py-0.5 font-display text-[0.625rem] font-semibold uppercase tracking-wider text-[#8b3d24]"
       }
     >
       <span aria-hidden>{verified ? "✓" : "?"}</span>
@@ -129,9 +129,9 @@ function CabinetSidebar({
   return (
     <aside
       data-directory-cabinet-sidebar
-      className="order-2 border-t border-border bg-surface lg:order-1 lg:border-t-0 lg:border-r"
+      className="order-2 min-w-0 border-t border-ink/10 bg-white lg:order-1 lg:border-t-0 lg:border-r"
     >
-      <div className="border-b border-border-soft p-5">
+      <div className="border-b border-ink/10 bg-mint p-6">
         <h2 className="font-display text-[1.25rem] font-bold text-ink">
           Cabinets référencés
         </h2>
@@ -141,23 +141,23 @@ function CabinetSidebar({
           <span className="text-ink">{numberFormatter.format(stats.totalCount)}</span>
         </p>
       </div>
-      <div className="max-h-[40rem] overflow-y-auto">
+      <div className="max-h-[38rem] overflow-y-auto overscroll-contain p-3">
         {cabinets.map((card, index) => {
           const name = directoryDisplayName(card);
           const address = buildDirectoryAddress(card);
           const verified = isDirectoryCabinetVerified(card);
 
           return (
-            <article key={card.establishment.siret} className="border-b border-border-soft last:border-b-0">
+            <article key={card.establishment.siret} className="rounded-xl border-b border-ink/10 last:border-b-0">
               <Link
                 href={cabinetDirectoryPath(card)}
-                className="group grid grid-cols-[2rem_minmax(0,1fr)] gap-3 px-5 py-4 transition-colors hover:bg-brand-50"
+                className="group grid grid-cols-[2rem_minmax(0,1fr)] gap-3 rounded-xl px-3 py-4 transition-colors hover:bg-lilac focus-visible:outline-2 focus-visible:outline-inset focus-visible:outline-blue"
               >
-                <span className="mt-1 flex h-7 w-7 items-center justify-center rounded-full bg-brand-ink font-mono text-[0.6875rem] font-semibold text-surface group-hover:bg-accent-500">
+                <span className="mt-1 flex h-7 w-7 items-center justify-center rounded-full bg-navy font-mono text-[0.6875rem] font-semibold text-surface group-hover:bg-accent-500">
                   {index + 1}
                 </span>
                 <span className="min-w-0">
-                  <span className="block truncate font-display text-[0.9375rem] font-semibold text-ink">
+                  <span className="block break-words font-display text-[0.9375rem] font-semibold text-ink">
                     {name}
                   </span>
                   <span className="mt-1 block text-[0.8125rem] leading-5 text-ink-muted">
@@ -177,8 +177,7 @@ function CabinetSidebar({
       </div>
       {stats.hasMoreResults && (
         <p className="border-t border-border-soft bg-bg-muted px-5 py-4 text-[0.8125rem] leading-5 text-ink-muted">
-          Les résultats sont limités pour garder la page lisible. Les fiches
-          restantes pourront être exposées via pagination.
+          Cette carte présente les {stats.displayedCount} premières fiches. Utilisez le comparateur ci-dessus pour rechercher parmi les établissements affichés.
         </p>
       )}
     </aside>
@@ -203,7 +202,7 @@ export function DirectoryCityMapExplorer({
       <section
         id="liste-cabinets"
         data-directory-city-map-explorer
-        className="overflow-hidden rounded-xl border border-border bg-surface shadow-sm"
+        className="scroll-mt-32 overflow-hidden rounded-[2rem] border border-ink/10 bg-white"
       >
         <CabinetSidebar cabinets={cabinets} stats={stats} />
       </section>
@@ -225,13 +224,13 @@ export function DirectoryCityMapExplorer({
     <section
       id="liste-cabinets"
       data-directory-city-map-explorer
-      className="overflow-hidden rounded-xl border border-border bg-surface shadow-sm"
+      className="scroll-mt-32 overflow-hidden rounded-[2rem] border border-ink/10 bg-white"
     >
-      <div className="grid lg:grid-cols-[minmax(18rem,1fr)_minmax(0,4fr)]">
+      <div className="grid lg:grid-cols-[minmax(18rem,.8fr)_minmax(0,1.5fr)]">
         <CabinetSidebar cabinets={cabinets} stats={stats} />
         <div
           data-directory-city-map="embed"
-          className="order-1 relative min-h-[24rem] overflow-hidden bg-brand-50 lg:order-2 lg:min-h-[40rem]"
+          className="order-1 relative min-h-[26rem] overflow-hidden bg-brand-50 lg:order-2 lg:min-h-[40rem]"
         >
           <iframe
             src={embedUrl}
@@ -261,8 +260,8 @@ export function DirectoryCityMapExplorer({
             );
           })}
           <div className="absolute bottom-4 left-4 right-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-            <div className="max-w-md rounded-lg border border-white/80 bg-surface/95 px-4 py-3 shadow-sm">
-              <h2 className="font-display text-[1rem] font-semibold text-ink">
+            <div className="max-w-md rounded-full border border-white/80 bg-surface/95 px-4 py-3 shadow-sm">
+              <h2 className="font-display text-[1rem] font-bold text-ink">
                 Carte des cabinets à {city.name}
               </h2>
               <p className="mt-1 text-[0.8125rem] leading-5 text-ink-muted">
@@ -274,7 +273,7 @@ export function DirectoryCityMapExplorer({
               href={buildOpenStreetMapDirectionsUrl(openMapPoint)}
               rel="nofollow noopener noreferrer"
               target="_blank"
-              className="inline-flex w-fit items-center gap-1.5 rounded-md border border-brand-700 bg-surface/95 px-4 py-2.5 font-display text-[0.8125rem] font-semibold text-brand-700 shadow-sm transition-colors hover:bg-brand-50"
+              className="inline-flex w-fit items-center gap-1.5 rounded-full border border-blue bg-surface/95 px-4 py-2.5 font-display text-[0.8125rem] font-semibold text-brand-700 shadow-sm transition-colors hover:bg-brand-50"
             >
               Ouvrir la carte
               <span aria-hidden>↗</span>

@@ -8,7 +8,7 @@ import {
   SMIC_MENSUEL_BRUT,
   type StatutSalarie,
 } from "@/libs/simulateurs/math";
-import { Disclaimer, FieldNumber, FieldSelect, FieldToggle, ResultValue, SimulatorBox, SimulatorCta } from "./ui";
+import { Disclaimer, FieldNumber, FieldSelect, FieldToggle, ResultValue, SimulatorBox, SimulatorFields, ResultGrid, SimulatorCta } from "./ui";
 
 type PointDepart = "brut" | "net";
 
@@ -24,7 +24,7 @@ export function CoutSalarieSimulator() {
 
   return (
     <SimulatorBox>
-      <div className="grid gap-5 md:grid-cols-3">
+      <SimulatorFields columns={3}>
         <FieldSelect<PointDepart>
           label="Point de départ"
           value={depart}
@@ -51,12 +51,12 @@ export function CoutSalarieSimulator() {
             { value: "cadre", label: "Cadre" },
           ]}
         />
-      </div>
-      <div className="mt-4">
-        <FieldToggle label="Entreprise de 50 salariés et plus" value={plus50} onChange={setPlus50} />
-      </div>
+        <div className="md:col-span-full">
+          <FieldToggle label="Entreprise de 50 salariés et plus" value={plus50} onChange={setPlus50} />
+        </div>
+      </SimulatorFields>
 
-      <div className="mt-7 grid gap-4 md:grid-cols-3">
+      <ResultGrid columns={3}>
         <ResultValue
           label="Coût employeur mensuel"
           value={fmtEur(result.coutMensuel)}
@@ -65,9 +65,9 @@ export function CoutSalarieSimulator() {
         />
         <ResultValue label="Coût annuel" value={fmtEur(result.coutAnnuel)} detail="hors 13e mois, primes et avantages" />
         <ResultValue label="Net versé au salarié" value={fmtEur(result.netAvantImpot)} detail="avant impôt sur le revenu" />
-      </div>
+      </ResultGrid>
       {result.reduction > 0 && (
-        <p className="mt-4 border-l-2 border-l-accent-500 pl-4 text-[0.8rem] text-ink-muted">
+        <p className="mt-5 rounded-2xl bg-mint px-5 py-4 text-[.82rem] leading-6 text-navy">
           Réduction générale de cotisations (RGDU 2026) estimée :{" "}
           <strong className="font-mono tabular-nums">−{fmtEur(result.reduction)}</strong> par mois
           (dégressive jusqu&apos;à 3 SMIC), déjà déduite du coût affiché.

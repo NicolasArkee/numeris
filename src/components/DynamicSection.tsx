@@ -3,7 +3,8 @@
 // dispatching on `section_type` to the matching presentational component.
 //
 // Server component (no state / no client-only APIs) so it stays SSG-friendly.
-// PricingTeaser + TestimonialSlider read the DB directly server-side.
+// Commercial pricing is deliberately replaced by a scope-comparison prompt
+// unless a dedicated, current and sourced commercial surface owns the fact.
 //
 // Contract :
 //  - section.items     : JSON-encoded array, shape depends on section_type
@@ -31,18 +32,27 @@ import { NumberedSteps } from "./NumberedSteps";
 import { QuoteBlock } from "./QuoteBlock";
 import { StatHighlight } from "./StatHighlight";
 import { SimulatorTeaser } from "./SimulatorTeaser";
-import { PricingTeaser } from "./PricingTeaser";
-import { pricingTierToProp, type PricingTierShape } from "./pricing-shared";
 import { ProcessSteps } from "./ProcessSteps";
 import { ProsCons } from "./ProsCons";
 import { RichTable } from "./RichTable";
 import { TableOfContents } from "./TableOfContents";
 import { IconSet, isSupportedIcon } from "./IconSet";
+import { FaqAccordion } from "./editorial/FaqAccordion";
+import {
+  EDITORIAL_HEADING,
+  EDITORIAL_FOCUS,
+  EditorialArrow,
+  EditorialCheck,
+} from "./editorial/EditorialElements";
 import type { IconName } from "./IconSet";
 import { FaqJsonLd } from "./JsonLd";
-import { db } from "@/libs/db";
-import type { PageSection, PricingTier } from "@/libs/db";
-import { legalEntity } from "@/data/legal-entity";
+import type { PageSection } from "@/libs/db";
+import { normalizeAnchorId } from "@/libs/skoria-v2/model";
+import {
+  sanitizeLegacyPublicText,
+  sanitizeLegacyPublicValue,
+} from "@/libs/skoria-v2/content-safety";
+import { BriefTrigger } from "@/components/journey/BriefTrigger";
 
 // ─── Parsed shapes for items column ───
 interface Citation {
@@ -56,6 +66,11 @@ interface FaqEntry {
   a: string;
 }
 
+interface InternalLinkEntry {
+  label: string;
+  href?: string;
+}
+
 const GENERATED_PROSE_SHELL = "mx-auto max-w-[48rem]";
 const GENERATED_WIDE_TEXT_SHELL = "max-w-[72rem]";
 const GENERATED_PROSE_TEXT = "max-w-none";
@@ -63,8 +78,7 @@ const GENERATED_EDITORIAL_GRID_TEXT = "max-w-none";
 
 function isWideEditorialText(section: PageSection): boolean {
   return (
-    section.section_type === "ContentSection"
-    && section.route === "professions"
+    section.section_type === "ContentSection" && section.route === "professions"
   );
 }
 
@@ -99,7 +113,12 @@ function asFaqArray(v: unknown): FaqEntry[] {
     const obj = entry as Record<string, unknown>;
     const q = (obj.q ?? obj.question) as unknown;
     const a = (obj.a ?? obj.answer) as unknown;
-    if (typeof q === "string" && typeof a === "string" && q.trim() && a.trim()) {
+    if (
+      typeof q === "string" &&
+      typeof a === "string" &&
+      q.trim() &&
+      a.trim()
+    ) {
       out.push({ q, a });
     }
   }
@@ -108,14 +127,17 @@ function asFaqArray(v: unknown): FaqEntry[] {
 
 /** RichTable items shape: { headers: string[], rows: string[][] } — defensive coercion. */
 function asRichTable(v: unknown): { headers: string[]; rows: string[][] } {
-  if (v === null || typeof v !== "object" || Array.isArray(v)) return { headers: [], rows: [] };
+  if (v === null || typeof v !== "object" || Array.isArray(v))
+    return { headers: [], rows: [] };
   const obj = v as Record<string, unknown>;
   const headers = asStringArray(obj.headers);
   const rawRows = Array.isArray(obj.rows) ? obj.rows : [];
   const rows: string[][] = [];
   for (const row of rawRows) {
     if (!Array.isArray(row)) continue;
-    const cells = row.map((c) => (typeof c === "string" ? c : c == null ? "" : String(c)));
+    const cells = row.map((c) =>
+      typeof c === "string" ? c : c == null ? "" : String(c),
+    );
     // normalise la largeur des lignes sur le nombre d'en-têtes
     while (headers.length && cells.length < headers.length) cells.push("");
     rows.push(headers.length ? cells.slice(0, headers.length) : cells);
@@ -123,19 +145,161 @@ function asRichTable(v: unknown): { headers: string[]; rows: string[][] } {
   return { headers, rows };
 }
 
+function scalarCell(value: unknown): string | null {
+  if (typeof value === "string") return value;
+  if (typeof value === "number") return String(value);
+  if (typeof value === "boolean") return value ? "Oui" : "Non";
+  if (value === null || value === undefined) return "";
+  return null;
+}
+
+const COMPARISON_HEADER_LABELS: Record<string, string> = {
+  label: "Critère",
+  criterion: "Critère",
+  critere: "Critère",
+  title: "Critère",
+  name: "Option",
+  value: "Valeur",
+  valueA: "Option A",
+  valueB: "Option B",
+  description: "Détail",
+};
+
+function comparisonHeader(key: string): string {
+  return (
+    COMPARISON_HEADER_LABELS[key] ??
+    key
+      .replace(/([a-z])([A-Z])/g, "$1 $2")
+      .replace(/[_-]+/g, " ")
+      .replace(/^./, (letter) => letter.toUpperCase())
+  );
+}
+
+/**
+ * Comparison imports exist in three historical shapes. Normalize the rich
+ * table object as well as record arrays such as {label,valueA,valueB}.
+ */
+function coerceComparisonTable(
+  value: unknown,
+): { headers: string[]; rows: string[][] } | null {
+  if (isRecord(value)) {
+    const explicitHeaders = asStringArray(value.headers ?? value.columns);
+    const rawRows = Array.isArray(value.rows) ? value.rows : [];
+    if (explicitHeaders.length > 0 && rawRows.length > 0) {
+      const rows = rawRows
+        .map((row) => {
+          if (Array.isArray(row))
+            return row
+              .map(scalarCell)
+              .filter((cell): cell is string => cell !== null);
+          if (isRecord(row)) {
+            return Object.values(row)
+              .map(scalarCell)
+              .filter((cell): cell is string => cell !== null);
+          }
+          return [];
+        })
+        .filter((row) => row.length > 0)
+        .map((row) => {
+          const normalized = row.slice(0, explicitHeaders.length);
+          while (normalized.length < explicitHeaders.length)
+            normalized.push("");
+          return normalized;
+        });
+      return rows.length > 0 ? { headers: explicitHeaders, rows } : null;
+    }
+  }
+
+  const records = asObjectArray(value);
+  if (records.length === 0) return null;
+  const keys: string[] = [];
+  for (const record of records) {
+    for (const [key, cell] of Object.entries(record)) {
+      if (keys.includes(key) || scalarCell(cell) === null) continue;
+      keys.push(key);
+      if (keys.length === 6) break;
+    }
+    if (keys.length === 6) break;
+  }
+  if (keys.length < 2) return null;
+  const rows = records.map((record) =>
+    keys.map((key) => scalarCell(record[key]) ?? ""),
+  );
+  return { headers: keys.map(comparisonHeader), rows };
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function internalHref(value: unknown): string | undefined {
+  if (typeof value !== "string") return undefined;
+  const href = value.trim();
+  if (!href.startsWith("/") || href.startsWith("//")) return undefined;
+  return href;
+}
+
+function labelFromInternalHref(href: string): string {
+  const leaf =
+    href.split(/[?#]/, 1)[0]?.split("/").filter(Boolean).at(-1) ?? href;
+  try {
+    return decodeURIComponent(leaf)
+      .replace(/[-_]+/g, " ")
+      .replace(/^./, (letter) => letter.toUpperCase());
+  } catch {
+    return leaf.replace(/[-_]+/g, " ");
+  }
+}
+
+function coerceInternalLinks(value: unknown): InternalLinkEntry[] {
+  if (!Array.isArray(value)) return [];
+  const links: InternalLinkEntry[] = [];
+  const seen = new Set<string>();
+  for (const raw of value) {
+    let label = "";
+    let href: string | undefined;
+    if (typeof raw === "string") {
+      href = internalHref(raw);
+      label = href ? labelFromInternalHref(href) : raw.trim();
+    } else if (isRecord(raw)) {
+      href = internalHref(raw.href ?? raw.url ?? raw.target_url);
+      const route =
+        typeof raw.route === "string"
+          ? raw.route.replace(/^\/+|\/+$/g, "")
+          : "";
+      const slug =
+        typeof raw.slug === "string" ? raw.slug.replace(/^\/+|\/+$/g, "") : "";
+      if (!href && route && slug) href = `/${route}/${slug}`;
+      const rawLabel = raw.label ?? raw.title ?? raw.anchor;
+      label =
+        typeof rawLabel === "string"
+          ? rawLabel.trim()
+          : href
+            ? labelFromInternalHref(href)
+            : "";
+    }
+    if (!label) continue;
+    const key = href ?? label;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    links.push({ label, ...(href ? { href } : {}) });
+  }
+  return links;
+}
+
 function asCitations(v: unknown): Citation[] {
   if (!Array.isArray(v)) return [];
   const out: Citation[] = [];
   for (const entry of v) {
     if (
-      entry !== null
-      && typeof entry === "object"
-      && "text" in entry
-      && "url" in entry
-      && "source" in entry
-      && typeof (entry as { text: unknown }).text === "string"
-      && typeof (entry as { url: unknown }).url === "string"
-      && typeof (entry as { source: unknown }).source === "string"
+      entry !== null &&
+      typeof entry === "object" &&
+      "text" in entry &&
+      "url" in entry &&
+      "source" in entry &&
+      typeof (entry as { text: unknown }).text === "string" &&
+      typeof (entry as { url: unknown }).url === "string" &&
+      typeof (entry as { source: unknown }).source === "string"
     ) {
       out.push({
         text: (entry as { text: string }).text,
@@ -168,6 +332,10 @@ function splitTitled(item: string): { title: string; description: string } {
 }
 
 // ─── Citations footnote block ───
+function isVisibleCitation(citation: Citation) {
+  return Boolean(citation.url && !citation.url.toLowerCase().includes("/stub") && !citation.text.toLowerCase().includes("stub"));
+}
+
 function CitationsFooter({
   citations,
   wide = false,
@@ -175,37 +343,38 @@ function CitationsFooter({
   citations: Citation[];
   wide?: boolean;
 }) {
-  // P0 defense-in-depth — strip stub/placeholder citations at render time
-  // even if upstream pipeline (04_generate_sections._strip_stub_citations)
-  // missed one. Drop when url is empty, contains "/stub", or text mentions
-  // "stub" (case-insensitive). See ARKEE_ORG audit Tier 0 #1.
-  const safeCitations = citations.filter((c) => {
-    const url = (c.url || "").toLowerCase();
-    const text = (c.text || "").toLowerCase();
-    return url.length > 0 && !url.includes("/stub") && !text.includes("stub");
-  });
-  if (safeCitations.length === 0) return null;
+  const safeCitations = citations.filter(isVisibleCitation);
+  if (!safeCitations.length) return null;
   return (
-    <div className={`${wide ? GENERATED_WIDE_TEXT_SHELL : GENERATED_PROSE_SHELL} -mt-8 mb-12 border-l-2 border-l-border-soft bg-bg px-5 py-3`}>
-      <p className="mb-1 text-[0.65rem] font-bold uppercase tracking-[0.1em] text-ink-soft">
-        Sources
+    <aside
+      className={`${wide ? GENERATED_WIDE_TEXT_SHELL : GENERATED_PROSE_SHELL} mb-10 mt-4 rounded-2xl border border-ink/10 bg-white/70 p-5`}
+      aria-label="Sources de cette section"
+      data-editorial-sources
+    >
+      <p className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-[.12em] text-blue">
+        <IconSet name="book" size={16} /> Sources
       </p>
-      <ul className="space-y-1">
-        {safeCitations.map((cit) => (
-          <li key={`${cit.source}-${cit.url}`} className="text-[0.7rem] text-ink-muted">
+      <ul className="grid gap-2">
+        {safeCitations.map((citation) => (
+          <li
+            key={`${citation.source}-${citation.url}`}
+            className="text-xs leading-5 text-ink-muted"
+          >
             <a
-              href={cit.url}
+              href={citation.url}
               target="_blank"
               rel="noopener nofollow noreferrer"
-              className="underline transition-colors hover:text-accent-700"
+              className={`break-words underline decoration-blue/30 underline-offset-4 transition-colors hover:text-blue ${EDITORIAL_FOCUS}`}
             >
-              {cit.text || cit.source}
+              {citation.text || citation.source}
             </a>
-            <span className="ml-2 text-ink-soft">({cit.source})</span>
+            {citation.source && (
+              <span className="ml-2">({citation.source})</span>
+            )}
           </li>
         ))}
       </ul>
-    </div>
+    </aside>
   );
 }
 
@@ -215,31 +384,19 @@ function CitationsFooter({
 // sections we render a lighter accordion that mirrors the ClusterPage FAQ
 // markup so visuals stay coherent across the page.
 function FaqInline({ title, items }: { title: string; items: FaqEntry[] }) {
-  if (items.length === 0) return null;
+  if (!items.length) return null;
   return (
-    <div className="mb-12 max-w-[72rem]" id="faq">
-      <h2 className="mb-8 font-display text-[1.75rem] font-bold leading-tight text-ink">
+    <section className="mb-12 min-w-0 max-w-[72rem]" id="faq">
+      <p className="mb-4 text-xs font-bold uppercase tracking-[.14em] text-blue">
+        Vos questions
+      </p>
+      <h2 className={`mb-7 ${EDITORIAL_HEADING}`}>
         {title || "Questions fréquentes"}
       </h2>
-      <div className="grid gap-4">
-        {items.map((item) => (
-          <details
-            key={item.q}
-            className="group border border-border-soft bg-surface"
-          >
-            <summary className="flex cursor-pointer items-center justify-between px-7 py-5 text-[0.95rem] font-medium text-ink transition-colors hover:text-accent-700">
-              {item.q}
-              <span className="ml-4 text-[0.8rem] text-border-soft transition-transform group-open:rotate-45">
-                +
-              </span>
-            </summary>
-            <div className="max-w-prose border-t border-border-soft px-7 py-5 text-base leading-relaxed text-ink-muted">
-              {item.a}
-            </div>
-          </details>
-        ))}
-      </div>
-    </div>
+      <FaqAccordion
+        items={items.map((item) => ({ question: item.q, answer: item.a }))}
+      />
+    </section>
   );
 }
 
@@ -247,61 +404,85 @@ function FaqInline({ title, items }: { title: string; items: FaqEntry[] }) {
 // The existing <ComparisonTable> expects a pricing-plan shape that Gemini
 // does not emit for editorial pages. When `items` is flat strings (typical
 // for "régime A vs régime B" lists), we render a clean two-column-style list.
-function ComparisonInline({ title, body, items }: { title: string; body: string | null; items: string[] }) {
+function ComparisonInline({
+  title,
+  body,
+  items,
+}: {
+  title: string;
+  body: string | null;
+  items: string[];
+}) {
   return (
-    <div className={`${GENERATED_PROSE_SHELL} mb-12 border border-border-soft bg-surface p-7`}>
-      {title && (
-        <h2 className="mb-4 font-display text-[1.25rem] font-bold text-ink">
-          {title}
-        </h2>
-      )}
-      {body && (
-        <p className="mb-4 max-w-prose text-base leading-relaxed text-ink-muted">
-          {body}
-        </p>
+    <section
+      className={`${GENERATED_PROSE_SHELL} mb-12 overflow-hidden rounded-[1.75rem] border border-ink/10 bg-white`}
+    >
+      {(title || body) && (
+        <div className="bg-lilac p-6 sm:p-8">
+          {title && <h2 className={EDITORIAL_HEADING}>{title}</h2>}
+          {body && (
+            <p className="mt-4 text-base leading-7 text-ink-muted">{body}</p>
+          )}
+        </div>
       )}
       {items.length > 0 && (
-        <ul className="space-y-3 border-t border-border-soft pt-4">
+        <dl className="divide-y divide-ink/10 px-6 sm:px-8">
           {items.map((item, i) => {
-            const { title: rowTitle, description } = splitTitled(item);
+            const row = splitTitled(item);
             return (
-              <li key={i} className="grid gap-1 md:grid-cols-[200px_1fr] md:gap-6">
-                <span className="text-[0.85rem] font-semibold text-ink">
-                  {rowTitle}
-                </span>
-                <span className="text-[0.85rem] leading-relaxed text-ink-muted">
-                  {description}
-                </span>
-              </li>
+              <div
+                key={i}
+                className="grid gap-3 py-5 sm:grid-cols-[.7fr_1fr] sm:gap-6"
+              >
+                <dt className="text-base font-bold leading-6 text-ink">
+                  {row.title}
+                </dt>
+                {row.description !== row.title && (
+                  <dd className="text-sm leading-6 text-ink-muted">
+                    {row.description}
+                  </dd>
+                )}
+              </div>
             );
           })}
-        </ul>
+        </dl>
       )}
-    </div>
+    </section>
   );
 }
 
-// ─── Inline InternalLinks fallback (DB shape: list of labels, no hrefs) ───
-function InternalLinksInline({ title, items }: { title: string; items: string[] }) {
-  if (items.length === 0) return null;
+// ─── Inline InternalLinks fallback (legacy labels + V2 label/href objects) ───
+function InternalLinksInline({
+  title,
+  items,
+}: {
+  title: string;
+  items: InternalLinkEntry[];
+}) {
+  if (!items.length) return null;
   return (
-    <div className="mb-12">
-      {title && (
-        <h2 className="mb-5 font-display text-[1.25rem] font-bold text-ink">
-          {title}
-        </h2>
-      )}
-      <ul className="grid gap-2 md:grid-cols-2">
-        {items.map((label, i) => (
-          <li
-            key={i}
-            className="flex items-start gap-2 border border-border-soft bg-surface px-4 py-3 text-[0.85rem] text-ink-muted"
-          >
-            <span className="text-accent-500">→</span> {label}
+    <section className="mb-12 rounded-[1.75rem] bg-lilac p-6 sm:p-8">
+      {title && <h2 className={`mb-6 ${EDITORIAL_HEADING}`}>{title}</h2>}
+      <ul className="grid gap-3 md:grid-cols-2">
+        {items.map((item, i) => (
+          <li key={item.href ?? `${item.label}-${i}`} className="min-w-0">
+            {item.href ? (
+              <a
+                className={`group flex h-full min-h-16 items-center justify-between gap-4 rounded-2xl bg-white/80 p-5 text-base font-bold leading-6 text-ink transition-colors hover:bg-blue hover:text-white ${EDITORIAL_FOCUS}`}
+                href={item.href}
+              >
+                <span>{item.label}</span>
+                <EditorialArrow className="shrink-0 transition-transform group-hover:translate-x-1" />
+              </a>
+            ) : (
+              <span className="flex h-full min-h-16 items-center rounded-2xl bg-white/50 p-5 text-base leading-6 text-ink">
+                {item.label}
+              </span>
+            )}
           </li>
         ))}
       </ul>
-    </div>
+    </section>
   );
 }
 
@@ -318,84 +499,48 @@ function StatsBandInline({
   body: string;
   stats: { value: string; label: string; source?: string; detail?: string }[];
 }) {
-  if (stats.length === 0) return null;
+  if (!stats.length) return null;
   return (
-    <div className="mb-12">
+    <section className="mb-12">
       {(title || body) && (
         <div className="mb-6 max-w-3xl">
-          {title && (
-            <h2 className="mb-2 font-display text-[1.25rem] font-bold text-ink">
-              {title}
-            </h2>
-          )}
+          {title && <h2 className={EDITORIAL_HEADING}>{title}</h2>}
           {body && (
-            <p className="max-w-prose text-base leading-relaxed text-ink-muted">
-              {body}
-            </p>
+            <p className="mt-4 text-base leading-7 text-ink-muted">{body}</p>
           )}
         </div>
       )}
-      <div className="grid grid-cols-2 gap-0 border border-border-soft bg-surface lg:grid-cols-4">
-        {stats.map((s, i) => (
-          <div
-            key={`${s.label}-${i}`}
-            className={`px-6 py-8 text-center ${i < stats.length - 1 ? "lg:border-r lg:border-border-soft" : ""}`}
-          >
-            <span className="block font-display text-[2.25rem] font-bold italic leading-none text-accent-700">
-              {s.value}
-            </span>
-            <span className="mt-2 block text-[0.8rem] font-medium text-ink">
-              {s.label}
-            </span>
-            {s.source && (
-              <span className="mt-1 block text-[0.65rem] uppercase tracking-wider text-ink-soft">
-                Source : {s.source}
-              </span>
-            )}
-            {s.detail && !s.source && (
-              <span className="mt-1 block text-[0.7rem] text-ink-muted">
-                {s.detail}
-              </span>
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
+      <StatHighlight
+        variant="band"
+        stats={stats.map((stat) => ({
+          value: stat.value,
+          label: stat.label,
+          detail: [stat.detail, stat.source ? `Source : ${stat.source}` : ""]
+            .filter(Boolean)
+            .join(" · "),
+        }))}
+      />
+    </section>
   );
 }
 
-// ─── EditoIntro: ContentSection variant highlighted + optional signature ───
-// If body contains the marker `[HELENE_SIGN]`, we cut at that marker and
-// append a small inline signature block at the bottom.
+// ─── EditoIntro: preserve prose without inferring a byline from a generator marker. ───
 function EditoIntroInline({ title, body }: { title: string; body: string }) {
-  const SIGN_MARKER = "[HELENE_SIGN]";
-  const hasSign = body.includes(SIGN_MARKER);
-  const cleanBody = hasSign ? body.split(SIGN_MARKER)[0]!.trim() : body;
-
+  // This marker came from generated content; it is not proof of authorship.
+  const cleanBody = body.split("[HELENE_SIGN]")[0]!.trim();
   return (
-    <div className={`${GENERATED_PROSE_SHELL} mb-12 border border-border-soft border-l-2 border-l-accent-500 bg-surface p-7`}>
-      {title && (
-        <h2 className="mb-4 font-display text-[1.25rem] font-bold text-ink">
-          {title}
-        </h2>
-      )}
+    <section
+      className={`${GENERATED_PROSE_SHELL} mb-12 rounded-[1.75rem] bg-paper p-6 sm:p-9`}
+    >
+      <span
+        aria-hidden="true"
+        className="mb-5 flex h-11 w-11 items-center justify-center rounded-2xl bg-blue text-white"
+      >
+        <IconSet name="book" size={23} />
+      </span>
+      {title && <h2 className={`mb-5 ${EDITORIAL_HEADING}`}>{title}</h2>}
       <RichText text={cleanBody} className="max-w-none" />
-      {hasSign && (
-        <footer className="mt-6 flex items-center gap-3 border-t border-border-soft pt-4">
-          <div className="flex h-9 w-9 items-center justify-center bg-accent-50 text-[0.72rem] font-bold text-accent-700">
-            {legalEntity.presidentInitials}
-          </div>
-          <div>
-            <p className="text-[0.78rem] font-semibold text-ink">
-              {legalEntity.presidentName}
-            </p>
-            <p className="text-[0.66rem] text-ink-muted">
-              {legalEntity.presidentTitle}, Expert-comptable
-            </p>
-          </div>
-        </footer>
-      )}
-    </div>
+    </section>
   );
 }
 
@@ -408,35 +553,41 @@ function RelatedArticlesInline({
   title: string;
   items: { slug: string; title: string; route?: string }[];
 }) {
-  if (items.length === 0) return null;
+  if (!items.length) return null;
   return (
-    <div className="mb-12">
-      <h2 className="mb-5 font-display text-[1.25rem] font-bold text-ink">
+    <section className="mb-12 rounded-[1.75rem] bg-paper p-6 sm:p-8">
+      <h2 className={`mb-7 ${EDITORIAL_HEADING}`}>
         {title || "À lire également"}
       </h2>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {items.map((it) => {
-          const href = it.route ? `/${it.route}/${it.slug}` : `/${it.slug}`;
+      <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+        {items.map((item, i) => {
+          const href = item.route
+            ? `/${item.route}/${item.slug}`
+            : `/${item.slug}`;
           return (
             <a
-              key={`${it.route ?? ""}-${it.slug}`}
+              key={`${item.route ?? ""}-${item.slug}`}
               href={href}
-              className="group block border border-border-soft bg-surface p-5 transition-colors hover:border-accent-500"
+              className={`group flex min-w-0 flex-col rounded-[1.4rem] border border-ink/10 bg-white p-6 transition-colors hover:border-blue/30 hover:bg-lilac/40 ${EDITORIAL_FOCUS}`}
             >
-              <span className="mb-2 block text-[0.65rem] font-bold uppercase tracking-[0.12em] text-accent-700">
-                Article lié
+              <span className="mb-7 flex items-center justify-between text-xs font-bold uppercase tracking-[.1em] text-blue">
+                Article lié{" "}
+                <span aria-hidden="true" className="font-mono">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
               </span>
-              <span className="text-[0.92rem] font-medium leading-snug text-ink transition-colors group-hover:text-accent-700">
-                {it.title}
-              </span>
-              <span className="mt-3 block text-[0.75rem] text-accent-500">
-                Lire l&apos;article →
+              <h3 className="flex-1 font-display text-xl font-bold leading-tight tracking-[-.025em] text-ink">
+                {item.title}
+              </h3>
+              <span className="mt-6 flex items-center justify-between gap-4 text-sm font-bold text-blue">
+                Lire l’article{" "}
+                <EditorialArrow className="shrink-0 transition-transform group-hover:translate-x-1" />
               </span>
             </a>
           );
         })}
       </div>
-    </div>
+    </section>
   );
 }
 
@@ -459,53 +610,49 @@ function ServiceMatrixInline({
   body: string;
   items: ServiceMatrixItem[];
 }) {
-  if (items.length === 0) return null;
+  if (!items.length) return null;
   return (
-    <div className="mb-12">
-      {title && (
-        <h2 className="mb-3 font-display text-[1.25rem] font-bold text-ink">
-          {title}
-        </h2>
-      )}
+    <section className="mb-12 rounded-[1.75rem] bg-mint p-6 sm:p-8">
+      {title && <h2 className={EDITORIAL_HEADING}>{title}</h2>}
       {body && (
-        <p className="mb-6 max-w-prose text-base leading-relaxed text-ink-muted">
+        <p className="mt-4 max-w-3xl text-base leading-7 text-ink-muted">
           {body}
         </p>
       )}
-      <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-        {items.map((it, i) => {
-          const included = it.included !== false; // default true
+      <ul className="mt-7 grid gap-3 md:grid-cols-2">
+        {items.map((item, i) => {
+          const included = item.included !== false;
           return (
-            <div
-              key={`${it.service}-${i}`}
-              className={`flex items-start gap-3 border p-4 ${
-                included
-                  ? "border-border-soft bg-surface"
-                  : "border-border-soft bg-bg opacity-60"
-              }`}
+            <li
+              key={`${item.service}-${i}`}
+              className="flex min-w-0 items-start gap-4 rounded-2xl bg-white/80 p-5"
             >
               <span
-                className={`mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center text-[0.75rem] font-bold ${
-                  included ? "bg-accent-500 text-brand-ink" : "bg-border-soft text-ink-soft"
-                }`}
+                aria-hidden="true"
+                className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${included ? "bg-navy text-mint" : "bg-paper text-ink-muted"}`}
               >
-                {included ? "✓" : "—"}
+                {included ? <EditorialCheck className="h-4 w-4" /> : "—"}
               </span>
-              <div className="flex-1">
-                <span className="block text-[0.85rem] font-medium text-ink">
-                  {it.service}
-                </span>
-                {(it.tier || it.dimension_value) && (
-                  <span className="mt-0.5 block text-[0.7rem] text-ink-muted">
-                    {it.tier ?? it.dimension_value}
+              <div className="min-w-0">
+                <p className="text-base font-bold leading-6 text-ink">
+                  <span className="sr-only">
+                    {included ? "Inclus : " : "Non inclus : "}
                   </span>
+                  {item.service}
+                </p>
+                {(item.tier || item.dimension_value) && (
+                  <p className="mt-2 text-sm leading-6 text-ink-muted">
+                    {[item.tier, item.dimension_value]
+                      .filter(Boolean)
+                      .join(" · ")}
+                  </p>
                 )}
               </div>
-            </div>
+            </li>
           );
         })}
-      </div>
-    </div>
+      </ul>
+    </section>
   );
 }
 
@@ -522,29 +669,28 @@ interface MapData {
 function MapEmbedInline({ title, body }: { title: string; body: string }) {
   let data: MapData = {};
   try {
-    const trimmed = body.trim();
-    if (trimmed.startsWith("{")) {
-      data = JSON.parse(trimmed) as MapData;
-    } else {
-      data = { address: trimmed };
-    }
+    const parsed = body.trim().startsWith("{")
+      ? JSON.parse(body)
+      : { address: body.trim() };
+    data = isRecord(parsed) ? (parsed as MapData) : {};
   } catch {
-    data = { address: body };
+    data = body.trim().startsWith("{") ? {} : { address: body };
   }
-
   const hasCoords =
-    typeof data.lat === "number" && typeof data.lng === "number";
-  const zoom = data.zoom ?? 13;
-
+    typeof data.lat === "number" &&
+    Number.isFinite(data.lat) &&
+    Math.abs(data.lat) <= 90 &&
+    typeof data.lng === "number" &&
+    Number.isFinite(data.lng) &&
+    Math.abs(data.lng) <= 180;
+  const zoom =
+    typeof data.zoom === "number" ? Math.min(20, Math.max(1, data.zoom)) : 13;
+  const address = typeof data.address === "string" ? data.address : "";
   return (
-    <div className="mb-12">
-      {title && (
-        <h2 className="mb-4 font-display text-[1.25rem] font-bold text-ink">
-          {title}
-        </h2>
-      )}
+    <section className="mb-12 rounded-[1.75rem] bg-mint p-5 sm:p-8">
+      {title && <h2 className={`mb-6 ${EDITORIAL_HEADING}`}>{title}</h2>}
       {hasCoords ? (
-        <div className="aspect-[16/9] w-full overflow-hidden border border-border-soft bg-surface">
+        <div className="aspect-[4/3] overflow-hidden rounded-[1.4rem] bg-white sm:aspect-[16/9]">
           <iframe
             title={title || "Carte de localisation"}
             src={`https://www.google.com/maps?q=${data.lat},${data.lng}&z=${zoom}&output=embed`}
@@ -554,47 +700,57 @@ function MapEmbedInline({ title, body }: { title: string; body: string }) {
           />
         </div>
       ) : (
-        <div className="border border-dashed border-border bg-bg p-7 text-center">
-          <p className="text-[0.85rem] text-ink-muted">
-            {data.address || "Adresse non renseignée."}
+        <div className="rounded-[1.4rem] bg-white/80 p-6">
+          <IconSet name="target" size={30} className="mb-4 text-blue" />
+          <p className="text-base leading-7 text-ink">
+            {address || "Adresse non renseignée."}
           </p>
-          {data.address && (
+          {address && (
             <a
-              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(data.address)}`}
+              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-3 inline-block text-[0.78rem] font-medium text-accent-700 hover:text-accent-500"
+              className={`mt-5 inline-flex min-h-11 items-center gap-3 rounded-full bg-blue px-5 py-3 text-sm font-bold text-white ${EDITORIAL_FOCUS}`}
             >
-              Ouvrir dans Google Maps →
+              Ouvrir dans Google Maps <EditorialArrow />
             </a>
           )}
         </div>
       )}
-    </div>
+    </section>
   );
 }
 
 // ─── Generic fallback for unknown section_type ───
 function UnknownSection({ section }: { section: PageSection }) {
-  if (process.env.NODE_ENV !== "production") {
+  if (process.env.NODE_ENV !== "production")
     console.warn(
-      `[DynamicSection] Unknown section_type="${section.section_type}" `
-      + `for ${section.route}/${section.slug}#${section.section_order}`,
+      `[DynamicSection] Unknown section_type="${section.section_type}" for ${section.route}/${section.slug}#${section.section_order}`,
     );
-  }
+  const body = section.body?.trim() ?? "";
+  const isStructuredBody = /^[\[{]/u.test(body);
+  const parsed = safeParse(isStructuredBody ? body : section.items);
+  const strings = asStringArray(parsed);
+  const records = asObjectArray(parsed);
+  const paragraphs = [
+    !isStructuredBody ? body : "",
+    ...strings,
+    ...records.flatMap((item) =>
+      [item.title, item.description, item.text, item.body].filter(
+        (value): value is string => typeof value === "string",
+      ),
+    ),
+  ].filter(Boolean);
+  if (!section.title && !paragraphs.length) return null;
   return (
-    <div className="mb-12 border border-dashed border-border bg-bg p-7">
-      {section.title && (
-        <h2 className="mb-3 font-display text-[1.25rem] font-bold text-ink">
-          {section.title}
-        </h2>
-      )}
-      {section.body && (
-        <p className="max-w-prose text-base leading-relaxed text-ink-muted">
-          {section.body}
-        </p>
-      )}
-    </div>
+    <>
+      <ContentSection
+        title={section.title ?? ""}
+        paragraphs={paragraphs}
+        variant="bordered"
+      />
+      <CitationsFooter citations={asCitations(safeParse(section.citations))} />
+    </>
   );
 }
 
@@ -667,7 +823,12 @@ function coerceStatsItems(
   parsed: unknown,
 ): { value: string; label: string; source?: string; detail?: string }[] {
   if (!Array.isArray(parsed)) return [];
-  const out: { value: string; label: string; source?: string; detail?: string }[] = [];
+  const out: {
+    value: string;
+    label: string;
+    source?: string;
+    detail?: string;
+  }[] = [];
   for (const raw of parsed) {
     if (typeof raw === "string") {
       const split = splitTitled(raw);
@@ -687,33 +848,6 @@ function coerceStatsItems(
   return out;
 }
 
-// ─── Coerce PricingTeaser items → component props (or empty → read DB) ───
-// Note: the <PricingTeaser> component expects `from` (not `from_price`) so we
-// adapt the field name when mapping from DB.PricingTier or Gemini-emitted objects.
-function coercePricingItems(parsed: unknown): PricingTierShape[] {
-  if (!Array.isArray(parsed)) return [];
-  const out: PricingTierShape[] = [];
-  for (const raw of parsed) {
-    if (typeof raw !== "object" || raw === null) continue;
-    const obj = raw as Record<string, unknown>;
-    const name = typeof obj.name === "string" ? obj.name : "";
-    const from =
-      typeof obj.from_price === "string"
-        ? obj.from_price
-        : typeof obj.from === "string"
-          ? obj.from
-          : "";
-    if (!name || !from) continue;
-    const features = Array.isArray(obj.features)
-      ? (obj.features.filter((f) => typeof f === "string") as string[])
-      : [];
-    const highlighted =
-      typeof obj.highlighted === "boolean" ? obj.highlighted : undefined;
-    out.push({ name, from, features, ...(highlighted !== undefined && { highlighted }) });
-  }
-  return out;
-}
-
 // ─── Coerce RelatedArticles items → {slug, title, route?} ───
 function coerceRelatedItems(
   parsed: unknown,
@@ -723,7 +857,10 @@ function coerceRelatedItems(
   for (const raw of parsed) {
     if (typeof raw === "string") {
       // Bare string → treat as title only (no link)
-      out.push({ slug: raw.toLowerCase().replace(/[^a-z0-9]+/g, "-"), title: raw });
+      out.push({
+        slug: raw.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+        title: raw,
+      });
       continue;
     }
     if (typeof raw === "object" && raw !== null) {
@@ -760,7 +897,9 @@ function coerceServiceMatrixItems(parsed: unknown): ServiceMatrixItem[] {
         typeof obj.included === "boolean" ? obj.included : undefined;
       const tier = typeof obj.tier === "string" ? obj.tier : undefined;
       const dimension_value =
-        typeof obj.dimension_value === "string" ? obj.dimension_value : undefined;
+        typeof obj.dimension_value === "string"
+          ? obj.dimension_value
+          : undefined;
       out.push({
         service,
         ...(included !== undefined && { included }),
@@ -778,6 +917,7 @@ function coerceTocItems(
 ): { id: string; label: string; level?: number }[] {
   if (!Array.isArray(parsed)) return [];
   const out: { id: string; label: string; level?: number }[] = [];
+  const seen = new Set<string>();
   for (const raw of parsed) {
     if (typeof raw === "object" && raw !== null) {
       const obj = raw as Record<string, unknown>;
@@ -793,38 +933,101 @@ function coerceTocItems(
           : typeof obj.title === "string"
             ? obj.title
             : "";
-      if (!id || !label) continue;
+      const normalizedId = normalizeAnchorId(id);
+      if (!normalizedId || !label || seen.has(normalizedId)) continue;
+      seen.add(normalizedId);
       const level = typeof obj.level === "number" ? obj.level : undefined;
-      out.push({ id, label, ...(level !== undefined && { level }) });
+      out.push({
+        id: normalizedId,
+        label,
+        ...(level !== undefined && { level }),
+      });
     }
   }
   return out;
 }
 
-// items: { pros: string[], cons: string[] } OU [{type:'pro'|'con', text}]
-function coerceProsCons(parsed: unknown): { pros: string[]; cons: string[] } {
-  if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
-    const o = parsed as Record<string, unknown>;
-    return { pros: asStringArray(o.pros), cons: asStringArray(o.cons) };
+// Preserve all supported historical shapes. Unlabelled prose remains neutral:
+// its position in an array is not evidence of an advantage or disadvantage.
+function coerceProsCons(parsed: unknown): {
+  pros: string[];
+  cons: string[];
+  points: string[];
+} {
+  const result = {
+    pros: [] as string[],
+    cons: [] as string[],
+    points: [] as string[],
+  };
+  function side(label: string): "pros" | "cons" | undefined {
+    const normalized = label
+      .trim()
+      .normalize("NFD")
+      .replaceAll(/\p{Diacritic}/gu, "")
+      .toLowerCase();
+    if (/^(?:pros?|avantages?|atouts?|pour|plus|\+)$/u.test(normalized))
+      return "pros";
+    if (
+      /^(?:cons?|inconvenients?|contraintes?|limites?|points? de vigilance|risques?|contre|minus|-)$/u.test(
+        normalized,
+      )
+    )
+      return "cons";
+    return undefined;
   }
-  const pros: string[] = [];
-  const cons: string[] = [];
-  if (Array.isArray(parsed)) {
-    for (const it of parsed) {
-      if (it && typeof it === "object") {
-        const o = it as Record<string, unknown>;
-        const t = String(o.type ?? o.kind ?? "").toLowerCase();
-        const text = String(o.text ?? o.label ?? o.title ?? "");
-        if (!text) continue;
-        if (t.startsWith("con") || t.startsWith("inconv") || t === "minus" || t === "-") {
-          cons.push(text);
-        } else {
-          pros.push(text);
-        }
-      }
+  function add(raw: unknown, explicitSide?: "pros" | "cons") {
+    if (typeof raw === "string") {
+      const text = raw.trim();
+      if (!text) return;
+      const labelled = text.match(
+        /^\s*(avantages?|atouts?|pour|pros?|plus|inconv[ée]nients?|contraintes?|limites?|points? de vigilance|risques?|contre|cons?|minus)\b([^:：]*?)\s*[:：]\s*(.+)$/iu,
+      );
+      const category =
+        explicitSide ?? (labelled ? side(labelled[1]!) : undefined);
+      if (labelled && category) {
+        const context = labelled[2]!.trim();
+        result[category].push(
+          context ? `${context} : ${labelled[3]!}` : labelled[3]!,
+        );
+      } else result[category ?? "points"].push(text);
+      return;
     }
+    if (!isRecord(raw)) return;
+    const title = typeof raw.title === "string" ? raw.title.trim() : "";
+    const label = typeof raw.label === "string" ? raw.label.trim() : "";
+    const declared =
+      typeof raw.type === "string"
+        ? raw.type
+        : typeof raw.kind === "string"
+          ? raw.kind
+          : "";
+    const category =
+      explicitSide ?? side(declared) ?? side(title) ?? side(label);
+    const description =
+      [raw.text, raw.description, raw.body]
+        .find(
+          (value): value is string =>
+            typeof value === "string" && Boolean(value.trim()),
+        )
+        ?.trim() ?? "";
+    const heading =
+      title && !side(title) ? title : label && !side(label) ? label : "";
+    const text = [heading, description]
+      .filter(
+        (value, index, values) => value && values.indexOf(value) === index,
+      )
+      .join(" : ");
+    if (text) add(text, category);
   }
-  return { pros, cons };
+  if (isRecord(parsed)) {
+    for (const [label, values] of Object.entries(parsed)) {
+      const category = side(label);
+      if (Array.isArray(values)) for (const item of values) add(item, category);
+    }
+  } else if (Array.isArray(parsed)) {
+    for (const item of parsed) add(item);
+  }
+  return result;
 }
 
 // ─── Main switch ───
@@ -835,10 +1038,15 @@ export async function DynamicSection({
   section: PageSection;
   professionEditorialLayout?: "grid" | "single";
 }) {
-  const parsedItems = safeParse(section.items);
+  const parsedItems = sanitizeLegacyPublicValue(safeParse(section.items));
   const citations = asCitations(safeParse(section.citations));
-  const title = section.title ?? "";
-  const body = section.body ?? "";
+  const title = sanitizeLegacyPublicText(section.title ?? "");
+  const body = sanitizeLegacyPublicText(section.body ?? "");
+  const safeSection: PageSection = {
+    ...section,
+    title: title || null,
+    body: body || null,
+  };
 
   switch (section.section_type) {
     case "Hero":
@@ -861,19 +1069,28 @@ export async function DynamicSection({
     case "ContentSection": {
       // Body may be a single paragraph; split on \n\n for multi-paragraph.
       const paragraphs = body
-        ? body.split(/\n{2,}/u).map((p) => p.trim()).filter(Boolean)
+        ? body
+            .split(/\n{2,}/u)
+            .map((p) => p.trim())
+            .filter(Boolean)
         : [];
       const wideText = isWideEditorialText(section);
       const contentLayout = wideText
-        ? professionEditorialLayout === "single" ? "editorial-single" : "editorial-grid"
+        ? professionEditorialLayout === "single"
+          ? "editorial-single"
+          : "editorial-grid"
         : "default";
       return (
         <>
           <ContentSection
             title={title}
             paragraphs={paragraphs}
-            className={wideText ? GENERATED_WIDE_TEXT_SHELL : GENERATED_PROSE_SHELL}
-            contentClassName={wideText ? GENERATED_EDITORIAL_GRID_TEXT : GENERATED_PROSE_TEXT}
+            className={
+              wideText ? GENERATED_WIDE_TEXT_SHELL : GENERATED_PROSE_SHELL
+            }
+            contentClassName={
+              wideText ? GENERATED_EDITORIAL_GRID_TEXT : GENERATED_PROSE_TEXT
+            }
             contentLayout={contentLayout}
           />
           <CitationsFooter citations={citations} wide={wideText} />
@@ -883,48 +1100,14 @@ export async function DynamicSection({
 
     case "BenefitsGrid": {
       const benefits = coerceBenefitsItems(parsedItems);
-      // BenefitsGrid expects {icon: string, title, description} — we pass the
-      // SVG markup via IconSet by serializing to a stable identifier through
-      // a wrapper card. Since BenefitsGrid renders `<span>{icon}</span>`, we
-      // adapt by rendering ourselves when objects are present.
       return (
         <>
-          {body && (
-            <p className="mb-6 max-w-prose text-base leading-relaxed text-ink-muted">
-              {body}
-            </p>
-          )}
-          {benefits.length > 0 ? (
-            <div className="mb-12">
-              {title && (
-                <h2 className="mb-6 font-display text-[1.25rem] font-bold text-ink">
-                  {title}
-                </h2>
-              )}
-              <div className="grid gap-4 md:grid-cols-2">
-                {benefits.map((b) => (
-                  <div
-                    key={b.title}
-                    className="border border-border-soft bg-surface p-6 transition-colors hover:border-accent-500"
-                  >
-                    <span className="mb-3 inline-flex h-10 w-10 items-center justify-center text-accent-700">
-                      <IconSet name={b.icon} size={32} />
-                    </span>
-                    <h3 className="mb-1.5 text-[0.95rem] font-semibold text-ink">
-                      {b.title}
-                    </h3>
-                    <p className="text-[0.9rem] leading-relaxed text-ink-muted">
-                      {b.description}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ) : (
-            // Fallback for legacy / empty input — keep the existing BenefitsGrid
-            // signature so we don't crash on edge cases.
-            <BenefitsGrid title={title} benefits={[]} columns={2} />
-          )}
+          <BenefitsGrid
+            title={title}
+            intro={body}
+            benefits={benefits}
+            columns={2}
+          />
           <CitationsFooter citations={citations} />
         </>
       );
@@ -933,12 +1116,13 @@ export async function DynamicSection({
     case "Checklist":
       return (
         <>
-          {body && (
-            <p className="mb-4 max-w-prose text-base leading-relaxed text-ink-muted">
-              {body}
-            </p>
-          )}
-          <Checklist title={title} items={asStringArray(parsedItems)} variant="check" columns={1} />
+          <Checklist
+            title={title}
+            intro={body}
+            items={asStringArray(parsedItems)}
+            variant="check"
+            columns={1}
+          />
           <CitationsFooter citations={citations} />
         </>
       );
@@ -954,14 +1138,18 @@ export async function DynamicSection({
       );
 
     case "ProsCons": {
-      const { pros, cons } = coerceProsCons(parsedItems);
-      if (pros.length === 0 && cons.length === 0) return <UnknownSection section={section} />;
+      const { pros, cons, points } = coerceProsCons(parsedItems);
+      if (pros.length === 0 && cons.length === 0 && points.length === 0)
+        return <UnknownSection section={safeSection} />;
       return (
         <>
-          {body && (
-            <p className="mb-6 max-w-prose text-base leading-relaxed text-ink-muted">{body}</p>
-          )}
-          <ProsCons title={title} pros={pros} cons={cons} />
+          <ProsCons
+            title={title}
+            intro={body}
+            pros={pros}
+            cons={cons}
+            points={points}
+          />
           <CitationsFooter citations={citations} />
         </>
       );
@@ -992,7 +1180,8 @@ export async function DynamicSection({
     case "DefinitionBox": {
       // DB shape ambiguous — use title as term, body as definition,
       // optional first citation as source.
-      const source = citations[0]?.source;
+      // The linked source footer already includes the source's name.
+      const source = citations[0] && !isVisibleCitation(citations[0]) ? citations[0].source : undefined;
       return (
         <div className="mb-12">
           <DefinitionBox term={title} definition={body} source={source} />
@@ -1002,18 +1191,13 @@ export async function DynamicSection({
     }
 
     case "NumberedSteps": {
-      const steps = coerceStepsItems(parsedItems).map((s) => ({
-        title: s.title,
-        description: s.description,
+      const steps = coerceStepsItems(parsedItems).map((step) => ({
+        title: step.title,
+        description: step.description,
       }));
       return (
         <>
-          {body && (
-            <p className="mb-4 max-w-prose text-base leading-relaxed text-ink-muted">
-              {body}
-            </p>
-          )}
-          <NumberedSteps title={title} steps={steps} />
+          <NumberedSteps title={title} intro={body} steps={steps} />
           <CitationsFooter citations={citations} />
         </>
       );
@@ -1023,7 +1207,11 @@ export async function DynamicSection({
       // Body = quote text, title = author (best-effort mapping).
       return (
         <>
-          <QuoteBlock quote={body} author={title || "Skoria"} variant="citation" />
+          <QuoteBlock
+            quote={body}
+            author={title || "Skoria"}
+            variant="citation"
+          />
           <CitationsFooter citations={citations} />
         </>
       );
@@ -1032,19 +1220,21 @@ export async function DynamicSection({
       const stats = coerceStatsItems(parsedItems).map((s) => ({
         value: s.value,
         label: s.label,
-        ...(s.detail && { detail: s.detail }),
+        ...((s.detail || s.source) && {
+          detail: [s.detail, s.source ? `Source : ${s.source}` : ""]
+            .filter(Boolean)
+            .join(" · "),
+        }),
       }));
       if (stats.length === 0) {
-        return <UnknownSection section={section} />;
+        return <UnknownSection section={safeSection} />;
       }
       return (
         <>
           {(title || body) && (
             <div className="mb-4">
               {title && (
-                <h2 className="mb-2 font-display text-[1.25rem] font-bold text-ink">
-                  {title}
-                </h2>
+                <h2 className={`mb-4 ${EDITORIAL_HEADING}`}>{title}</h2>
               )}
               {body && (
                 <p className="max-w-prose text-base leading-relaxed text-ink-muted">
@@ -1059,33 +1249,59 @@ export async function DynamicSection({
       );
     }
 
-    case "ComparisonTable":
+    case "ComparisonTable": {
+      const table = coerceComparisonTable(parsedItems);
       return (
         <>
-          <ComparisonInline title={title} body={body || null} items={asStringArray(parsedItems)} />
+          {table ? (
+            <RichTable
+              title={title}
+              intro={body || null}
+              headers={table.headers}
+              rows={table.rows}
+            />
+          ) : (
+            <ComparisonInline
+              title={title}
+              body={body || null}
+              items={asStringArray(parsedItems)}
+            />
+          )}
           <CitationsFooter citations={citations} />
         </>
       );
+    }
 
     case "RichTable": {
       const { headers, rows } = asRichTable(parsedItems);
-      if (headers.length === 0 || rows.length === 0) return <UnknownSection section={section} />;
+      if (headers.length === 0 || rows.length === 0)
+        return <UnknownSection section={safeSection} />;
       return (
         <>
-          <RichTable title={title} intro={body || null} headers={headers} rows={rows} />
+          <RichTable
+            title={title}
+            intro={body || null}
+            headers={headers}
+            rows={rows}
+          />
           <CitationsFooter citations={citations} />
         </>
       );
     }
 
     case "InternalLinks":
-      return <InternalLinksInline title={title} items={asStringArray(parsedItems)} />;
+      return (
+        <InternalLinksInline
+          title={title}
+          items={coerceInternalLinks(parsedItems)}
+        />
+      );
 
     // ─── V2 NEW CASES (Wave 3b / P2a) ───
 
     case "StatsBand": {
       const stats = coerceStatsItems(parsedItems);
-      if (stats.length === 0) return <UnknownSection section={section} />;
+      if (stats.length === 0) return <UnknownSection section={safeSection} />;
       return (
         <>
           <StatsBandInline title={title} body={body} stats={stats} />
@@ -1103,21 +1319,21 @@ export async function DynamicSection({
       );
 
     case "ExpertQuote":
-      // Body = quote text, author auto = editorial publisher identity.
       return (
         <>
-          <QuoteBlock
-            quote={body}
-            author={legalEntity.presidentName}
-            role={`${legalEntity.presidentTitle}, comparateur indépendant`}
-            variant="citation"
+          <ContentSection
+            title="Le repère éditorial"
+            paragraphs={body ? [body] : []}
+            variant="highlighted"
+            className={GENERATED_PROSE_SHELL}
+            contentClassName="max-w-none"
           />
           <CitationsFooter citations={citations} />
         </>
       );
 
     case "SimulatorTeaser":
-      // Composant standalone : lit ses 4 simulateurs hardcoded (defaultSimulators).
+      // The default tools are derived from the shared simulator registry.
       return (
         <SimulatorTeaser
           {...(title && { title })}
@@ -1126,32 +1342,22 @@ export async function DynamicSection({
       );
 
     case "PricingTeaser": {
-      // Prefer items emitted by Gemini ; fallback to DB pricing_tiers.
-      let tiers = coercePricingItems(parsedItems);
-      if (tiers.length === 0) {
-        try {
-          tiers = (await db.getPricingTiers()).map(pricingTierToProp);
-        } catch (e) {
-          if (process.env.NODE_ENV !== "production") {
-            console.warn("[DynamicSection] PricingTeaser DB read failed:", e);
-          }
-          tiers = [];
-        }
-      }
-      if (tiers.length === 0) return <UnknownSection section={section} />;
       return (
-        <>
-          {body && (
-            <p className="mb-4 max-w-prose text-base leading-relaxed text-ink-muted">
-              {body}
-            </p>
-          )}
-          <PricingTeaser
-            {...(title && { title })}
-            tiers={tiers}
-          />
-          <CitationsFooter citations={citations} />
-        </>
+        <section className="mb-12 rounded-[1.25rem] border border-ink/12 bg-apricot p-6 sm:p-8">
+          <p className="sk-eyebrow text-blue">Honoraires</p>
+          <h2 className="mt-3 font-display text-[1.5rem] font-bold text-ink">
+            Comparer un prix relié à un périmètre
+          </h2>
+          <p className="mt-4 max-w-3xl text-[.9rem] leading-7 text-ink-muted">
+            Sans volume, état du dossier, fréquence et niveau de conseil, un
+            forfait isolé ne permet pas de comparer. Demandez à chaque
+            professionnel de séparer le socle récurrent, la mise en place, les
+            options et les travaux exceptionnels.
+          </p>
+          <BriefTrigger className="mt-6 inline-flex min-h-11 items-center rounded-full bg-blue px-5 text-[.78rem] font-bold text-white">
+            Ajouter ces critères au brief&nbsp; ↗
+          </BriefTrigger>
+        </section>
       );
     }
 
@@ -1203,10 +1409,98 @@ export async function DynamicSection({
 
     case "ServiceMatrix": {
       const items = coerceServiceMatrixItems(parsedItems);
-      if (items.length === 0) return <UnknownSection section={section} />;
+      if (items.length === 0) return <UnknownSection section={safeSection} />;
       return (
         <>
           <ServiceMatrixInline title={title} body={body} items={items} />
+          <CitationsFooter citations={citations} />
+        </>
+      );
+    }
+
+    case "LocalProvidersMap": {
+      const providers = asObjectArray(parsedItems).filter(
+        (item) => typeof item.name === "string" && item.name.trim(),
+      );
+      if (!providers.length) return <UnknownSection section={safeSection} />;
+      return (
+        <section className="mb-12 rounded-[1.75rem] bg-mint p-6 sm:p-8">
+          <h2 className={EDITORIAL_HEADING}>
+            {title.replace(/partenaires/giu, "organismes") ||
+              "Les organismes à proximité"}
+          </h2>
+          {body && (
+            <p className="mt-4 max-w-3xl text-base leading-7 text-ink-muted">
+              {body.replace(/partenaires/giu, "organismes")}
+            </p>
+          )}
+          <div className="mt-7 grid gap-3 md:grid-cols-2">
+            {providers.map((provider, i) => {
+              const name = String(provider.name);
+              const address = [provider.address, provider.ville]
+                .filter((value): value is string => typeof value === "string")
+                .join(", ");
+              return (
+                <article
+                  key={`${name}-${i}`}
+                  className="min-w-0 rounded-[1.4rem] bg-white/85 p-6"
+                >
+                  <IconSet name="target" className="mb-5 text-blue" size={28} />
+                  {typeof provider.type === "string" && (
+                    <p className="mb-3 text-xs font-bold uppercase tracking-[.08em] text-blue">
+                      {provider.type}
+                    </p>
+                  )}
+                  <h3 className="font-display text-xl font-bold leading-tight text-ink">
+                    {name}
+                  </h3>
+                  {address && (
+                    <p className="mt-3 text-sm leading-6 text-ink-muted">
+                      {address}
+                    </p>
+                  )}
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${name} ${address}`)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`mt-5 inline-flex min-h-11 items-center gap-3 text-sm font-bold text-blue ${EDITORIAL_FOCUS}`}
+                  >
+                    Vérifier la localisation <EditorialArrow />
+                  </a>
+                </article>
+              );
+            })}
+          </div>
+          <CitationsFooter citations={citations} />
+        </section>
+      );
+    }
+
+    case "OpeningHoursTable": {
+      const sourced = citations.some(
+        (citation) => citation.url && !citation.url.includes("/stub"),
+      );
+      if (!sourced)
+        return (
+          <AlertBox type="info" title="Préparer une visite">
+            Avant de vous déplacer, consultez les horaires publiés par
+            l’organisme ou contactez-le pour confirmer ses disponibilités et les
+            modalités de rendez-vous.
+          </AlertBox>
+        );
+      const rows = asObjectArray(parsedItems).flatMap((item) =>
+        typeof item.day === "string" && typeof item.hours === "string"
+          ? [[item.day, item.hours]]
+          : [],
+      );
+      return (
+        <>
+          <RichTable
+            title={title || "Horaires d’ouverture"}
+            intro={body}
+            headers={["Jour", "Horaires"]}
+            rows={rows}
+          />
           <CitationsFooter citations={citations} />
         </>
       );
@@ -1226,19 +1520,19 @@ export async function DynamicSection({
       const calcKey = `${title} ${section.slug}`.toLowerCase();
       const interactive = /lmnp|meubl|loyer|locati/.test(calcKey) ? (
         <ImmobilierSimulator />
-      ) : /honoraire|accompagnement comptable|budget pour votre accompagnement|co[ûu]t de votre accompagnement/.test(calcKey) ? (
+      ) : /honoraire|accompagnement comptable|budget pour votre accompagnement|co[ûu]t de votre accompagnement/.test(
+          calcKey,
+        ) ? (
         <HonorairesSimulator />
-      ) : /r[ée]gime|micro|r[ée]el|\bis\b|\bir\b|sasu|bnc|statut/.test(calcKey) ? (
+      ) : /r[ée]gime|micro|r[ée]el|\bis\b|\bir\b|sasu|bnc|statut/.test(
+          calcKey,
+        ) ? (
         <StatutsSimulator />
       ) : null;
       if (interactive) {
         return (
           <div className="mb-12">
-            {title && (
-              <h2 className="mb-3 font-display text-[1.25rem] font-bold text-ink">
-                {title}
-              </h2>
-            )}
+            {title && <h2 className={`mb-4 ${EDITORIAL_HEADING}`}>{title}</h2>}
             {body && (
               <p className="mb-5 max-w-prose text-base leading-relaxed text-ink-muted">
                 {body}
@@ -1249,57 +1543,60 @@ export async function DynamicSection({
           </div>
         );
       }
-      // Pas de moteur de calcul correspondant — carte simulateur :
-      // champs décrits par la pipeline ({label, hint}) + CTA contact.
       const fields = asObjectArray(parsedItems)
-        .map((o) => ({
-          label: typeof o.label === "string" ? o.label : "",
-          hint: typeof o.hint === "string" ? o.hint : "",
+        .map((item) => ({
+          label: typeof item.label === "string" ? item.label : "",
+          hint: typeof item.hint === "string" ? item.hint : "",
         }))
-        .filter((f) => f.label);
+        .filter((field) => field.label);
       return (
-        <div className="mb-12 border border-border-soft border-l-2 border-l-accent-500 bg-surface p-7">
-          <p className="mb-2 text-[0.65rem] font-bold uppercase tracking-[0.12em] text-accent-700">
-            Simulateur
+        <section className="mb-12 rounded-[1.75rem] bg-lilac p-6 sm:p-8">
+          <p className="mb-4 text-xs font-bold uppercase tracking-[.14em] text-blue">
+            Préparer votre estimation
           </p>
-          {title && (
-            <h2 className="mb-3 font-display text-[1.25rem] font-bold text-ink">
-              {title}
-            </h2>
-          )}
+          {title && <h2 className={EDITORIAL_HEADING}>{title}</h2>}
           {body && (
-            <p className="mb-5 max-w-prose text-base leading-relaxed text-ink-muted">
+            <p className="mt-4 max-w-3xl text-base leading-7 text-ink-muted">
               {body}
             </p>
           )}
           {fields.length > 0 && (
-            <ul className="mb-6 space-y-2">
-              {fields.map((f) => (
-                <li key={f.label} className="flex items-start gap-2 text-[0.85rem] text-ink-muted">
-                  <span className="mt-0.5 text-accent-500">→</span>
-                  <span>
-                    {f.label}
-                    {f.hint && (
-                      <span className="ml-2 text-[0.72rem] text-ink-muted">({f.hint})</span>
-                    )}
-                  </span>
+            <ul className="my-6 grid gap-3 sm:grid-cols-2">
+              {fields.map((field) => (
+                <li key={field.label} className="rounded-2xl bg-white/75 p-5">
+                  <p className="text-sm font-bold leading-6 text-ink">
+                    {field.label}
+                  </p>
+                  {field.hint && (
+                    <p className="mt-2 text-sm leading-6 text-ink-muted">
+                      {field.hint}
+                    </p>
+                  )}
                 </li>
               ))}
             </ul>
           )}
-          <a
-            href="/contact"
-            className="inline-flex items-center gap-2 bg-accent-500 px-6 py-3 font-body text-[0.82rem] font-semibold text-brand-ink transition-colors hover:bg-accent-700"
-          >
-            Obtenir mon estimation personnalisée →
-          </a>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <BriefTrigger
+              prefill={{ need: title || "Préparer une estimation" }}
+              className="inline-flex min-h-12 items-center gap-3 rounded-full bg-blue px-5 py-3 text-sm font-bold text-white"
+            >
+              Préparer les questions de mon brief <EditorialArrow />
+            </BriefTrigger>
+            <a
+              href="/simulateurs"
+              className={`inline-flex min-h-12 items-center gap-3 rounded-full border border-ink/20 px-5 py-3 text-sm font-bold text-ink ${EDITORIAL_FOCUS}`}
+            >
+              Voir les simulateurs <EditorialArrow />
+            </a>
+          </div>
           <CitationsFooter citations={citations} />
-        </div>
+        </section>
       );
     }
 
     default:
-      return <UnknownSection section={section} />;
+      return <UnknownSection section={safeSection} />;
   }
 }
 

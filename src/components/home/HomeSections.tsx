@@ -46,8 +46,8 @@ export function SectionHead({
 export function HomeMethodStrip() {
   const items = [
     {
-      k: "Comparaison neutre",
-      v: "Aucun cabinet ne nous appartient, aucun classement n'est vendu.",
+      k: "Cadre comparatif",
+      v: "Les fiches distinguent les données publiques, les informations documentées et les éléments à confirmer.",
     },
     {
       k: "Sources publiques",
@@ -208,7 +208,7 @@ const GUIDES = [
   { href: "/ressources/prix-expert-comptable", title: "Combien coûte un expert-comptable ?", tag: "Tarifs" },
   { href: "/ressources/expert-comptable-en-ligne", title: "En ligne ou cabinet de proximité : comment trancher", tag: "Comparatif" },
   { href: "/ressources/lettre-de-mission-expert-comptable", title: "Lire une lettre de mission avant de signer", tag: "Contrat" },
-  { href: "/guides/lmnp", title: "LMNP : le guide fiscal de la location meublée", tag: "Immobilier" },
+  { href: "/ressources/lmnp-expert-comptable", title: "LMNP : le guide fiscal de la location meublée", tag: "Immobilier" },
   { href: "/ressources/salaire-expert-comptable", title: "Salaire d'un expert-comptable : les repères", tag: "Métier" },
   { href: "/ressources/devenir-expert-comptable", title: "Devenir expert-comptable : le parcours complet", tag: "Métier" },
 ];

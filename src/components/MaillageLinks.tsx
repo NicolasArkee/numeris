@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { RelatedPages } from "./RelatedPages";
 import { db } from "@/libs/db";
 import { AppConfig } from "@/utils/AppConfig";
 
@@ -23,21 +23,11 @@ export async function MaillageLinks({ sourceUrl }: { sourceUrl: string }) {
     url.startsWith(AppConfig.url) ? url.slice(AppConfig.url.length) || "/" : url;
 
   return (
-    <section className="mt-16 border-t border-border-soft pt-8" aria-label="Liens utiles">
-      <h2 className="mb-5 font-display text-[1.3rem] font-medium text-ink">Liens utiles</h2>
-      <ul className="grid gap-2.5 md:grid-cols-2">
-        {links.map((l) => (
-          <li key={l.target_url}>
-            <Link
-              href={toHref(l.target_url)}
-              className="group inline-flex items-center gap-2 text-[0.85rem] text-ink-muted transition-colors hover:text-accent-700"
-            >
-              <span className="h-1 w-1 flex-shrink-0 bg-border-soft transition-colors group-hover:bg-accent-500" />
-              {l.anchor}
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </section>
+    <RelatedPages
+      title="Les sujets à explorer ensuite."
+      eyebrow="Liens utiles"
+      description="Retrouvez les pages associées pour approfondir un point, préciser votre besoin ou poursuivre votre comparaison."
+      links={links.map((link) => ({ href: toHref(link.target_url), label: link.anchor }))}
+    />
   );
 }
